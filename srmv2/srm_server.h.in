@@ -1,0 +1,69 @@
+/*
+ * $Id$
+ */
+
+
+#ifndef _SRM_SERVER_H
+#define _SRM_SERVER_H
+#ifdef USE_MYSQL
+#include <mysql.h>
+#endif
+
+            /* srm server constants */
+
+#define MAXRETRY 5
+#define RETRYI  60
+#define BACKLOG (100) // Max. request backlog
+#define LOGBUFSZ 1024
+#define PRTBUFSZ 180
+#define SRMV2_NBTHREADS 20
+#define SRMV2_NBTHREADS_MAX 512
+#define SRMV2_PORT 8444
+extern char *SRMV2_PROXY_DIR;
+extern uid_t proxy_uid;
+extern gid_t proxy_gid;
+extern char db_pwd[33];
+extern char db_srvr[33];
+extern char db_user[33];
+
+
+#define SRMV2_PROXY_DEFAULT_DIR "@prefix@/var/proxies/"
+
+#define RPC_ASYNCH_TIMEOUT 5
+
+                        /* srm server structures */
+
+struct srm_dbfd {
+    int     idx;        /* index in array of srm_dbfd */
+#ifdef USE_MYSQL
+    MYSQL       mysql;
+#endif
+    int     tr_started;
+};
+
+struct srm_srv_thread_info {
+    int             s;      /* socket for communication with client */
+    int             db_open_done;
+    struct srm_dbfd dbfd;
+    char            errbuf[PRTBUFSZ];
+};
+
+            /* srm server exit codes */
+
+#define USERR   1   /* user error */
+#define SYERR   2   /* system error */
+#define CONFERR 4   /* configuration error */
+
+            /* srm server messages */
+
+#define SRM02   "SRM02 - %s error : %s\n"
+#define SRM09   "SRM09 - fatal configuration error: %s %s\n"
+#define SRM23   "SRM23 - %s is not accessible\n"
+#define SRM98   "SRM98 - %s\n"
+
+#define DEFAULT_XMLRPC_HOST "localhost"
+#define DEFAULT_XMLRPC_PORT "8080"
+#define DEFAULT_XMLRPC_PATH "/RPC2"
+#define DEFAULT_XMLRPC_ENDPOINT "http://" DEFAULT_XMLRPC_HOST ":" DEFAULT_XMLRPC_PORT DEFAULT_XMLRPC_PATH
+extern char *xmlrpc_endpoint;
+#endif /* _SRM_SERVER_H */

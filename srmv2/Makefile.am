@@ -1,0 +1,141 @@
+# $Id$
+#*********************************************************************
+#*
+#* Authors: Flavia Donno <Flavia.Donno@cern.ch>
+#*
+#* Authors: Antonio Messina <antonio.messina@ictp.it>
+#*
+#* Copyright 2006 ICTP EGRID Project
+#*           http://www.egrid.it/
+#*
+#* Copyright 2004 INFN FIRB Project
+#*           http://grid-it.cnaf.infn.it/
+#*
+#*********************************************************************
+
+STORM_NSCONFIG = /etc/sysconfig/srmv2storm.nsconfig
+LOGFILE = @prefix@/var/log/storm/srmv2log
+MTCCFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
+
+SOAPFILES = srmv2H.h srmv2Stub.h srmv2C.c srmv2Server.c srmv2Client.c srmSoapBinding.nsmap
+
+MAINTAINERCLEANFILES = Makefile.in $(SOAPFILES) stdsoap2.c srmv2_init_script
+TOCLEAN = $(SOAPFILES) srm.v2.2.h *.res.xml *.req.xml stdsoap2.c \
+	  srmv2_init_script
+
+#if FESERV_SELECTED
+stormmandir = $(mandir)/man8
+stormman_DATA = srmv2.man
+stormetcsysdir = $(sysconfdir)/init.d
+stormetcsys_DATA = srmv2_init_script
+stormetcsysconfdir = $(sysconfdir)/sysconfig
+stormetcsysconfdir_DATA = srmv2storm.nsconfig
+stormdb = $(sysconfdir)/db
+stormdb_DATA = ../db/storm_mysql_grant.sql ../db/storm_mysql_tbl.sql ../db/storm_mysql_config.sh ../db/README
+#endif
+
+EXTRA_DIST = srm.v2.2.wsdl typemap.dat srmv2.man srmv2_init_script.in srmv2storm.nsconfig
+
+INCLUDES = -I. -I../db \
+           @MYSQL_CFLAGS@ \
+	   @GSOAPGSI_CFLAGS@ \
+           -I@GSOAP_DIR@ \
+	   -I@GSOAPGSI_DIR@/include \
+    -I/opt/glite/include/glite/security/voms \
+            -I/opt/globus/include/gcc32/ \
+		@XMLRPC_C_CFLAGS@ \
+           -DSTORM_NSCONFIG=\"$(STORM_NSCONFIG)\" \
+	   -DLOGFILE=\"$(LOGFILE)\" \
+	   -DUSE_MYSQL $(MTCCFLAGS)
+
+#if FESERV_SELECTED
+sbin_PROGRAMS = srmv2storm
+srmv2storm_SOURCES = srmv2.c 
+srmv2storm_LDFLAGS = -L$(top_srcdir)/db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@\
+                     @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@
+srmv2storm_LDADD = -lsrmv2storm -lstormdb -lvomsc @MYSQL_LDADD@ \
+                   @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ \
+                   @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid
+#endif
+
+noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
+                  Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \
+                  serrno.h srm_server.h srm.v2.2.h srmv2H.h \
+                  srmv2srmSoapBindingObject.h srmv2srmSoapBindingProxy.h \
+                  srmv2Stub.h storm_api.h storm_constants.h storm_functions.h \
+                  storm_limits.h storm_util.h srmlogit.h \
+                  xmlrpc_decode.h xmlrpc_encode.h
+
+noinst_LTLIBRARIES = libsrmv2storm.la
+
+libsrmv2storm_la_SOURCES = 	Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
+    srmv2_ptg.cpp ptg.cpp ptg.hpp \
+	copy.cpp copy.hpp copy_status.cpp copy_status.hpp file_request.hpp \
+	file_status.hpp get_status.cpp get_status.hpp ptp.cpp ptp.hpp put_status.cpp \
+    srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
+	put_status.hpp soap_util.hpp sql_string.hpp srm_util.c srmlogit.c srmv2C.c \
+	srmv2Server.c srmv2_bol.cpp srmv2_copy.cpp srmv2_dirreq.c srmv2_filerequest_template.hpp \
+	srmv2_permreq.c srmv2_ptp.cpp srmv2_spacereq.c srmv2_status_bol.cpp \
+	srmv2_status_copy.cpp srmv2_status_get.cpp srmv2_status_put.cpp srmv2_status_template.hpp \
+	srmv2_xferreq.c stdsoap2.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c $(noinst_INCLUDES)
+
+srmv2storm_DEPENDENCIES = libsrmv2storm.la
+
+$(SOAPFILES): srm.v2.2.h
+	@GSOAP_DIR@/soapcpp2 -c -p srmv2 srm.v2.2.h
+
+srm.v2.2.h: srm.v2.2.wsdl
+	@GSOAP_DIR@/wsdl2h -c -t typemap.dat srm.v2.2.wsdl
+
+stdsoap2.c:
+	@echo
+	/bin/cp @GSOAP_DIR@/stdsoap2.c .
+
+clean :
+	/bin/rm -f $(TOCLEAN)
+
+install-data-hook: $(stormman_DATA) $(stormetcsys_DATA) $(storetcsysconf_DATA)
+	if test -d $(DESTDIR)$(stormmandir); then \
+		$(mkinstalldirs) $(DESTDIR)$(stormmandir); \
+	fi
+	for file in $(stormman_DATA); do \
+	   fname=`echo $$file | cut -d. -f1`; \
+	   /bin/cp $$file $(DESTDIR)$(stormmandir)/$$fname.8; \
+	   /bin/rm $(DESTDIR)$(stormmandir)/$$file; \
+	done
+	if [ ! -d $(DESTDIR)$(stormetcsysdir) ]; then \
+		$(mkinstalldirs) $(DESTDIR)$(stormetcsysdir); \
+	fi
+	for file in $(stormetcsys_DATA); do \
+	    /bin/cp $$file $(DESTDIR)$(stormetcsysdir)/srmv2storm; \
+	    /bin/rm -f $(DESTDIR)$(stormetcsysdir)/$$file; \
+	    /bin/chmod a+rx $(DESTDIR)$(stormetcsysdir)/srmv2storm; \
+	done
+
+	if [ ! -d $(DESTDIR)$(stormetcsysconfdir) ]; then \
+		$(mkinstalldirs) $(DESTDIR)$(stormetcsysconfdir); \
+	fi
+	for file in $(stormetcsysconfdir_DATA); do \
+		/bin/cp $$file $(DESTDIR)$(stormetcsysconfdir)/`basename $$file` ; \
+	done
+	if [ ! -d $(DESTDIR)$(stormdb) ]; then \
+		$(mkinstalldirs) $(DESTDIR)$(stormdb); \
+	fi
+	for file in $(stormdb_DATA); do \
+	    /bin/cp $$file $(DESTDIR)$(stormdb)/`basename $$file`; \
+	done
+	if ! [ -d $(DESTDIR)/var/log ]; then \
+		$(mkinstalldirs) $(DESTDIR)$(prefix)/var/log ; \
+	fi
+
+
+
+
+dist-hook:
+	cd $(distdir)
+	for file in $(MAINTAINERCLEANFILES); do \
+           /bin/rm -f $(distdir)/$$file; \
+        done
+
+srmv2.lo srmv2_dirreq.lo : $(SOAPFILES)
+

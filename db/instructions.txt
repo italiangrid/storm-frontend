@@ -1,0 +1,9 @@
+% mysql -u root -p 
+Enter password: storm 
+mysql> show databases;
+mysql> use mysql;
+mysql> select user, host, password from user;
+mysql> use storm_db;
+mysql> show tables;
+mysql> describe storm_copy_filereq;
+

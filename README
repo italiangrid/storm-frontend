@@ -1,0 +1,248 @@
+*
+*   Author: Flavia Donno, Flavia.Donno@pi.infn.it
+*   Date:   5 August 2005
+*
+*   NOTE: The StoRM SRM v2.1 Server was written reusing
+*         the software developed at CERN by the LCG Data
+*         Management Team for the LCG DPM package.
+*         *** Special thanks to Jean-Philippe Baud, CERN LCG/GD. ***
+*
+Prerequisites
+=============
+Before proceding, you have to make sure you have installed and configured
+all prerequisite packages.
+
+Globus
+------
+In order to install Globus you need the following rpms:
+globus-initialization-2.2.4-5
+vdt_globus_info_client-VDT1.2.2rh9-1
+vdt_globus_jobmanager_condor-VDT1.2.0rh9-1
+vdt_globus_data_server-VDT1.2.2rh9-1
+globus-config-0.22-1.lcg
+vdt_globus_rm_essentials-VDT1.2.2rh9-1
+vdt_globus_jobmanager_lsf-VDT1.2.0rh9-1
+vdt_globus_essentials-VDT1.2.2rh9-1
+vdt_globus_info_server-VDT1.2.2rh9-1
+vdt_globus_sdk-VDT1.2.2rh9-1
+vdt_globus_jobmanager_pbs-VDT1.2.0rh9-1
+vdt_globus_info_essentials-VDT1.2.2rh9-1
+vdt_globus_rm_server-VDT1.2.2rh9-1
+vdt_globus_rm_client-VDT1.2.2rh9-1
+gpt-VDT1.2.2rh9-1
+
+You can get them from the following link:
+http://grid-deployment.web.cern.ch/grid-deployment/download/RpmDir_i386-sl3/index-i386-sl3-LCG-2_6_0.html
+
+To configure globus, please use the following instructions.
+Execute the following commands as root:
+
+# . /etc/profile.d/globus.sh
+# export GPT_LOCATION=/opt/gpt
+# /opt/globus/sbin/globus-initialization.sh
+# ${GPT_LOCATION}/sbin/gpt-build -force -nosrc gcc32 gcc32pthr \
+  gcc32dbg gcc32dbgpthr
+
+ATTENTION: If you want to enable the use of Grid poll accounts with the
+           StoRM Front End, you need to install LCAS/LCMAPS. Please refer
+           to the relative documentation distributed with LCG 2.6.0.
+
+GSOAP Linux
+-----------
+You need to install gsoap-linux v2.6.
+You can find the tar file in /home/storm/download on testbed006.cnaf.infn.it.
+Such tar file must be unwinded in /usr/local.
+
+CGSI_gSOAP
+----------
+You need to install the following rpms for CGSI_gSOAP:
+
+CGSI_gSOAP_2.6-1.1.9-1.slc3
+CGSI_gSOAP_2.6-dev-1.1.9-1.slc3
+
+You can find them here:
+http://grid-deployment.web.cern.ch/grid-deployment/download/RpmDir_i386-sl3/index-i386-sl3-LCG-2_6_0.html
+
+curl-7.15.0-1
+-----------
+
+You need to install the curl-7.15.0-1 package.
+The relative binary RPMs for SLC3 can be found on testbed006.cnaf.infn.it 
+in the direcory /home/storm/rpms/RPMS/i386 or at the official StoRM 
+distribution site: http://grid-it.cnaf.infn.it/storm from the download section.
+The rpm name is: curl-globus-ssl-gcc32dbgpthr-7.15.0-1.i386.rpm.
+The correspondent tar file can be found on testbed006.cnaf.infn.it in 
+the directory /home/storm: curl-7.15.0.tar.gz
+You should unwind this tar in the directory /home/storm.
+Instructions to build the package can be found in the file
+/home/storm/curl-7.15.0/INSTRUCTIONS_FOR_STORM
+ATTENTION:
+==========
+Do not take curl-7.15.0 from the official distribution, since
+the building tools have been modified to link curl against the Globus
+SSL libraries.
+
+xmlrpc-c-1.04
+-------------
+
+You need to install the xmlrpc-c-1.04 package.
+The relative binary RPMs for SLC3 can be found on testbed006.cnaf.infn.it 
+in the direcory /home/storm/rpms/RPMS/i386 or at the official StoRM 
+distribution site: http://grid-it.cnaf.infn.it/storm from the download section.
+The rpm name is: xmlrpc-c-globus-ssl-1.04-1.i386.rpm
+The correspondent tar file can be found on testbed006.cnaf.infn.it 
+in the directory /home/storm: xmlrpc-c-1.04.tar.gz 
+You should unwind this tar in the directory /home/storm.
+Instructions to build the package can be found in the file
+/home/storm/xmlrpc-c-1.04/INSTRUCTIONS_FOR_STORM
+ATTENTION:
+==========
+Do not take xmlrpc-c-1.04 from the official distribution, since
+the building tools have been modified to link xmlrpc-c against the Globus
+SSL libraries.
+
+CASTOR client
+-------------
+You need to install also the CASTOR client rpm:
+CASTOR-client-2.0.0-59
+You can find the rpm in the usual location:
+http://grid-deployment.web.cern.ch/grid-deployment/download/RpmDir_i386-sl3/index-i386-sl3-LCG-2_6_0.html
+
+Certification Authorities files
+-------------------------------
+In order to run the secure version of the SRM Front End (FE) server, you need
+to install the most recent CA rpms. Also, you should request a host certificate
+server for the machine where the FE runs.
+The most updated CA rpms can be found here:
+http://grid-deployment.web.cern.ch/grid-deployment/lcg2CAlist.html
+
+MySQL server and client
+-----------------------
+The rpms needed are:
+MySQL-devel-4.0.23-sl3
+MySQL-server-4.0.23-sl3
+MySQL-client-4.0.23-sl3
+MySQL-shared-compat-4.0.20-0
+You can find them here:
+http://grid-deployment.web.cern.ch/grid-deployment/download/RpmDir_i386-sl3/index-i386-sl3-LCG-2_6_0.html.
+
+Installing StoRM FE
+===================
+The relative binary RPMs for SLC3 can be found on testbed006.cnaf.infn.it
+in the direcory /home/storm/rpms/RPMS/i386 or at the official StoRM
+distribution site: http://grid-it.cnaf.infn.it/storm from the download section.
+There are 2 rpms: one containing the server distribution and one containing
+the client test programs.
+The rpms name are: srmv2-storm-server-gcc32dbgpthr-1.0-1.i386.rpm
+                   srmv2-storm-client-gcc32dbgpthr-1.0-1.i386.rpm
+
+Once you have installed the rpms, you can configure the server.
+However, if for some reason you need to rebuild the server/client test programs
+from source, the instructions are below.
+
+Building StoRM FE
+=================
+To build the code, execute the following instructions:
+1. cd storm/frontend
+2. source frontend-setup.sh (if you have bash) or source frontend-setup.csh (if you have tcsh)
+3. ./autogen.sh
+4. ./configure --prefix=<installation_dir> --disable-gsoapgsi \
+               --with-rpm-dir=<rpm_dir>
+   or if you want to create a secure version of the server execute:
+   ./configure --prefix=<installation_dir> --enable-gsoapgsi \
+	       --with-rpm-dir=<rpm_dir>
+   where <installation_dir> is the directory where the client and server
+   binaries will be installed. Es. /home/flavia/install
+   and <rpm_dir> is the directory where the rpms will be created. Es.
+   /home/flavia/rpm. If this directory does not exist, it will be created.
+5. [g]make
+
+To install the code in the directory specified by the --prefix option in the
+configure command at line .4, execute:
+
+6. [g]make install
+
+To clean up the directory tree from executable and object files, execute:
+
+7. [g]make clean
+
+After the operation above, one can reissue again gmake without the need
+to run again autogen.sh or configure.
+
+To clean the directory tree completely and go back to the source tree
+as fetched out from cvs, beside executing a gmake clean, one must execute:
+
+8. [g]make clean-tree
+
+NOTE: The configure script offers the possibility to only build the StoRM
+      FrontEnd server. In order to do so, you have to use the following
+      switches on the configure command line, in addition to whatever other
+      switch you want to use:
+		--disable-all --enable-fe-server
+
+      In order to skip the building of the StoRM FrontEnd server and build
+      only the client test programs, on the configure comand line you can
+      use the following switches in addition to whatever other switch you
+      want to use:
+		--disable-all --enable-fe-client
+
+      By default both StoRM FE server and client test programs will be built.
+
+Server Configuration
+====================
+
+To configure MySQL, as root and using the mysql root password 
+execute the script:
+
+# db/storm_mysql_config.sh 
+
+At this point the DB is configured.
+
+Now you need to create few configuration files for the StoRM server.
+As root, create the following file with the following content:
+# cat /etc/sysconfig/srmv2storm.nsconfig
+storm/storm@localhost
+
+or better:
+# cat /etc/sysconfig/srmv2storm.nsconfig
+storm/storm@testbed006
+ 
+where testbed006 is the name of the machine where the server is being
+configured.
+
+Create the directory /var/log/storm.
+
+Create the directory ${prefix}/proxies where ${prefix} is the installation
+directory for the StoRM FE. For instance: /home/storm/proxies.
+This directory should be only accessible by root.
+
+Also, create the file /etc/my.cnf and set max_connection to 10 (the
+default value is 4 and could be too low).
+
+At this point you can start the server as follows:
+
+% <installation_dir>/sbin/srmv2storm
+
+By default the server will listen on TCP port 8444 and log in 
+/var/log/storm/srmv2log. 
+
+If you want to start the secure version of the server on port 8443, 
+you need to start it as root.
+You can issue the following commands:
+
+# export export SRMV2_PORT=8443
+# <installation_dir>/sbin/srmv2storm -l /var/log/storm/srmv2log-secure
+
+In this way, a secure instance of the server will be started on TCP port 8443.
+The server will log in the file /var/log/storm/srmv2log-secure.
+
+A startup/stop script is provided in:
+${prefix}/etc/init.d/srmv2storm
+to activate/de-activate the server at system startup/shutdown times.
+${prefix} is the installation directory of the StoRM FE server.
+To invoke the script you can issue the following command as root:
+
+# ${prefix}/etc/init.d/srmv2storm {start|stop|status|restart|condrestart}
+
+That's all FOLKS!!!
+

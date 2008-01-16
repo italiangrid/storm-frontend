@@ -1,0 +1,108 @@
+.TH SRMV2 n "$Date$" INFN "StoRM Administrator Commands"
+.SH NAME
+srmv2storm \- start the StoRM SRM v2 server
+.SH SYNOPSIS
+.B srmv2
+[
+.BI -c " config_file"
+] [
+.BI -l " log_file"
+] [
+.BI -t " num_threads"
+]
+
+.SH DESCRIPTION
+.LP
+The
+.B srmv2storm
+command starts the StoRM SRM v2 server.
+This command is usually executed at system startup time
+.RB ( /etc/rc.local ).
+A procedure is provided in ${prefix}/etc/init.d/srmv2storm to start and stop
+the server and ask for its status. To invoke it one can issue as 
+root the following:
+.nf
+
+# ${prefix}/etc/init.d/srmv2storm {start|stop|status|restart|condrestart}
+
+.fi
+This will read the StoRM "request" database configuration file,
+create a pool of threads and look for requests.
+Each of them is processed in a thread which opens a connection to the
+database server if necessary.
+When a request has been completed, the thread becomes idle until it is allocated
+to another request.
+The connection to the database server is kept open between 2 requests.
+.LP
+All error messages and statistical information are kept in a log.
+.LP
+The StoRM SRM Server listen port number can be defined on client hosts and
+on the server itself in either of the following ways:
+.RS
+.LP
+setting an environment variable SRMV2_PORT
+.RS
+.HP
+setenv SRMV2_PORT 8444
+.RE
+.LP
+an entry in
+.B /etc/shift.conf
+like:
+.RS
+.HP
+SRMV2	PORT	8444
+.RE
+.RE
+.LP
+If none of these methods is used, the default port number is taken from the
+definition of SRMV2_PORT in srm_server.h.
+.LP
+The StoRM SRM "request" database keeps the requests and their status
+even after completion.
+.LP
+The StoRM SRM configuration file contains password information for the
+database and must be readable/writable only by root.
+It contains a single line in the format:
+.RS
+.HP
+username/password@server
+.RE
+where 'username' and 'password' are the credentials to login to the database
+instance identified by 'server'.
+.LP
+In the log each entry has a timestamp.
+All entries corresponding to one request have the same request id.
+For each user command there is one message giving information about
+the requestor (hostname, dn) and one message SRM98 giving the command
+itself.
+The completion code of the command is also logged.
+.SH OPTIONS
+.TP
+.BI -c " config_file"
+Specifies a different path for the StoRM SRM v2 configuration file.
+.TP
+.BI -l " log_file"
+Specifies a different path for the StoRM SRM v2 log file.
+.TP
+.BI -l " num_threads"
+Specifies the number of threads the server starts with. The default is 20.
+.SH FILES
+.TP 1.5i
+.B /etc/sysconfig/srmv2storm.nsconfig
+configuration file
+.TP
+.B /var/log/storm/srmv2log
+.SH EXAMPLES
+.TP
+Here is a small log:
+.nf
+08/04 21:18:47 22343,0 PrepareToPut: request by /C=IT/O=INFN/OU=Personal Certificate/L=Pisa/CN=Flavia Donno/Email=flavia.donno@pi.infn.it from testbed006.cnaf.infn.it
+08/04 21:18:47 22343,0 PrepareToPut: SRM98 - PrepareToPut 132 90f8bfce-5fb1-41d2-b335-3908935a6038
+08/04 21:18:47 22343,0 PrepareToPut: SRM98 - PrepareToPut 0 srm://testbed006.cnaf.infn.it:8444/cnaf/put-test-xxx1
+08/04 21:18:47 22343,0 PrepareToPut: SRM98 - PrepareToPut 1 srm://testbed006.cnaf.infn.it:8444/cnaf/put-test-xxx2
+08/04 21:18:47 22343,0 PrepareToPut: SRM98 - PrepareToPut 2 srm://testbed006.cnaf.infn.it:8444/cnaf/put-test-xxx3
+08/04 21:18:47 22343,0 PrepareToPut: returns 0
+.fi
+.SH SEE ALSO
+.B ...(1)

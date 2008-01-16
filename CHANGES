@@ -1,0 +1,11 @@
+The following file includes a short list of changes that have occured in the 
+Frontend server with respect to a previous release.
+
+R_1_0_2
+* Server crash fixed in case a communication problem with the 
+  XMLRPC server occured.
+
+
+R_1_0_1
+* First tagged release for a limited user community 
+
