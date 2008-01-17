@@ -1,4 +1,4 @@
-%define name         srmv2-storm-server
+%define name         storm-frontend-server
 %define version      @VERSION@
 %define release      @STORMPATCHLVL@
 %define flavor       @GLOBUS_FLAVOR@
@@ -60,12 +60,12 @@ rm ../file.list.%{name}
 %files -f ../file.list.%{name}
 
 %post
-# add srmv2storm at startup 
+# add storm-frontend at startup 
 id storm >&/dev/null || adduser -r storm
 
-if [ -e /etc/init.d/srmv2storm ] 
+if [ -e /etc/init.d/storm-frontend ] 
 then 
-  mv /etc/init.d/srmv2storm{,.rpmsave}
+  mv /etc/init.d/storm-frontend{,.rpmsave}
 fi 
 for i in %{prefix}/etc/sysconfig/*; do 
     file=$(basename $i)
@@ -81,8 +81,8 @@ for i in %{prefix}/etc/sysconfig/*; do
     ln -s $i /etc/sysconfig/$file
 done
 
-ln -s %{prefix}/etc/init.d/srmv2storm /etc/init.d 
-/sbin/chkconfig --add srmv2storm
+ln -s %{prefix}/etc/init.d/storm-frontend /etc/init.d 
+/sbin/chkconfig --add storm-frontend
 
 # creating proxy directory 
 if [ ! -e %{prefix}/var/proxies ]

@@ -13,7 +13,7 @@
 #*
 #*********************************************************************
 
-STORM_NSCONFIG = /etc/sysconfig/srmv2storm.nsconfig
+STORM_NSCONFIG = /etc/sysconfig/storm-frontend.nsconfig
 LOGFILE = @prefix@/var/log/storm/srmv2log
 MTCCFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
 
@@ -29,14 +29,14 @@ stormman_DATA = srmv2.man
 stormetcsysdir = $(sysconfdir)/init.d
 stormetcsys_DATA = srmv2_init_script
 stormetcsysconfdir = $(sysconfdir)/sysconfig
-stormetcsysconfdir_DATA = srmv2storm.nsconfig
+stormetcsysconfdir_DATA = storm-frontend.nsconfig
 stormdb = $(sysconfdir)/db
 stormdb_DATA = ../db/storm_mysql_grant.sql ../db/storm_mysql_tbl.sql ../db/storm_mysql_config.sh ../db/README
 #endif
 
-EXTRA_DIST = srm.v2.2.wsdl typemap.dat srmv2.man srmv2_init_script.in srmv2storm.nsconfig
+EXTRA_DIST = srm.v2.2.wsdl typemap.dat srmv2.man srmv2_init_script.in storm-frontend.nsconfig
 
-INCLUDES = -I. -I../db \
+INCLUDES = -I. -I$(top_srcdir)/db \
            @MYSQL_CFLAGS@ \
 	   @GSOAPGSI_CFLAGS@ \
            -I@GSOAP_DIR@ \
@@ -49,11 +49,15 @@ INCLUDES = -I. -I../db \
 	   -DUSE_MYSQL $(MTCCFLAGS)
 
 #if FESERV_SELECTED
-sbin_PROGRAMS = srmv2storm
-srmv2storm_SOURCES = srmv2.c 
-srmv2storm_LDFLAGS = -L$(top_srcdir)/db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@\
+
+sbin_PROGRAMS = storm-frontend
+# The prefix for SOURCES is the name of the program or library (in this case
+# storm-frontend), including extension, where any dash ("-") and any period
+# (".") is replaced by an underscore ("_").
+storm_frontend_SOURCES = srmv2.c 
+storm_frontend_LDFLAGS = -L../db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@\
                      @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@
-srmv2storm_LDADD = -lsrmv2storm -lstormdb -lvomsc @MYSQL_LDADD@ \
+storm_frontend_LDADD = -lstormfrontend -lstormdb -lvomsc @MYSQL_LDADD@ \
                    @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ \
                    @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid
 #endif
@@ -66,9 +70,9 @@ noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
                   storm_limits.h storm_util.h srmlogit.h \
                   xmlrpc_decode.h xmlrpc_encode.h
 
-noinst_LTLIBRARIES = libsrmv2storm.la
+noinst_LTLIBRARIES = libstormfrontend.la
 
-libsrmv2storm_la_SOURCES = 	Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
+libstormfrontend_la_SOURCES = 	Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
     srmv2_ptg.cpp ptg.cpp ptg.hpp \
 	copy.cpp copy.hpp copy_status.cpp copy_status.hpp file_request.hpp \
 	file_status.hpp get_status.cpp get_status.hpp ptp.cpp ptp.hpp put_status.cpp \
@@ -79,13 +83,13 @@ libsrmv2storm_la_SOURCES = 	Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_
 	srmv2_status_copy.cpp srmv2_status_get.cpp srmv2_status_put.cpp srmv2_status_template.hpp \
 	srmv2_xferreq.c stdsoap2.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c $(noinst_INCLUDES)
 
-srmv2storm_DEPENDENCIES = libsrmv2storm.la
+storm_frontend_DEPENDENCIES = libstormfrontend.la
 
 $(SOAPFILES): srm.v2.2.h
 	@GSOAP_DIR@/soapcpp2 -c -p srmv2 srm.v2.2.h
 
-srm.v2.2.h: srm.v2.2.wsdl
-	@GSOAP_DIR@/wsdl2h -c -t typemap.dat srm.v2.2.wsdl
+srm.v2.2.h: $(top_srcdir)/srmv2/srm.v2.2.wsdl
+	@GSOAP_DIR@/wsdl2h -c -t $(top_srcdir)/srmv2/typemap.dat $(top_srcdir)/srmv2/srm.v2.2.wsdl
 
 stdsoap2.c:
 	@echo
@@ -107,9 +111,9 @@ install-data-hook: $(stormman_DATA) $(stormetcsys_DATA) $(storetcsysconf_DATA)
 		$(mkinstalldirs) $(DESTDIR)$(stormetcsysdir); \
 	fi
 	for file in $(stormetcsys_DATA); do \
-	    /bin/cp $$file $(DESTDIR)$(stormetcsysdir)/srmv2storm; \
+	    /bin/cp $$file $(DESTDIR)$(stormetcsysdir)/storm-frontend; \
 	    /bin/rm -f $(DESTDIR)$(stormetcsysdir)/$$file; \
-	    /bin/chmod a+rx $(DESTDIR)$(stormetcsysdir)/srmv2storm; \
+	    /bin/chmod a+rx $(DESTDIR)$(stormetcsysdir)/storm-frontend; \
 	done
 
 	if [ ! -d $(DESTDIR)$(stormetcsysconfdir) ]; then \
