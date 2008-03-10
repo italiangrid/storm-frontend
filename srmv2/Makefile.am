@@ -23,7 +23,6 @@ MAINTAINERCLEANFILES = Makefile.in $(SOAPFILES) stdsoap2.c srmv2_init_script
 TOCLEAN = $(SOAPFILES) srm.v2.2.h *.res.xml *.req.xml stdsoap2.c \
 	  srmv2_init_script
 
-#if FESERV_SELECTED
 stormmandir = $(mandir)/man8
 stormman_DATA = srmv2.man
 stormetcsysdir = $(sysconfdir)/init.d
@@ -63,12 +62,11 @@ storm_frontend_LDADD = -lstormfrontend -lstormdb -lvomsc @MYSQL_LDADD@ \
 #endif
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
-                  Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \
-                  serrno.h srm_server.h srm.v2.2.h srmv2H.h \
-                  srmv2srmSoapBindingObject.h srmv2srmSoapBindingProxy.h \
-                  srmv2Stub.h storm_api.h storm_constants.h storm_functions.h \
-                  storm_limits.h storm_util.h srmlogit.h \
-                  xmlrpc_decode.h xmlrpc_encode.h
+  Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \
+  serrno.h srm_server.h srm.v2.2.h srmv2H.h \
+  srmv2Stub.h storm_api.h storm_constants.h storm_functions.h \
+  storm_limits.h storm_util.h srmlogit.h \
+  xmlrpc_decode.h xmlrpc_encode.h
 
 noinst_LTLIBRARIES = libstormfrontend.la
 

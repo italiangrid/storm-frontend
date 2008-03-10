@@ -4,6 +4,8 @@
 %define flavor       @GLOBUS_FLAVOR@
 %define builddir     $RPM_BUILD_DIR/%{name}-%{flavor}-%{version}
 %define globusdir    @GLOBUS_LOCATION@
+%define stormdir     @STORM_DIR@
+%define glitedir     @GLITE_LOCATION@
 %define gsoapdir     @GSOAP_DIR@
 %define gsoapgsidir  @GSOAPGSI_DIR@
 %define mysqldir     @MYSQL_DIR@
@@ -39,7 +41,7 @@ filesystem.
 %build
 source frontend-setup.sh
 ./autogen.sh
-./configure --prefix=%{prefix} --disable-all --enable-fe-server --enable-gsoapgsi --enable-globus=yes --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-gsoap-dir=%{gsoapdir} --with-gsoapgsi-dir=%{gsoapgsidir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
+./configure --prefix=%{prefix} --disable-all --enable-fe-server --enable-gsoapgsi --enable-globus=yes --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-gsoapgsi-dir=%{gsoapgsidir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
 
 gmake
 
