@@ -1605,13 +1605,12 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
 int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1__srmPingResponse_ *rep)
 {
 	static const char *func = "Ping";
-	static const char *commandPrefix = "pippopluto";
+	static const char *commandPrefix = "CMD:";
 	static const char *methodName = "synchcall.ping";
-    struct ns1__TExtraInfo** extraInfoArray; 
     struct ns1__srmPingResponse *repp;
     struct RPC_ResponseHandlerInput_Ping PingResponseHandlerInput;
     int error;
-    char askInfoToBE;
+    char return_version_info;
     char clientdn[256];
     xmlrpc_env env;
     xmlrpc_value *inputParam;
@@ -1642,38 +1641,25 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
     
-    askInfoToBE = 0;
     if (req->authorizationID != NULL) {
-    	if (strncmp(req->authorizationID, commandPrefix, strlen(commandPrefix)) == 0)
-    		askInfoToBE = 1;
+        // Pass it to the BE and see what happen...
+        return_version_info = 0;
+        int prefix_lenght = strlen(commandPrefix);
+        if (strncmp(req->authorizationID, commandPrefix, prefix_lenght) == 0) {
+            
+        }
+    } else {
+        req->authorizationID = "KEY=BE-Version";
+        return_version_info = 1;
     }
     
-    if (!askInfoToBE) {
-    	repp->versionInfo = "v2.2";
-        srmlogit(STORM_LOG_INFO, func, "Returning: %s\n", repp->versionInfo);
-        
-        //Adding the new field on TYPE and VERSION 
-        repp->otherInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo));
-        if (NULL == repp->otherInfo)
-            return(SOAP_EOM);
-        repp->otherInfo->extraInfoArray = soap_malloc(soap, 2*sizeof(struct ns1__TExtraInfo));
-        if (NULL == repp->otherInfo->extraInfoArray)
-            return(SOAP_EOM);
-        repp->otherInfo->__sizeextraInfoArray = 2;
-        
-        extraInfoArray = repp->otherInfo->extraInfoArray;
-        
-        //Set backend type
-        extraInfoArray[0] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
-        extraInfoArray[0]->key = "backend_type";
-        extraInfoArray[0]->value = "StoRM";
-        //Set backend version
-        extraInfoArray[1] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
-        extraInfoArray[1]->key = "backend_version";
-        extraInfoArray[1]->value = "1.3.16";
-               
-    	return SOAP_OK;
-        
+    /**************************** Encode VOMS attibutes ***************************/
+    error = encode_VOMSAttributes(func, &env, soap, NULL, inputParam);
+    if (error) {
+        srmlogit(STORM_LOG_ERROR, func, "Error encoding VOMS attributes\n");
+        xmlrpc_DECREF(inputParam);
+        xmlrpc_env_clean(&env);
+        return(SOAP_OK);
     }
     
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
@@ -1714,7 +1700,56 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
         return(SOAP_EOM);
     }
     
+    if (return_version_info) {
+        error = set_version_info(soap, repp);
+        if (error != SOAP_OK) {
+            return error;
+        }
+    }
     srmlogit(STORM_LOG_INFO, func, "Request done.\n");
     
     return(SOAP_OK);
+}
+
+// Function used by ns1__srmPing()
+int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
+    struct ns1__TExtraInfo** extraInfoArray; 
+    char *be_version = "ERROR";
+    char *version_temp = "<FE:1.3.19><BE:%s>";
+    char version[50];
+    
+    // Get the version of the BE and set the information to be returned.
+    if (repp->otherInfo != NULL) {
+        if (repp->otherInfo->extraInfoArray != NULL) {
+            if (repp->otherInfo->extraInfoArray[0]->value != NULL) {
+                be_version = repp->otherInfo->extraInfoArray[0]->value;
+            }
+        }
+    }
+    repp->versionInfo = "v2.2";
+    
+    // Allocate memory for the response structure
+    repp->otherInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo));
+    if (NULL == repp->otherInfo) {
+        return(SOAP_EOM);
+    }
+    repp->otherInfo->extraInfoArray = soap_malloc(soap, 2*sizeof(struct ns1__TExtraInfo));
+    if (NULL == repp->otherInfo->extraInfoArray) {
+        return(SOAP_EOM);
+    }
+    repp->otherInfo->__sizeextraInfoArray = 2;
+    
+    extraInfoArray = repp->otherInfo->extraInfoArray;
+    
+    // Set backend type
+    extraInfoArray[0] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
+    extraInfoArray[0]->key = "backend_type";
+    extraInfoArray[0]->value = "StoRM";
+    // Set backend version
+    extraInfoArray[1] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
+    extraInfoArray[1]->key = "backend_version";
+    sprintf(version, version_temp, be_version);
+    extraInfoArray[1]->value = soap_strdup(soap, version);
+    
+    return SOAP_OK;
 }
