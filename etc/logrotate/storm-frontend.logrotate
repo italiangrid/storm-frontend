@@ -1,0 +1,13 @@
+missingok
+rotate 26
+compress
+notifempty
+create 644 storm storm
+
+/opt/srmv2storm/var/log/srmv2storm.log {
+    size=50M
+    lastaction
+        DATE=`date +%Y-%m-%d`; mv /opt/storm/var/log/storm-backend.stdout.1.gz /opt/storm/var/log/storm-backend.stdout.$DATE.gz
+    endscript
+}
+
