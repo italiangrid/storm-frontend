@@ -14,10 +14,12 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = storm_mysql_config.sh \
-             storm_mysql_drop.sql \
-             storm_mysql_grant.sql \
-             storm_mysql_tbl.sql \
-	     instructions.txt
+  storm_mysql_drop.sql \
+  storm_mysql_grant.sql \
+  storm_mysql_tbl.sql \
+  instructions.txt \
+  storm_database_config.sh \
+  storm_mysql_update_from_1.0.0_to_1.3.2000.sql
 
 INCLUDES = -I. -I$(top_srcdir)/srmv2 -I$(top_srcdir)/build/srmv2 \
 		-I@GSOAP_DIR@ \

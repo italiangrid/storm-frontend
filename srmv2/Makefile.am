@@ -30,8 +30,8 @@ stormetcsys_DATA = srmv2_init_script
 stormetcsysconfdir = $(sysconfdir)/sysconfig
 stormetcsysconf_DATA = storm-frontend.nsconfig
 stormdbdir = $(sysconfdir)/db
-stormdb_DATA = ../db/storm_mysql_grant.sql ../db/storm_mysql_tbl.sql ../db/storm_mysql_config.sh ../db/README
-#endif
+stormdb_DATA = ../db/storm_mysql_grant.sql ../db/storm_mysql_tbl.sql ../db/storm_mysql_config.sh ../db/README \
+  ../db/storm_database_config.sh ../db/storm_mysql_update_from_1.0.0_to_1.3.2000.sql
 
 EXTRA_DIST = srm.v2.2.wsdl typemap.dat srmv2.man srmv2_init_script.in storm-frontend.nsconfig
 
@@ -48,8 +48,6 @@ INCLUDES = -I. -I$(top_srcdir)/db \
     -DLOGFILE=\"$(LOGFILE)\" \
     -DUSE_MYSQL $(MTCCFLAGS)
 
-#if FESERV_SELECTED
-
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
@@ -59,7 +57,6 @@ storm_frontend_LDFLAGS = -L../db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYP
     @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@ @GLITE_LDFLAGS@
 storm_frontend_LDADD = -lstormfrontend -lstormdb -lvomsc @MYSQL_LDADD@ \
     @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ @GSOAPGSI_LDFLAGS@ @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid
-#endif
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
   Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \
