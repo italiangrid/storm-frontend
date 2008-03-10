@@ -319,10 +319,11 @@ AC_SUBST(XMLRPC_C_CFLAGS)
 AC_SUBST(PREFIX)
 
 AC_OUTPUT(Makefile \
-          srmv2/Makefile \
-          srmv2/srmv2_init_script \
-          srmv2/srm_server.h \
-          db/Makefile \
-          srmv2-storm-server.spec \
-          clean.sh)
+  srmv2/Makefile \
+  srmv2/srmv2_init_script \
+  srmv2/srm_server.h \
+  db/Makefile \
+  etc/Makefile \
+  srmv2-storm-server.spec \
+  clean.sh)
 
