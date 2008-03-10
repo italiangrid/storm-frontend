@@ -20,7 +20,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 \
 
 FESERV_SPEC = srmv2-storm-server.spec
 
-SUBDIRS = db srmv2
+SUBDIRS = db srmv2 etc
 
 STORM_SPEC = $(FESERV_SPEC)
 
