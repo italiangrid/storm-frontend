@@ -29,24 +29,25 @@ stormman_DATA = srmv2.man
 stormetcsysdir = $(sysconfdir)/init.d
 stormetcsys_DATA = srmv2_init_script
 stormetcsysconfdir = $(sysconfdir)/sysconfig
-stormetcsysconfdir_DATA = storm-frontend.nsconfig
-stormdb = $(sysconfdir)/db
+stormetcsysconf_DATA = storm-frontend.nsconfig
+stormdbdir = $(sysconfdir)/db
 stormdb_DATA = ../db/storm_mysql_grant.sql ../db/storm_mysql_tbl.sql ../db/storm_mysql_config.sh ../db/README
 #endif
 
 EXTRA_DIST = srm.v2.2.wsdl typemap.dat srmv2.man srmv2_init_script.in storm-frontend.nsconfig
 
 INCLUDES = -I. -I$(top_srcdir)/db \
-           @MYSQL_CFLAGS@ \
-	   @GSOAPGSI_CFLAGS@ \
-           -I@GSOAP_DIR@ \
-	   -I@GSOAPGSI_DIR@/include \
+    @STORM_CFLAGS@ \
+    @MYSQL_CFLAGS@ \
+    @GSOAPGSI_CFLAGS@ \
+    -I@GSOAP_DIR@ \
+    -I@GSOAPGSI_DIR@/include \
     -I/opt/glite/include/glite/security/voms \
-            -I/opt/globus/include/gcc32/ \
-		@XMLRPC_C_CFLAGS@ \
-           -DSTORM_NSCONFIG=\"$(STORM_NSCONFIG)\" \
-	   -DLOGFILE=\"$(LOGFILE)\" \
-	   -DUSE_MYSQL $(MTCCFLAGS)
+    -I/opt/globus/include/gcc32/ \
+    @XMLRPC_C_CFLAGS@ \
+    -DSTORM_NSCONFIG=\"$(STORM_NSCONFIG)\" \
+    -DLOGFILE=\"$(LOGFILE)\" \
+    -DUSE_MYSQL $(MTCCFLAGS)
 
 #if FESERV_SELECTED
 
@@ -55,11 +56,10 @@ sbin_PROGRAMS = storm-frontend
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
 storm_frontend_SOURCES = srmv2.c 
-storm_frontend_LDFLAGS = -L../db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@\
-                     @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@
+storm_frontend_LDFLAGS = -L../db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@ \
+    @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@ @GLITE_LDFLAGS@
 storm_frontend_LDADD = -lstormfrontend -lstormdb -lvomsc @MYSQL_LDADD@ \
-                   @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ \
-                   @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid
+    @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ @GSOAPGSI_LDFLAGS@ @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid
 #endif
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
@@ -72,16 +72,16 @@ noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
 
 noinst_LTLIBRARIES = libstormfrontend.la
 
-libstormfrontend_la_SOURCES = 	Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
+libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
     srmv2_ptg.cpp ptg.cpp ptg.hpp \
-	copy.cpp copy.hpp copy_status.cpp copy_status.hpp file_request.hpp \
-	file_status.hpp get_status.cpp get_status.hpp ptp.cpp ptp.hpp put_status.cpp \
+    copy.cpp copy.hpp copy_status.cpp copy_status.hpp file_request.hpp \
+    file_status.hpp get_status.cpp get_status.hpp ptp.cpp ptp.hpp put_status.cpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
-	put_status.hpp soap_util.hpp sql_string.hpp srm_util.c srmlogit.c srmv2C.c \
-	srmv2Server.c srmv2_bol.cpp srmv2_copy.cpp srmv2_dirreq.c srmv2_filerequest_template.hpp \
-	srmv2_permreq.c srmv2_ptp.cpp srmv2_spacereq.c srmv2_status_bol.cpp \
-	srmv2_status_copy.cpp srmv2_status_get.cpp srmv2_status_put.cpp srmv2_status_template.hpp \
-	srmv2_xferreq.c stdsoap2.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c $(noinst_INCLUDES)
+    put_status.hpp soap_util.hpp sql_string.hpp srm_util.c srmlogit.c srmv2C.c \
+    srmv2Server.c srmv2_bol.cpp srmv2_copy.cpp srmv2_dirreq.c srmv2_filerequest_template.hpp \
+    srmv2_permreq.c srmv2_ptp.cpp srmv2_spacereq.c srmv2_status_bol.cpp \
+    srmv2_status_copy.cpp srmv2_status_get.cpp srmv2_status_put.cpp srmv2_status_template.hpp \
+    srmv2_xferreq.c stdsoap2.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c $(noinst_INCLUDES)
 
 storm_frontend_DEPENDENCIES = libstormfrontend.la
 
@@ -89,7 +89,7 @@ $(SOAPFILES): srm.v2.2.h
 	@GSOAP_DIR@/soapcpp2 -c -p srmv2 srm.v2.2.h
 
 srm.v2.2.h: $(top_srcdir)/srmv2/srm.v2.2.wsdl
-	@GSOAP_DIR@/wsdl2h -c -t $(top_srcdir)/srmv2/typemap.dat $(top_srcdir)/srmv2/srm.v2.2.wsdl
+	@GSOAP_DIR@/wsdl2h -e -z -c -t $(top_srcdir)/srmv2/typemap.dat $(top_srcdir)/srmv2/srm.v2.2.wsdl
 
 stdsoap2.c:
 	@echo
@@ -119,14 +119,14 @@ install-data-hook: $(stormman_DATA) $(stormetcsys_DATA) $(storetcsysconf_DATA)
 	if [ ! -d $(DESTDIR)$(stormetcsysconfdir) ]; then \
 		$(mkinstalldirs) $(DESTDIR)$(stormetcsysconfdir); \
 	fi
-	for file in $(stormetcsysconfdir_DATA); do \
+	for file in $(stormetcsysconf_DATA); do \
 		/bin/cp $$file $(DESTDIR)$(stormetcsysconfdir)/`basename $$file` ; \
 	done
-	if [ ! -d $(DESTDIR)$(stormdb) ]; then \
-		$(mkinstalldirs) $(DESTDIR)$(stormdb); \
+	if [ ! -d $(DESTDIR)$(stormdbdir) ]; then \
+		$(mkinstalldirs) $(DESTDIR)$(stormdbdir); \
 	fi
 	for file in $(stormdb_DATA); do \
-	    /bin/cp $$file $(DESTDIR)$(stormdb)/`basename $$file`; \
+	    /bin/cp $$file $(DESTDIR)$(stormdbdir)/`basename $$file`; \
 	done
 	if ! [ -d $(DESTDIR)/var/log ]; then \
 		$(mkinstalldirs) $(DESTDIR)$(prefix)/var/log ; \
