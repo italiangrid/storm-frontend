@@ -67,19 +67,19 @@ namespace storm {
                 if(0 == (*j)["fileSize"].size())
                     s->fileSize = -1;
                 else
-                    s->fileSize = atoi((*j)["fileSize"].c_str());
+                    s->fileSize = atoll((*j)["fileSize"].c_str());
 
                 // Estimated Waiting Time
                 if(0 == (*j)["estimatedWaitTime"].size())
                     s->estimatedWaitTime = -1;
                 else
-                    s->estimatedWaitTime = atoi((*j)["estimatedWaitTime"].c_str());
+                    s->estimatedWaitTime = atoll((*j)["estimatedWaitTime"].c_str());
 
                 /// Remaining Pin Time
                 if(0 == (*j)["remainingPinTime"].size())
                     s->remainingPinLifetime = -1;
                 else
-                    s->remainingPinLifetime = atoi((*j)["remainingPinTime"].c_str());
+                    s->remainingPinLifetime = atoll((*j)["remainingPinTime"].c_str());
             } else { // SURL not found in the result set
             	s = new get_status::surl_t(i->source());
             	s->status = SRM_USCOREINVALID_USCOREPATH;
