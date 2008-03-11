@@ -122,8 +122,12 @@ fi
 if [ ! -e  %{prefix}/etc/init.d/storm-frontend ]
 then
   rm -f /etc/init.d/storm-frontend
-  rm -f %{prefix}/etc/sysconfig/storm-frontend.nsconfig.rpmnew
-  rm -f %{prefix}/etc/init.d/storm-frontend.rpmnew
+  if [ -e %{prefix}/etc/sysconfig/storm-frontend.nsconfig.rpmnew ]; then
+    rm -f %{prefix}/etc/sysconfig/storm-frontend.nsconfig.rpmnew
+  fi
+  if [ -e %{prefix}/etc/init.d/storm-frontend.rpmnew ]; then
+    rm -f %{prefix}/etc/init.d/storm-frontend.rpmnew
+  fi
   cd %{prefix}/etc/
   rmdir sysconfig/
   rmdir init.d/
