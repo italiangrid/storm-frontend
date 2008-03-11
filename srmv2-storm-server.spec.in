@@ -49,6 +49,10 @@ gmake
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
+
+mkdir -p $RPM_BUILD_ROOT/etc/cron.d
+mv -f $RPM_BUILD_ROOT/%{prefix}/etc/logrotate/storm-frontend.cron $RPM_BUILD_ROOT/etc/cron.d/
+
 # Build the file-list automatically :)
 cd $RPM_BUILD_ROOT
 find . -type d | sed '1,3d;s,^\.,\%attr(-\,root\,root) \%dir ,' > $RPM_BUILD_DIR/file.list.%{name}
@@ -61,15 +65,37 @@ rm ../file.list.%{name}
 
 %files -f ../file.list.%{name}
 
+%pre
+# Before installing the rpm, save the files that could been modified by the administrator
+if [ -e %{prefix}/etc/init.d/storm-frontend ]
+then
+    mv %{prefix}/etc/init.d/storm-frontend{,_custom_config.tmp}
+fi
+if [ -e %{prefix}/etc/sysconfig/storm-frontend.nsconfig ]
+then
+    mv %{prefix}/etc/sysconfig/storm-frontend.nsconfig{,.custom_config.tmp}
+fi
+
 %post
 # add storm-frontend at startup 
 id storm >&/dev/null || adduser -r storm
 
-if [ -e /etc/init.d/storm-frontend ] 
-then 
-  mv /etc/init.d/storm-frontend{,.rpmsave}
-fi 
-for i in %{prefix}/etc/sysconfig/*; do 
+# add symbolic link
+ln -sf %{prefix}/etc/init.d/storm-frontend /etc/init.d/storm-frontend
+
+# If it is an upgrade operation keep custom configurations
+if [ -e  %{prefix}/etc/init.d/storm-frontend_custom_config.tmp ]
+then
+    mv %{prefix}/etc/init.d/storm-frontend{,.rpmnew}
+    mv %{prefix}/etc/init.d/storm-frontend{_custom_config.tmp,}
+fi
+if [ -e  %{prefix}/etc/sysconfig/storm-frontend.nsconfig.custom_config.tmp ]
+then
+    mv %{prefix}/etc/sysconfig/storm-frontend.nsconfig{,.rpmnew}
+    mv %{prefix}/etc/sysconfig/storm-frontend.nsconfig{.custom_config.tmp,}
+fi
+
+for i in %{prefix}/etc/sysconfig/*; do
     file=$(basename $i)
     if [ -h /etc/sysconfig/$file ]; then
         rm /etc/sysconfig/$file
@@ -83,13 +109,26 @@ for i in %{prefix}/etc/sysconfig/*; do
     ln -s $i /etc/sysconfig/$file
 done
 
-ln -s %{prefix}/etc/init.d/storm-frontend /etc/init.d 
 /sbin/chkconfig --add storm-frontend
 
 # creating proxy directory 
 if [ ! -e %{prefix}/var/proxies ]
 then
-  mkdir -p %{prefix}/var/proxies 
+  mkdir -p %{prefix}/var/proxies
   chown storm %{prefix}/var/proxies
 fi
+
+%postun
+if [ ! -e  %{prefix}/etc/init.d/storm-frontend ]
+then
+  rm -f /etc/init.d/storm-frontend
+  rm -f %{prefix}/etc/sysconfig/storm-frontend.nsconfig.rpmnew
+  rm -f %{prefix}/etc/init.d/storm-frontend.rpmnew
+  cd %{prefix}/etc/
+  rmdir sysconfig/
+  rmdir init.d/
+  cd ..
+  rmdir etc/
+fi
+rm -rf %{prefix}/var/
 
