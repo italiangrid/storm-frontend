@@ -4,10 +4,10 @@ compress
 notifempty
 create 644 storm storm
 
-/opt/srmv2storm/var/log/srmv2storm.log {
+/opt/storm/frontend/var/log/storm-frontend.log {
     size=50M
     lastaction
-        DATE=`date +%Y-%m-%d`; mv /opt/storm/var/log/storm-backend.stdout.1.gz /opt/storm/var/log/storm-backend.stdout.$DATE.gz
+        DATE=`date +%Y-%m-%d`; mv /opt/storm/frontend/var/log/storm-frontend.log.1.gz /opt/storm/frontend/var/log/storm-frontend.log.$DATE.gz
     endscript
 }
 
