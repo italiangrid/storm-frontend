@@ -1,1 +1,1 @@
-00 00 * * * root /usr/sbin/logrotate -s /opt/srmv2storm/etc/logrotate/logrotate.status /opt/srmv2storm/etc/logrotate/storm-frontend.logrotate
+00 00 * * * root /usr/sbin/logrotate -s /opt/storm/frontend/etc/logrotate/logrotate.status /opt/storm/frontend/etc/logrotate/storm-frontend.logrotate
