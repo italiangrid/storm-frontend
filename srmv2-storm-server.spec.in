@@ -128,11 +128,17 @@ then
   if [ -e %{prefix}/etc/init.d/storm-frontend.rpmnew ]; then
     rm -f %{prefix}/etc/init.d/storm-frontend.rpmnew
   fi
-  cd %{prefix}/etc/
-  rmdir sysconfig/
-  rmdir init.d/
-  cd ..
-  rmdir etc/
+  if [ -d %{prefix}/etc/ ]; then
+    cd %{prefix}/etc/
+    if [ -d sysconfig/ ]; then
+      rmdir sysconfig/
+    fi
+    if [ -d init.d/ ]; then
+      rmdir init.d/
+    fi
+    cd ..
+    rmdir etc/
+  fi
 fi
 rm -rf %{prefix}/var/
 
