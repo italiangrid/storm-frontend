@@ -48,6 +48,9 @@ INCLUDES = -I. -I$(top_srcdir)/db \
     -DLOGFILE=\"$(LOGFILE)\" \
     -DUSE_MYSQL $(MTCCFLAGS)
 
+# xmlrpc-c and curl are linked STATICALLY! ()
+LIBS= @XMLRPC_C_LIB_LOCATION@/libxmlrpc_client.a @XMLRPC_C_LIB_LOCATION@/libxmlrpc_xmlparse.a @XMLRPC_C_LIB_LOCATION@/libxmlrpc.a @XMLRPC_C_LIB_LOCATION@/libxmlrpc_util.a @XMLRPC_C_LIB_LOCATION@/libxmlrpc_xmltok.a @CURL_LIB_LOCATION@/libcurl.a
+
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period

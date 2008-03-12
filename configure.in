@@ -221,14 +221,43 @@ AC_MSG_CHECKING([for xmlrpc-c directory])
 AC_ARG_WITH(xmlrpc-c-dir,[ | --with-xmlrpc-c-dir=<dir> Default is \$XMLRPC_C_DIR],
             xmlrpc_c_dir="$withval", xmlrpc_c_dir="$XMLRPC_C_DIR")
 if test -d "$xmlrpc_c_dir" ; then
-   AC_MSG_RESULT([$xmlrpc_c_dir found])
-   XMLRPC_C_DIR="$xmlrpc_c_dir"
-   #XMLRPC_C_LDADD="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --ldadd` `$XMLRPC_C_DIR/bin/xmlrpc-c-config client --ldadd`"
-   #XMLRPC_C_CFLAGS="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --cflags`"
-   XMLRPC_C_CFLAGS="-I/home/storm/xmlrpc-c_new/include"
-   XMLRPC_C_LDADD="-L/home/storm/curl_new/lib -lcurl -L/home/storm/xmlrpc-c_new/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok"
+    AC_MSG_RESULT([$xmlrpc_c_dir found])
+    XMLRPC_C_DIR="$xmlrpc_c_dir"
+    #XMLRPC_C_LDADD="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --ldadd` `$XMLRPC_C_DIR/bin/xmlrpc-c-config client --ldadd`"
+    #XMLRPC_C_CFLAGS="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --cflags`"
+    #XMLRPC_C_LDADD="-L/home/storm/curl_new/lib -lcurl -L/home/storm/xmlrpc-c_new/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok"
+    # Now it is linked statically
+    XMLRPC_C_LDADD=""
 else
-   AC_MSG_RESULT([no such directory $xmlrpc_c_dir])
+    AC_MSG_ERROR([no such directory $xmlrpc_c_dir])
+fi
+if test -d "$xmlrpc_c_dir/include" ; then
+    XMLRPC_C_CFLAGS="-I/home/storm/xmlrpc-c_new/include"
+else
+    AC_MSG_ERROR([no such directory $xmlrpc_c_dir/include])
+fi
+if test -d "$xmlrpc_c_dir/lib" ; then
+    XMLRPC_C_LIB_LOCATION="$xmlrpc_c_dir/lib"
+else
+    AC_MSG_ERROR([no such directory $xmlrpc_c_dir/lib])
+fi
+
+dnl ==================================================================
+dnl Get CURL installation directory from command line option or
+dnl environment variable CURL_LOCATION.
+dnl ==================================================================
+AC_MSG_CHECKING([for curl directory])
+AC_ARG_WITH(curl-location,[ | --with-curl-location=<dir> Default is \$CURL_LOCATION],
+            curl_location="$withval", curl_location="$CURL_LOCATION")
+if test -d "$curl_location" ; then
+    AC_MSG_RESULT([$curl_location found])
+    if test -d "$curl_location/lib" ; then
+        CURL_LIB_LOCATION="$curl_location/lib"
+    else
+        AC_MSG_ERROR([no such directory $curl_location/lib])
+    fi
+else
+    AC_MSG_ERROR([no such directory $curl_location])
 fi
 
 dnl ==================================================================
@@ -318,6 +347,8 @@ AC_SUBST(GSOAPGSI_LDADD)
 AC_SUBST(XMLRPC_C_DIR)
 AC_SUBST(XMLRPC_C_LDADD)
 AC_SUBST(XMLRPC_C_CFLAGS)
+AC_SUBST(CURL_LIB_LOCATION)
+AC_SUBST(XMLRPC_C_LIB_LOCATION)
 AC_SUBST(PREFIX)
 
 AC_OUTPUT(Makefile \
