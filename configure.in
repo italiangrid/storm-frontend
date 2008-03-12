@@ -223,8 +223,10 @@ AC_ARG_WITH(xmlrpc-c-dir,[ | --with-xmlrpc-c-dir=<dir> Default is \$XMLRPC_C_DIR
 if test -d "$xmlrpc_c_dir" ; then
    AC_MSG_RESULT([$xmlrpc_c_dir found])
    XMLRPC_C_DIR="$xmlrpc_c_dir"
-   XMLRPC_C_LDADD="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --ldadd` `$XMLRPC_C_DIR/bin/xmlrpc-c-config client --ldadd`"
-   XMLRPC_C_CFLAGS="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --cflags`"
+   #XMLRPC_C_LDADD="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --ldadd` `$XMLRPC_C_DIR/bin/xmlrpc-c-config client --ldadd`"
+   #XMLRPC_C_CFLAGS="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --cflags`"
+   XMLRPC_C_CFLAGS="-I/home/storm/xmlrpc-c_new/include"
+   XMLRPC_C_LDADD="-L/home/storm/curl_new/lib -lcurl -L/home/storm/xmlrpc-c_new/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok"
 else
    AC_MSG_RESULT([no such directory $xmlrpc_c_dir])
 fi
@@ -241,7 +243,7 @@ if test -d "$storm_dir" ; then
    STORM_DIR="$storm_dir"
    STORM_CFLAGS="-I$STORM_DIR/include"
 else
-   AC_MSG_RESULT([no such directory $xmlrpc_c_dir])
+   AC_MSG_RESULT([no such directory $storm_dir])
 fi
 
 dnl ========================================================================
