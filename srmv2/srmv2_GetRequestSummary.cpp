@@ -69,13 +69,13 @@ bool valid_input(const char* func, struct ns1__ArrayOfString* arrayOfRequestToke
 ns1__TRequestType getRequestType(std::string& r_type)
 {
     if (r_type.compare("PTG") == 0)
-        return enum ns1__TRequestType(0);
+        return ns1__TRequestType(0);
     if (r_type.compare("PTP") == 0)
-        return enum ns1__TRequestType(1);
+        return ns1__TRequestType(1);
     if (r_type.compare("COP") == 0)
-        return enum ns1__TRequestType(2);
+        return ns1__TRequestType(2);
     if (r_type.compare("BOL") == 0)
-        return enum ns1__TRequestType(3);
+        return ns1__TRequestType(3);
         
     srmlogit(STORM_LOG_ERROR, "GetRequestSummary", "BUG: Failed conversion of request type!!!\n");
     return ns1__TRequestType(PREPARE_USCORETO_USCOREPUT);
