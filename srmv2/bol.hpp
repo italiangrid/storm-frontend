@@ -47,7 +47,7 @@ private:
     class surl_t {
     public:
         surl_t(std::string src): source(src),  has_diroption(false), status(SRM_USCOREREQUEST_USCOREQUEUED){};
-        surl_t(std::string src, bool isdir):, source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED){isdirectory = isdir; n_levels = -1; allrecursive = -1;};
+        surl_t(std::string src, bool isdir): source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED){isdirectory = isdir; n_levels = -1; allrecursive = -1;};
         virtual ~surl_t(){};
         sql_string source;
         bool has_diroption;
