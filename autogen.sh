@@ -20,6 +20,6 @@ rm -f config.cache
 aclocal -I config 2>/dev/null
 autoheader
 libtoolize -c --automake
-automake --foreign --add-missing --copy 2>/dev/null
+automake --foreign --add-missing --copy
 autoconf
 #
