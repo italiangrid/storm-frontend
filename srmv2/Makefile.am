@@ -59,7 +59,7 @@ storm_frontend_SOURCES = srmv2.c
 storm_frontend_LDFLAGS = -L../db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@ \
     @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@ @GLITE_LDFLAGS@
 storm_frontend_LDADD = -lstormfrontend -lstormdb -lvomsc @MYSQL_LDADD@ \
-    @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ @GSOAPGSI_LDFLAGS@ @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid
+    @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ @GSOAPGSI_LDFLAGS@ @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid -lidn
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
   Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \

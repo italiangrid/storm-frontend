@@ -12,7 +12,7 @@
 #*********************************************************************
 
 EXTRA_DIST = srmv2-storm-server.spec.in frontend-setup.sh frontend-setup.csh \
-             clean.sh.in  autogen.sh LICENSE README VERSION
+             clean.sh.in  autogen.sh LICENSE README VERSION globus_makefile_header
 
 MAINTAINERCLEANFILES = Makefile.in aclocal.m4 \
                        configure config.h.in \
