@@ -117,6 +117,9 @@ then
   mkdir -p %{prefix}/var/proxies
   chown storm %{prefix}/var/proxies
 fi
+# execution flag on the dabase scripts
+chmod u=rwx,g=rx,o=r %{prefix}/etc/db/storm_database_config.sh
+chmod u=rwx,g=rx,o=r %{prefix}/etc/db/storm_mysql_config.sh
 
 %postun
 if [ ! -e  %{prefix}/etc/init.d/storm-frontend ]
