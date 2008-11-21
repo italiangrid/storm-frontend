@@ -55,10 +55,10 @@ sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
-storm_frontend_SOURCES = srmv2.c 
+storm_frontend_SOURCES = srmv2.cpp
 storm_frontend_LDFLAGS = -L../db @GLOBUS_LDFLAGS@ -L/opt/glite/lib @SSL_AND_CRYPTO@ \
     @MYSQL_LDFLAGS@ @GSOAPGSI_LDFLAGS@ @GLITE_LDFLAGS@
-storm_frontend_LDADD = -lstormfrontend -lstormdb -lvomsc @MYSQL_LDADD@ \
+storm_frontend_LDADD = -lstormfrontend -lstormdb -L/opt/glite/lib -lvomsc @MYSQL_LDADD@ \
     @XMLRPC_C_LDADD@ @GLOBUS_PKG_LIBS@ @GSOAPGSI_LDFLAGS@ @GSOAPGSI_LDADD@ -lshift -lz -lm -luuid -lidn
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
@@ -79,7 +79,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp bol.cpp bol.hpp b
     srmv2Server.c srmv2_bol.cpp srmv2_copy.cpp srmv2_dirreq.c srmv2_filerequest_template.hpp \
     srmv2_permreq.c srmv2_ptp.cpp srmv2_spacereq.c srmv2_status_bol.cpp \
     srmv2_status_copy.cpp srmv2_status_get.cpp srmv2_status_put.cpp srmv2_status_template.hpp \
-    srmv2_xferreq.c stdsoap2.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c $(noinst_INCLUDES)
+    srmv2_xferreq.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c stdsoap2.c $(noinst_INCLUDES)
 
 storm_frontend_DEPENDENCIES = libstormfrontend.la
 

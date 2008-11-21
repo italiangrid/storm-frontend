@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: srmv2.c 2777 2006-08-29 13:20:17Z amessina $
  */
 
 /**
@@ -9,13 +9,20 @@
 
 #include "Cinit.h"
 #include "Cpool_api.h"
-#include "cgsi_plugin.h"
 #include "serrno.h"
 #include "srmSoapBinding.nsmap"
-#include "srm_server.h"
-#include "srmv2H.h"
-#include "storm_functions.h"
-#include "storm_limits.h"
+
+//extern "C" {
+    #include "stdsoap2.h"
+    #include "cgsi_plugin.h"
+    #include "srm_server.h"
+    #include "srmv2H.h"
+
+    #include "storm_functions.h"
+    #include "storm_limits.h"
+extern "C" {
+    #include "storm_util.h"
+}
 
 #include "srmlogit.h"
 
@@ -188,7 +195,7 @@ static int srm_main(struct main_args *main_args)
     char *p;
     char *p_p, *p_s, *p_u;
     int port=-1;
-    struct soap soap;
+    struct soap *soap_data;
     int thread_index;
     struct soap *tsoap;
     xmlrpc_env env;
@@ -335,7 +342,7 @@ static int srm_main(struct main_args *main_args)
             len+=palen;
             len+=1;
                 
-            xmlrpc_endpoint=calloc(len,sizeof(char));
+            xmlrpc_endpoint = (char *) calloc(len, sizeof(char));
 
             strncat(xmlrpc_endpoint,"http://",7);
             strncat(xmlrpc_endpoint,h, hlen);
@@ -442,7 +449,7 @@ end HS */
             exit (SYERR);
         srmlogit_init();
     }
-    (void) storm_init_dbpkg ();
+//    (void) storm_init_dbpkg ();
 
     /* Create a pool of threads */
 
@@ -462,26 +469,28 @@ end HS */
     signal (SIGPIPE, SIG_IGN);
     signal (SIGXFSZ, SIG_IGN);
 #endif
-    soap_init2 (&soap,SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
-    soap.max_keep_alive = SOAP_MAX_KEEPALIVE; 
-    soap.accept_timeout = 0;
+    soap_data = (struct soap *) calloc(1, sizeof( struct soap ));
+    soap_init2(soap_data,SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
+    soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE; 
+    soap_data->accept_timeout = 0;
 #if defined(GSI_PLUGINS)
     flags = CGSI_OPT_DELEG_FLAG;
-    soap_register_plugin_arg (&soap, server_cgsi_plugin, &flags);
+    soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
 #endif
 // not supported in gsoap 2.6
-//    soap.bind_flags |= MSG_NOSIGNAL;
-    soap.bind_flags |= SO_REUSEADDR;
+//    soap_data->bind_flags |= MSG_NOSIGNAL;
+    soap_data->bind_flags |= SO_REUSEADDR;
 
-    if (soap_bind (&soap, NULL, port, BACKLOG) < 0) {
-        srmlogit (STORM_LOG_ERROR, func, SRM02, "soap_bind", strerror (soap.errnum));
-        soap_done (&soap);
+    if (soap_bind(soap_data, NULL, port, BACKLOG) < 0) {
+        srmlogit (STORM_LOG_ERROR, func, SRM02, "soap_bind", strerror (soap_data->errnum));
+        soap_done(soap_data);
+        free(soap_data);
         return (SYERR);
     }
     srmlogit (STORM_LOG_DEBUG, func, "Port Number %d\n", port);
 
     /* supporting HTTP GET in order to reply the wsdl */
-    soap.fget = http_get; 
+    soap_data->fget = http_get; 
 
         /* Start up our XML-RPC client library. */
         xmlrpc_env_init(&env);
@@ -501,14 +510,15 @@ end HS */
         }else
             srmlogit(STORM_LOG_INFO, func, "StoRM FE started.\n");
     while (1) {
-        if (soap_accept (&soap) < 0) {
-            srmlogit (STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror (soap.errnum));
-            soap_done (&soap);
+        if (soap_accept (soap_data) < 0) {
+            srmlogit (STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror (soap_data->errnum));
+            soap_done (soap_data);
             return (1);
         }
-        if ((tsoap = soap_copy (&soap)) == NULL) {
+        if ((tsoap = soap_copy (soap_data)) == NULL) {
             srmlogit (STORM_LOG_ERROR, func, SRM02, "soap_copy", strerror (ENOMEM));
-            soap_done (&soap);
+            soap_done (soap_data);
+            free(soap_data);
             return (1);
         }
         if ((thread_index = Cpool_next_index (ipool)) < 0) {
@@ -524,13 +534,12 @@ end HS */
             return (SYERR);
         }
     }
-    soap_done (&soap);
+    soap_done (soap_data);
+    free(soap_data);
     return (0);
 }
 
-main(argc, argv)
-int argc;
-char **argv;
+main(int argc, char **argv)
 {
 #if ! defined(_WIN32)
     struct main_args main_args;
@@ -549,7 +558,7 @@ void *
 process_request(void *soap_vp)
 {
     struct soap *soap = (struct soap *)soap_vp;
-    struct srm_srv_thread_info *thip = soap->user;
+    struct srm_srv_thread_info *thip = (struct srm_srv_thread_info *) soap->user;
     soap->recv_timeout = SOAP_RECV_TIMEOUT;
     soap->send_timeout = SOAP_SEND_TIMEOUT;
     soap_serve (soap);
