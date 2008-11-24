@@ -10,16 +10,15 @@
 #include "Cinit.h"
 #include "Cpool_api.h"
 #include "serrno.h"
+
 #include "srmSoapBinding.nsmap"
+#include "cgsi_plugin.h"
+#include "srm_server.h"
+#include "srmv2H.h"
 
-//extern "C" {
-    #include "stdsoap2.h"
-    #include "cgsi_plugin.h"
-    #include "srm_server.h"
-    #include "srmv2H.h"
+#include "storm_functions.h"
+#include "storm_limits.h"
 
-    #include "storm_functions.h"
-    #include "storm_limits.h"
 extern "C" {
     #include "storm_util.h"
 }
