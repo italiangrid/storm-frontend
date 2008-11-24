@@ -14,11 +14,16 @@ namespace po = boost::program_options;
 #include <iostream>
 #include <fstream>
 #include <iterator>
+#include <string>
 using namespace std;
 
 // Costants
 static const string DEFAULT_CONFIGURATION_FILE = "storm-frontend.conf";
 static const string DEFAULT_LOG_FILE = "storm-frontend.log";
+static const string DEFAULT_WSDL_FILE = "";
+static const string DEFAULT_XMLRPC_HOST = "localhost";
+static const string DEFAULT_XMLRPC_PORT = "8080";
+static const string DEFAULT_XMLRPC_PATH = "/RPC2";
 static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_PORT = 8444;
 
@@ -50,10 +55,14 @@ static const string OPT_PORT = "p";
 static const string OPTL_PORT = "port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPT_XMLRPC_ENPOINT = "x";
-static const string OPTL_XMLRPC_ENPOINT = "xmlrpc-endpoint";
-static const char* OPT_XMLRPC_ENPOINT_DESCRIPTION = "Specify the XMLRPC endpoint of the StoRM Backend. <arg> is of the form:\n"
-    "[HOST][:PORT][/PATH]\nDefault is: localhost:8080/RPC2";
+static const string OPTL_XMLRPC_HOST = "xmlrpc-endpoint";
+static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
+
+static const string OPTL_XMLRPC_PORT = "xmlrpc-port";
+static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
+
+static const string OPTL_XMLRPC_PATH = "xmlrpc-path";
+static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
 static const string OPT_PROXY_USER = "U";
 static const string OPTL_PROXY_USER = "proxy-user";
@@ -67,13 +76,22 @@ static const string OPT_WSDL_FILE = "w";
 static const string OPTL_WSDL_FILE = "wsdl-file";
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
 
-static const string OPT_VERBOSE = "v";
-static const string OPTL_VERBOSE = "debug-level";
-static const char* OPT_VERBOSE_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
+static const string OPT_DEBUG_LEVEL = "v";
+static const string OPTL_DEBUG_LEVEL = "debug-level";
+static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
 
 static const string OPT_DEBUG = "d";
 static const string OPTL_DEBUG = "debug-mode";
 static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
+
+static const string OPTL_DB_HOST = "db-host";
+static const char* OPT_DB_HOST_DESCRIPTION = "Machine hosting the DB";
+
+static const string OPTL_DB_USER = "db-user";
+static const char* OPT_DB_USER_DESCRIPTION = "Database user";
+
+static const string OPTL_DB_USER_PASSWORD = "db-passwd";
+static const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
 
 
 // A helper function to simplify printing options stuff
@@ -96,21 +114,26 @@ public:
     bool requestedHelp();
     bool requestedVersion();
     bool requestedDebug();
-    int getVerboseLevel();
+    int getDebugLevel();
     int getNumThreads();
+    int getPort();
+    string getDebugLevelString();
     string getProxyDir();
-    string getPort();
-    string getXMLRPCEndpoint();
     string getProxyUser();
+    string getXMLRPCEndpoint();
     string getUser();
     string getWSDLFilePath();
     string getLogFile();
+    string getDBHost();
+    string getDBUser();
+    string getDBUserPassword();
 
 private:
     po::options_description defineConfigFileOptions();
     po::options_description defineCommandLineOptions();
     void setCommandLineOptions(po::variables_map& vm);
     void setConfigurationOptions(po::variables_map& vm);
+    int decodeDebugLevelOption(string debugLevel);
 
     po::options_description configurationFileOptions;
     po::options_description commandLineOptions;
@@ -119,16 +142,20 @@ private:
     bool versionRequested;
     bool debugMode;
     int numberOfThreads;
-    int verboseLevel;
+    int debugLevel;
     int port;
     string log_file;
     string proxy_dir;
     string proxy_user;
     string user;
     string wsdl_file;
-    string verboseLevelString;
-    string xmlrpc_endpoint;
-
+    string debugLevelString;
+    string xmlrpc_host;
+    string xmlrpc_port;
+    string xmlrpc_path;
+    string dbHost;
+    string dbUser;
+    string dbUserPassword;
 
 };
 
