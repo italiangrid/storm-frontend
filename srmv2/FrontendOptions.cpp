@@ -24,7 +24,8 @@ void FrontendOptions::parseOptions(int argc, char* argv[]) {
     try {
         store(po::parse_command_line(argc, argv, commandLineOptions), cmdline_vm);
     } catch (exception& e) {
-        throw runtime_error(string("Error: " + e.what()));
+        string msg = "Error: " + e.what();
+        throw runtime_error(msg);
     }
 
     notify(cmdline_vm);
@@ -50,7 +51,8 @@ void FrontendOptions::parseOptions(int argc, char* argv[]) {
     try {
         store(parse_config_file(conf_file, configurationFileOptions), config_vm);
     } catch (exception& e) {
-        throw runtime_error(string("Error reading configuration file: " + e.what()));
+        string msg = "Error reading configuration file: " + e.what();
+        throw runtime_error(msg);
     }
 
     notify(config_vm);
