@@ -62,7 +62,7 @@ static const string OPTL_XMLRPC_PORT = "xmlrpc-port";
 static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
 
 static const string OPTL_XMLRPC_PATH = "xmlrpc-path";
-static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Path of the StoRM XMLRPC server service";
+static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
 static const string OPT_PROXY_USER = "U";
 static const string OPTL_PROXY_USER = "proxy-user";
@@ -133,7 +133,7 @@ private:
     po::options_description defineCommandLineOptions();
     void setCommandLineOptions(po::variables_map& vm);
     void setConfigurationOptions(po::variables_map& vm);
-    int decodeDebugLevelOption(string debugLevel);
+    int decodeDebugLevelOption(string& debugLevel);
 
     po::options_description configurationFileOptions;
     po::options_description commandLineOptions;

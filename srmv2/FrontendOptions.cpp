@@ -124,7 +124,7 @@ int FrontendOptions::getDebugLevel() {
     return debugLevel;
 }
 
-int FrontendOptions::getDebugLevelString() {
+string FrontendOptions::getDebugLevelString() {
     return debugLevelString;
 }
 
