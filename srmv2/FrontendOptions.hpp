@@ -15,7 +15,6 @@ namespace po = boost::program_options;
 #include <fstream>
 #include <iterator>
 #include <string>
-#include <exception>
 using namespace std;
 
 // Costants
@@ -145,7 +144,7 @@ private:
     bool helpRequested;
     bool versionRequested;
     bool debugMode;
-    bool configurationFileFound;
+    bool configFileSpecifiedAtCmdLine;
     int numberOfThreads;
     int debugLevel;
     int port;
