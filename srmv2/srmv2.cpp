@@ -25,7 +25,6 @@ extern "C" {
 
 #include "srmlogit.h"
 
-#include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -202,7 +201,7 @@ static int srm_main(struct main_args *main_args) {
     }
 
     // Proxy User
-    pwd = getpwnam(optarg);
+    pwd = getpwnam(proxy_user.c_str());
     if (NULL == pwd) { // error
         fprintf(stderr, "Invalid user for proxy: %s\n", proxy_user.c_str());
         return CONFERR;
