@@ -21,12 +21,12 @@ static char sccsid[] = "@(#)$RCSfile$ $Revision$ $Date$ CERN Jean-Philippe Baud"
 #include "srmlogit.h"
 
 extern int jid;
-extern char logfile;
+extern char* logfile;
 
 static pthread_mutex_t log_mutex= PTHREAD_MUTEX_INITIALIZER;;
 
-static FILE *log_fd=NULL;
-static int loglevel=1;
+static FILE *log_fd = NULL;
+static int loglevel = STORM_LOG_ERROR;
 
 /** This function init the log file. At this moment, open the file in
     append mode and set the global (to the srmlogit.c file) variable.
@@ -39,12 +39,6 @@ static int loglevel=1;
                   value of the global variable errno modified by
                   fopen() in case the fopen() fail.
 **/
-int srmlogit_set_debuglevel(int level)
-{
-    loglevel = level;
-    return 0;
-}
-
 int srmlogit_init() {
     /* this locking is non-necessary... */
     pthread_mutex_lock(&log_mutex);
@@ -58,6 +52,12 @@ int srmlogit_init() {
         fprintf(stderr, "error opening file %s, error = '%s'\n", logfile, err);
         return e;
     }
+    return 0;
+}
+
+int srmlogit_set_debuglevel(int level)
+{
+    loglevel = level;
     return 0;
 }
 
