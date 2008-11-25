@@ -53,7 +53,7 @@ char localhost[ST_MAXHOSTNAMELEN+1];
 char logfile[ST_MAXPATHLEN+1];
 char *wsdl_file = NULL;
 
-char SRMV2_PROXY_DIR[ST_MAXPATHLEN+1];
+char *SRMV2_PROXY_DIR;
 uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
 char *xmlrpc_endpoint = NULL;
