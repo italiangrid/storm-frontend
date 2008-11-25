@@ -80,7 +80,7 @@ int check_environment() {
     /* environment is set? */
     gridmap = getenv("GRIDMAP");
     gridmapdir = getenv("GRIDMAPDIR");
-    if (NULL == gridmap || NULL == gridmap)
+    if (NULL == gridmap || NULL == gridmapdir)
         return -1;
 
     /* grid-mapfile is a file? */
@@ -242,7 +242,7 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
-    srmlogit(STORM_LOG_INFO, func, "-------------------------------------------------------");
+    srmlogit(STORM_LOG_INFO, func, "-------------------------------------------------------\n");
 
 
     gethostname(localhost, ST_MAXHOSTNAMELEN+1);
