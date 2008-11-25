@@ -45,24 +45,23 @@ int srmlogit_set_debuglevel(int level)
     return 0;
 }
 
-int srmlogit_init(){
+int srmlogit_init() {
     /* this locking is non-necessary... */
     pthread_mutex_lock(&log_mutex);
-    log_fd=fopen(logfile,"a");
+    log_fd = fopen(logfile, "a");
     pthread_mutex_unlock(&log_mutex);
-    if(log_fd == NULL){
-        int e=errno;
+    if (log_fd == NULL) {
+        int e = errno;
         char ebuf[256];
-        char *err=NULL;
-        err=strerror_r(e,ebuf,256);
-        fprintf(stderr,"error opening file %s, error = '%s'\n",logfile,err);
+        char *err = NULL;
+        err = strerror_r(e, ebuf, 256);
+        fprintf(stderr, "error opening file %s, error = '%s'\n", logfile, err);
         return e;
     }
     return 0;
 }
 
-int srmlogit(int level, const char *func, const char *msg, ...)
-{
+int srmlogit(int level, const char *func, const char *msg, ...) {
     va_list args;
     char prtbuf[LOGBUFSZ];
     int save_errno;
@@ -81,7 +80,7 @@ int srmlogit(int level, const char *func, const char *msg, ...)
 
     save_errno = errno;
     va_start(args, msg);
-    (void) time(&current_time);        /* Get current time */
+    (void) time(&current_time); /* Get current time */
 #if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
     (void) localtime_r(&current_time, &tmstruc);
     tm = &tmstruc;
@@ -89,23 +88,23 @@ int srmlogit(int level, const char *func, const char *msg, ...)
     tm = localtime(&current_time);
 #endif
     Cglobals_getTid(&Tid);
-    if (Tid < 0)    /* main thread */
-        sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon+1,
-                tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, jid, func);
+    if (Tid < 0) /* main thread */
+        sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon + 1, tm->tm_mday,
+                tm->tm_hour, tm->tm_min, tm->tm_sec, jid, func);
     else
-        sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d,%d %s: ", tm->tm_mon+1,
-                tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, jid, Tid, func);
-	prefix_msg_len = strlen(prtbuf);
-	max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
-    desired_buf_len = vsnprintf(prtbuf+prefix_msg_len, max_char_to_write, msg, args);
+        sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d,%d %s: ", tm->tm_mon + 1, tm->tm_mday,
+                tm->tm_hour, tm->tm_min, tm->tm_sec, jid, Tid, func);
+    prefix_msg_len = strlen(prtbuf);
+    max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
+    desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
     // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
     if (desired_buf_len >= max_char_to_write)
-    	sprintf(prtbuf+(LOGBUFSZ-12), " TRUNCATED\n\0");
+        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
     va_end(args);
 
     pthread_mutex_lock(&log_mutex);
     if (log_fd == NULL)
-		log_fd = stderr;
+        log_fd = stderr;
     fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
     fflush(log_fd);
     pthread_mutex_unlock(&log_mutex);
