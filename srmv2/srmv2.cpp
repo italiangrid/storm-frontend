@@ -238,20 +238,20 @@ static int srm_main(struct main_args *main_args) {
 
     srmlogit_set_debuglevel(debuglevel);
 
-    srmlogit(STORM_LOG_INFO, func, "Starting StoRM frontend as user: %s\n", user_name.c_str());
-    srmlogit(STORM_LOG_INFO, func, "---------------------- Configuration ------------------\n");
-    srmlogit(STORM_LOG_INFO, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
-    srmlogit(STORM_LOG_INFO, func, "%s=%d\n", OPTL_PORT.c_str(), port);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), logfile);
-    srmlogit(STORM_LOG_INFO, func, "xmlrpc-endpoint=%s\n", xmlrpc_endpoint);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user_name.c_str());
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
-    srmlogit(STORM_LOG_INFO, func, "-------------------------------------------------------\n");
+    srmlogit(STORM_LOG_NONE, func, "Starting StoRM frontend as user: %s\n", user_name.c_str());
+    srmlogit(STORM_LOG_NONE, func, "---------------------- Configuration ------------------\n");
+    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
+    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), port);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), logfile);
+    srmlogit(STORM_LOG_NONE, func, "xmlrpc-endpoint=%s\n", xmlrpc_endpoint);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user_name.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
+    srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
 
 
     gethostname(localhost, ST_MAXHOSTNAMELEN+1);
