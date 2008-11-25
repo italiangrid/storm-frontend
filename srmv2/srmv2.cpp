@@ -389,22 +389,3 @@ process_request(void *soap_vp) {
     free(soap);
     return (NULL);
 }
-
-int serrno2statuscode(int err) {
-    switch (err) {
-    case ENOENT:
-    case ENOTDIR:
-    case ENAMETOOLONG:
-        return (SRM_USCOREINVALID_USCOREPATH);
-    case EACCES:
-        return (SRM_USCOREAUTHORIZATION_USCOREFAILURE);
-    case EEXIST:
-        return (SRM_USCOREDUPLICATION_USCOREERROR);
-    case EINVAL:
-        return (SRM_USCOREINVALID_USCOREREQUEST);
-    case ENOSPC:
-        return (SRM_USCORENO_USCOREFREE_USCORESPACE);
-    default:
-        return (SRM_USCOREFAILURE);
-    }
-}
