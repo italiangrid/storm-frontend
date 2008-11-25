@@ -45,23 +45,24 @@ extern "C" {
 
 #define NAME "StoRM SRM v2.2"
 
+struct srm_srv_thread_info srm_srv_thread_info[SRMV2_NBTHREADS_MAX];
 char db_pwd[33];
 char db_srvr[33];
 char db_user[33];
-struct srm_srv_thread_info srm_srv_thread_info[SRMV2_NBTHREADS_MAX];
-int jid;
 char localdomain[ST_MAXHOSTNAMELEN+1];
 char localhost[ST_MAXHOSTNAMELEN+1];
-char logfile[ST_MAXPATHLEN+1];
-char *wsdl_file = NULL;
 
-char *SRMV2_PROXY_DIR;
-uid_t proxy_uid = 0;
-gid_t proxy_gid = 0;
-char *xmlrpc_endpoint = NULL;
+char* SRMV2_PROXY_DIR;
+char* xmlrpc_endpoint;
+char* wsdl_file;
+char* logfile;
+char** supported_protocols;
 
 int nb_supported_protocols;
-char **supported_protocols;
+int jid;
+
+uid_t proxy_uid = 0;
+gid_t proxy_gid = 0;
 
 /**
  * check environment variables contents.
@@ -181,7 +182,7 @@ static int srm_main(struct main_args *main_args) {
     strcpy(db_pwd, dbUserPasswd.c_str());
 
     // Logfile
-    strcpy(logfile, log_file.c_str());
+    logfile = strdup(log_file.c_str());
 
     // Proxy directory
     SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
