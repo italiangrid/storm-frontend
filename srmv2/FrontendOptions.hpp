@@ -55,7 +55,7 @@ static const string OPT_PORT = "p";
 static const string OPTL_PORT = "port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPTL_XMLRPC_HOST = "xmlrpc-endpoint";
+static const string OPTL_XMLRPC_HOST = "xmlrpc-host";
 static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
 
 static const string OPTL_XMLRPC_PORT = "xmlrpc-port";
