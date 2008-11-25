@@ -314,7 +314,6 @@ static int srm_main(struct main_args *main_args) {
         free(soap_data);
         return (SYERR);
     }
-    srmlogit(STORM_LOG_DEBUG, func, "Port Number %d\n", port);
 
     /* supporting HTTP GET in order to reply the wsdl */
     soap_data->fget = http_get;
