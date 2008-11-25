@@ -193,7 +193,7 @@ static int srm_main(struct main_args *main_args) {
     SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
 
     // User
-    string user_name;
+    char* user_name;
     struct passwd *pwd;
     gid_t drop_gid = 0;
     uid_t drop_uid = 0;
@@ -205,14 +205,14 @@ static int srm_main(struct main_args *main_args) {
         }
         drop_gid = pwd->pw_gid;
         drop_uid = pwd->pw_uid;
-        user_name = user;
+        user_name = user.c_str();
     } else {
         pwd = getpwuid(getuid());
         user_name = pwd->pw_name;
     }
 
     // Proxy User
-    string proxy_user_name;
+    char* proxy_user_name;
     if (! proxy_user.empty()) {
         pwd = getpwnam(proxy_user.c_str());
         if (NULL == pwd) { // error
@@ -221,7 +221,7 @@ static int srm_main(struct main_args *main_args) {
         }
         proxy_uid = pwd->pw_uid;
         proxy_gid = pwd->pw_gid;
-        proxy_user_name = proxy_user;
+        proxy_user_name = proxy_user.c_str();
     } else {
         proxy_user_name = user_name;
     }
@@ -238,7 +238,7 @@ static int srm_main(struct main_args *main_args) {
 
     srmlogit_set_debuglevel(debuglevel);
 
-    srmlogit(STORM_LOG_INFO, func, "Starting StoRM frontend as user: %s\n", user_name.c_str());
+    srmlogit(STORM_LOG_INFO, func, "Starting StoRM frontend as user: %s\n", user_name);
     srmlogit(STORM_LOG_INFO, func, "---------------------- Configuration ------------------\n");
     srmlogit(STORM_LOG_INFO, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_INFO, func, "%s=%d\n", OPTL_PORT.c_str(), port);
@@ -246,7 +246,7 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_INFO, func, "xmlrpc-endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_INFO, func, "%s=%s (to store proxies for srmCopy)\n", SRMV2_PROXY_DIR);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user_name.c_str());
+    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user_name);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
