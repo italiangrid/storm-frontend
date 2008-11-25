@@ -76,28 +76,28 @@ int check_environment() {
 
 #ifdef GSI_PLUGINS
     /* environment is set? */
-    gridmap=getenv("GRIDMAP");
-    gridmapdir=getenv("GRIDMAPDIR");
-    if(NULL == gridmap || NULL == gridmap)
-    return -1;
+    gridmap = getenv("GRIDMAP");
+    gridmapdir = getenv("GRIDMAPDIR");
+    if (NULL == gridmap || NULL == gridmap)
+        return -1;
 
     /* grid-mapfile is a file? */
-    ret=stat(gridmap, &stbuf);
-    if(0 != ret || ! S_ISREG(stbuf.st_mode))
-    return -1;
+    ret = stat(gridmap, &stbuf);
+    if (0 != ret || ! S_ISREG(stbuf.st_mode))
+        return -1;
 
     /* grid-mapfile file is readable? */
-    if( 0 != access(gridmap, R_OK) )
-    return -1;
+    if ( 0 != access(gridmap, R_OK) )
+        return -1;
 
     /* gridmapdir is a directory? */
     ret = stat(gridmapdir,&stbuf);
-    if(0 != ret || !S_ISDIR(stbuf.st_mode))
-    return -1;
+    if (0 != ret || !S_ISDIR(stbuf.st_mode))
+        return -1;
 
     /* gridmapdir is readable and executable? */
-    if( 0 != access(gridmapdir, R_OK & X_OK) )
-    return -1;
+    if ( 0 != access(gridmapdir, R_OK & X_OK) )
+        return -1;
 #endif
     return 0;
 }
@@ -129,27 +129,14 @@ static int http_get(struct soap *soap) {
 
 static int srm_main(struct main_args *main_args) {
     char *func = "srm_main";
-    int c;
-    FILE *cf;
-    char cfbuf[80];
     void *process_request(void *);
-    int flags;
-    char *getconfent();
-    int i;
-    int ipool;
-    char *p;
-    char *p_p, *p_s, *p_u;
 
-    struct soap *soap_data;
-    int thread_index;
-    struct soap *tsoap;
-    xmlrpc_env env;
-
-    uid_t drop_gid = 0;
-    gid_t drop_uid = 0;
-    int option_index = 0;
-
+    // Set pid in global variable
     jid = getpid();
+
+    // ------------------------------------------------------------------------
+    //------------------------- Set configuration -----------------------------
+    // ------------------------------------------------------------------------
 
     FrontendOptions configuration;
 
@@ -180,8 +167,7 @@ static int srm_main(struct main_args *main_args) {
     int debuglevel = configuration.getDebugLevel();
     string debugLevelString = configuration.getDebugLevelString();
 
-    // Set global variables... TODO: do not use global variables
-
+    // Setting global variables... TODO: do not use global variables
     // DB stuff
     strcpy(db_srvr, dbHost.c_str());
     strcpy(db_user, dbUser.c_str());
@@ -200,8 +186,8 @@ static int srm_main(struct main_args *main_args) {
         fprintf(stderr, "Invalid user: %s\n", user.c_str());
         return CONFERR;
     }
-    drop_gid = pwd->pw_gid;
-    drop_uid = pwd->pw_uid;
+    gid_t drop_gid = pwd->pw_gid;
+    uid_t drop_uid = pwd->pw_uid;
 
     // Proxy User
     pwd = getpwnam(optarg);
@@ -266,10 +252,13 @@ static int srm_main(struct main_args *main_args) {
     }
 
     /* Create a pool of threads */
+    int ipool;
     if ((ipool = Cpool_create (nThreads, NULL)) < 0) {
         srmlogit(STORM_LOG_DEBUG, func, SRM02, "Cpool_create", sstrerror(serrno));
         return (SYERR);
     }
+
+    int i;
     for (i = 0; i < nThreads; i++) {
         srm_srv_thread_info[i].s = -1;
         srm_srv_thread_info[i].dbfd.idx = i;
@@ -281,16 +270,17 @@ static int srm_main(struct main_args *main_args) {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGXFSZ, SIG_IGN);
 #endif
+
+    struct soap *soap_data;
     soap_data = (struct soap *) calloc(1, sizeof(struct soap));
     soap_init2(soap_data, SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
     soap_data->accept_timeout = 0;
+    int flags;
 #if defined(GSI_PLUGINS)
     flags = CGSI_OPT_DELEG_FLAG;
     soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
 #endif
-    // not supported in gsoap 2.6
-    //    soap_data->bind_flags |= MSG_NOSIGNAL;
     soap_data->bind_flags |= SO_REUSEADDR;
 
     if (soap_bind(soap_data, NULL, port, BACKLOG) < 0) {
@@ -305,6 +295,7 @@ static int srm_main(struct main_args *main_args) {
     soap_data->fget = http_get;
 
     /* Start up our XML-RPC client library. */
+    xmlrpc_env env;
     xmlrpc_env_init(&env);
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     //die_if_fault_occurred(&env);
@@ -312,6 +303,7 @@ static int srm_main(struct main_args *main_args) {
 
     /* main loop */
     if (drop_uid != 0 || drop_gid != 0) {
+
         if (setgid(drop_gid) || setuid(drop_uid)) {
             srmlogit(STORM_LOG_ERROR, func, "Unable to drop privileges to %d,%d. Exiting.\n",
                     drop_uid, drop_gid);
@@ -319,8 +311,13 @@ static int srm_main(struct main_args *main_args) {
         }
         srmlogit(STORM_LOG_INFO, func, "StoRM FE started as (uid,gid) = (%d,%d)\n", drop_uid,
                 drop_gid);
-    } else
+    } else {
         srmlogit(STORM_LOG_INFO, func, "StoRM FE started.\n");
+    }
+
+    struct soap *tsoap;
+    int thread_index;
+
     while (1) {
         if (soap_accept(soap_data) < 0) {
             srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror(soap_data->errnum));
