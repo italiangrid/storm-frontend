@@ -203,7 +203,7 @@ static int srm_main(struct main_args *main_args) {
     drop_uid = pwd->pw_uid;
 
     // Proxy User
-    struct passwd *pwd = getpwnam(optarg);
+    *pwd = getpwnam(optarg);
     if (NULL == pwd) { // error
         fprintf(stderr, "Invalid user for proxy: %s\n", proxy_user.c_str());
         return CONFERR;
@@ -231,7 +231,7 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_INFO, func, "xmlrpc-endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_INFO, func, "%s=%s (to store proxies for srmCopy)\n", SRMV2_PROXY_DIR);
-    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user);
+    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user.c_str());
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
