@@ -40,7 +40,7 @@ static int loglevel = STORM_LOG_ERROR;
                   fopen() in case the fopen() fail.
 **/
 int srmlogit_init() {
-    // this locking is not necessary...
+    // this locking is actually not needed...
     pthread_mutex_lock(&log_mutex);
 
     if (NULL == logfile)
@@ -51,12 +51,11 @@ int srmlogit_init() {
     pthread_mutex_unlock(&log_mutex);
 
     if (log_fd == NULL) {
-        int save_errno = errno;
-        char ebuf[256];
-        char *err = NULL;
-        err = strerror_r(save_errno, ebuf, 256);
-        fprintf(stderr, "Error opening log file %s, error = '%s'\n", logfile, err);
-        return save_errno;
+        if (NULL == logfile)
+            fprintf(stderr, "Cannot open log file\n");
+        else
+            fprintf(stderr, "Cannot open log file %s\n", logfile);
+        return 1;
     }
     return 0;
 }
