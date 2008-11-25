@@ -33,7 +33,7 @@ typedef unsigned long long unsignedLong64;
 
 #define MAX_PORT_NUMBER 1<<16
 
-int get_supported_protocols (char ***);
+int get_supported_protocols(char ***);
 int is_surl_local (char *surl);
 char *pfnfromturl (char *turl);
 char *sfnfromsurl (char *surl);

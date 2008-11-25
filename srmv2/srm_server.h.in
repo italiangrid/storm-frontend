@@ -61,9 +61,9 @@ struct srm_srv_thread_info {
 #define SRM23   "SRM23 - %s is not accessible\n"
 #define SRM98   "SRM98 - %s\n"
 
-#define DEFAULT_XMLRPC_HOST "localhost"
-#define DEFAULT_XMLRPC_PORT "8080"
-#define DEFAULT_XMLRPC_PATH "/RPC2"
-#define DEFAULT_XMLRPC_ENDPOINT "http://" DEFAULT_XMLRPC_HOST ":" DEFAULT_XMLRPC_PORT DEFAULT_XMLRPC_PATH
+//#define DEFAULT_XMLRPC_HOST "localhost"
+//#define DEFAULT_XMLRPC_PORT "8080"
+//#define DEFAULT_XMLRPC_PATH "/RPC2"
+//#define DEFAULT_XMLRPC_ENDPOINT "http://" DEFAULT_XMLRPC_HOST ":" DEFAULT_XMLRPC_PORT DEFAULT_XMLRPC_PATH
 extern char *xmlrpc_endpoint;
 #endif /* _SRM_SERVER_H */
