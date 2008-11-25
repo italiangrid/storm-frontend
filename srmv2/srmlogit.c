@@ -30,7 +30,7 @@ static int loglevel=1;
 
 /** This function init the log file. At this moment, open the file in
     append mode and set the global (to the srmlogit.c file) variable.
-    
+
     This function also initialize and lock the mutex used by the
     srmlogit() function in order to avoid concurrency problem in
     writing to the log file.
@@ -119,39 +119,39 @@ int srmlogit(int level, const char *func, const char *msg, ...)
  *  A backslash is appended to a line to be continued
  *  A continuation line is prefixed by '+ '
  */
-void
-srm_logreq(int ll, const char *func, char *logbuf)
-{
-    int n1, n2;
-    char *p;
-    char savechrs1[2];
-    char savechrs2[2];
-
-    n1 = LOGBUFSZ - strlen (func) - 36;
-    n2 = strlen (logbuf);
-    p = logbuf;
-    while (n2 > n1) {
-        savechrs1[0] = *(p + n1);
-        savechrs1[1] = *(p + n1 + 1);
-        *(p + n1) = '\\';
-        *(p + n1 + 1) = '\0';
-        srmlogit (ll, func, SRM98, p);
-        if (p != logbuf) {
-            *p = savechrs2[0];
-            *(p + 1) = savechrs2[1];
-        }
-        p += n1 - 2;
-        savechrs2[0] = *p;
-        savechrs2[1] = *(p + 1);
-        *p = '+';
-        *(p + 1) = ' ';
-        *(p + 2) = savechrs1[0];
-        *(p + 3) = savechrs1[1];
-        n2 -= n1;
-    }
-    srmlogit (ll, func, SRM98, p);
-    if (p != logbuf) {
-        *p = savechrs2[0];
-        *(p + 1) = savechrs2[1];
-    }
-}
+//void
+//srm_logreq(int ll, const char *func, char *logbuf)
+//{
+//    int n1, n2;
+//    char *p;
+//    char savechrs1[2];
+//    char savechrs2[2];
+//
+//    n1 = LOGBUFSZ - strlen (func) - 36;
+//    n2 = strlen (logbuf);
+//    p = logbuf;
+//    while (n2 > n1) {
+//        savechrs1[0] = *(p + n1);
+//        savechrs1[1] = *(p + n1 + 1);
+//        *(p + n1) = '\\';
+//        *(p + n1 + 1) = '\0';
+//        srmlogit (ll, func, SRM98, p);
+//        if (p != logbuf) {
+//            *p = savechrs2[0];
+//            *(p + 1) = savechrs2[1];
+//        }
+//        p += n1 - 2;
+//        savechrs2[0] = *p;
+//        savechrs2[1] = *(p + 1);
+//        *p = '+';
+//        *(p + 1) = ' ';
+//        *(p + 2) = savechrs1[0];
+//        *(p + 3) = savechrs1[1];
+//        n2 -= n1;
+//    }
+//    srmlogit (ll, func, SRM98, p);
+//    if (p != logbuf) {
+//        *p = savechrs2[0];
+//        *(p + 1) = savechrs2[1];
+//    }
+//}

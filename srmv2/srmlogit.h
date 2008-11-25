@@ -29,13 +29,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 int srmlogit_set_debuglevel(int level);
 int srmlogit_init();
 int srmlogit(int level,const char *func, const char *msg, ...);
-void srm_logreq(int ll, const char *func, char *logbuf);
+//void srm_logreq(int ll, const char *func, char *logbuf);
+
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif
