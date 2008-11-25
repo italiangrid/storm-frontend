@@ -145,7 +145,7 @@ static int srm_main(struct main_args *main_args) {
     try {
         configuration.parseOptions(main_args->argc, main_args->argv);
     } catch (exception& e) {
-        cout << "Error parsing configuration: " << e.what() << endl;
+        cout << e.what() << endl << endl;
         return 1;
     }
 
