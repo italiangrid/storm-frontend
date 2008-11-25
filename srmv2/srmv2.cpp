@@ -245,7 +245,7 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), logfile);
     srmlogit(STORM_LOG_INFO, func, "xmlrpc-endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
-    srmlogit(STORM_LOG_INFO, func, "%s=%s (to store proxies for srmCopy)\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
+    srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user_name.c_str());
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
