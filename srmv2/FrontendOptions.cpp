@@ -173,8 +173,7 @@ string FrontendOptions::getDBUserPassword() {
 }
 
 void FrontendOptions::printHelpMessage() {
-    cout << commandLineOptions << "\n\n\n";
-    cout << configurationFileOptions << "\n";
+    cout << commandLineOptions << endl;
 }
 
 po::options_description FrontendOptions::defineConfigFileOptions() {
