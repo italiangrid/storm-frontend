@@ -188,13 +188,17 @@ static int srm_main(struct main_args *main_args) {
 
     // User
     struct passwd *pwd;
-    pwd = getpwnam(user.c_str());
-    if (NULL == pwd) { // error
-        fprintf(stderr, "Invalid user: %s\n", user.c_str());
-        return CONFERR;
+    gid_t drop_gid = 0;
+    uid_t drop_uid = 0;
+    if (! user.empty()) {
+        pwd = getpwnam(user.c_str());
+        if (NULL == pwd) { // error
+            fprintf(stderr, "Invalid user: %s\n", user.c_str());
+            return CONFERR;
+        }
+        drop_gid = pwd->pw_gid;
+        drop_uid = pwd->pw_uid;
     }
-    gid_t drop_gid = pwd->pw_gid;
-    uid_t drop_uid = pwd->pw_uid;
 
     // Proxy User
     pwd = getpwnam(optarg);

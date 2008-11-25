@@ -24,7 +24,6 @@ static const string DEFAULT_WSDL_FILE = "";
 static const string DEFAULT_XMLRPC_HOST = "localhost";
 static const string DEFAULT_XMLRPC_PORT = "8080";
 static const string DEFAULT_XMLRPC_PATH = "/RPC2";
-static const string DEFAULT_USER = "storm";
 static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_PORT = 8444;
 
