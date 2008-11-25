@@ -21,7 +21,7 @@ static char sccsid[] = "@(#)$RCSfile$ $Revision$ $Date$ CERN Jean-Philippe Baud"
 #include "srmlogit.h"
 
 extern int jid;
-extern char logfile[];
+extern char logfile;
 
 static pthread_mutex_t log_mutex= PTHREAD_MUTEX_INITIALIZER;;
 
