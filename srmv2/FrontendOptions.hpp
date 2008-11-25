@@ -144,7 +144,7 @@ private:
     bool helpRequested;
     bool versionRequested;
     bool debugMode;
-    bool configFileSpecifiedAtCmdLine;
+    bool configurationFileFound;
     int numberOfThreads;
     int debugLevel;
     int port;
