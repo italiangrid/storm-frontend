@@ -177,7 +177,7 @@ static int srm_main(struct main_args *main_args) {
     strcpy(logfile, log_file.c_str());
 
     // Proxy directory
-    strcpy(SRMV2_PROXY_DIR, proxy_dir.c_str());
+    SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
 
     // User
     struct passwd *pwd;
