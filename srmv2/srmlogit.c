@@ -44,14 +44,14 @@ int srmlogit_init() {
     pthread_mutex_lock(&log_mutex);
 
     if (NULL == logfile)
-        log_fq = stderr;
+        log_fd = stderr;
 
     log_fd = fopen(logfile, "a");
 
     pthread_mutex_unlock(&log_mutex);
 
     if (log_fd == NULL) {
-        int sava_errno = errno;
+        int save_errno = errno;
         char ebuf[256];
         char *err = NULL;
         err = strerror_r(save_errno, ebuf, 256);
