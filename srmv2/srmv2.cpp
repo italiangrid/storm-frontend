@@ -258,7 +258,7 @@ static int srm_main(struct main_args *main_args) {
 
     srmlogit(STORM_LOG_INFO, func, "StoRM frontend started\n");
 
-    if (debugMode) {
+    if (! debugMode) {
         if (Cinitdaemon("srmv2", NULL) < 0)
             exit(SYERR);
         srmlogit_init();
