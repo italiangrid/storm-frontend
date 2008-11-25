@@ -194,7 +194,8 @@ static int srm_main(struct main_args *main_args) {
     strcpy(SRMV2_PROXY_DIR, proxy_dir.c_str());
 
     // User
-    struct passwd *pwd = getpwnam(user.c_str());
+    struct passwd *pwd;
+    pwd = getpwnam(user.c_str());
     if (NULL == pwd) { // error
         fprintf(stderr, "Invalid user: %s\n", user.c_str());
         return CONFERR;
@@ -203,7 +204,7 @@ static int srm_main(struct main_args *main_args) {
     drop_uid = pwd->pw_uid;
 
     // Proxy User
-    *pwd = getpwnam(optarg);
+    pwd = getpwnam(optarg);
     if (NULL == pwd) { // error
         fprintf(stderr, "Invalid user for proxy: %s\n", proxy_user.c_str());
         return CONFERR;
