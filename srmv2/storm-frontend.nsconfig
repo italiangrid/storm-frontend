@@ -1,1 +1,22 @@
-storm/storm@localhost
+user = userSTORM
+num-threads = 5
+port = 8440
+logfile = /pippo/pluto.log
+debug-level = WARN
+
+# XMLRPC server information
+xmlrpc-host = localhost
+xmlrpc-port = 8081
+xmlrpc-path = /RPC3
+
+proxy-dir = /proxy-dir/pluto
+proxy-user = proxyUser
+
+# Database
+db-host = dbhost.cnaf.infn.it
+db-user = dnUser
+db-passwd = dbUserPassword
+
+# WSDL to be returned to a GET request
+wsdl-file = /wsdl-file-dir/pippo.wsdl
+
