@@ -201,13 +201,15 @@ static int srm_main(struct main_args *main_args) {
     }
 
     // Proxy User
-    pwd = getpwnam(proxy_user.c_str());
-    if (NULL == pwd) { // error
-        fprintf(stderr, "Invalid user for proxy: %s\n", proxy_user.c_str());
-        return CONFERR;
+    if (! proxy_user.empty()) {
+        pwd = getpwnam(proxy_user.c_str());
+        if (NULL == pwd) { // error
+            fprintf(stderr, "Invalid user for proxy: %s\n", proxy_user.c_str());
+            return CONFERR;
+        }
+        proxy_uid = pwd->pw_uid;
+        proxy_gid = pwd->pw_gid;
     }
-    proxy_uid = pwd->pw_uid;
-    proxy_gid = pwd->pw_gid;
 
     // WSDL file
     wsdl_file = strdup(wsdl_file_path.c_str());
