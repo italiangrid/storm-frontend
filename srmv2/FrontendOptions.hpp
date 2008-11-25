@@ -15,6 +15,7 @@ namespace po = boost::program_options;
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <exception>
 using namespace std;
 
 // Costants
@@ -115,6 +116,7 @@ public:
     bool requestedHelp();
     bool requestedVersion();
     bool requestedDebug();
+    bool foundConfigurationFile();
     int getDebugLevel();
     int getNumThreads();
     int getPort();
@@ -128,6 +130,7 @@ public:
     string getDBHost();
     string getDBUser();
     string getDBUserPassword();
+    string getConfigurationFile();
 
 private:
     po::options_description defineConfigFileOptions();
@@ -142,6 +145,7 @@ private:
     bool helpRequested;
     bool versionRequested;
     bool debugMode;
+    bool configurationFileFound;
     int numberOfThreads;
     int debugLevel;
     int port;
@@ -157,6 +161,7 @@ private:
     string dbHost;
     string dbUser;
     string dbUserPassword;
+    string configuration_file;
 
 };
 

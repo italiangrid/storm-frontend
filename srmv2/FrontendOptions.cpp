@@ -5,6 +5,7 @@
  *      Author: alb
  */
 
+#include <stdexcept>
 #include "FrontendOptions.hpp"
 #include "srmlogit.h"
 
@@ -20,7 +21,12 @@ void FrontendOptions::parseOptions(int argc, char* argv[]) {
 
     po::variables_map cmdline_vm;
 
-    store(po::parse_command_line(argc, argv, commandLineOptions), cmdline_vm);
+    try {
+        store(po::parse_command_line(argc, argv, commandLineOptions), cmdline_vm);
+    } catch (exception& e) {
+        throw runtime_error(e.what());
+    }
+
     notify(cmdline_vm);
 
     setCommandLineOptions(cmdline_vm);
@@ -31,16 +37,22 @@ void FrontendOptions::parseOptions(int argc, char* argv[]) {
 
     string configuration_file_path(cmdline_vm[OPTL_CONFIG_FILE].as<string>());
 
-    cout << "Reading configuration file: " << configuration_file_path << "...\n";
-
     po::variables_map config_vm;
     ifstream conf_file(configuration_file_path.c_str());
 
     if (conf_file.fail()) {
-        cout << "File not found!\n";
+        string msg = "Configuration file not found \"" + configuration_file_path + "\"";
+        throw runtime_error(msg);
     }
 
-    store(parse_config_file(conf_file, configurationFileOptions), config_vm);
+    cout << "Reading configuration file: " << configuration_file_path << "...\n";
+
+    try {
+        store(parse_config_file(conf_file, configurationFileOptions), config_vm);
+    } catch (exception& e) {
+        throw runtime_error(e.what());
+    }
+
     notify(config_vm);
 
     setConfigurationOptions(config_vm);
@@ -52,6 +64,7 @@ void FrontendOptions::setCommandLineOptions(po::variables_map& vm) {
     helpRequested = false;
     versionRequested = false;
     debugMode = false;
+    configurationFileFound = false;
 
     if (vm.count(OPTL_HELP))
         helpRequested = true;
@@ -61,6 +74,11 @@ void FrontendOptions::setCommandLineOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_DEBUG))
         debugMode = true;
+
+    if (vm.count(OPTL_CONFIG_FILE)) {
+        configurationFileFound = true;
+        configuration_file = vm[OPTL_CONFIG_FILE].as<string>();
+    }
 
 }
 
@@ -124,6 +142,10 @@ bool FrontendOptions::requestedDebug() {
     return debugMode;
 }
 
+bool FrontendOptions::foundConfigurationFile() {
+    return configurationFileFound;
+}
+
 int FrontendOptions::getDebugLevel() {
     return debugLevel;
 }
@@ -178,6 +200,10 @@ string FrontendOptions::getDBUserPassword() {
 
 void FrontendOptions::printHelpMessage() {
     cout << commandLineOptions << endl;
+}
+
+string FrontendOptions::getConfigurationFile() {
+    return configuration_file;
 }
 
 po::options_description FrontendOptions::defineConfigFileOptions() {

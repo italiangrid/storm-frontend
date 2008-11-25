@@ -39,6 +39,8 @@ extern "C" {
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 
+#include <exception>
+
 #include "FrontendOptions.hpp"
 
 #define NAME "StoRM SRM v2.2"
@@ -140,7 +142,12 @@ static int srm_main(struct main_args *main_args) {
 
     FrontendOptions configuration;
 
-    configuration.parseOptions(main_args->argc, main_args->argv);
+    try {
+        configuration.parseOptions(main_args->argc, main_args->argv);
+    } catch (exception& e) {
+        cout << "Error parsing configuration: " << e.what() << endl;
+        return 1;
+    }
 
     if (configuration.requestedHelp()) {
         configuration.printHelpMessage();
