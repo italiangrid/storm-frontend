@@ -181,7 +181,13 @@ static int srm_main(struct main_args *main_args) {
     strcpy(db_pwd, dbUserPasswd.c_str());
 
     // Logfile
-    logfile = strdup(log_file.c_str());
+    if (debugMode)
+        logfile = NULL;  // i.e. log to stderr
+    else
+        logfile = strdup(log_file.c_str());
+
+    // Initialize the loging system
+    srmlogit_init();
 
     // Proxy directory
     SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
@@ -258,10 +264,9 @@ static int srm_main(struct main_args *main_args) {
 
     srmlogit(STORM_LOG_INFO, func, "StoRM frontend started\n");
 
-    if (! debugMode) {
+    if (! debugMode) { // fork and leave the daemon in background
         if (Cinitdaemon("srmv2", NULL) < 0)
             exit(SYERR);
-        srmlogit_init();
     }
 
     /* Create a pool of threads */
