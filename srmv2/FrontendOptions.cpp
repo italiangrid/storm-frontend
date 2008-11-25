@@ -250,6 +250,8 @@ int FrontendOptions::decodeDebugLevelOption(string& debugLevelString) {
         debugLevel = STORM_LOG_ERROR;
     else if (debugLevelString == "WARN")
         debugLevel = STORM_LOG_WARNING;
+    else if (debugLevelString == "INFO")
+            debugLevel = STORM_LOG_INFO;
     else if (debugLevelString == "DEBUG")
         debugLevel = STORM_LOG_DEBUG;
     else if (debugLevelString == "DEBUG2")
