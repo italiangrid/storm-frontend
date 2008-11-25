@@ -229,8 +229,8 @@ static int srm_main(struct main_args *main_args) {
 
     srmlogit_set_debuglevel(debuglevel);
 
-    srmlogit(STORM_LOG_INFO, func, "Starting StoRM frontend as user: %s", user.c_str());
-    srmlogit(STORM_LOG_INFO, func, "Configuration information: ----------------------------");
+    srmlogit(STORM_LOG_INFO, func, "Starting StoRM frontend as user: %s\n", user.c_str());
+    srmlogit(STORM_LOG_INFO, func, "Configuration information: ----------------------------\n");
     srmlogit(STORM_LOG_INFO, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_INFO, func, "%s=%d\n", OPTL_PORT.c_str(), port);
     srmlogit(STORM_LOG_INFO, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), logfile);
