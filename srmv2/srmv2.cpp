@@ -223,7 +223,7 @@ static int srm_main(struct main_args *main_args) {
     bool debugMode = configuration.requestedDebug();
     int debuglevel = configuration.getDebugLevel();
     string debugLevelString = configuration.getDebugLevelString();
-    bool checkGridmapfile = configuration.checkGridmapfile();
+    bool checkGridmapfile = configuration.gridmapfileCheckEnabled();
 
     // Run using "user" privileges
     if (runAsUser(user) != 0) {
