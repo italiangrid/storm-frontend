@@ -348,7 +348,7 @@ static int srm_main(struct main_args *main_args) {
     srm_srv_thread_info[nThreads].s = -1;
     srm_srv_thread_info[nThreads].dbfd.idx = -1;
 
-    srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully startedas...\n");
+    srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully started...\n");
 
     /******************************* main loop ******************************/
     struct soap *tsoap;
