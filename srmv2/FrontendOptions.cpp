@@ -128,7 +128,8 @@ void FrontendOptions::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
 
-    checkGridmapfile = vm[OPTL_CHECK_GRIDMAPFILE].as<bool> ();
+    disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
+    disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
 
 }
 
@@ -148,8 +149,12 @@ bool FrontendOptions::foundConfigurationFile() {
     return configurationFileFound;
 }
 
-bool FrontendOptions::gridmapfileCheckEnabled() {
-    return checkGridmapfile;
+bool FrontendOptions::mappingDisabled() {
+    return disableMapping;
+}
+
+bool FrontendOptions::vomsCheckDisabled() {
+    return disableVOMSCheck;
 }
 
 int FrontendOptions::getDebugLevel() {
@@ -231,7 +236,8 @@ po::options_description FrontendOptions::defineConfigFileOptions() {
         (string(OPTL_DB_HOST).c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
         (string(OPTL_DB_USER).c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
         (string(OPTL_DB_USER_PASSWORD).c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
-        (string(OPTL_CHECK_GRIDMAPFILE).c_str(), po::value<bool>()->default_value(true), OPT_CHECK_GRIDMAPFILE_DESCRIPTION);
+        (string(OPTL_DISABLE_MAPPING).c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
+        (string(OPTL_DISABLE_VOMSCHECK).c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
 
     return configurationFileOptions;
 }

@@ -40,8 +40,11 @@ static const string OPT_CONFIG_FILE = "c";
 static const string OPTL_CONFIG_FILE = "config-file";
 static const char* OPT_CONFIG_FILE_DESCRIPTION = "Configuration file";
 
-static const string OPTL_CHECK_GRIDMAPFILE = "check.gridmapfile";
-static const char* OPT_CHECK_GRIDMAPFILE_DESCRIPTION = "Enable/Disable gridmapfile check.";
+static const string OPTL_DISABLE_MAPPING = "security.disable.mapping";
+static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
+
+static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
+static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
 static const string OPT_LOG_FILE = "l";
 static const string OPTL_LOG_FILE = "logfile";
@@ -118,7 +121,8 @@ public:
     bool requestedVersion();
     bool requestedDebug();
     bool foundConfigurationFile();
-    bool gridmapfileCheckEnabled();
+    bool mappingDisabled();
+    bool vomsCheckDisabled();
     int getDebugLevel();
     int getNumThreads();
     int getPort();
@@ -148,7 +152,8 @@ private:
     bool versionRequested;
     bool debugMode;
     bool configurationFileFound;
-    bool checkGridmapfile;
+    bool disableMapping;
+    bool disableVOMSCheck;
     int numberOfThreads;
     int debugLevel;
     int port;
