@@ -48,8 +48,6 @@ struct srm_srv_thread_info srm_srv_thread_info[SRMV2_NBTHREADS_MAX];
 char db_pwd[33];
 char db_srvr[33];
 char db_user[33];
-char localdomain[ST_MAXHOSTNAMELEN+1];
-char localhost[ST_MAXHOSTNAMELEN+1];
 
 char* SRMV2_PROXY_DIR;
 char* xmlrpc_endpoint;
@@ -252,13 +250,6 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
     srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
-
-
-    gethostname(localhost, ST_MAXHOSTNAMELEN+1);
-    if (strchr(localhost, '.') == NULL) {
-        strcat(localhost, ".");
-        strcat(localhost, localdomain);
-    }
 
     /* Get list of supported protocols */
     if ((nb_supported_protocols = get_supported_protocols(&supported_protocols)) < 0) {
