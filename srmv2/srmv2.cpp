@@ -246,10 +246,12 @@ static int srm_main(struct main_args *main_args) {
     db_srvr = strdup(dbHost.c_str());
 
     // Initialize the loging system
-    if (debugMode)
+    if (debugMode) {
         srmlogit_init(NULL); // i.e. log to stderr
-    else
+        log_file.assign("stderr"); // Just because it's printed in the logs, see below.
+    } else {
         srmlogit_init(log_file.c_str());
+    }
 
     // WSDL file
     wsdl_file = strdup(wsdl_file_path.c_str());
@@ -267,7 +269,7 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_NONE, func, "---------------------- Configuration ------------------\n");
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), port);
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), logfile);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), log_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
