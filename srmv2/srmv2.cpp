@@ -227,7 +227,16 @@ static int srm_main(struct main_args *main_args) {
 
     // Run using "user" privileges
     if (runAsUser(user) != 0) {
-        fprintf(stderr, "Error: cannot run as user \"%s\"", user.c_str());
+        fprintf(stderr, "Error: cannot run as user \"%s\".\n", user.c_str());
+        return 1;
+    }
+
+    // Proxy directory
+    SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
+
+    // Proxy User
+    if (setProxyUserGlobalVariables(proxy_user) != 0) {
+        fprintf(stderr, "Error: request invalid user \"%s\" for proxy dir.\n", proxy_user.c_str());
         return 1;
     }
 
@@ -237,9 +246,6 @@ static int srm_main(struct main_args *main_args) {
     strcpy(db_user, dbUser.c_str());
     strcpy(db_pwd, dbUserPasswd.c_str());
 
-    // Proxy directory
-    SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
-
     // Logfile
     if (debugMode)
         logfile = NULL;  // i.e. log to stderr
@@ -248,12 +254,6 @@ static int srm_main(struct main_args *main_args) {
 
     // Initialize the loging system
     srmlogit_init();
-
-    // Proxy User
-    if (setProxyUserGlobalVariables(proxy_user) != 0) {
-        fprintf(stderr, "Error: request invalid user \"%s\" for proxy dir", proxy_user.c_str());
-        return 1;
-    }
 
     // WSDL file
     wsdl_file = strdup(wsdl_file_path.c_str());
