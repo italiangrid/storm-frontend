@@ -45,9 +45,9 @@ extern "C" {
 #define NAME "StoRM SRM v2.2"
 
 struct srm_srv_thread_info srm_srv_thread_info[SRMV2_NBTHREADS_MAX];
-char db_pwd[33];
-char db_srvr[33];
-char db_user[33];
+char *db_pwd;
+char *db_srvr;
+char *db_user;
 
 char* SRMV2_PROXY_DIR;
 char* xmlrpc_endpoint;
@@ -242,9 +242,9 @@ static int srm_main(struct main_args *main_args) {
 
     // Setting global variables... TODO: do not use global variables
     // DB stuff
-    strcpy(db_srvr, dbHost.c_str());
-    strcpy(db_user, dbUser.c_str());
-    strcpy(db_pwd, dbUserPasswd.c_str());
+    db_user = strdup(dbUser.c_str());
+    db_pwd = strdup(dbUserPasswd.c_str());
+    db_srvr = strdup(dbHost.c_str());
 
     // Logfile
     if (debugMode)

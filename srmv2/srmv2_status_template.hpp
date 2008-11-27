@@ -24,12 +24,6 @@
 
 using namespace std;
 
-
-extern char db_user[33];
-extern char db_srvr[33];
-extern char db_pwd[33];
-
-
 template<typename soap_response_t>
 int __process_request_status (struct soap * soap,
                               const char * const r_token,

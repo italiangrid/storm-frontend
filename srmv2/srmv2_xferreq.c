@@ -18,10 +18,6 @@
 
 #include <cgsi_plugin.h>
 
-extern char db_pwd[33];
-extern char db_srvr[33];
-extern char db_user[33];
-extern char localdomain[ST_MAXHOSTNAMELEN+1];
 extern int nb_supported_protocols;
 extern char **supported_protocols;
 

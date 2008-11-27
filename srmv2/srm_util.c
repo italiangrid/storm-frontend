@@ -10,10 +10,6 @@
 #include "srm_server.h"
 #include "stdsoap2.h"
 
-extern char db_pwd[33];
-extern char db_srvr[33];
-extern char db_user[33];
-
 int get_supported_protocols(char ***sup_proto) {
     int nb_supported_protocols = 0;
     int c;

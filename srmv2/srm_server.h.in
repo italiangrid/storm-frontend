@@ -22,9 +22,9 @@
 extern char *SRMV2_PROXY_DIR;
 extern uid_t proxy_uid;
 extern gid_t proxy_gid;
-extern char db_pwd[33];
-extern char db_srvr[33];
-extern char db_user[33];
+extern char *db_pwd;
+extern char *db_srvr;
+extern char *db_user;
 
 
 #define SRMV2_PROXY_DEFAULT_DIR "@prefix@/var/proxies/"
