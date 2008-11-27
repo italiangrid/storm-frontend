@@ -313,7 +313,7 @@ static int srm_main(struct main_args *main_args) {
     int flags;
 #if defined(GSI_PLUGINS)
     flags = CGSI_OPT_DELEG_FLAG;
-    if (!chcheckGridmapfile) {
+    if (!checkGridmapfile) {
         flags &&= CGSI_OPT_DISABLE_NAME_CHECK;
     }
     soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
