@@ -94,26 +94,31 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
 #else
     tm = localtime(&current_time);
 #endif
+
     Cglobals_getTid(&Tid);
-    if (Tid < 0) /* main thread */
-        sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon + 1, tm->tm_mday,
-                tm->tm_hour, tm->tm_min, tm->tm_sec, jid, func);
-    else
-        sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d,%d %s: ", tm->tm_mon + 1, tm->tm_mday,
-                tm->tm_hour, tm->tm_min, tm->tm_sec, jid, Tid, func);
-    prefix_msg_len = strlen(prtbuf);
+
+    if (Tid < 0) { // main thread
+        prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon + 1,
+                tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, jid, func);
+    } else {
+        prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d,%d %s: ", tm->tm_mon + 1,
+                tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, jid, Tid, func);
+    }
+
     max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
     desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
-    // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
-    if (desired_buf_len >= max_char_to_write)
-        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
     va_end(args);
 
+    // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
+    if (desired_buf_len >= max_char_to_write) {
+        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+    }
+
     pthread_mutex_lock(&log_mutex);
-    if (log_fd == NULL)
-        log_fd = stderr;
+
     fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
     fflush(log_fd);
+
     pthread_mutex_unlock(&log_mutex);
 
     errno = save_errno;
