@@ -52,7 +52,6 @@ char *db_user;
 char* SRMV2_PROXY_DIR;
 char* xmlrpc_endpoint;
 char* wsdl_file;
-char* logfile;
 char** supported_protocols;
 
 int nb_supported_protocols;
@@ -246,14 +245,11 @@ static int srm_main(struct main_args *main_args) {
     db_pwd = strdup(dbUserPasswd.c_str());
     db_srvr = strdup(dbHost.c_str());
 
-    // Logfile
-    if (debugMode)
-        logfile = NULL;  // i.e. log to stderr
-    else
-        logfile = strdup(log_file.c_str());
-
     // Initialize the loging system
-    srmlogit_init();
+    if (debugMode)
+        srmlogit_init(NULL); // i.e. log to stderr
+    else
+        srmlogit_init(log_file.c_str());
 
     // WSDL file
     wsdl_file = strdup(wsdl_file_path.c_str());
