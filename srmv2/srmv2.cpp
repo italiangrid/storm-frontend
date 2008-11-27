@@ -223,6 +223,7 @@ static int srm_main(struct main_args *main_args) {
     bool debugMode = configuration.requestedDebug();
     int debuglevel = configuration.getDebugLevel();
     string debugLevelString = configuration.getDebugLevelString();
+    bool checkGridmapfile = configuration.checkGridmapfile();
 
     // Run using "user" privileges
     if (runAsUser(user) != 0) {
@@ -278,6 +279,10 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
+    if (checkGridmapfile)
+        srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_CHECK_GRIDMAPFILE.c_str());
+    else
+        srmlogit(STORM_LOG_NONE, func, "%s=false\n", OPTL_CHECK_GRIDMAPFILE.c_str());
     srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
 
     /* Get list of supported protocols */
@@ -303,8 +308,6 @@ static int srm_main(struct main_args *main_args) {
 #endif
 
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
-    //soap_data = (struct soap *) calloc(1, sizeof(struct soap));
-    //soap_init2(soap_data, SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
     soap_data->accept_timeout = 0;
     int flags;

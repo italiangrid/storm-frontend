@@ -128,6 +128,8 @@ void FrontendOptions::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
 
+    checkGridmapfile = vm[OPTL_CHECK_GRIDMAPFILE].as<bool> ();
+
 }
 
 bool FrontendOptions::requestedHelp() {
@@ -144,6 +146,10 @@ bool FrontendOptions::requestedDebug() {
 
 bool FrontendOptions::foundConfigurationFile() {
     return configurationFileFound;
+}
+
+bool FrontendOptions::gridmapfileCheckEnabled() {
+    return checkGridmapfile;
 }
 
 int FrontendOptions::getDebugLevel() {
@@ -224,7 +230,8 @@ po::options_description FrontendOptions::defineConfigFileOptions() {
         (string(OPTL_DEBUG_LEVEL + "," + OPT_DEBUG_LEVEL).c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
         (string(OPTL_DB_HOST).c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
         (string(OPTL_DB_USER).c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
-        (string(OPTL_DB_USER_PASSWORD).c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION);
+        (string(OPTL_DB_USER_PASSWORD).c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
+        (string(OPTL_CHECK_GRIDMAPFILE).c_str(), po::value<bool>()->default_value(true), OPT_CHECK_GRIDMAPFILE_DESCRIPTION);
 
     return configurationFileOptions;
 }

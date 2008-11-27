@@ -40,60 +40,62 @@ static const string OPT_CONFIG_FILE = "c";
 static const string OPTL_CONFIG_FILE = "config-file";
 static const char* OPT_CONFIG_FILE_DESCRIPTION = "Configuration file";
 
+static const string OPTL_CHECK_GRIDMAPFILE = "check.gridmapfile";
+static const char* OPT_CHECK_GRIDMAPFILE_DESCRIPTION = "Enable/Disable gridmapfile check.";
+
 static const string OPT_LOG_FILE = "l";
 static const string OPTL_LOG_FILE = "logfile";
 static const char* OPT_LOG_FILE_DESCRIPTION = "Use <arg> as log file";
 
 static const string OPT_NUM_THREADS = "t";
-static const string OPTL_NUM_THREADS = "num-threads";
+static const string OPTL_NUM_THREADS = "threads.number";
 static const char* OPT_NUM_THREADS_DESCRIPTION = "Use <arg> threads";
 
 static const string OPT_PROXY_DIR = "P";
-static const string OPTL_PROXY_DIR = "proxy-dir";
+static const string OPTL_PROXY_DIR = "proxy.dir";
 static const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
+
+static const string OPT_PROXY_USER = "U";
+static const string OPTL_PROXY_USER = "proxy.user";
+static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
 
 static const string OPT_PORT = "p";
 static const string OPTL_PORT = "port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPTL_XMLRPC_HOST = "xmlrpc-host";
+static const string OPTL_XMLRPC_HOST = "xmlrpc.host";
 static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
 
-static const string OPTL_XMLRPC_PORT = "xmlrpc-port";
+static const string OPTL_XMLRPC_PORT = "xmlrpc.port";
 static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
 
-static const string OPTL_XMLRPC_PATH = "xmlrpc-path";
+static const string OPTL_XMLRPC_PATH = "xmlrpc.path";
 static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
-
-static const string OPT_PROXY_USER = "U";
-static const string OPTL_PROXY_USER = "proxy-user";
-static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
 
 static const string OPT_USER = "u";
 static const string OPTL_USER = "user";
 static const char* OPT_USER_DESCRIPTION = "Run the frontend as user <arg>";
 
 static const string OPT_WSDL_FILE = "w";
-static const string OPTL_WSDL_FILE = "wsdl-file";
+static const string OPTL_WSDL_FILE = "wsdl.file";
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
 
 static const string OPT_DEBUG_LEVEL = "v";
-static const string OPTL_DEBUG_LEVEL = "debug-level";
+static const string OPTL_DEBUG_LEVEL = "debug.level";
 static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
 
 static const string OPT_DEBUG = "d";
 static const string OPTL_DEBUG = "debug-mode";
 static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
 
-static const string OPTL_DB_HOST = "db-host";
+static const string OPTL_DB_HOST = "db.host";
 static const char* OPT_DB_HOST_DESCRIPTION = "Machine hosting the DB";
 
-static const string OPTL_DB_USER = "db-user";
+static const string OPTL_DB_USER = "db.user";
 static const char* OPT_DB_USER_DESCRIPTION = "Database user";
 
-static const string OPTL_DB_USER_PASSWORD = "db-passwd";
+static const string OPTL_DB_USER_PASSWORD = "db.passwd";
 static const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
-
 
 // A helper function to simplify printing options stuff
 template<class T>
@@ -116,6 +118,7 @@ public:
     bool requestedVersion();
     bool requestedDebug();
     bool foundConfigurationFile();
+    bool gridmapfileCheckEnabled();
     int getDebugLevel();
     int getNumThreads();
     int getPort();
@@ -145,6 +148,7 @@ private:
     bool versionRequested;
     bool debugMode;
     bool configurationFileFound;
+    bool checkGridmapfile;
     int numberOfThreads;
     int debugLevel;
     int port;
