@@ -314,7 +314,7 @@ static int srm_main(struct main_args *main_args) {
 #if defined(GSI_PLUGINS)
     flags = CGSI_OPT_DELEG_FLAG;
     if (!checkGridmapfile) {
-        flags |= CGSI_OPT_DISABLE_NAME_CHECK;
+        flags |= CGSI_OPT_DISABLE_MAPPING | CGSI_OPT_DISABLE_VOMS_CHECK; 
         srmlogit(STORM_LOG_NONE, func, "Name check disabled\n");
     }
     soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
