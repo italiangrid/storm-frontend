@@ -3,7 +3,8 @@ threads.number = 5
 port = 8440
 logfile = storm-frontend.log
 debug.level = DEBUG2
-#check.gridmapfile = false
+security.disable.mapping = false
+security.disable.vomscheck = false
 
 # XMLRPC server information
 xmlrpc.host = devrb.cnaf.infn.it
