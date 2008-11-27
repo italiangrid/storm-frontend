@@ -320,11 +320,11 @@ static int srm_main(struct main_args *main_args) {
     int flags;
 #if defined(GSI_PLUGINS)
     flags = CGSI_OPT_DELEG_FLAG;
-    if (!disableMapping) {
+    if (disableMapping) {
         flags |= CGSI_OPT_DISABLE_MAPPING;
         srmlogit(STORM_LOG_NONE, func, "Mapping disabled\n");
     }
-    if (!disableVOMSCheck) {
+    if (disableVOMSCheck) {
             flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
             srmlogit(STORM_LOG_NONE, func, "VOMS check disabled\n");
         }
