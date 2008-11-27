@@ -294,33 +294,19 @@ static int srm_main(struct main_args *main_args) {
     }
 
     if (! debugMode) { // fork and leave the daemon in background
-        if (Cinitdaemon("srmv2", NULL) < 0)
+        if (Cinitdaemon("srmv2", NULL) < 0) {
             exit(SYERR);
+        }
     }
-
-    /* Create a pool of threads */
-    int ipool;
-    if ((ipool = Cpool_create (nThreads, NULL)) < 0) {
-        srmlogit(STORM_LOG_DEBUG, func, SRM02, "Cpool_create", sstrerror(serrno));
-        return (SYERR);
-    }
-
-    int i;
-    for (i = 0; i < nThreads; i++) {
-        srm_srv_thread_info[i].s = -1;
-        srm_srv_thread_info[i].dbfd.idx = i;
-    }
-    srm_srv_thread_info[nThreads].s = -1;
-    srm_srv_thread_info[nThreads].dbfd.idx = -1;
 
 #if ! defined(_WIN32)
     signal(SIGPIPE, SIG_IGN);
     signal(SIGXFSZ, SIG_IGN);
 #endif
 
-    struct soap *soap_data;
-    soap_data = (struct soap *) calloc(1, sizeof(struct soap));
-    soap_init2(soap_data, SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
+    struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
+    //soap_data = (struct soap *) calloc(1, sizeof(struct soap));
+    //soap_init2(soap_data, SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
     soap_data->accept_timeout = 0;
     int flags;
@@ -330,24 +316,39 @@ static int srm_main(struct main_args *main_args) {
 #endif
     soap_data->bind_flags |= SO_REUSEADDR;
 
-    if (soap_bind(soap_data, NULL, port, BACKLOG) < 0) {
-        srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_bind", strerror(soap_data->errnum));
+    if (!soap_valid_socket(soap_bind(soap_data, NULL, port, BACKLOG))) {
+        soap_print_fault(soap_data, stderr);
         soap_done(soap_data);
         free(soap_data);
-        return (SYERR);
+        exit(SYERR);
     }
 
-    /* supporting HTTP GET in order to reply the wsdl */
+    // supporting HTTP GET in order to reply the wsdl
     soap_data->fget = http_get;
 
-    /* Start up our XML-RPC client library. */
+    /* Start up XML-RPC client library. */
     xmlrpc_env env;
     xmlrpc_env_init(&env);
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
-    //die_if_fault_occurred(&env);
     xmlrpc_env_clean(&env);
 
-    /* main loop */
+    /* Create a pool of threads */
+    int ipool;
+    if ((ipool = Cpool_create(nThreads, NULL)) < 0) {
+        srmlogit(STORM_LOG_DEBUG, func, SRM02, "Cpool_create", sstrerror(serrno));
+        exit(SYERR);
+    }
+
+    // Initialize structure srm_srv_thread_info
+    int i;
+    for (i = 0; i < nThreads; i++) {
+        srm_srv_thread_info[i].s = -1;
+        srm_srv_thread_info[i].dbfd.idx = i;
+    }
+    srm_srv_thread_info[nThreads].s = -1;
+    srm_srv_thread_info[nThreads].dbfd.idx = -1;
+
+    /******************************* main loop ******************************/
     struct soap *tsoap;
     int thread_index;
 
@@ -355,24 +356,24 @@ static int srm_main(struct main_args *main_args) {
         if (soap_accept(soap_data) < 0) {
             srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror(soap_data->errnum));
             soap_done(soap_data);
-            return (1);
+            return 1;
         }
         if ((tsoap = soap_copy(soap_data)) == NULL) {
             srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_copy", strerror(ENOMEM));
             soap_done(soap_data);
             free(soap_data);
-            return (1);
+            return 1;
         }
         if ((thread_index = Cpool_next_index (ipool)) < 0) {
             srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_next_index", sstrerror(serrno));
-            return (SYERR);
+            return SYERR;
         }
         tsoap->user = &srm_srv_thread_info[thread_index];
         if (Cpool_assign (ipool, &process_request, tsoap, 1) < 0) {
             free(tsoap);
             srm_srv_thread_info[thread_index].s = -1;
             srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_assign", sstrerror(serrno));
-            return (SYERR);
+            return SYERR;
         }
     }
     soap_done(soap_data);
