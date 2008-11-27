@@ -127,6 +127,59 @@ static int http_get(struct soap *soap) {
     return SOAP_OK;
 }
 
+int runAsUser(string& user) {
+
+    struct passwd *pwd;
+
+    if (user.empty()) {
+
+        // Get current user name
+        pwd = getpwuid(getuid());
+        user.assign(pwd->pw_name);
+
+    } else {
+
+        // Get information on the requested user
+        pwd = getpwnam(user.c_str());
+        if (NULL == pwd) { // error
+            return CONFERR;
+        }
+
+        if (setgid(pwd->pw_uid) || setuid(pwd->pw_gid)) {
+            return CONFERR;
+        }
+
+    }
+
+    return 0;
+}
+
+int setProxyUserGlobalVariables(string& proxy_user) {
+
+    struct passwd *pwd;
+
+    string proxy_user_name;
+    if (proxy_user.empty()) {
+
+        // Get current user name
+        pwd = getpwuid(getuid());
+        proxy_user.assign(pwd->pw_name);
+
+    } else {
+
+        // Get information on the requested user
+        pwd = getpwnam(proxy_user.c_str());
+        if (NULL == pwd) { // error
+            return CONFERR;
+        }
+
+        proxy_uid = pwd->pw_uid;
+        proxy_gid = pwd->pw_gid;
+    }
+
+    return 0;
+}
+
 static int srm_main(struct main_args *main_args) {
     char *func = "srm_main";
     void *process_request(void *);
@@ -172,11 +225,20 @@ static int srm_main(struct main_args *main_args) {
     int debuglevel = configuration.getDebugLevel();
     string debugLevelString = configuration.getDebugLevelString();
 
+    // Run using "user" privileges
+    if (runAsUser(user) != 0) {
+        fprintf(stderr, "Error: cannot run as user \"%s\"", user.c_str());
+        return 1;
+    }
+
     // Setting global variables... TODO: do not use global variables
     // DB stuff
     strcpy(db_srvr, dbHost.c_str());
     strcpy(db_user, dbUser.c_str());
     strcpy(db_pwd, dbUserPasswd.c_str());
+
+    // Proxy directory
+    SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
 
     // Logfile
     if (debugMode)
@@ -187,41 +249,10 @@ static int srm_main(struct main_args *main_args) {
     // Initialize the loging system
     srmlogit_init();
 
-    // Proxy directory
-    SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
-
-    // User
-    string user_name;
-    struct passwd *pwd;
-    gid_t drop_gid = 0;
-    uid_t drop_uid = 0;
-    if (! user.empty()) {
-        pwd = getpwnam(user.c_str());
-        if (NULL == pwd) { // error
-            fprintf(stderr, "Invalid user: %s\n", user.c_str());
-            return CONFERR;
-        }
-        drop_gid = pwd->pw_gid;
-        drop_uid = pwd->pw_uid;
-        user_name = user;
-    } else {
-        pwd = getpwuid(getuid());
-        user_name = string(pwd->pw_name);
-    }
-
     // Proxy User
-    string proxy_user_name;
-    if (! proxy_user.empty()) {
-        pwd = getpwnam(proxy_user.c_str());
-        if (NULL == pwd) { // error
-            fprintf(stderr, "Invalid user for proxy: %s\n", proxy_user.c_str());
-            return CONFERR;
-        }
-        proxy_uid = pwd->pw_uid;
-        proxy_gid = pwd->pw_gid;
-        proxy_user_name = proxy_user;
-    } else {
-        proxy_user_name = user_name;
+    if (setProxyUserGlobalVariables(proxy_user) != 0) {
+        fprintf(stderr, "Error: request invalid user \"%s\" for proxy dir", proxy_user.c_str());
+        return 1;
     }
 
     // WSDL file
@@ -236,7 +267,7 @@ static int srm_main(struct main_args *main_args) {
 
     srmlogit_set_debuglevel(debuglevel);
 
-    srmlogit(STORM_LOG_NONE, func, "Starting StoRM frontend as user: %s\n", user_name.c_str());
+    srmlogit(STORM_LOG_NONE, func, "Starting StoRM frontend as user: %s\n", user.c_str());
     srmlogit(STORM_LOG_NONE, func, "---------------------- Configuration ------------------\n");
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), port);
@@ -244,7 +275,7 @@ static int srm_main(struct main_args *main_args) {
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user_name.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
@@ -317,19 +348,6 @@ static int srm_main(struct main_args *main_args) {
     xmlrpc_env_clean(&env);
 
     /* main loop */
-    if (drop_uid != 0 || drop_gid != 0) {
-
-        if (setgid(drop_gid) || setuid(drop_uid)) {
-            srmlogit(STORM_LOG_ERROR, func, "Unable to drop privileges to %d,%d. Exiting.\n",
-                    drop_uid, drop_gid);
-            return 1;
-        }
-        srmlogit(STORM_LOG_INFO, func, "StoRM FE started as (uid,gid) = (%d,%d)\n", drop_uid,
-                drop_gid);
-    } else {
-        srmlogit(STORM_LOG_INFO, func, "StoRM FE started.\n");
-    }
-
     struct soap *tsoap;
     int thread_index;
 
