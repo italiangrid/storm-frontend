@@ -36,14 +36,11 @@ package that implements an SRM interface to a GPFS parallel
 filesystem.
 
 %prep
-%setup -n @PACKAGE@-%{version} 
+%setup -n @PACKAGE@-%{version}
 
 %build
-source frontend-setup.sh
-./autogen.sh
-./configure --prefix=%{prefix} --disable-all --enable-fe-server --enable-gsoapgsi --enable-globus=yes --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-gsoapgsi-dir=%{gsoapgsidir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
-
-gmake
+./configure --prefix=%{prefix} --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-gsoapgsi-dir=%{gsoapgsidir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
+make
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
