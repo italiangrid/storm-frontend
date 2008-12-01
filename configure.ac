@@ -9,26 +9,21 @@
 #*
 #*********************************************************************
 
-dnl =============================================================
-dnl Process this file with autoconf to produce a configure script
-dnl =============================================================
 AC_INIT([storm-frontend], [1.4.0], [luca.magnoni@cnaf.infn.it])
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([src/frontend/srmv2.cpp])
 AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE()
-AC_PREFIX_DEFAULT(/opt/storm/frontend)
+
+# Release number
+AC_SUBST([STORM_RELEASE], [00])
+
+# Installation prefix
+AC_PREFIX_DEFAULT([/opt/storm/frontend])
 
 if test "x${prefix}" = "xNONE"; then
   prefix=$ac_default_prefix
   ac_configure_args="$ac_configure_args --prefix $prefix"
-fi
-
-if test -z $STORMPATCHLVL 
-then
-	STORMPATCHLVL=00
-else
-	STORMPATCHLVL=$STORMPATCHLVL
 fi
 
 AC_PROG_CXX
@@ -282,7 +277,6 @@ PREFIX=$prefix
 dnl =========================
 dnl Define required variables
 dnl =========================
-AC_SUBST(STORMPATCHLVL)
 AC_SUBST(RPM_DIR)
 AC_SUBST(GLOBUS_LOCATION)
 AC_SUBST(GLOBUS_FLAVOR)
