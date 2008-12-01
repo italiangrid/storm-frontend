@@ -16,7 +16,7 @@ AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE()
 
 # Release number
-AC_SUBST([STORM_RELEASE], [00])
+AC_SUBST([STORM_RELEASE_NUMBER], [00])
 
 # Installation prefix
 AC_PREFIX_DEFAULT([/opt/storm/frontend])
