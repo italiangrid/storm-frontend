@@ -1,5 +1,4 @@
 source frontend-setup.sh
-./autogen.sh
+autoreconf --install --force
 ./configure CFLAGS=-g CXXFLAGS=-g
-make clean
 make
