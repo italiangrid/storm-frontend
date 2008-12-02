@@ -54,13 +54,14 @@ AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
 # ========================================================================
 # Globus libraries
 # ========================================================================
-AC_SUBST([GLOBUS_LOCATION], ["/opt/globus"])
-AC_SUBST([GLOBUS_FLAVOR], ["gcc32dbgpthr"])
-AC_SUBST([GLOBUS_INCLUDES], [" -I/opt/globus/include/gcc32dbgpthr " ])
+#AC_SUBST([GLOBUS_LOCATION], ["/opt/globus"])
+#AC_SUBST([GLOBUS_FLAVOR], ["gcc32dbgpthr"])
+#AC_SUBST([GLOBUS_INCLUDES], [" -I/opt/globus/include/gcc32dbgpthr " ])
 #AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gssapi_gsi_gcc32dbgpthr -lglobus_gss_assist_gcc32dbgpthr " ])
-AC_SUBST([GLOBUS_PKG_LIBS], ["" ])
+#AC_SUBST([GLOBUS_PKG_LIBS], ["" ])
 
 AC_SUBST([SSL_AND_CRYPTO], [" -L/opt/globus/lib -lssl_gcc32dbgpthr -lcrypto_gcc32dbgpthr "])
+#AC_SUBST([SSL_AND_CRYPTO], [""])
 
 # ========================================================================
 # GSOAP
@@ -82,7 +83,7 @@ fi
 AC_SUBST([GSOAPGSI_DIR], [])
 AC_SUBST([GSOAPGSI_CFLAGS], [" -DGSI_PLUGINS "])
 AC_SUBST([GSOAPGSI_LDFLAGS], [" -L$GSOAPGSI_DIR/lib "])
-AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_$GLOBUS_FLAVOR "])
+AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_gcc32dbgpthr "])
 
 # ========================================================================
 # MySQL 
