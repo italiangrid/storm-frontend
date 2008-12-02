@@ -28,6 +28,14 @@ fi
 
 AC_SUBST([PREFIX], [$prefix])
 
+DEFAULT_STORM_DIR=/home/storm
+DEFAULT_GSOAP_DIR=/usr/local/gsoap-2.7/bin
+DEFAULT_XMLRPC_C_DIR=$DEFAULT_STORM_DIR/xmlrpc-c_new
+DEFAULT_CURL_LOCATION=$DEFAULT_STORM_DIR/curl_new
+DEFAULT_GLITE_LOCATION=/opt/glite
+DEFAULT_MYSQL_DIR=/usr
+DEFAULT_RPM_DIR=`pwd`
+
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 
@@ -40,13 +48,13 @@ AC_CHECK_FUNCS(getenv)
 # StoRM directory
 # ========================================================================
 AC_MSG_CHECKING([for StoRM directory])
-if test ! \( -d $STORM_DIR \); then
-    STORM_DIR=/home/storm
+if test -z $STORM_DIR; then
+    STORM_DIR=$DEFAULT_STORM_DIR
 fi
 if test ! \( -d $STORM_DIR \); then
-    AC_MSG_ERROR([no such directory "${STORM_DIR}"])
+    AC_MSG_ERROR([no such directory "$STORM_DIR"])
 fi
-AC_MSG_RESULT(["${STORM_DIR}" found])
+AC_MSG_RESULT(["$STORM_DIR" found])
 
 AC_SUBST([STORM_DIR])
 AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
@@ -54,70 +62,70 @@ AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
 # ========================================================================
 # Globus libraries
 # ========================================================================
-#AC_SUBST([GLOBUS_LOCATION], ["/opt/globus"])
-#AC_SUBST([GLOBUS_FLAVOR], ["gcc32dbgpthr"])
-#AC_SUBST([GLOBUS_INCLUDES], [" -I/opt/globus/include/gcc32dbgpthr " ])
-#AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gssapi_gsi_gcc32dbgpthr -lglobus_gss_assist_gcc32dbgpthr " ])
-#AC_SUBST([GLOBUS_PKG_LIBS], ["" ])
-
 AC_SUBST([SSL_AND_CRYPTO], [" -L/opt/globus/lib -lssl_gcc32dbgpthr -lcrypto_gcc32dbgpthr "])
-#AC_SUBST([SSL_AND_CRYPTO], [""])
 
 # ========================================================================
 # GSOAP
 # ========================================================================
-AC_MSG_CHECKING([for gsoap directory])
-AC_ARG_WITH([gsoap-dir], [AS_HELP_STRING([--with-gsoap-dir], [gSOAP directory])],
-            [gsoap_dir="$withval"], [gsoap_dir="$GSOAP_DIR"])
-if test -d "$gsoap_dir" ; then
-    AC_MSG_RESULT([$gsoap_dir found])
-    AC_SUBST([GSOAP_DIR], [$gsoap_dir])
-    AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated])
-else
-    AC_MSG_ERROR([no such directory $gsoap_dir])
+AC_MSG_CHECKING([for gSOAP directory])
+if test -z $GSOAP_DIR; then
+    GSOAP_DIR=$DEFAULT_GSOAP_DIR
 fi
+if test ! \( -d $GSOAP_DIR \); then
+    AC_MSG_ERROR([no such directory "$GSOAP_DIR"])
+fi
+AC_MSG_RESULT(["$GSOAP_DIR" found])
+
+AC_SUBST([GSOAP_DIR])
+AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated])
 
 # ========================================================================
 # gSOAP GSI plugin
 # ========================================================================
 AC_SUBST([GSOAPGSI_DIR], [])
 AC_SUBST([GSOAPGSI_CFLAGS], [" -DGSI_PLUGINS "])
-AC_SUBST([GSOAPGSI_LDFLAGS], [" -L$GSOAPGSI_DIR/lib "])
 AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_gcc32dbgpthr "])
 
 # ========================================================================
 # MySQL 
 # ========================================================================
 AC_MSG_CHECKING([for MySQL directory])
-AC_ARG_WITH([mysql-dir], [AS_HELP_STRING([ --with-mysql-dir], [MySQL directory])],
-            [mysql_dir="$withval"], [mysql_dir="$MYSQL_DIR"])
-if test -d "$mysql_dir" ; then
-    AC_MSG_RESULT(["$mysql_dir" found])
-    AC_SUBST([MYSQL_DIR], [$mysql_dir])
-    AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR/include/mysql -DUSE_MYSQL" ])
-    AC_SUBST([MYSQL_LDFLAGS], [" -L$MYSQL_DIR/lib/mysql" ])
-    AC_SUBST([MYSQL_LDADD], [-lmysqlclient_r])
-else
-    AC_MSG_RESULT([no such directory "$mysql_dir"])
+if test -z $MYSQL_DIR; then
+    MYSQL_DIR=$DEFAULT_MYSQL_DIR
 fi
+if test ! \( -d $MYSQL_DIR \); then
+    AC_MSG_ERROR([no such directory "$MYSQL_DIR"])
+fi
+AC_MSG_RESULT(["$MYSQL_DIR" found])
+
+AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR/include/mysql -DUSE_MYSQL" ])
+AC_SUBST([MYSQL_LDFLAGS], [" -L$MYSQL_DIR/lib/mysql" ])
+AC_SUBST([MYSQL_LDADD], [-lmysqlclient_r])
 
 # ========================================================================
 # gLite
 # ========================================================================
-AC_SUBST([GLITE_LOCATION], ["/opt/glite"])
-AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION_PATH/lib "])
+AC_MSG_CHECKING([gLite directory])
+if test -z $GLITE_LOCATION; then
+    GLITE_LOCATION=$DEFAULT_GLITE_LOCATION
+fi
+if test ! \( -d $GLITE_LOCATION \); then
+    AC_MSG_ERROR([no such directory "$GLITE_LOCATION"])
+fi
+AC_MSG_RESULT(["$GLITE_LOCATION" found])
+AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION/lib "])
 
 # ========================================================================
 # XMLRPC-C
 # ========================================================================
 AC_MSG_CHECKING([for XMLRPC-C directory])
 if test -z $XMLRPC_C_DIR; then
-    XMLRPC_C_DIR=/home/storm/xmlrpc-c_new
+    XMLRPC_C_DIR=$DEFAULT_XMLRPC_C_DIR
 fi
 if test ! \( -d $XMLRPC_C_DIR \); then
-    AC_MSG_ERROR([no such directory "${XMLRPC_C_DIR}"])
+    AC_MSG_ERROR([no such directory "$XMLRPC_C_DIR"])
 fi
-AC_MSG_RESULT(["${XMLRPC_C_DIR}" found])
+AC_MSG_RESULT(["$XMLRPC_C_DIR" found])
 
 AC_SUBST([XMLRPC_C_CFLAGS], [" -I$XMLRPC_C_DIR/include "])
 AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/lib"])
@@ -133,12 +141,12 @@ AC_SUBST([XMLRPC_C_LDADD], [""])
 # ========================================================================
 AC_MSG_CHECKING([for Curl directory])
 if test -z $CURL_LOCATION; then
-    CURL_LOCATION=$STORM_DIR/curl_new
+    CURL_LOCATION=$DEFAULT_CURL_LOCATION
 fi
 if test ! \( -d $CURL_LOCATION \); then
-    AC_MSG_ERROR([no such directory "${CURL_LOCATION}"])
+    AC_MSG_ERROR([no such directory "$CURL_LOCATION"])
 fi
-AC_MSG_RESULT(["${CURL_LOCATION}" found])
+AC_MSG_RESULT(["$CURL_LOCATION" found])
 AC_SUBST([CURL_LIB_LOCATION], [$CURL_LOCATION/lib])
 
 # ========================================================================
@@ -146,14 +154,13 @@ AC_SUBST([CURL_LIB_LOCATION], [$CURL_LOCATION/lib])
 # ========================================================================
 AC_MSG_CHECKING([for RPM directory])
 if test -z $RPMD; then
-    RPMD=`pwd`
+    RPMD=$DEFAULT_RPM_DIR
 fi
 if test ! \( -d $RPMD \); then
-    AC_MSG_ERROR([no such directory "${RPMD}"])
+    AC_MSG_ERROR([no such directory "$RPMD"])
 fi
-AC_MSG_RESULT(["${RMPD}" found])
+AC_MSG_RESULT(["$RMPD" found])
 AC_SUBST([RPM_DIR], [$RPMD])
-
 
 AC_CONFIG_HEADERS([config.h])
 

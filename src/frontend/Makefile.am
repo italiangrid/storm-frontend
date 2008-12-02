@@ -31,10 +31,9 @@ sbin_PROGRAMS = storm-frontend
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
 storm_frontend_SOURCES = srmv2.cpp
-storm_frontend_LDFLAGS = -L../db @SSL_AND_CRYPTO@ \
-    @GSOAPGSI_LDFLAGS@ @GLITE_LDFLAGS@ @MYSQL_LDFLAGS@ 
-storm_frontend_LDADD = -lstormfrontend -lstormdb -L/opt/glite/lib -lvomsc @MYSQL_LDADD@ \
-    @XMLRPC_C_LDADD@ @GSOAPGSI_LDFLAGS@ @GSOAPGSI_LDADD@ \
+storm_frontend_LDFLAGS = -L../db @SSL_AND_CRYPTO@ @MYSQL_LDFLAGS@ @GLITE_LDFLAGS@
+storm_frontend_LDADD = -lstormfrontend -lstormdb @GLITE_LDFLAGS@ -lvomsc @MYSQL_LDADD@ \
+    @XMLRPC_C_LDADD@ @GSOAPGSI_LDADD@ \
     -lshift -lz -lm -luuid -lidn -lboost_program_options
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
