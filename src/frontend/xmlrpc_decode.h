@@ -33,6 +33,7 @@
 #define SRM_PARAM_arrayOfSpaceDetails "arrayOfSpaceDetails"
 #define SRM_PARAM_status "status"
 #define SRM_PARAM_details "details"
+#define SRM_PARAM_arrayOfSubPaths "arrayOfSubPaths"
 #define SRM_PARAM_type "type"
 #define SRM_PARAM_fileLocality "fileLocality"
 #define SRM_PARAM_fileStorageType "fileStorageType"

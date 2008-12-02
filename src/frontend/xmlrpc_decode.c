@@ -1091,6 +1091,7 @@ int decode_ArrayOfTMetaDataPathDetail(const char *callerName,
                                       char *fieldName,
                                       xmlrpc_value *xmlStruct)
 {
+    static const char *funcName = "decode_ArrayOfTMetaDataPathDetail";
     struct ns1__TMetaDataPathDetail *repfilep;
     struct ns1__TMetaDataPathDetail **pathDetailArray;
     int i, arraySize, error;
@@ -1378,8 +1379,17 @@ int decode_ArrayOfTMetaDataPathDetail(const char *callerName,
         }
     
         /** OPTIONAL ************** (18) Get arrayOfSubPaths ****************************/
-        //@TODO error = decode_ArrayOfTMetaDataPathDetail(...)
-        repfilep->arrayOfSubPaths = NULL;
+        error = decode_ArrayOfTMetaDataPathDetail(funcName, env_addr, soap, &(repfilep->arrayOfSubPaths), SRM_PARAM_arrayOfSubPaths, xml_arrayItem);
+        if (error) {
+            if (error!= DECODE_ERR_NOT_FOUND) {
+                xmlrpc_DECREF(xml_arrayItem);
+                xmlrpc_DECREF(xml_arrayOfTMetaData);
+                return error;
+            }
+            //Parameter not found, but it's optional so continue execution..
+            xmlrpc_env_clean(env_addr);
+            xmlrpc_env_init(env_addr);
+        }
         
         xmlrpc_DECREF(xml_arrayItem);
     } // for (i=0; i<arraySize; i++)
