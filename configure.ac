@@ -62,8 +62,9 @@ AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
 # ========================================================================
 # Globus libraries
 # ========================================================================
-AC_SUBST([SSL_AND_CRYPTO], [" -L/opt/globus/lib -lssl_gcc32dbgpthr -lcrypto_gcc32dbgpthr "])
-
+#AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_gcc32dbgpthr -lglobus_gssapi_gsi_gcc32dbgpthr -lglobus_gsi_proxy_core_gcc32dbgpthr -lglobus_gsi_credential_gcc32dbgpthr -lglobus_gsi_callback_gcc32dbgpthr -lglobus_oldgaa_gcc32dbgpthr -lglobus_gsi_sysconfig_gcc32dbgpthr -lglobus_gsi_cert_utils_gcc32dbgpthr -lglobus_openssl_gcc32dbgpthr -lglobus_proxy_ssl_gcc32dbgpthr -lglobus_openssl_error_gcc32dbgpthr -lglobus_common_gcc32dbgpthr" ])
+#AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gssapi_gsi_gcc32dbgpthr -lglobus_openssl_gcc32dbgpthr -lglobus_openssl_error_gcc32dbgpthr -lglobus_common_gcc32dbgpthr" ])
+AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_gcc32dbgpthr "])
 # ========================================================================
 # GSOAP
 # ========================================================================
