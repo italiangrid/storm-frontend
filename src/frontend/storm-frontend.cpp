@@ -377,6 +377,7 @@ static int srm_main(struct main_args *main_args) {
                         sizeof(struct srm_srv_thread_info));
         tsoap->user = srm_srv_thread_info;
 
+        srmlogit(STORM_LOG_INFO, func, "Scheduling thread\n");
         tp.schedule(boost::bind(process_request, tsoap));
 
     }
