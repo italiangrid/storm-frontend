@@ -12,12 +12,13 @@ static char sccsid[] = "@(#)$RCSfile$ $Revision$ $Date$ CERN Jean-Philippe Baud"
 #include <sys/types.h>
 #include <time.h>
 #include <stdarg.h>
-#include "Cglobals.h"
 #include "srm_server.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <string.h>
 
+#include <boost/thread.hpp>
+#include <sstream>
 #include "srmlogit.h"
 
 extern int jid;
@@ -95,15 +96,13 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     tm = localtime(&current_time);
 #endif
 
-    Cglobals_getTid(&Tid);
+    ostringstream oss;
 
-    if (Tid < 0) { // main thread
-        prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon + 1,
-                tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, jid, func);
-    } else {
-        prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d,%d %s: ", tm->tm_mon + 1,
-                tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, jid, Tid, func);
-    }
+    oss << boost::this_thread::get_id();
+    const char* tid = (oss.str()).c_str();
+
+    prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon + 1,
+            tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, tid, func);
 
     max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
     desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
