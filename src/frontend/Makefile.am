@@ -24,12 +24,6 @@ INCLUDES = -I$(top_srcdir)/src/db \
     @MYSQL_CFLAGS@
 
 # xmlrpc-c and curl are linked STATICALLY! ()
-LIBS= @XMLRPC_C_LIB_LOCATION@/libxmlrpc_client.a \
-      @XMLRPC_C_LIB_LOCATION@/libxmlrpc_xmlparse.a \
-      @XMLRPC_C_LIB_LOCATION@/libxmlrpc.a \
-      @XMLRPC_C_LIB_LOCATION@/libxmlrpc_util.a \
-      @XMLRPC_C_LIB_LOCATION@/libxmlrpc_xmltok.a \
-      @CURL_LIB_LOCATION@/libcurl.a
 
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
@@ -38,7 +32,7 @@ sbin_PROGRAMS = storm-frontend
 storm_frontend_SOURCES = srmv2.cpp
 storm_frontend_LDFLAGS = -L../db @MYSQL_LDFLAGS@ @GLITE_LDFLAGS@
 storm_frontend_LDADD = -lstormfrontend -lstormdb @GLITE_LDFLAGS@ -lvomsc @MYSQL_LDADD@ \
-    @XMLRPC_C_LDADD@ @GSOAPGSI_LDADD@ @GLOBUS_PKG_LIBS@\
+    @XMLRPC_C_LDADD@ @CURL_LDADD@ @GSOAPGSI_LDADD@ @GLOBUS_PKG_LIBS@ \
     -lshift -lz -lm -luuid -lidn -lboost_program_options
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \

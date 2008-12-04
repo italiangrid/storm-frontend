@@ -131,7 +131,8 @@ AC_MSG_RESULT(["$XMLRPC_C_DIR" found])
 AC_SUBST([XMLRPC_C_CFLAGS], [" -I$XMLRPC_C_DIR/include "])
 AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/lib"])
 # Now it is linked statically
-AC_SUBST([XMLRPC_C_LDADD], [""])
+AC_SUBST([XMLRPC_C_LDADD], [" -L$XMLRPC_C_DIR/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok "])
+#AC_SUBST([XMLRPC_C_LDADD], [""])
 
 #XMLRPC_C_LDADD="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --ldadd` `$XMLRPC_C_DIR/bin/xmlrpc-c-config client --ldadd`"
 #XMLRPC_C_CFLAGS="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --cflags`"
@@ -149,6 +150,8 @@ if test ! \( -d $CURL_LOCATION \); then
 fi
 AC_MSG_RESULT(["$CURL_LOCATION" found])
 AC_SUBST([CURL_LIB_LOCATION], [$CURL_LOCATION/lib])
+AC_SUBST([CURL_LDADD], [" -L$CURL_LOCATION/lib -lcurl "])
+#AC_SUBST([CURL_LDADD], [" -L$CURL_LOCATION/lib -lwwwapp -lwwwcache -lwwwcore -lwwwdir -lwwwfile -lwwwftp -lwwwgopher -lwwwhtml -lwwwinit -lwwwmime -lwwwmux -lwwwnews -lwwwstream -lwwwtelnet -lwwwzip -lwwwxml -lwwwutils -lwwwtrans -lwwwhttp -lmd5"])
 
 # ========================================================================
 # RPM directory
