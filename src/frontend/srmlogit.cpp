@@ -96,12 +96,12 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     tm = localtime(&current_time);
 #endif
 
-    ostringstream oss;
+    std::ostringstream oss;
 
     oss << boost::this_thread::get_id();
     const char* tid = (oss.str()).c_str();
 
-    prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %5d %s: ", tm->tm_mon + 1,
+    prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %s %s: ", tm->tm_mon + 1,
             tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, tid, func);
 
     max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
