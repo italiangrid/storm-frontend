@@ -1,6 +1,6 @@
 %define name         storm-frontend-server
 %define version      @VERSION@
-%define release      @STORM_RELEASE_NUMBER@
+%define release      @STORM_FRONTEND_RELEASE_NUMBER@
 %define flavor       @GLOBUS_FLAVOR@
 %define builddir     $RPM_BUILD_DIR/%{name}-%{flavor}-%{version}
 %define globusdir    @GLOBUS_LOCATION@

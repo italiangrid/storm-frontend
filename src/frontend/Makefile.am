@@ -5,7 +5,6 @@ MTCCFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
 GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 
 MAINTAINERCLEANFILES = Makefile.in stdsoap2.c
-TOCLEAN = stdsoap2.c
 
 stormmandir = $(mandir)/man8
 stormman_DATA = srmv2.man
@@ -23,17 +22,23 @@ INCLUDES = -I$(top_srcdir)/src/db \
     -I@GSOAP_DIR@ \
     @MYSQL_CFLAGS@
 
-# xmlrpc-c and curl are linked STATICALLY! ()
-
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
-storm_frontend_SOURCES = srmv2.cpp
-storm_frontend_LDFLAGS = -L../db @MYSQL_LDFLAGS@ @GLITE_LDFLAGS@
-storm_frontend_LDADD = -lstormfrontend -lstormdb @GLITE_LDFLAGS@ -lvomsc @MYSQL_LDADD@ \
-    @XMLRPC_C_LDADD@ @CURL_LDADD@ @GSOAPGSI_LDADD@ @GLOBUS_PKG_LIBS@ \
-    -lshift -lz -lm -luuid -lidn -lboost_program_options
+storm_frontend_SOURCES = storm-frontend.cpp
+storm_frontend_LDFLAGS = -L../db \
+    @MYSQL_LDFLAGS@ \
+    @GLITE_LDFLAGS@
+storm_frontend_LDADD = -lstormfrontend -lstormdb \
+    @GLITE_LDFLAGS@ -lvomsc \
+    @MYSQL_LDADD@ \
+    @XMLRPC_C_LDADD@ \
+    @CURL_LDADD@ \
+    @GSOAPGSI_LDADD@ \
+    @GLOBUS_PKG_LIBS@ \
+    @BOOST_LDADD@ \
+    -lshift -lz -lm -luuid -lidn
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
   Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \
@@ -46,19 +51,25 @@ noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
 
 noinst_LTLIBRARIES = libstormfrontend.la
 
-libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
+libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
+    bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
     srmv2_ptg.cpp ptg.cpp ptg.hpp \
-    copy.cpp copy.hpp copy_status.cpp copy_status.hpp file_request.hpp \
-    file_status.hpp get_status.cpp get_status.hpp ptp.cpp ptp.hpp put_status.cpp \
+    copy.cpp copy.hpp copy_status.cpp copy_status.hpp \
+    file_request.hpp file_status.hpp srmv2_filerequest_template.hpp \
+    srmv2_status_template.hpp \
+    get_status.cpp get_status.hpp srmv2_status_get.cpp \
+    ptp.cpp ptp.hpp put_status.cpp put_status.hpp srmv2_ptp.cpp srmv2_status_put.cpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
-    put_status.hpp soap_util.hpp sql_string.hpp srm_util.c srmlogit.c \
-    srmv2_bol.cpp srmv2_copy.cpp srmv2_dirreq.c srmv2_filerequest_template.hpp \
-    srmv2_permreq.c srmv2_ptp.cpp srmv2_spacereq.c srmv2_status_bol.cpp \
-    srmv2_status_copy.cpp srmv2_status_get.cpp srmv2_status_put.cpp srmv2_status_template.hpp \
-    srmv2_xferreq.c storm_util.c xmlrpc_decode.c xmlrpc_encode.c stdsoap2.c \
+    srmv2_bol.cpp srmv2_status_bol.cpp \
+    srmv2_copy.cpp  srmv2_status_copy.cpp \
+    srmv2_dirreq.c srmv2_xferreq.c \
+    srmv2_permreq.c srmv2_spacereq.c \
+    xmlrpc_decode.c xmlrpc_encode.c \
+    storm_util.c soap_util.hpp sql_string.hpp srm_util.c srmlogit.c \
     FrontendOptions.cpp FrontendOptions.hpp \
     $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c \
+    stdsoap2.c \
     $(noinst_INCLUDES)
 
 storm_frontend_DEPENDENCIES = libstormfrontend.la

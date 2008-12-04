@@ -10,13 +10,14 @@
 #*********************************************************************
 
 AC_INIT([storm-frontend], [1.4.0], [luca.magnoni@cnaf.infn.it])
-AC_PREREQ([2.59])
-AC_CONFIG_SRCDIR([src/frontend/srmv2.cpp])
-AC_CONFIG_AUX_DIR([config])
-AM_INIT_AUTOMAKE()
 
 # Release number
-AC_SUBST([STORM_RELEASE_NUMBER], [00])
+AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [00])
+
+AC_PREREQ([2.59])
+AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
+AC_CONFIG_AUX_DIR([config])
+AM_INIT_AUTOMAKE()
 
 # Installation prefix
 AC_PREFIX_DEFAULT([/opt/storm/frontend])
@@ -60,11 +61,15 @@ AC_SUBST([STORM_DIR])
 AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
 
 # ========================================================================
+# Boost
+# ========================================================================
+AC_SUBST([BOOST_LDADD], ["/usr/lib/libboost_program_options.a"])
+
+# ========================================================================
 # Globus libraries
 # ========================================================================
-#AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_gcc32dbgpthr -lglobus_gssapi_gsi_gcc32dbgpthr -lglobus_gsi_proxy_core_gcc32dbgpthr -lglobus_gsi_credential_gcc32dbgpthr -lglobus_gsi_callback_gcc32dbgpthr -lglobus_oldgaa_gcc32dbgpthr -lglobus_gsi_sysconfig_gcc32dbgpthr -lglobus_gsi_cert_utils_gcc32dbgpthr -lglobus_openssl_gcc32dbgpthr -lglobus_proxy_ssl_gcc32dbgpthr -lglobus_openssl_error_gcc32dbgpthr -lglobus_common_gcc32dbgpthr" ])
-#AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gssapi_gsi_gcc32dbgpthr -lglobus_openssl_gcc32dbgpthr -lglobus_openssl_error_gcc32dbgpthr -lglobus_common_gcc32dbgpthr" ])
 AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_gcc32dbgpthr "])
+
 # ========================================================================
 # GSOAP
 # ========================================================================
@@ -176,6 +181,7 @@ AC_CONFIG_FILES([Makefile \
     src/Makefile \
     src/db/Makefile \
     src/frontend/Makefile \
+    src/frontend/frontend_version.h
     src/frontend/srm_server.h \
     storm-frontend.spec \
     clean.sh])
