@@ -19,10 +19,7 @@
 #include "storm_functions.h"
 #include "storm_limits.h"
 
-extern "C" {
 #include "storm_util.h"
-}
-
 #include "srmlogit.h"
 
 #include <signal.h>
