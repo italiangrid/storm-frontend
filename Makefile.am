@@ -2,7 +2,7 @@
 
 SUBDIRS = etc wsdl src
 
-SPEC_FILE = srmiv2-storm-server.spec
+SPEC_FILE = storm-frontend.spec
 
 RPM_DIRS = @RPM_DIR@/SOURCES @RPM_DIR@/SPECS @RPM_DIR@/BUILD @RPM_DIR@/RPMS @RPM_DIR@/SRPMS
 

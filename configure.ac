@@ -177,7 +177,7 @@ AC_CONFIG_FILES([Makefile \
     src/db/Makefile \
     src/frontend/Makefile \
     src/frontend/srm_server.h \
-    srmv2-storm-server.spec \
+    storm-frontend.spec \
     clean.sh])
 
 AC_OUTPUT
