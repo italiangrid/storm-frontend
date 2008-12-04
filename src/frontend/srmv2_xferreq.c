@@ -17,6 +17,7 @@
 #include "xmlrpc_encode.h"
 
 #include <cgsi_plugin.h>
+#include "frontend_version.h"
 
 extern int nb_supported_protocols;
 extern char **supported_protocols;
@@ -25,28 +26,28 @@ extern char **supported_protocols;
 
 static int marshall_CPR(struct soap *soap, struct ns1__TCopyRequestFileStatus *repfilep, struct storm_copy_filereq *cpr_entry)
 {
-    
+
     if (repfilep->fileSize = soap_malloc(soap, sizeof(unsignedLong64)))
         *(repfilep->fileSize) = cpr_entry->actual_size;
-    
+
     if ((repfilep->sourceSURL = soap_strdup(soap, cpr_entry->from_surl)) == NULL)
         return(-1);
-    
+
     if (repfilep->remainingFileLifetime = soap_malloc(soap, sizeof(int))) {
         if (cpr_entry->lifetime)
             *(repfilep->remainingFileLifetime) = *(cpr_entry->lifetime);
         else
             *(repfilep->remainingFileLifetime) = 0;
     }
-            
+
     repfilep->status->statusCode = cpr_entry->status;
-    
+
     if (*cpr_entry->errstring)
         repfilep->status->explanation = soap_strdup(soap, cpr_entry->errstring);
-    
+
     if ((repfilep->targetSURL = soap_strdup(soap, cpr_entry->to_surl)) == NULL)
         return(-1);
-    
+
     return (0);
 }
 
@@ -54,33 +55,33 @@ static int marshall_GFR (struct soap *soap, struct ns1__TGetRequestFileStatus *r
 {
     char *p;
     char turl[ST_MAXSFNLEN+1];
-    
+
     if (NULL == repfilep || NULL == gfr_entry)
         return -1;
 
-    if ((repfilep->fileSize = soap_malloc(soap, sizeof(unsignedLong64)))) 
+    if ((repfilep->fileSize = soap_malloc(soap, sizeof(unsignedLong64))))
         *(repfilep->fileSize) = gfr_entry->actual_size;
-        
+
     if ((repfilep->sourceSURL = soap_strdup(soap, gfr_entry->from_surl)) == NULL)
         return(-1);
-    
+
     if (repfilep->remainingPinTime = soap_malloc(soap, sizeof(int))) {
         if (gfr_entry->lifetime)
             *(repfilep->remainingPinTime) = *(gfr_entry->lifetime);
         else
             *(repfilep->remainingPinTime) = 0;
     }
-    
+
     repfilep->status->statusCode = gfr_entry->status;
-    
+
     if (*gfr_entry->errstring)
         repfilep->status->explanation = soap_strdup(soap, gfr_entry->errstring);
-    
+
     if (*gfr_entry->pfn) {
         sprintf(turl,"%s",gfr_entry->pfn);
         repfilep->transferURL = soap_strdup(soap, turl);
     }
-    
+
     return (0);
 }
 
@@ -95,41 +96,41 @@ static int marshall_PFR(struct soap *soap, struct ns1__TPutRequestFileStatus *re
 
     if ((repfilep->SURL = soap_strdup(soap, pfr_entry->to_surl)) == NULL)
         return(-1);
-    
+
     if (repfilep->remainingPinLifetime = soap_malloc(soap, sizeof(int))) {
         if (pfr_entry->lifetime)
             *(repfilep->remainingPinLifetime) = *(pfr_entry->lifetime);
         else
             *(repfilep->remainingPinLifetime) = 0;
     }
-    
+
     /*
      * @TODO FileLifetime, for the moment is equal to PinLifeTime
      */
-     
+
     if (repfilep->remainingFileLifetime = soap_malloc(soap, sizeof(int))) {
         if (pfr_entry->lifetime)
             *(repfilep->remainingFileLifetime) = *(pfr_entry->lifetime);
         else
             *(repfilep->remainingFileLifetime) = 0;
     }
-    
-    
+
+
     repfilep->status->statusCode = pfr_entry->status;
-    
+
     if (*pfr_entry->errstring)
         repfilep->status->explanation = soap_strdup(soap, pfr_entry->errstring);
-    
+
     if (*pfr_entry->pfn) {
         sprintf(turl, "%s", pfr_entry->pfn);
         repfilep->transferURL = soap_strdup(soap, turl);
     }
-    
+
     /*
      * @TODO ArrayOfTextraInfo
      */
     repfilep->transferProtocolInfo = NULL;
-    
+
     return (0);
 }
 
@@ -161,7 +162,7 @@ static int storm_req_fill_filetype(int ftype, struct storm_req *request)
 static int storm_req_fill_transfer_params(const struct ns1__TTransferParameters *tparam, struct storm_req *request)
 {
     int size=0, i=0;
-    if(NULL == request || 
+    if(NULL == request ||
        NULL == tparam)
         return EINVAL;
 
@@ -238,13 +239,13 @@ static int storm_req_fill_transfer_params(const struct ns1__TTransferParameters 
     IGNORED struct ns1__TRetentionPolicyInfo*    targetFileRetentionPolicyInfo  0:1;//nillable
     struct ns1__TTransferParameters*     transferParameters             0:1;//nillable
 
-*/ 
-static int storm_req_fill_from_get(struct ns1__srmPrepareToGetRequest *req, 
+*/
+static int storm_req_fill_from_get(struct ns1__srmPrepareToGetRequest *req,
                                    struct storm_req *request)
 {
     int ret;
-    if(NULL == req 
-       || NULL == request 
+    if(NULL == req
+       || NULL == request
        || NULL == req->arrayOfFileRequests)
         return EINVAL;
 
@@ -258,9 +259,9 @@ static int storm_req_fill_from_get(struct ns1__srmPrepareToGetRequest *req,
         if(0 != ret)
             return -1;
     }
-    
+
     if(NULL != req->userRequestDescription) {
-        // 'request->u_token' will have the correct syntax for the MYSQL query. 
+        // 'request->u_token' will have the correct syntax for the MYSQL query.
         strncpy(&(request->u_token[1]), req->userRequestDescription, sizeof(request->u_token)-3);
         request->u_token[0] = '\'';
         request->u_token[strlen(request->u_token)] = '\'';
@@ -281,13 +282,13 @@ static int storm_req_fill_from_get(struct ns1__srmPrepareToGetRequest *req,
         request->pinlifetime = *req->desiredPinLifeTime;
     else
         request->pinlifetime = -1;
-        
+
     /* targetSpaceToken NOT IMPLEMENTED */
     /* targetFileRetentionPolicyInfo NOT IMPLEMENTED */
 
     request->nbreqfiles = req->arrayOfFileRequests->__sizerequestArray;
-    
-    /* Fill other parameters with dummy value*/   
+
+    /* Fill other parameters with dummy value*/
     request->status = SRM_USCOREREQUEST_USCOREQUEUED;
     memset(request->errstring, 0, sizeof(request->errstring));
     request->nr_completed = 0;
@@ -325,20 +326,20 @@ static int gfr_entry_fill(struct ns1__TGetFileRequest *file, struct storm_get_fi
         if(NULL != file->dirOption->numOfLevels)
             gfr->diroption->numlevel = *file->dirOption->numOfLevels;
         else
-            gfr->diroption->numlevel = -1;      
+            gfr->diroption->numlevel = -1;
     }
     return 0;
 }
 
 /* This function allocate an array of struct storm_get_filereq. Please, call
  * gfr_entry_array_free to free() the memory allocated by this
- * function. 
- * 
+ * function.
+ *
  * This function returns:
  *    EINVAL  => invalid argument
  *    ENOMEM  => unable to allocate memory
  */
-static int gfr_entry_array_fill(struct ns1__srmPrepareToGetRequest *req, 
+static int gfr_entry_array_fill(struct ns1__srmPrepareToGetRequest *req,
                           struct storm_get_filereq ***gfr_array_ptr)
 {
     int i;
@@ -348,7 +349,7 @@ static int gfr_entry_array_fill(struct ns1__srmPrepareToGetRequest *req,
        NULL == req->arrayOfFileRequests ||
        NULL == gfr_array_ptr)
         return EINVAL;
-    
+
     size = req->arrayOfFileRequests->__sizerequestArray;
     /* allocating memory for the array */
     *gfr_array_ptr =
@@ -359,12 +360,12 @@ static int gfr_entry_array_fill(struct ns1__srmPrepareToGetRequest *req,
     /* allocating and filling the members of the array */
     gfr_array = *gfr_array_ptr;
     for(i=0; i<size; i++){
-        gfr_array[i] = calloc(req->arrayOfFileRequests->__sizerequestArray, sizeof(struct storm_get_filereq )); 
+        gfr_array[i] = calloc(req->arrayOfFileRequests->__sizerequestArray, sizeof(struct storm_get_filereq ));
         if(NULL == gfr_array[i]){
             free_gfr_entry_array(*gfr_array_ptr);
             return ENOMEM;
         }
-        
+
         if(0 != gfr_entry_fill(req->arrayOfFileRequests->requestArray[i], gfr_array[i])){
             free_gfr_entry_array(*gfr_array_ptr);
             return EINVAL;
@@ -377,7 +378,7 @@ static int ptgstatus_fill_from_getreq(struct soap *soap,
                                       struct ns1__srmStatusOfGetRequestResponse *rep,
                                       struct storm_get_filereq **gfr_array)
 {
-    
+
 
     return 0;
 }
@@ -405,11 +406,11 @@ struct RPC_ResponseHandlerInput_ReleaseFiles {
 };
 
 /* Response handler for the RPC asynchronous call of the ReleaseFiles function */
-void rpcResponseHandler_ReleaseFiles(const char          *serverUrl, 
-                                     const char          *method_name, 
-                                     const xmlrpc_value  *param_array, 
-                                     const void          *user_data, 
-                                     const xmlrpc_env    *faultP, 
+void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
+                                     const char          *method_name,
+                                     const xmlrpc_value  *param_array,
+                                     const void          *user_data,
+                                     const xmlrpc_env    *faultP,
                                      xmlrpc_value        *result)
 {
     static const char *func = "rpcResponseHandler_ReleaseFiles";
@@ -419,12 +420,12 @@ void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
     struct ns1__srmReleaseFilesResponse *repp;
     int error;
     xmlrpc_env env;
-    
+
     input = (struct RPC_ResponseHandlerInput_ReleaseFiles *) user_data;
     soap = input->soap;
     req = input->req;
     repp = input->repp;
-    
+
     if (faultP->fault_occurred) {
         srmlogit(STORM_LOG_ERROR, func, "ERROR: XML-RPC Fault: %s (code: %d)\n", faultP->fault_string, faultP->fault_code);
         repp->returnStatus->explanation = soap_strdup(soap, faultP->fault_string);
@@ -434,7 +435,7 @@ void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
     }
     /* Initialize the error-handling environment. */
     xmlrpc_env_init(&env);
-    
+
     /** MANDATORY ************ (1) Decode returnStatus (in TReturnStatus *) *************************/
     error = decode_globalTReturnStatus(func, &env, soap, repp->returnStatus, result);
     if (error != 0) {
@@ -444,7 +445,7 @@ void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
         input->RPCTerminated = 1;
         return;
     }
-    
+
     /** OPTIONAL ************* (2) Decode returnStatus (in TReturnStatus *) *************************/
     error = decode_ArrayOfTSURLReturnStatus(func, &env, soap, &(repp->arrayOfFileStatuses), SRM_PARAM_arrayOfFileStatuses, result);
     if (error != 0) {
@@ -461,9 +462,9 @@ void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
             return;
         }
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Response parsed!\n");
-    
+
     xmlrpc_env_clean(&env);
     input->RPCTerminated = 1;
     return;
@@ -480,39 +481,39 @@ int ns1__srmReleaseFiles (struct soap *soap,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmReleaseFilesResponse))) == NULL)
         return (SOAP_EOM);
     /* Initialize the other filed of the repp structure */
     repp->arrayOfFileStatuses = NULL;
-    
+
     if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
         return (SOAP_EOM);
-    
+
     /* Assign the repp response structure to the output parameter rep */
     rep->srmReleaseFilesResponse = repp;
-    
+
     /* Initialize xmlrpc error-handling environment. */
     xmlrpc_env_init(&env);
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    
+
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
     if (error) {
-        repp->returnStatus->explanation = "Error encoding VOMS attributes"; 
+        repp->returnStatus->explanation = "Error encoding VOMS attributes";
         repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /******************************************************************************/
-    /********        Encode parameters for ReleaseFiles   (SRM v2.2)       ********/  
+    /********        Encode parameters for ReleaseFiles   (SRM v2.2)       ********/
     /******************************************************************************/
-    
+
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -526,7 +527,7 @@ int ns1__srmReleaseFiles (struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL ************ (2) Encode requestToken (char *) ********************************/
     error = encode_string(func, &env, req->requestToken, SRM_PARAM_requestToken, inputParam);
     if (error) {
@@ -540,7 +541,7 @@ int ns1__srmReleaseFiles (struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL *********** (3) Encode arrayOfSURLs (ns1_ArrayOfAnyURI *) ********************************/
     error = encode_ArrayOfAnyURI(func, &env, req->arrayOfSURLs, SRM_PARAM_arrayOfSURLs, inputParam);
     if (error) {
@@ -554,7 +555,7 @@ int ns1__srmReleaseFiles (struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL ************ (4) Encode doRemove    ***************************************/
     error = encode_bool(func, &env, req->doRemove, "recursive", inputParam);
     if (error) {
@@ -568,7 +569,7 @@ int ns1__srmReleaseFiles (struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
 
@@ -577,25 +578,25 @@ int ns1__srmReleaseFiles (struct soap *soap,
     ReleaseFilesResponseHandlerInput.req  = req;
     ReleaseFilesResponseHandlerInput.repp = repp;
     ReleaseFilesResponseHandlerInput.RPCTerminated = 0;
-                                                                        
+
     /* Make remote procedure call, i.e. call Backend server */
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_ReleaseFiles,
                               &ReleaseFilesResponseHandlerInput, "(S)", inputParam);
-                              
+
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
-    while (ReleaseFilesResponseHandlerInput.RPCTerminated == 0) 
+    while (ReleaseFilesResponseHandlerInput.RPCTerminated == 0)
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+
     xmlrpc_DECREF(inputParam);
 
     if (ReleaseFilesResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
         return(SOAP_EOM);
     }
-    
+
     srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
-    
+
     return(SOAP_OK);
 }
 
@@ -612,11 +613,11 @@ struct RPC_ResponseHandlerInput_PutDone {
 };
 
 /* Response handler for the RPC asynchronous call of the PutDone function */
-void rpcResponseHandler_PutDone(const char          *serverUrl, 
-                                const char          *method_name, 
-                                const xmlrpc_value  *param_array, 
-                                const void          *user_data, 
-                                const xmlrpc_env    *faultP, 
+void rpcResponseHandler_PutDone(const char          *serverUrl,
+                                const char          *method_name,
+                                const xmlrpc_value  *param_array,
+                                const void          *user_data,
+                                const xmlrpc_env    *faultP,
                                 xmlrpc_value        *result)
 {
     static const char *func = "rpcResponseHandler_PutDone";
@@ -626,12 +627,12 @@ void rpcResponseHandler_PutDone(const char          *serverUrl,
     struct ns1__srmPutDoneResponse *repp;
     int error;
     xmlrpc_env env;
-    
+
     input = (struct RPC_ResponseHandlerInput_PutDone *) user_data;
     soap = input->soap;
     req = input->req;
     repp = input->repp;
-    
+
     if (faultP->fault_occurred) {
         srmlogit(STORM_LOG_ERROR, func, "ERROR: XML-RPC Fault: %s (code: %d)\n", faultP->fault_string, faultP->fault_code);
         repp->returnStatus->explanation = soap_strdup(soap, faultP->fault_string);
@@ -641,7 +642,7 @@ void rpcResponseHandler_PutDone(const char          *serverUrl,
     }
     /* Initialize the error-handling environment. */
     xmlrpc_env_init(&env);
-    
+
     /** MANDATORY ************ (1) Decode returnStatus (in TReturnStatus *) *************************/
     error = decode_globalTReturnStatus(func, &env, soap, repp->returnStatus, result);
     if (error != 0) {
@@ -651,7 +652,7 @@ void rpcResponseHandler_PutDone(const char          *serverUrl,
         input->RPCTerminated = 1;
         return;
     }
-    
+
     /** OPTIONAL ************* (2) Decode arrayOfFileStatuses (in ArrayOfTSURLReturnStatus *) *********/
     error = decode_ArrayOfTSURLReturnStatus(func, &env, soap, &(repp->arrayOfFileStatuses), SRM_PARAM_arrayOfFileStatuses, result);
     if (error != 0) {
@@ -668,9 +669,9 @@ void rpcResponseHandler_PutDone(const char          *serverUrl,
             return;
         }
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Response parsed!\n");
-    
+
     xmlrpc_env_clean(&env);
     input->RPCTerminated = 1;
     return;
@@ -685,39 +686,39 @@ int ns1__srmPutDone(struct soap *soap, struct ns1__srmPutDoneRequest *req, struc
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmPutDoneResponse))) == NULL)
         return (SOAP_EOM);
     /* Initialize the other filed of the repp structure */
     repp->arrayOfFileStatuses = NULL;
-    
+
     if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
         return (SOAP_EOM);
 
     /* Assign the repp response structure to the output parameter rep */
     rep->srmPutDoneResponse = repp;
-    
+
     /* Initialize xmlrpc error-handling environment. */
     xmlrpc_env_init(&env);
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    
+
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
     if (error) {
-        repp->returnStatus->explanation = "Error encoding VOMS attributes"; 
+        repp->returnStatus->explanation = "Error encoding VOMS attributes";
         repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /******************************************************************************/
-    /********        Encode parameters for PutDone   (SRM v2.2)            ********/  
+    /********        Encode parameters for PutDone   (SRM v2.2)            ********/
     /******************************************************************************/
-    
+
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -731,7 +732,7 @@ int ns1__srmPutDone(struct soap *soap, struct ns1__srmPutDoneRequest *req, struc
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL ************ (2) Encode requestToken (char *) ********************************/
     error = encode_string(func, &env, req->requestToken, SRM_PARAM_requestToken, inputParam);
     if (error) {
@@ -745,22 +746,22 @@ int ns1__srmPutDone(struct soap *soap, struct ns1__srmPutDoneRequest *req, struc
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** MANDATORY *********** (3) Encode arrayOfSURLs (ns1_ArrayOfAnyURI *) ********************************/
     error = encode_ArrayOfAnyURI(func, &env, req->arrayOfSURLs, SRM_PARAM_arrayOfSURLs, inputParam);
     if (error) {
         repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-        
+
         if (error == ENCODE_ERR_MISSING_PARAM)
             repp->returnStatus->explanation = "Error: parameter arrayOfSURLs is required";
         else
             repp->returnStatus->explanation = "Error encoding arrayOfSURLs parameter";
-        
+
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
 
@@ -769,25 +770,25 @@ int ns1__srmPutDone(struct soap *soap, struct ns1__srmPutDoneRequest *req, struc
     PutDoneResponseHandlerInput.req  = req;
     PutDoneResponseHandlerInput.repp = repp;
     PutDoneResponseHandlerInput.RPCTerminated = 0;
-                                                                        
+
     /* Make remote procedure call, i.e. call Backend server */
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_PutDone,
                               &PutDoneResponseHandlerInput, "(S)", inputParam);
-                              
+
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
-    while (PutDoneResponseHandlerInput.RPCTerminated == 0) 
+    while (PutDoneResponseHandlerInput.RPCTerminated == 0)
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+
     xmlrpc_DECREF(inputParam);
 
     if (PutDoneResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
         return(SOAP_EOM);
     }
-    
+
     srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
-    
+
     return(SOAP_OK);
 }
 
@@ -804,11 +805,11 @@ struct RPC_ResponseHandlerInput_AbortRequest {
 };
 
 /* Response handler for the RPC asynchronous call of the AbortRequest function */
-void rpcResponseHandler_AbortRequest(const char          *serverUrl, 
-                                     const char          *method_name, 
-                                     const xmlrpc_value  *param_array, 
-                                     const void          *user_data, 
-                                     const xmlrpc_env    *faultP, 
+void rpcResponseHandler_AbortRequest(const char          *serverUrl,
+                                     const char          *method_name,
+                                     const xmlrpc_value  *param_array,
+                                     const void          *user_data,
+                                     const xmlrpc_env    *faultP,
                                      xmlrpc_value        *result)
 {
     static const char *func = "rpcResponseHandler_AbortRequest";
@@ -818,12 +819,12 @@ void rpcResponseHandler_AbortRequest(const char          *serverUrl,
     struct ns1__srmAbortRequestResponse *repp;
     int error;
     xmlrpc_env env;
-    
+
     input = (struct RPC_ResponseHandlerInput_AbortRequest *) user_data;
     soap = input->soap;
     req = input->req;
     repp = input->repp;
-    
+
     if (faultP->fault_occurred) {
         srmlogit(STORM_LOG_ERROR, func, "ERROR: XML-RPC Fault: %s (code: %d)\n", faultP->fault_string, faultP->fault_code);
         repp->returnStatus->explanation = soap_strdup(soap, faultP->fault_string);
@@ -833,7 +834,7 @@ void rpcResponseHandler_AbortRequest(const char          *serverUrl,
     }
     /* Initialize the error-handling environment. */
     xmlrpc_env_init(&env);
-    
+
     /** MANDATORY ************ (1) Decode returnStatus (in TReturnStatus *) *************************/
     error = decode_globalTReturnStatus(func, &env, soap, repp->returnStatus, result);
     if (error != 0) {
@@ -843,9 +844,9 @@ void rpcResponseHandler_AbortRequest(const char          *serverUrl,
         input->RPCTerminated = 1;
         return;
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Response parsed!\n");
-    
+
     xmlrpc_env_clean(&env);
     input->RPCTerminated = 1;
     return;
@@ -862,38 +863,38 @@ int ns1__srmAbortRequest(struct soap *soap,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmAbortRequestResponse))) == NULL)
         return (SOAP_EOM);
-    
+
     if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
         return (SOAP_EOM);
     repp->returnStatus->explanation = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
     rep->srmAbortRequestResponse = repp;
-    
+
     /* Initialize xmlrpc error-handling environment. */
     xmlrpc_env_init(&env);
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    
+
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
     if (error) {
-        repp->returnStatus->explanation = "Error encoding VOMS attributes"; 
+        repp->returnStatus->explanation = "Error encoding VOMS attributes";
         repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /******************************************************************************/
-    /********        Encode parameters for AbortRequest   (SRM v2.2)            ********/  
+    /********        Encode parameters for AbortRequest   (SRM v2.2)            ********/
     /******************************************************************************/
-    
+
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -907,22 +908,22 @@ int ns1__srmAbortRequest(struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** MANDATORY *********** (3) Encode requestToken (char *) ********************************/
     error = encode_string(func, &env, req->requestToken, SRM_PARAM_requestToken, inputParam);
     if (error) {
         repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-        
+
         if (error == ENCODE_ERR_MISSING_PARAM)
             repp->returnStatus->explanation = "Error: parameter requestToken is required";
         else
             repp->returnStatus->explanation = "Error encoding requestToken parameter";
-        
+
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
 
@@ -931,25 +932,25 @@ int ns1__srmAbortRequest(struct soap *soap,
     AbortRequestResponseHandlerInput.req  = req;
     AbortRequestResponseHandlerInput.repp = repp;
     AbortRequestResponseHandlerInput.RPCTerminated = 0;
-                                                                        
+
     /* Make remote procedure call, i.e. call Backend server */
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_AbortRequest,
                               &AbortRequestResponseHandlerInput, "(S)", inputParam);
-                              
+
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
-    while (AbortRequestResponseHandlerInput.RPCTerminated == 0) 
+    while (AbortRequestResponseHandlerInput.RPCTerminated == 0)
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+
     xmlrpc_DECREF(inputParam);
 
     if (AbortRequestResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
         return(SOAP_EOM);
     }
-    
+
     srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
-    
+
     return(SOAP_OK);
 }
 
@@ -966,11 +967,11 @@ struct RPC_ResponseHandlerInput_AbortFiles {
 };
 
 /* Response handler for the RPC asynchronous call of the AbortFiles function */
-void rpcResponseHandler_AbortFiles(const char          *serverUrl, 
-                                   const char          *method_name, 
-                                   const xmlrpc_value  *param_array, 
-                                   const void          *user_data, 
-                                   const xmlrpc_env    *faultP, 
+void rpcResponseHandler_AbortFiles(const char          *serverUrl,
+                                   const char          *method_name,
+                                   const xmlrpc_value  *param_array,
+                                   const void          *user_data,
+                                   const xmlrpc_env    *faultP,
                                    xmlrpc_value        *result)
 {
     static const char *func = "rpcResponseHandler_AbortFiles";
@@ -980,12 +981,12 @@ void rpcResponseHandler_AbortFiles(const char          *serverUrl,
     struct ns1__srmAbortFilesResponse *repp;
     int error;
     xmlrpc_env env;
-    
+
     input = (struct RPC_ResponseHandlerInput_AbortFiles *) user_data;
     soap = input->soap;
     req = input->req;
     repp = input->repp;
-    
+
     if (faultP->fault_occurred) {
         srmlogit(STORM_LOG_ERROR, func, "ERROR: XML-RPC Fault: %s (code: %d)\n", faultP->fault_string, faultP->fault_code);
         repp->returnStatus->explanation = soap_strdup(soap, faultP->fault_string);
@@ -995,7 +996,7 @@ void rpcResponseHandler_AbortFiles(const char          *serverUrl,
     }
     /* Initialize the error-handling environment. */
     xmlrpc_env_init(&env);
-    
+
     /** MANDATORY ************ (1) Decode returnStatus (in TReturnStatus *) *************************/
     error = decode_globalTReturnStatus(func, &env, soap, repp->returnStatus, result);
     if (error != 0) {
@@ -1005,7 +1006,7 @@ void rpcResponseHandler_AbortFiles(const char          *serverUrl,
         input->RPCTerminated = 1;
         return;
     }
-    
+
     /** OPTIONAL ************* (2) Decode arrayOfFileStatuses (in ArrayOfTSURLReturnStatus *) *********/
     error = decode_ArrayOfTSURLReturnStatus(func, &env, soap, &(repp->arrayOfFileStatuses), SRM_PARAM_arrayOfFileStatuses, result);
     if (error != 0) {
@@ -1022,9 +1023,9 @@ void rpcResponseHandler_AbortFiles(const char          *serverUrl,
             return;
         }
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Response parsed!\n");
-    
+
     xmlrpc_env_clean(&env);
     input->RPCTerminated = 1;
     return;
@@ -1041,39 +1042,39 @@ int ns1__srmAbortFiles(struct soap *soap,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmAbortFilesResponse))) == NULL)
         return (SOAP_EOM);
     repp->arrayOfFileStatuses = NULL;
-    
+
     if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
         return (SOAP_EOM);
     repp->returnStatus->explanation = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
     rep->srmAbortFilesResponse = repp;
-    
+
     /* Initialize xmlrpc error-handling environment. */
     xmlrpc_env_init(&env);
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    
+
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
     if (error) {
-        repp->returnStatus->explanation = "Error encoding VOMS attributes"; 
+        repp->returnStatus->explanation = "Error encoding VOMS attributes";
         repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /******************************************************************************/
-    /********        Encode parameters for AbortFiles   (SRM v2.2)         ********/  
+    /********        Encode parameters for AbortFiles   (SRM v2.2)         ********/
     /******************************************************************************/
-    
+
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -1087,37 +1088,37 @@ int ns1__srmAbortFiles(struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** MANDATORY *********** (3) Encode requestToken (char *) ********************************/
     error = encode_string(func, &env, req->requestToken, SRM_PARAM_requestToken, inputParam);
     if (error) {
         repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-        
+
         if (error == ENCODE_ERR_MISSING_PARAM)
             repp->returnStatus->explanation = "Error: parameter requestToken is required";
         else
             repp->returnStatus->explanation = "Error encoding requestToken parameter";
-        
+
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /** MANDATORY *********** (3) Encode arrayOfSURLs (ns1_ArrayOfAnyURI *) ********************************/
     error = encode_ArrayOfAnyURI(func, &env, req->arrayOfSURLs, SRM_PARAM_arrayOfSURLs, inputParam);
     if (error) {
         repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-        
+
         if (error == ENCODE_ERR_MISSING_PARAM)
             repp->returnStatus->explanation = "Error: parameter arrayOfSURLs is required";
         else
             repp->returnStatus->explanation = "Error encoding arrayOfSURLs parameter";
-        
+
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
 
@@ -1126,25 +1127,25 @@ int ns1__srmAbortFiles(struct soap *soap,
     AbortFilesResponseHandlerInput.req  = req;
     AbortFilesResponseHandlerInput.repp = repp;
     AbortFilesResponseHandlerInput.RPCTerminated = 0;
-                                                                        
+
     /* Make remote procedure call, i.e. call Backend server */
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_AbortFiles,
                               &AbortFilesResponseHandlerInput, "(S)", inputParam);
-                              
+
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
-    while (AbortFilesResponseHandlerInput.RPCTerminated == 0) 
+    while (AbortFilesResponseHandlerInput.RPCTerminated == 0)
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+
     xmlrpc_DECREF(inputParam);
 
     if (AbortFilesResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
         return(SOAP_EOM);
     }
-    
+
     srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
-    
+
     return(SOAP_OK);
 }
 
@@ -1161,11 +1162,11 @@ struct RPC_ResponseHandlerInput_ExtendFileLifeTime {
 };
 
 /* Response handler for the RPC asynchronous call of the ExtendFileLifeTime function */
-void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl, 
-                                           const char          *method_name, 
-                                           const xmlrpc_value  *param_array, 
-                                           const void          *user_data, 
-                                           const xmlrpc_env    *faultP, 
+void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl,
+                                           const char          *method_name,
+                                           const xmlrpc_value  *param_array,
+                                           const void          *user_data,
+                                           const xmlrpc_env    *faultP,
                                            xmlrpc_value        *result)
 {
     static const char *func = "rpcResponseHandler_ExtendFileLifeTime";
@@ -1175,12 +1176,12 @@ void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl,
     struct ns1__srmExtendFileLifeTimeResponse *repp;
     int error;
     xmlrpc_env env;
-    
+
     input = (struct RPC_ResponseHandlerInput_ExtendFileLifeTime *) user_data;
     soap = input->soap;
     req = input->req;
     repp = input->repp;
-    
+
     if (faultP->fault_occurred) {
         srmlogit(STORM_LOG_ERROR, func, "ERROR: XML-RPC Fault: %s (code: %d)\n", faultP->fault_string, faultP->fault_code);
         repp->returnStatus->explanation = soap_strdup(soap, faultP->fault_string);
@@ -1190,7 +1191,7 @@ void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl,
     }
     /* Initialize the error-handling environment. */
     xmlrpc_env_init(&env);
-    
+
     /** MANDATORY ************ (1) Decode returnStatus (in TReturnStatus *) *************************/
     error = decode_globalTReturnStatus(func, &env, soap, repp->returnStatus, result);
     if (error != 0) {
@@ -1200,7 +1201,7 @@ void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl,
         input->RPCTerminated = 1;
         return;
     }
-    
+
     /** OPTIONAL ************* (2) Decode arrayOfFileStatuses (in ArrayOfTSURLLifetimeReturnStatus *) *********/
     error = decode_ArrayOfTSURLLifetimeReturnStatus(func, &env, soap, &(repp->arrayOfFileStatuses), SRM_PARAM_arrayOfFileStatuses, result);
     if (error != 0) {
@@ -1217,9 +1218,9 @@ void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl,
             return;
         }
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Response parsed!\n");
-    
+
     xmlrpc_env_clean(&env);
     input->RPCTerminated = 1;
     return;
@@ -1237,39 +1238,39 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmExtendFileLifeTimeResponse))) == NULL)
         return (SOAP_EOM);
     repp->arrayOfFileStatuses = NULL;
-    
+
     if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
         return (SOAP_EOM);
     repp->returnStatus->explanation = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
     rep->srmExtendFileLifeTimeResponse = repp;
-    
+
     /* Initialize xmlrpc error-handling environment. */
     xmlrpc_env_init(&env);
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    
+
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
     if (error) {
-        repp->returnStatus->explanation = "Error encoding VOMS attributes"; 
+        repp->returnStatus->explanation = "Error encoding VOMS attributes";
         repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /******************************************************************************/
-    /********    Encode parameters for ExtendFileLifeTime   (SRM v2.2)     ********/  
+    /********    Encode parameters for ExtendFileLifeTime   (SRM v2.2)     ********/
     /******************************************************************************/
-    
+
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -1283,7 +1284,7 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL ************ (2) Encode requestToken (char *) ********************************/
     error = encode_string(func, &env, req->requestToken, SRM_PARAM_requestToken, inputParam);
     if (error) {
@@ -1297,22 +1298,22 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** MANDATORY *********** (3) Encode arrayOfSURLs (ns1_ArrayOfAnyURI *) ********************************/
     error = encode_ArrayOfAnyURI(func, &env, req->arrayOfSURLs, SRM_PARAM_arrayOfSURLs, inputParam);
     if (error) {
         repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-        
+
         if (error == ENCODE_ERR_MISSING_PARAM)
             repp->returnStatus->explanation = "Error: parameter arrayOfSURLs is required";
         else
             repp->returnStatus->explanation = "Error encoding arrayOfSURLs parameter";
-        
+
         xmlrpc_DECREF(inputParam);
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /** OPTIONAL ************ (4) Encode newFileLifeTime (int *)    *********************************/
     error = encode_lifetimeValue(func, &env, req->newFileLifeTime, SRM_PARAM_fileLifeTime, inputParam);
     if (error) {
@@ -1326,7 +1327,7 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL ************ (5) Encode newPinLifeTime (int *)    *********************************/
     error = encode_lifetimeValue(func, &env, req->newPinLifeTime, SRM_PARAM_pinLifetime, inputParam);
     if (error) {
@@ -1340,7 +1341,7 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
 
@@ -1349,25 +1350,25 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
     ExtendFileLifeTimeResponseHandlerInput.req  = req;
     ExtendFileLifeTimeResponseHandlerInput.repp = repp;
     ExtendFileLifeTimeResponseHandlerInput.RPCTerminated = 0;
-                                                                        
+
     /* Make remote procedure call, i.e. call Backend server */
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_ExtendFileLifeTime,
                               &ExtendFileLifeTimeResponseHandlerInput, "(S)", inputParam);
-                              
+
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
-    while (ExtendFileLifeTimeResponseHandlerInput.RPCTerminated == 0) 
+    while (ExtendFileLifeTimeResponseHandlerInput.RPCTerminated == 0)
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+
     xmlrpc_DECREF(inputParam);
 
     if (ExtendFileLifeTimeResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
         return(SOAP_EOM);
     }
-    
+
     srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
-    
+
     return(SOAP_OK);
 }
 
@@ -1465,48 +1466,48 @@ int ns1__srmGetTransferProtocols(struct soap* soap,
     struct ns1__TSupportedTransferProtocol **protocolArray;
     char **supported_protocols;
     int i, nb_supported_protocols;
-    
+
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetTransferProtocolsResponse))) == NULL)
         return(SOAP_EOM);
-    
+
     if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
         return(SOAP_EOM);
-        
+
     rep->srmGetTransferProtocolsResponse = repp;
-    
+
     nb_supported_protocols = get_supported_protocols(&supported_protocols);
-    
+
     if (nb_supported_protocols <= 0) {
         srmlogit (STORM_LOG_ERROR, func, "get_supported_protocols does not return any protocol");
         repp->returnStatus->statusCode = SRM_USCOREFAILURE;
         repp->returnStatus->explanation = "Error: list of supported protocols not found";
         return(SOAP_OK);
     }
-    
+
     /* Allocate the response structure for the list of protocols */
     repp->protocolInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTSupportedTransferProtocol));
     if (NULL == repp->protocolInfo)
         return(SOAP_EOM);
-    
+
     repp->protocolInfo->protocolArray = soap_malloc(soap, nb_supported_protocols * sizeof(struct ns1__TSupportedTransferProtocol *));
     if (NULL == repp->protocolInfo->protocolArray)
         return(SOAP_EOM);
     repp->protocolInfo->__sizeprotocolArray = nb_supported_protocols;
     protocolArray = repp->protocolInfo->protocolArray;
-    
+
     /* Set the protocol list to return */
     for (i=0; i<nb_supported_protocols; i++) {
         protocolArray[i] = soap_malloc(soap, sizeof(struct ns1__TSupportedTransferProtocol));
         protocolArray[i]->transferProtocol = soap_strdup(soap, supported_protocols[i]);
         protocolArray[i]->attributes = NULL;
     }
-    
+
     free(supported_protocols);
-    
+
     repp->returnStatus->statusCode = SRM_USCORESUCCESS;
     repp->returnStatus->explanation = "Success";
-    
+
     return(SOAP_OK);
 }
 
@@ -1523,11 +1524,11 @@ struct RPC_ResponseHandlerInput_Ping {
 };
 
 /* Response handler for the RPC asynchronous call of the Ping function */
-void rpcResponseHandler_Ping(const char          *serverUrl, 
-                             const char          *method_name, 
-                             const xmlrpc_value  *param_array, 
-                             const void          *user_data, 
-                             const xmlrpc_env    *faultP, 
+void rpcResponseHandler_Ping(const char          *serverUrl,
+                             const char          *method_name,
+                             const xmlrpc_value  *param_array,
+                             const void          *user_data,
+                             const xmlrpc_env    *faultP,
                              xmlrpc_value        *result)
 {
     static const char *func = "rpcResponseHandler_Ping";
@@ -1537,12 +1538,12 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
     struct ns1__srmPingResponse *repp;
     int error;
     xmlrpc_env env;
-    
+
     input = (struct RPC_ResponseHandlerInput_Ping *) user_data;
     soap = input->soap;
     req = input->req;
     repp = input->repp;
-    
+
     if (faultP->fault_occurred) {
         srmlogit(STORM_LOG_ERROR, func, "ERROR: XML-RPC Fault: %s (code: %d)\n", faultP->fault_string, faultP->fault_code);
         repp->versionInfo = "ERROR!";
@@ -1551,7 +1552,7 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
     }
     /* Initialize the error-handling environment. */
     xmlrpc_env_init(&env);
-    
+
     /** OPTIONAL ************* (1) Decode versionInfo (in char *) *********/
     error = decode_string(func, &env, soap, &(repp->versionInfo), "versionInfo", result);
     if (error != 0) {
@@ -1569,7 +1570,7 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /** OPTIONAL ************* (2) Decode otherInfo (in ns1__ArrayOfTExtraInfo *) *********/
     error = decode_ArrayOfTExtraInfo(func, &env, soap, &(repp->otherInfo), SRM_PARAM_storageSystemInfo, result);
     if (error != 0) {
@@ -1587,9 +1588,9 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Response parsed!\n");
-    
+
     xmlrpc_env_clean(&env);
     input->RPCTerminated = 1;
     return;
@@ -1597,7 +1598,7 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
 
 /**
  * This functin is used to check the state of the SRM. It works as an "are you alive" type of call.
-*/ 
+*/
 int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1__srmPingResponse_ *rep)
 {
 	static const char *func = "Ping";
@@ -1610,11 +1611,11 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
     char clientdn[256];
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+
 #if defined(GSI_PLUGINS)
     clientdn[0] = 0;
     get_client_dn(soap, clientdn, sizeof(clientdn));
-    srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", clientdn);  
+    srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", clientdn);
 #else
     if (req->authorizationID != NULL) {
         srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", req->authorizationID);
@@ -1627,28 +1628,28 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
         return (SOAP_EOM);
 	repp->versionInfo = NULL;
     repp->otherInfo = NULL;
-    
+
     /* Assign the repp response structure to the output parameter rep */
     rep->srmPingResponse = repp;
-    
+
     /* Initialize xmlrpc error-handling environment. */
     xmlrpc_env_init(&env);
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    
+
     if (req->authorizationID != NULL) {
         // Pass it to the BE and see what happen...
         return_version_info = 0;
         int prefix_lenght = strlen(commandPrefix);
         if (strncmp(req->authorizationID, commandPrefix, prefix_lenght) == 0) {
-            
+
         }
     } else {
         req->authorizationID = "KEY=BE-Version";
         return_version_info = 1;
     }
-    
+
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, NULL, inputParam);
     if (error) {
@@ -1657,7 +1658,7 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
         xmlrpc_env_clean(&env);
         return(SOAP_OK);
     }
-    
+
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -1670,7 +1671,7 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
-    
+
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
 
@@ -1679,23 +1680,23 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
     PingResponseHandlerInput.req  = req;
     PingResponseHandlerInput.repp = repp;
     PingResponseHandlerInput.RPCTerminated = 0;
-                                                                        
+
     /* Make remote procedure call, i.e. call Backend server */
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_Ping,
                               &PingResponseHandlerInput, "(S)", inputParam);
-                              
+
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
-    while (PingResponseHandlerInput.RPCTerminated == 0) 
+    while (PingResponseHandlerInput.RPCTerminated == 0)
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+
     xmlrpc_DECREF(inputParam);
 
     if (PingResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
         return(SOAP_EOM);
     }
-    
+
     if (return_version_info) {
         error = set_version_info(soap, repp);
         if (error != SOAP_OK) {
@@ -1703,17 +1704,17 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
         }
     }
     srmlogit(STORM_LOG_INFO, func, "Request done.\n");
-    
+
     return(SOAP_OK);
 }
 
 // Function used by ns1__srmPing()
 int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
-    struct ns1__TExtraInfo** extraInfoArray; 
+    struct ns1__TExtraInfo** extraInfoArray;
     char *be_version = "ERROR";
-    char *version_temp = "<FE:1.3.19><BE:%s>";
+    char *version_temp = "<FE:%s><BE:%s>";
     char version[50];
-    
+
     // Get the version of the BE and set the information to be returned.
     if (repp->otherInfo != NULL) {
         if (repp->otherInfo->extraInfoArray != NULL) {
@@ -1723,7 +1724,7 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
         }
     }
     repp->versionInfo = "v2.2";
-    
+
     // Allocate memory for the response structure
     repp->otherInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo));
     if (NULL == repp->otherInfo) {
@@ -1734,9 +1735,9 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
         return(SOAP_EOM);
     }
     repp->otherInfo->__sizeextraInfoArray = 2;
-    
+
     extraInfoArray = repp->otherInfo->extraInfoArray;
-    
+
     // Set backend type
     extraInfoArray[0] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
     extraInfoArray[0]->key = "backend_type";
@@ -1744,8 +1745,8 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     // Set backend version
     extraInfoArray[1] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
     extraInfoArray[1]->key = "backend_version";
-    sprintf(version, version_temp, be_version);
+    sprintf(version, version_temp, frontend_version, be_version);
     extraInfoArray[1]->value = soap_strdup(soap, version);
-    
+
     return SOAP_OK;
 }
