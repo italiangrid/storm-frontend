@@ -175,7 +175,7 @@ int setProxyUserGlobalVariables(string& proxy_user) {
     return 0;
 }
 
-static int srm_main(struct main_args *main_args) {
+static int srm_main(int argc, char** argv) {
     char *func = "srm_main";
     void *process_request(void *);
 
@@ -189,7 +189,7 @@ static int srm_main(struct main_args *main_args) {
     FrontendOptions configuration;
 
     try {
-        configuration.parseOptions(main_args->argc, main_args->argv);
+        configuration.parseOptions(argc, argv);
     } catch (exception& e) {
         cout << e.what() << endl << endl;
         return 1;
@@ -387,12 +387,8 @@ static int srm_main(struct main_args *main_args) {
 }
 
 int main(int argc, char **argv) {
-    struct main_args main_args;
 
-    main_args.argc = argc;
-    main_args.argv = argv;
-
-    int exit_code = srm_main(&main_args);
+    int exit_code = srm_main(argc, argv);
 
     exit(exit_code);
 }
