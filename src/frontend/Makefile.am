@@ -67,3 +67,5 @@ stdsoap2.c:
 	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_DIR@)"
 	/bin/cp @GSOAP_DIR@/stdsoap2.c .
 
+distclean-local:
+	rm -f stdsoap2.c
