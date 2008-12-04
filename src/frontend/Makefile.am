@@ -40,7 +40,7 @@ storm_frontend_LDADD = -lstormfrontend -lstormdb \
     @GSOAPGSI_LDADD@ \
     @GLOBUS_PKG_LIBS@ \
     @BOOST_LDADD@ \
-    -lshift -lz -lm -luuid -lidn
+    -lz -lm -luuid -lidn
 
 noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
   Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \

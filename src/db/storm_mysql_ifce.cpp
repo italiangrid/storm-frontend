@@ -18,6 +18,8 @@
 #include <map>
 #include <vector>
 
+int serrno = 0;
+
 using namespace std;
 
 EXTERN_C void storm_init_dbpkg()
@@ -30,15 +32,15 @@ map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
     static const char * const func = "exec_query";
     if (mysql_query(&dbfd->mysql, query.c_str())) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n", mysql_error (&dbfd->mysql), query.c_str());
-        serrno = SEINTERNAL;
-        throw serrno;
+        int err = SEINTERNAL;
+        throw err;
     }
 
     MYSQL_RES *res;
     if ((res = mysql_store_result (&dbfd->mysql)) == NULL) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_store_res error: %s\n", mysql_error (&dbfd->mysql));
-        serrno = SEINTERNAL;
-        throw serrno;
+        int err = SEINTERNAL;
+        throw err;
     }
 
     int num_fields = mysql_num_fields(res);

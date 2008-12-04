@@ -68,23 +68,3 @@ int get_supported_protocols(char ***sup_proto) {
     return (nb_supported_protocols);
 }
 
-int get_client_id(struct soap *soap, uid_t *uid, gid_t *gid) {
-    struct passwd *pw;
-    char username[ST_MAXUSRNAMELEN + 1];
-
-#if defined(GSI_PLUGINS)
-    if (get_client_username(soap, username, sizeof(username)) < 0)
-        return (-1);
-#else
-    strcpy(username, "flavia");
-#endif
-
-    if ((pw = Cgetpwnam(username)) < 0)
-        return (-1);
-
-    *uid = pw->pw_uid;
-    *gid = pw->pw_gid;
-
-    return (0);
-}
-

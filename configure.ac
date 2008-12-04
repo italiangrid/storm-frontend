@@ -137,13 +137,7 @@ AC_MSG_RESULT(["$XMLRPC_C_DIR" found])
 
 AC_SUBST([XMLRPC_C_CFLAGS], [" -I$XMLRPC_C_DIR/include "])
 AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/lib"])
-# Now it is linked statically
 AC_SUBST([XMLRPC_C_LDADD], [" -L$XMLRPC_C_DIR/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok "])
-#AC_SUBST([XMLRPC_C_LDADD], [""])
-
-#XMLRPC_C_LDADD="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --ldadd` `$XMLRPC_C_DIR/bin/xmlrpc-c-config client --ldadd`"
-#XMLRPC_C_CFLAGS="`$XMLRPC_C_DIR/bin/xmlrpc-c-config --cflags`"
-#XMLRPC_C_LDADD="-L/home/storm/curl_new/lib -lcurl -L/home/storm/xmlrpc-c_new/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok"
 
 # ========================================================================
 # Curl

@@ -5,7 +5,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <uuid/uuid.h>
-#include "Cnetdb.h"
 #include "storm_functions.h"
 #include "serrno.h"
 #include "srm_server.h"
@@ -1377,38 +1376,19 @@ int ns1__srmSuspendRequest(struct soap *soap,
                            struct ns1__srmSuspendRequestResponse_ *rep)
 {
     static const char *func = "SuspendRequest";
-    struct hostent *hp;
     struct ns1__srmSuspendRequestResponse *repp;
-    struct in_addr sin_addr;
-    struct srm_srv_thread_info *thip = soap->user;
-    char clientdn[256];
-    char **fqans, *clienthost;
-    int nbfqans;
-
-/******* FLAVIA TO DO *******/
-#if defined(GSI_PLUGINS)
-    get_client_dn(soap, clientdn, sizeof(clientdn));
-    fqans = get_client_roles(soap, &nbfqans);
-#else
-    if(NULL != req->authorizationID) strcpy(clientdn,req->authorizationID);
-    else strcpy(clientdn,"DUMMY USER ID");
-#endif
-/******* FLAVIA TO DO *******/
-
-    sin_addr.s_addr = htonl (soap->ip);
-    if ((hp = Cgethostbyaddr((char *)(&sin_addr), sizeof(struct in_addr), AF_INET)) == NULL)
-        clienthost = inet_ntoa (sin_addr);
-    else
-        clienthost = hp->h_name;
-    srmlogit(STORM_LOG_INFO, func, "Request by %s from %s\n", clientdn, clienthost);
 
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmSuspendRequestResponse))) == NULL ||
         (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
         return(SOAP_EOM);
     }
+
     repp->returnStatus->explanation = NULL;
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     rep->srmSuspendRequestResponse = repp;
+    
+    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
+
     return(SOAP_OK);
 }
 
@@ -1417,38 +1397,19 @@ int ns1__srmResumeRequest(struct soap *soap,
                           struct ns1__srmResumeRequestResponse_ *rep)
 {
     static const char *func = "ResumeRequest";
-    struct hostent *hp;
     struct ns1__srmResumeRequestResponse *repp;
-    struct in_addr sin_addr;
-    struct srm_srv_thread_info *thip = soap->user;
-    char clientdn[256];
-    char **fqans, *clienthost;
-    int nbfqans;
-
-/******* FLAVIA TO DO *******/
-#if defined(GSI_PLUGINS)
-    get_client_dn(soap, clientdn, sizeof(clientdn));
-    fqans = get_client_roles(soap, &nbfqans);
-#else
-    if(NULL != req->authorizationID) strcpy(clientdn,req->authorizationID);
-    else strcpy(clientdn,"DUMMY USER ID");
-#endif
-/******* FLAVIA TO DO *******/
-
-    sin_addr.s_addr = htonl (soap->ip);
-    if ((hp = Cgethostbyaddr ((char *)(&sin_addr), sizeof(struct in_addr), AF_INET)) == NULL)
-        clienthost = inet_ntoa (sin_addr);
-    else
-        clienthost = hp->h_name;
-    srmlogit(STORM_LOG_INFO, func, "Request by %s from %s\n", clientdn, clienthost);
 
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmResumeRequestResponse))) == NULL ||
         (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
         return(SOAP_EOM);
     }
+
     repp->returnStatus->explanation = NULL;
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     rep->srmResumeRequestResponse = repp;
+
+    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
+
     return(SOAP_OK);
 }
 
