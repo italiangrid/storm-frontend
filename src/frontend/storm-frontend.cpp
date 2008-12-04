@@ -41,6 +41,8 @@ extern "C" {
 #include <exception>
 
 #include "FrontendOptions.hpp"
+#include <boost/threadpool.hpp>
+#include <boost/bind.hpp>
 
 #define NAME "StoRM SRM v2.2"
 
@@ -348,55 +350,90 @@ static int srm_main(struct main_args *main_args) {
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     xmlrpc_env_clean(&env);
 
-    /* Create a pool of threads */
-    int ipool;
-    if ((ipool = Cpool_create(nThreads, NULL)) < 0) {
-        srmlogit(STORM_LOG_DEBUG, func, SRM02, "Cpool_create", sstrerror(serrno));
-        exit(SYERR);
-    }
-
-    // Initialize structure srm_srv_thread_info
-    int i;
-    for (i = 0; i < nThreads; i++) {
-        srm_srv_thread_info[i].s = -1;
-        srm_srv_thread_info[i].dbfd.idx = i;
-    }
-    srm_srv_thread_info[nThreads].s = -1;
-    srm_srv_thread_info[nThreads].dbfd.idx = -1;
+    boost::threadpool::fifo_pool thread_pool(nThreads);
 
     srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully started...\n");
 
     /******************************* main loop ******************************/
     struct soap *tsoap;
-    int thread_index;
 
     while (1) {
+
         if (soap_accept(soap_data) < 0) {
             srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror(soap_data->errnum));
             soap_done(soap_data);
             return 1;
         }
+
         if ((tsoap = soap_copy(soap_data)) == NULL) {
             srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_copy", strerror(ENOMEM));
             soap_done(soap_data);
             free(soap_data);
             return 1;
         }
-        if ((thread_index = Cpool_next_index (ipool)) < 0) {
-            srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_next_index", sstrerror(serrno));
-            return SYERR;
-        }
-        tsoap->user = &srm_srv_thread_info[thread_index];
-        if (Cpool_assign (ipool, &process_request, tsoap, 1) < 0) {
-            free(tsoap);
-            srm_srv_thread_info[thread_index].s = -1;
-            srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_assign", sstrerror(serrno));
-            return SYERR;
-        }
+
+        struct srm_srv_thread_info
+                *srm_srv_thread_info = (struct srm_srv_thread_info*) soap_malloc(tsoap,
+                        sizeof(struct srm_srv_thread_info));
+        tsoap->user = srm_srv_thread_info;
+
+        boost::threadpool::thread_pool.schedule(boost::bind(process_request, tsoap));
+
     }
     soap_done(soap_data);
     free(soap_data);
     return (0);
+
+
+
+//    /* Create a pool of threads */
+//    int ipool;
+//    if ((ipool = Cpool_create(nThreads, NULL)) < 0) {
+//        srmlogit(STORM_LOG_DEBUG, func, SRM02, "Cpool_create", sstrerror(serrno));
+//        exit(SYERR);
+//    }
+//
+//    // Initialize structure srm_srv_thread_info
+//    int i;
+//    for (i = 0; i < nThreads; i++) {
+//        srm_srv_thread_info[i].s = -1;
+//        srm_srv_thread_info[i].dbfd.idx = i;
+//    }
+//    srm_srv_thread_info[nThreads].s = -1;
+//    srm_srv_thread_info[nThreads].dbfd.idx = -1;
+
+
+//    /******************************* main loop ******************************/
+//    struct soap *tsoap;
+//    int thread_index;
+//
+//    while (1) {
+//        if (soap_accept(soap_data) < 0) {
+//            srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror(soap_data->errnum));
+//            soap_done(soap_data);
+//            return 1;
+//        }
+//        if ((tsoap = soap_copy(soap_data)) == NULL) {
+//            srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_copy", strerror(ENOMEM));
+//            soap_done(soap_data);
+//            free(soap_data);
+//            return 1;
+//        }
+//        if ((thread_index = Cpool_next_index (ipool)) < 0) {
+//            srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_next_index", sstrerror(serrno));
+//            return SYERR;
+//        }
+//        tsoap->user = &srm_srv_thread_info[thread_index];
+//        if (Cpool_assign (ipool, &process_request, tsoap, 1) < 0) {
+//            free(tsoap);
+//            srm_srv_thread_info[thread_index].s = -1;
+//            srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_assign", sstrerror(serrno));
+//            return SYERR;
+//        }
+//    }
+//    soap_done(soap_data);
+//    free(soap_data);
+//    return (0);
 }
 
 int main(int argc, char **argv) {
