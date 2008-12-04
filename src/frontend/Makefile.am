@@ -20,7 +20,9 @@ INCLUDES = -I$(top_srcdir)/src/db \
     @XMLRPC_C_CFLAGS@ \
     @GSOAPGSI_CFLAGS@ \
     -I@GSOAP_DIR@ \
-    @MYSQL_CFLAGS@
+    @MYSQL_CFLAGS@ \
+    -I$(top_srcdir)/src/external-includes/threadpool-0_2_5-src/threadpool \
+    -I@BOOST_INCLUDE_DIR@
 
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case

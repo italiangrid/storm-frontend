@@ -350,7 +350,7 @@ static int srm_main(struct main_args *main_args) {
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     xmlrpc_env_clean(&env);
 
-    boost::threadpool::fifo_pool thread_pool(nThreads);
+    boost::threadpool::fifo_pool tp(nThreads);
 
     srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully started...\n");
 
@@ -377,7 +377,7 @@ static int srm_main(struct main_args *main_args) {
                         sizeof(struct srm_srv_thread_info));
         tsoap->user = srm_srv_thread_info;
 
-        boost::threadpool::thread_pool.schedule(boost::bind(process_request, tsoap));
+        tp.schedule(boost::bind(process_request, tsoap));
 
     }
     soap_done(soap_data);
