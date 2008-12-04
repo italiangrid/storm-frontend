@@ -7,10 +7,7 @@
  * command line, configuration file and start the frontend.
  */
 
-#include "Cinit.h"
-#include "Cpool_api.h"
 #include "serrno.h"
-
 #include "srmSoapBinding.nsmap"
 #include "cgsi_plugin.h"
 #include "srm_server.h"
@@ -303,8 +300,9 @@ static int srm_main(struct main_args *main_args) {
     }
 
     if (! debugMode) { // fork and leave the daemon in background
-        if (Cinitdaemon("srmv2", NULL) < 0) {
-            exit(SYERR);
+        int pid = fork();
+        if (pid > 0) {
+            exit(0);
         }
     }
 
@@ -353,99 +351,50 @@ static int srm_main(struct main_args *main_args) {
 
     /******************************* main loop ******************************/
     struct soap *tsoap;
+    int exit_code = 0;
 
     while (1) {
 
         if (soap_accept(soap_data) < 0) {
-            srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror(soap_data->errnum));
-            soap_done(soap_data);
-            return 1;
+            srmlogit(STORM_LOG_ERROR, func, "Error in soap_accept(): %s\n", strerror(
+                    soap_data->errnum));
+            exit_code = 1;
+            break;
         }
 
         if ((tsoap = soap_copy(soap_data)) == NULL) {
-            srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_copy", strerror(ENOMEM));
-            soap_done(soap_data);
-            free(soap_data);
-            return 1;
+            srmlogit(STORM_LOG_ERROR, func, "Error in soap_copy(): %s\n", strerror(ENOMEM));
+            exit_code = 1;
+            break;
         }
 
         struct srm_srv_thread_info
                 *srm_srv_thread_info = (struct srm_srv_thread_info*) soap_malloc(tsoap,
                         sizeof(struct srm_srv_thread_info));
+
         tsoap->user = srm_srv_thread_info;
 
-        srmlogit(STORM_LOG_INFO, func, "Scheduling thread\n");
         tp.schedule(boost::bind(process_request, tsoap));
 
     }
+
+    tp.wait();
+    soap_end(soap_data);
     soap_done(soap_data);
     free(soap_data);
-    return (0);
 
-
-
-//    /* Create a pool of threads */
-//    int ipool;
-//    if ((ipool = Cpool_create(nThreads, NULL)) < 0) {
-//        srmlogit(STORM_LOG_DEBUG, func, SRM02, "Cpool_create", sstrerror(serrno));
-//        exit(SYERR);
-//    }
-//
-//    // Initialize structure srm_srv_thread_info
-//    int i;
-//    for (i = 0; i < nThreads; i++) {
-//        srm_srv_thread_info[i].s = -1;
-//        srm_srv_thread_info[i].dbfd.idx = i;
-//    }
-//    srm_srv_thread_info[nThreads].s = -1;
-//    srm_srv_thread_info[nThreads].dbfd.idx = -1;
-
-
-//    /******************************* main loop ******************************/
-//    struct soap *tsoap;
-//    int thread_index;
-//
-//    while (1) {
-//        if (soap_accept(soap_data) < 0) {
-//            srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_accept", strerror(soap_data->errnum));
-//            soap_done(soap_data);
-//            return 1;
-//        }
-//        if ((tsoap = soap_copy(soap_data)) == NULL) {
-//            srmlogit(STORM_LOG_ERROR, func, SRM02, "soap_copy", strerror(ENOMEM));
-//            soap_done(soap_data);
-//            free(soap_data);
-//            return 1;
-//        }
-//        if ((thread_index = Cpool_next_index (ipool)) < 0) {
-//            srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_next_index", sstrerror(serrno));
-//            return SYERR;
-//        }
-//        tsoap->user = &srm_srv_thread_info[thread_index];
-//        if (Cpool_assign (ipool, &process_request, tsoap, 1) < 0) {
-//            free(tsoap);
-//            srm_srv_thread_info[thread_index].s = -1;
-//            srmlogit(STORM_LOG_ERROR, func, SRM02, "Cpool_assign", sstrerror(serrno));
-//            return SYERR;
-//        }
-//    }
-//    soap_done(soap_data);
-//    free(soap_data);
-//    return (0);
+    return (exit_code);
 }
 
 int main(int argc, char **argv) {
-#if ! defined(_WIN32)
     struct main_args main_args;
-    int ret;
+
     main_args.argc = argc;
     main_args.argv = argv;
-    exit(srm_main(&main_args));
 
-#else
-    if (Cinitservice ("srmv2", &srm_main))
-    exit (SYERR);
-#endif
+    int exit_code = srm_main(&main_args);
+
+    exit(exit_code);
 }
 
 void *
