@@ -8,7 +8,7 @@
 #include "srmlogit.h"
 #include "srmv2H.h"
 #include "storm_mysql.h"
-
+#include <errno.h>
 #include <string>
 #include <map>
 #include <vector>

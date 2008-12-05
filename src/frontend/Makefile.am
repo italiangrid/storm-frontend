@@ -21,7 +21,6 @@ INCLUDES = -I$(top_srcdir)/src/db \
     @GSOAPGSI_CFLAGS@ \
     -I@GSOAP_DIR@ \
     @MYSQL_CFLAGS@ \
-    -I$(top_srcdir)/src/external-includes/threadpool-0_2_5-src/threadpool \
     -I@BOOST_INCLUDE_DIR@
 
 sbin_PROGRAMS = storm-frontend
