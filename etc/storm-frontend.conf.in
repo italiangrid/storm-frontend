@@ -1,8 +1,10 @@
 user = root
 threads.number = 5
 port = 8440
-logfile = storm-frontend.log
+logfile = @prefix@/var/log/storm-frontend.log
 debug.level = DEBUG2
+
+# Security settings
 security.disable.mapping = false
 security.disable.vomscheck = false
 
@@ -12,16 +14,14 @@ xmlrpc.host = devrb.cnaf.infn.it
 #xmlrpc.port = 8080
 #xmlrpc.path = /RPC2
 
-proxy.dir = /proxy-dir/pluto
+proxy.dir = @prefix@/var/proxy
 #proxy.user = 
 
 # Database
-db.host = devrb.cnaf.infn.it
-#db.host = devwn01.cnaf.infn.it
+db.host = localhost
 db.user = storm
-db.passwd = gorkypark
-#db.passwd = lacasadilucamag
+db.passwd = password
 
 # WSDL to be returned to a GET request
-#wsdl.file = /wsdl-file-dir/pippo.wsdl
+wsdl.file = @prefix@/wsdl/srm.v2.2.wsdl
 
