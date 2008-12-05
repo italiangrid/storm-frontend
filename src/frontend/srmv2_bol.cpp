@@ -15,22 +15,11 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
-#include <string.h>
-#include <sys/types.h>
-#include <uuid/uuid.h>
-#include "storm_functions.h"
-#include "serrno.h"
-#include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"
-
-#include <cgsi_plugin.h>
-
 #include "srmv2_filerequest_template.hpp"
 #include "bol.hpp"
-
 
 extern "C" int ns1__srmBringOnline (struct soap *soap,
                           struct ns1__srmBringOnlineRequest *req,
@@ -64,3 +53,4 @@ extern "C" int ns1__srmBringOnline (struct soap *soap,
 //        (soap, request, req, &rep->srmBringOnlineResponse);
     
 }
+

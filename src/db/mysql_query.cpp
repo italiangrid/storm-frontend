@@ -1,7 +1,4 @@
 #include "srmlogit.h"
-#include <errno.h>
-#include <serrno.h>
-#include <sys/types.h>
 #include <mysqld_error.h>
 
 #include <string>
@@ -11,8 +8,6 @@
 #include "mysql_query.hpp"
 
 using namespace std;
-
-
 
 static pair<MYSQL_FIELD *, MYSQL_RES *>  * _query_init(struct srm_dbfd *dbfd, string query)
 {
@@ -38,7 +33,6 @@ static pair<MYSQL_FIELD *, MYSQL_RES *>  * _query_init(struct srm_dbfd *dbfd, st
 
     return new pair<MYSQL_FIELD *, MYSQL_RES *>(fields, res);
 }
-
 
 namespace storm_db {
 
@@ -172,61 +166,3 @@ namespace storm_db {
 
 } // namespace storm_db
 
-// int main(int argc, char **argv)
-// {
-
-//     if(argc<2){
-//         cerr << "Usage: "<<argv[0]<<" query"<<endl;
-//         return EINVAL;
-//     }
-//     bool call_map=false;
-//     if(argc>2)
-//         if(string("-m") == argv[2])
-//             call_map=true;
-
-//     struct srm_dbfd dbfd;
-    
-//     (void) mysql_init(&dbfd.mysql);
-//     if(!mysql_real_connect(&dbfd.mysql, "localhost", "storm", "storm", "storm_db", 0, NULL, 0)) {
-//         cerr << "Connection error: "<<mysql_error(&dbfd.mysql)<<endl;
-//         return ECONNABORTED;
-//     }
-    
-//     if(call_map){
-//         map<string, vector<string> > *result; 
-//         try {
-//             result = map_exec_query(&dbfd, argv[1]);
-//         }catch (int i){
-//             return 1;
-//         }
-//         for(map<string, vector<string> >::const_iterator i = result->begin();
-//             i != result->end();
-//             ++i){
-//             cout << i->first<< ":  ";
-//             for(vector<string>::const_iterator j = i->second.begin();
-//                 j != i->second.end();
-//                 j++)
-//                 cout << *j <<"|";
-//             cout << endl;
-//         } 
-//     }else{
-//         vector<map<string,string> > *result;
-//         try {
-//             result = vector_exec_query(&dbfd, argv[1]);
-//         }catch (int i){
-//             return 1;
-//         }
-//         for(vector<map<string, string> >::const_iterator i = result->begin();
-//             i != result->end();
-//             ++i){
-//             for(map<string, string>::const_iterator j = i->begin();
-//                 j != i->end();
-//                 j++)
-//                     cout << j->first << " : "<<j->second <<endl;
-//             cout << endl;
-//         } 
-
-//     }
-//     return 0;
-// }
-// 

@@ -3,22 +3,18 @@
  * All rights reserved
  */
 
-//#include "srmv2H.h"
-
-#include <errno.h>
-#include <sys/types.h>
 #include <mysqld_error.h>
 #include "storm_functions.h"
-#include "srm_server.h"
-#include "serrno.h"
 #include "srmlogit.h"
 #include "srmv2H.h"
+#include "storm_mysql.h"
 
 #include <string>
 #include <map>
 #include <vector>
 
 int serrno = 0;
+int seinternal = -1;
 
 using namespace std;
 
@@ -27,15 +23,13 @@ map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
     static const char * const func = "exec_query";
     if (mysql_query(&dbfd->mysql, query.c_str())) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n", mysql_error (&dbfd->mysql), query.c_str());
-        int err = SEINTERNAL;
-        throw err;
+        throw seinternal;
     }
 
     MYSQL_RES *res;
     if ((res = mysql_store_result (&dbfd->mysql)) == NULL) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_store_res error: %s\n", mysql_error (&dbfd->mysql));
-        int err = SEINTERNAL;
-        throw err;
+        throw seinternal;
     }
 
     int num_fields = mysql_num_fields(res);
@@ -76,7 +70,7 @@ EXTERN_C int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct srm
         sleep(RETRYI);
     }
     srmlogit (STORM_LOG_ERROR, func, "Too many connection attempts to the DB. Cowardly refusing to continue.\n");
-    serrno = SEINTERNAL;
+    serrno = seinternal;
     return (-1);
 }
 
@@ -134,12 +128,12 @@ EXTERN_C int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, co
     
     if (mysql_query(&dbfd->mysql, sql_stmt)) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s\n", mysql_error (&dbfd->mysql));
-        serrno = SEINTERNAL;
+        serrno = seinternal;
         return(-1);
     }
     if ((*res = mysql_store_result (&dbfd->mysql)) == NULL) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_store_res error: %s\n", mysql_error (&dbfd->mysql));
-        serrno = SEINTERNAL;
+        serrno = seinternal;
         return(-1);
     }
     return(0);
@@ -718,7 +712,7 @@ EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
         else {
             srmlogit (STORM_LOG_ERROR, func, "INSERT error: %s\n",
                 mysql_error (&dbfd->mysql));
-            serrno = SEINTERNAL;
+            serrno = seinternal;
         }
         return (-1);
     }
@@ -737,7 +731,6 @@ EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
 
    in case of error, serrno can be:
    ENOMEM     => error allocating memory (probably in snprintf)
-   SEINTERNAL => error executing query (check log for query and error(
 */
 EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd, 
                            struct storm_get_filereq *gfr_entry, 
@@ -786,7 +779,7 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
         }
         if(mysql_query(&dbfd->mysql, sql_stmt)){
             srmlogit(STORM_LOG_ERROR, func, "Error in query = '%s', error: '%s'",sql_stmt, mysql_error(&dbfd->mysql));
-            serrno = SEINTERNAL;
+            serrno = seinternal;
             return -1;
         }
         diroptionID = (storm_id_t) mysql_insert_id(&dbfd->mysql);       
@@ -807,7 +800,7 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
     }
     if(mysql_query(&dbfd->mysql, sql_stmt)){
         srmlogit(STORM_LOG_ERROR, func, "Error in query = '%s', error: '%s'",sql_stmt, mysql_error(&dbfd->mysql));
-        serrno = SEINTERNAL;
+        serrno = seinternal;
         return -2;
     }
     getID = mysql_insert_id(&dbfd->mysql);
@@ -823,7 +816,7 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
     }
     if(mysql_query(&dbfd->mysql, sql_stmt)){
         srmlogit(STORM_LOG_ERROR, func, "Error in query = '%s', error: '%s'",sql_stmt, mysql_error(&dbfd->mysql));
-        serrno = SEINTERNAL;
+        serrno = seinternal;
         return -3;
     }
 
@@ -1105,7 +1098,7 @@ EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
         if (mysql_errno(&dbfd->mysql) == ER_DUP_ENTRY) serrno = EEXIST;
         else {
             srmlogit (STORM_LOG_ERROR, func, "INSERT error: %s\n", mysql_error (&dbfd->mysql));
-            serrno = SEINTERNAL;
+            serrno = seinternal;
         }
         return(-1);
     }
@@ -1123,13 +1116,13 @@ EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
                 if(ER_NO_REFERENCED_ROW == mysql_errno(&dbfd->mysql))
                     no_proto++; /* Protocol not supported */
                 srmlogit(STORM_LOG_ERROR, func, "Error inserting protocol %s. Continuing. query = '%s', error: '%s'\n",storm_req->protocols[i], sql_stmt, mysql_error(&dbfd->mysql));
-                serrno = SEINTERNAL;
+                serrno = seinternal;
             }else
                inserted++;
         }
         if(0 == inserted){ /* None of specified protocols is supported.*/
             srmlogit(STORM_LOG_ERROR, func, "None of specified protocol is supported\n");
-            serrno = SEINTERNAL;
+            serrno = seinternal;
             if(no_proto == i)
                 return -ENOPROTOOPT;
             else
@@ -1209,7 +1202,7 @@ EXTERN_C int storm_insert_pfr_entry(struct srm_dbfd *dbfd, struct storm_put_file
         else {
             srmlogit (STORM_LOG_ERROR, func, "INSERT error: %s\n",
                 mysql_error (&dbfd->mysql));
-            serrno = SEINTERNAL;
+            serrno = seinternal;
         }
         return (-1);
     }
@@ -1246,7 +1239,7 @@ EXTERN_C int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_req 
         else {
             srmlogit (STORM_LOG_ERROR, func, "INSERT error: %s\n",
                 mysql_error (&dbfd->mysql));
-            serrno = SEINTERNAL;
+            serrno = seinternal;
         }
         return (-1);
     }
@@ -1473,6 +1466,4 @@ EXTERN_C int storm_list_protocol(struct srm_dbfd *dbfd,
     mysql_free_result(dblistptr);
     return(i);
 }
-
-
 

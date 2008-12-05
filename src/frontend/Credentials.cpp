@@ -1,5 +1,5 @@
 #include "Credentials.hpp"
-
+#include "srmlogit.h"
 #include <cgsi_plugin.h>
 #include "FrontendConfiguration.hpp"
 

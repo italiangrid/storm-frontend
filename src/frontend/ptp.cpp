@@ -23,6 +23,8 @@
 
 #include "ptp.hpp"
 #include "mysql_query.hpp"
+#include "storm_mysql.h"
+
 using namespace storm;
 
 void

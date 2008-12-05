@@ -4,19 +4,17 @@
 
 #ifndef _STORM_FUNCTIONS_H
 #define _STORM_FUNCTIONS_H
-//#if defined(_WIN32)
-//#include <sys/utime.h>
-//#else
+
 #include <utime.h>
-//#endif
 #include <mysql.h>
 #include "srm_server.h"
 #include "storm_constants.h"
-#include "osdep.h"
+//#include "osdep.h"
 
-int *C__storm_errno();
-#define storm_errno (*C__storm_errno())
+//int *C__storm_errno();
+//#define storm_errno (*C__storm_errno())
 
+/*
 #define RETURN(x) \
         { \
         if ( x != 0) { srmlogit (STORM_LOG_ERROR, func, "returns %d\n", (x)); }\
@@ -30,7 +28,7 @@ int *C__storm_errno();
         }
 
 #define END_TRANS_AND_RETURN(x) RETURN(x)
-
+*/
                         /* ACL types */
 
 #define STORM_ACL_USER_OBJ        1
@@ -81,17 +79,5 @@ int *C__storm_errno();
 #define itoa(buf, var)  (snprintf(buf, sizeof(var)*2+2, "0x%x", var),buf)
 #define u64tostr(var, buf, i)  (snprintf(buf, sizeof(var)*2+2, "0x%x", var),buf)
 
-
-/* DB operations */
-
-
-
-/* Database operations */
-EXTERN_C int storm_opendb _PROTO((char *, char *, char *, struct srm_dbfd *));
-EXTERN_C int storm_start_tr _PROTO((int, struct srm_dbfd *));
-EXTERN_C int storm_end_tr _PROTO((struct srm_dbfd *));
-EXTERN_C void storm_abort_tr _PROTO((struct srm_dbfd *));
-EXTERN_C void set_savepoint _PROTO((struct srm_dbfd *, const char *));
-EXTERN_C void rollback_to_savepoint _PROTO((struct srm_dbfd *, const char *));
 #endif
 

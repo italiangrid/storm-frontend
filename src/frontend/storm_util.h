@@ -13,6 +13,9 @@ extern "C" {
 
 /* Type definitions */
 typedef unsigned long long unsignedLong64;
+typedef time_t storm_time_t;
+typedef long long storm_size_t;
+typedef long storm_id_t;
 
 /* Error code for the functions check_* and split_surl() */
 #define SURL_VALID                   0

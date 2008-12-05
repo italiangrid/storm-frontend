@@ -18,9 +18,6 @@
  */
 
 // C includes
-#include "storm_functions.h"
-#include "serrno.h"
-#include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"
@@ -35,6 +32,7 @@
 
 // parent
 #include "file_request.hpp"
+
 namespace storm {
 class ptp : public storm::file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse> {
 public:

@@ -27,7 +27,7 @@
 #define FS_RDONLY   2
 
             /* Long options for Disk pool manager utilities */
-
+/*
 #define OPT_DEF_FSZ 0
 #define OPT_FS      1
 #define OPT_FS_SERVER   2
@@ -43,7 +43,7 @@
 #define OPT_PUT_RETENP  12
 #define OPT_GC_START    13
 #define OPT_GC_STOP 14
-
+*/
             /* Disk pool manager utilities exit codes */
 
 #define USERR   1   /* user error */

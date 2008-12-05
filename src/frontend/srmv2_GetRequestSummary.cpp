@@ -19,16 +19,11 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <sys/types.h>
-#include <uuid/uuid.h>
-#include "storm_functions.h"
-#include "serrno.h"
-#include "srm_server.h"
 #include "srmv2H.h"
-#include "storm_util.h"
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
+#include "storm_mysql.h"
 
 #include <cgsi_plugin.h>
 

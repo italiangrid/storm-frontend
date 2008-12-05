@@ -7,33 +7,22 @@
  * command line, configuration file and start the frontend.
  */
 
-#include "serrno.h"
 #include "srmSoapBinding.nsmap"
 #include "cgsi_plugin.h"
 #include "srm_server.h"
 #include "srmv2H.h"
-
 #include "storm_functions.h"
 #include "storm_limits.h"
-
 #include "storm_util.h"
 #include "srmlogit.h"
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <pwd.h>
-
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
-
 #include <exception>
-
 #include "FrontendConfiguration.hpp"
 #include <boost/threadpool.hpp>
 #include <boost/bind.hpp>

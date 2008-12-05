@@ -8,11 +8,15 @@
 #ifndef STORM_MYSQL_H_
 #define STORM_MYSQL_H_
 
+#include "storm_util.h"
+#include "osdep.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef MYSQL_RES *DBLISTPTR;
-typedef time_t storm_time_t;
-typedef long long storm_size_t;
 typedef char storm_dbrec_addr[21];
-typedef long storm_id_t;
 
 struct storm_req {
     char            client_dn[256];
@@ -152,4 +156,17 @@ struct storm_acl {
         unsigned char   a_perm;
 };
 
+/* Prototype definitions */
+int storm_opendb(char *, char *, char *, struct srm_dbfd *);
+int storm_start_tr(int, struct srm_dbfd *);
+int storm_end_tr(struct srm_dbfd *);
+void storm_abort_tr(struct srm_dbfd *);
+void set_savepoint(struct srm_dbfd *, const char *);
+void rollback_to_savepoint(struct srm_dbfd *, const char *);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* STORM_MYSQL_H_ */
+

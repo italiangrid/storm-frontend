@@ -20,6 +20,7 @@
 #include "srmv2H.h"
 #include "srm_server.h"
 #include "file_status.hpp"
+#include "storm_mysql.h"
 #include <cgsi_plugin.h>
 
 using namespace std;

@@ -22,12 +22,9 @@ extern "C" {
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 #include <voms_apic.h>
-#include "storm_util.h"
 }
 
-
 #include "srmlogit.h"
-#include "storm_functions.h"
 #include "srm_server.h"
 
 #include <exception>
@@ -36,6 +33,7 @@ extern "C" {
 #include "Credentials.hpp"
 
 #include "mysql_query.hpp"
+#include "storm_mysql.h"
 #include "sql_string.hpp"
 
 using namespace std;

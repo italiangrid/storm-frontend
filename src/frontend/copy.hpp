@@ -18,9 +18,6 @@
  */
 
 // C includes
-#include "storm_functions.h"
-#include "serrno.h"
-#include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"

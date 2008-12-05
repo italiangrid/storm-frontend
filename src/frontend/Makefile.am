@@ -42,8 +42,7 @@ storm_frontend_LDADD = -lstormfrontend -lstormdb \
     @BOOST_LDADD@ \
     -lz -lm -luuid -lidn
 
-noinst_INCLUDES = osdep.h serrno.h storm_api.h \
-  srm_server.h storm_constants.h storm_functions.h \
+noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
   storm_limits.h storm_util.h srmlogit.h \
   xmlrpc_decode.h xmlrpc_encode.h \
   $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \
@@ -65,6 +64,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
     xmlrpc_decode.c xmlrpc_encode.c \
+    storm_util.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c \
     stdsoap2.c \
