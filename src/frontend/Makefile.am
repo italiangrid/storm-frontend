@@ -54,16 +54,13 @@ noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
 noinst_LTLIBRARIES = libstormfrontend.la
 
 libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
-    bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
-    srmv2_ptg.cpp ptg.cpp ptg.hpp \
-    copy.cpp copy.hpp copy_status.cpp copy_status.hpp \
-    file_request.hpp file_status.hpp srmv2_filerequest_template.hpp \
     srmv2_status_template.hpp \
-    get_status.cpp get_status.hpp srmv2_status_get.cpp \
+    bol.cpp bol.hpp bol_status.cpp bol_status.hpp srmv2_bol.cpp srmv2_status_bol.cpp \
     ptp.cpp ptp.hpp put_status.cpp put_status.hpp srmv2_ptp.cpp srmv2_status_put.cpp \
+    ptg.cpp ptg.hpp get_status.cpp get_status.hpp srmv2_ptg.cpp srmv2_status_get.cpp \
+    copy.cpp copy.hpp copy_status.cpp copy_status.hpp srmv2_copy.cpp  srmv2_status_copy.cpp \
+    file_request.hpp file_status.hpp srmv2_filerequest_template.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
-    srmv2_bol.cpp srmv2_status_bol.cpp \
-    srmv2_copy.cpp  srmv2_status_copy.cpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
@@ -77,7 +74,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
 
 storm_frontend_DEPENDENCIES = libstormfrontend.la
 
-stdsoap2.c:
+stdsioap2.c:
 	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_DIR@)"
 	/bin/cp @GSOAP_DIR@/stdsoap2.c .
 

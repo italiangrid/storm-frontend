@@ -22,11 +22,6 @@ int serrno = 0;
 
 using namespace std;
 
-EXTERN_C void storm_init_dbpkg()
-{
-    return ;
-}
-
 map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
 {
     static const char * const func = "exec_query";
