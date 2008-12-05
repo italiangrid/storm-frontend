@@ -109,10 +109,10 @@ ostream& operator<<(ostream& os, const vector<T>& v)
 }
 
 
-class FrontendOptions {
+class FrontendConfiguration {
 public:
-    FrontendOptions();
-    virtual ~FrontendOptions();
+    FrontendConfiguration();
+    virtual ~FrontendConfiguration();
 
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
