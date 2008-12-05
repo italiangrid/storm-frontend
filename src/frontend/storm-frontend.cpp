@@ -40,12 +40,10 @@
 
 #define NAME "StoRM SRM v2.2"
 
-struct srm_srv_thread_info srm_srv_thread_info[SRMV2_NBTHREADS_MAX];
 char *db_pwd;
 char *db_srvr;
 char *db_user;
 
-char* SRMV2_PROXY_DIR;
 char* xmlrpc_endpoint;
 char* wsdl_file;
 char** supported_protocols;
@@ -229,9 +227,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    // Proxy directory
-    SRMV2_PROXY_DIR = strdup(proxy_dir.c_str());
-
     // Proxy User
     if (setProxyUserGlobalVariables(proxy_user) != 0) {
         fprintf(stderr, "Error: request invalid user \"%s\" for proxy dir.\n", proxy_user.c_str());
@@ -271,7 +266,7 @@ int main(int argc, char** argv)
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), log_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), SRMV2_PROXY_DIR);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
