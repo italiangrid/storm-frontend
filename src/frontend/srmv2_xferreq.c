@@ -21,377 +21,6 @@
 extern int nb_supported_protocols;
 extern char **supported_protocols;
 
-/*          Data Transfer Functions             */
-
-//static int marshall_CPR(struct soap *soap, struct ns1__TCopyRequestFileStatus *repfilep, struct storm_copy_filereq *cpr_entry)
-//{
-//
-//    if (repfilep->fileSize = soap_malloc(soap, sizeof(unsignedLong64)))
-//        *(repfilep->fileSize) = cpr_entry->actual_size;
-//
-//    if ((repfilep->sourceSURL = soap_strdup(soap, cpr_entry->from_surl)) == NULL)
-//        return(-1);
-//
-//    if (repfilep->remainingFileLifetime = soap_malloc(soap, sizeof(int))) {
-//        if (cpr_entry->lifetime)
-//            *(repfilep->remainingFileLifetime) = *(cpr_entry->lifetime);
-//        else
-//            *(repfilep->remainingFileLifetime) = 0;
-//    }
-//
-//    repfilep->status->statusCode = cpr_entry->status;
-//
-//    if (*cpr_entry->errstring)
-//        repfilep->status->explanation = soap_strdup(soap, cpr_entry->errstring);
-//
-//    if ((repfilep->targetSURL = soap_strdup(soap, cpr_entry->to_surl)) == NULL)
-//        return(-1);
-//
-//    return (0);
-//}
-//
-//static int marshall_GFR (struct soap *soap, struct ns1__TGetRequestFileStatus *repfilep, struct storm_get_filereq *gfr_entry, char *protocol)
-//{
-//    char *p;
-//    char turl[ST_MAXSFNLEN+1];
-//
-//    if (NULL == repfilep || NULL == gfr_entry)
-//        return -1;
-//
-//    if ((repfilep->fileSize = soap_malloc(soap, sizeof(unsignedLong64))))
-//        *(repfilep->fileSize) = gfr_entry->actual_size;
-//
-//    if ((repfilep->sourceSURL = soap_strdup(soap, gfr_entry->from_surl)) == NULL)
-//        return(-1);
-//
-//    if (repfilep->remainingPinTime = soap_malloc(soap, sizeof(int))) {
-//        if (gfr_entry->lifetime)
-//            *(repfilep->remainingPinTime) = *(gfr_entry->lifetime);
-//        else
-//            *(repfilep->remainingPinTime) = 0;
-//    }
-//
-//    repfilep->status->statusCode = gfr_entry->status;
-//
-//    if (*gfr_entry->errstring)
-//        repfilep->status->explanation = soap_strdup(soap, gfr_entry->errstring);
-//
-//    if (*gfr_entry->pfn) {
-//        sprintf(turl,"%s",gfr_entry->pfn);
-//        repfilep->transferURL = soap_strdup(soap, turl);
-//    }
-//
-//    return (0);
-//}
-//
-//static int marshall_PFR(struct soap *soap, struct ns1__TPutRequestFileStatus *repfilep,
-//                 struct storm_put_filereq *pfr_entry, char *protocol)
-//{
-//    char *p;
-//    char turl[ST_MAXSFNLEN+1];
-//
-//    if (repfilep->fileSize = soap_malloc(soap, sizeof(unsignedLong64)))
-//        *(repfilep->fileSize) = pfr_entry->actual_size;
-//
-//    if ((repfilep->SURL = soap_strdup(soap, pfr_entry->to_surl)) == NULL)
-//        return(-1);
-//
-//    if (repfilep->remainingPinLifetime = soap_malloc(soap, sizeof(int))) {
-//        if (pfr_entry->lifetime)
-//            *(repfilep->remainingPinLifetime) = *(pfr_entry->lifetime);
-//        else
-//            *(repfilep->remainingPinLifetime) = 0;
-//    }
-//
-//    /*
-//     * @TODO FileLifetime, for the moment is equal to PinLifeTime
-//     */
-//
-//    if (repfilep->remainingFileLifetime = soap_malloc(soap, sizeof(int))) {
-//        if (pfr_entry->lifetime)
-//            *(repfilep->remainingFileLifetime) = *(pfr_entry->lifetime);
-//        else
-//            *(repfilep->remainingFileLifetime) = 0;
-//    }
-//
-//
-//    repfilep->status->statusCode = pfr_entry->status;
-//
-//    if (*pfr_entry->errstring)
-//        repfilep->status->explanation = soap_strdup(soap, pfr_entry->errstring);
-//
-//    if (*pfr_entry->pfn) {
-//        sprintf(turl, "%s", pfr_entry->pfn);
-//        repfilep->transferURL = soap_strdup(soap, turl);
-//    }
-//
-//    /*
-//     * @TODO ArrayOfTextraInfo
-//     */
-//    repfilep->transferProtocolInfo = NULL;
-//
-//    return (0);
-//}
-//
-//
-//
-//static int storm_req_fill_filetype(int ftype, struct storm_req *request)
-//{
-//    switch(ftype){
-//    case VOLATILE:
-//        request->f_type = DB_FILE_TYPE_VOLATILE;
-//        break;
-//    case DURABLE:
-//        request->f_type = DB_FILE_TYPE_DURABLE;
-//        break;
-//    case PERMANENT:
-//        request->f_type = DB_FILE_TYPE_PERMANENT;
-//        break;
-//    default:
-//        return EINVAL;
-//    }
-//    return 0;
-//}
-//
-///* Fill the storm_req struct "request" with protocols read from the
-// * ns1__TTransferParameters struct.  In case of error, then the
-// * function try to free() the memory already allocated.  To free() the
-// * request->protocols array, please, call free_storm_req_protocols().
-// */
-//static int storm_req_fill_transfer_params(const struct ns1__TTransferParameters *tparam, struct storm_req *request)
-//{
-//    int size=0, i=0;
-//    if(NULL == request ||
-//       NULL == tparam)
-//        return EINVAL;
-//
-//    /* Fill Access Pattern */
-//    if(NULL != tparam->accessPattern){
-//        switch(*tparam->accessPattern){
-//        case TRANSFER_USCOREMODE:
-//            request->conn_type = DB_ACCESS_PATTERN_TRANSFER;
-//            break;
-//        case PROCESSING_USCOREMODE:
-//            request->conn_type = DB_ACCESS_PATTERN_PROCESS;
-//            break;
-//        default:
-//            return EINVAL;
-//        }
-//    }else
-//        request->conn_type = DB_ACCESS_PATTERN_UNKNOWN;
-//
-//    /* Fill Connection Type */
-//    if(NULL != tparam->connectionType){
-//        switch(*tparam->connectionType){
-//        case WAN:
-//            request->conn_type = DB_CONN_TYPE_WAN;
-//            break;
-//        case LAN:
-//            request->conn_type = DB_CONN_TYPE_LAN;
-//            break;
-//        default:
-//            return EINVAL;
-//        }
-//    }else
-//        request->conn_type = DB_CONN_TYPE_UNKNOWN;
-//
-//    /* Fill Array of Client Networks NOT IMPLEMENTED*/
-//    request->client_networks = NULL;
-//
-//    /* Fill Protocol List */
-//    if(NULL == tparam->arrayOfTransferProtocols ||
-//       0 >= tparam->arrayOfTransferProtocols->__sizestringArray)
-//        return EINVAL;
-//    size = tparam->arrayOfTransferProtocols->__sizestringArray;
-//    request->protocols = calloc(size+1, sizeof(char *)); /* size+1 because this is a null-terminated array */
-//    if(NULL == request->protocols)
-//        return ENOMEM;
-//
-//    for(i = 0; i< size; i++){
-//        request->protocols[i] = strdup(tparam->arrayOfTransferProtocols->stringArray[i]);
-//        if(NULL == request->protocols[i]){
-//            free_storm_req_transfer_params(request);
-//            free(request->protocols);
-//            return ENOMEM;
-//        }
-//    }
-//
-//    request->nr_waiting = request->nbreqfiles;
-//    return 0;
-//}
-//
-//
-///* This function return:
-//   0        Success
-//   EINVAL   invalid argument
-//   -1       invalid protocol list
-//   -2       invalid file type
-//
-//    IGNORED char*                                authorizationID                0:1;//nillable
-//    ???IGNORED struct ns1__ArrayOfTGetFileRequest*  arrayOfFileRequests           ;
-//    char*                                userRequestDescription         0:1;//nillable
-//    IGNORED struct ns1__ArrayOfTExtraInfo*       storageSystemInfo              0:1;//nillable
-//    enum ns1__TFileStorageType*          desiredFileStorageType         0:1;//nillable
-//    IGNORED int*                                 desiredTotalRequestTime        0:1;//nillable
-//    int*                                 desiredPinLifeTime             0:1;//nillable
-//    IGNORED char*                                targetSpaceToken               0:1;//nillable
-//    IGNORED struct ns1__TRetentionPolicyInfo*    targetFileRetentionPolicyInfo  0:1;//nillable
-//    struct ns1__TTransferParameters*     transferParameters             0:1;//nillable
-//
-//*/
-//static int storm_req_fill_from_get(struct ns1__srmPrepareToGetRequest *req,
-//                                   struct storm_req *request)
-//{
-//    int ret;
-//    if(NULL == req
-//       || NULL == request
-//       || NULL == req->arrayOfFileRequests)
-//        return EINVAL;
-//
-//    strncpy(request->r_type, DB_GET_REQUEST, sizeof(request->r_type)-1);
-//
-//    /* Fill protocols */
-//    if(NULL == req->transferParameters)
-//        request->protocols = NULL;
-//    else{
-//        ret = storm_req_fill_transfer_params(req->transferParameters, request);
-//        if(0 != ret)
-//            return -1;
-//    }
-//
-//    if(NULL != req->userRequestDescription) {
-//        // 'request->u_token' will have the correct syntax for the MYSQL query.
-//        strncpy(&(request->u_token[1]), req->userRequestDescription, sizeof(request->u_token)-3);
-//        request->u_token[0] = '\'';
-//        request->u_token[strlen(request->u_token)] = '\'';
-//    }
-//
-//    /* File Type */
-//    if(NULL != req->desiredFileStorageType){
-//        if(storm_req_fill_filetype(*req->desiredFileStorageType, request))
-//            return -2;
-//    }else
-//        request->f_type = DB_FILE_TYPE_UNKNOWN;
-//
-//    /* desiredTotalRequestTime NOT IMPLEMENTED */
-//    request->retrytime = -1;
-//
-//    /* desiredPinLifeTime */
-//    if(NULL != req->desiredPinLifeTime)
-//        request->pinlifetime = *req->desiredPinLifeTime;
-//    else
-//        request->pinlifetime = -1;
-//
-//    /* targetSpaceToken NOT IMPLEMENTED */
-//    /* targetFileRetentionPolicyInfo NOT IMPLEMENTED */
-//
-//    request->nbreqfiles = req->arrayOfFileRequests->__sizerequestArray;
-//
-//    /* Fill other parameters with dummy value*/
-//    request->status = SRM_USCOREREQUEST_USCOREQUEUED;
-//    memset(request->errstring, 0, sizeof(request->errstring));
-//    request->nr_completed = 0;
-//    request->nr_failed = 0;
-//    return 0;
-//}
-//
-//
-//static int gfr_entry_fill(struct ns1__TGetFileRequest *file, struct storm_get_filereq *gfr)
-//{
-//    if(NULL == gfr || NULL == file)
-//        return EINVAL;
-//    int i=0;
-//    strncpy(gfr->surl, file->sourceSURL, ST_MAXSFNLEN);
-//
-//    gfr->status = SRM_USCOREREQUEST_USCOREQUEUED;
-//
-//    if(NULL == file->dirOption)
-//        gfr->diroption = NULL;
-//    else{ /* fill DirOption fields */
-//        gfr->diroption = calloc(1, sizeof(struct storm_diroption));
-//        if(NULL == gfr->diroption)
-//            return ENOMEM;
-//
-//        /* SourceADirectory */
-//        gfr->diroption->srcdir = file->dirOption->isSourceADirectory;
-//
-//        /* AllLevelRecursive */
-//        if(NULL != file->dirOption->allLevelRecursive)
-//            gfr->diroption->recursive = *file->dirOption->allLevelRecursive;
-//        else
-//            gfr->diroption->recursive = -1;
-//
-//        /* numOfLevels */
-//        if(NULL != file->dirOption->numOfLevels)
-//            gfr->diroption->numlevel = *file->dirOption->numOfLevels;
-//        else
-//            gfr->diroption->numlevel = -1;
-//    }
-//    return 0;
-//}
-//
-///* This function allocate an array of struct storm_get_filereq. Please, call
-// * gfr_entry_array_free to free() the memory allocated by this
-// * function.
-// *
-// * This function returns:
-// *    EINVAL  => invalid argument
-// *    ENOMEM  => unable to allocate memory
-// */
-//static int gfr_entry_array_fill(struct ns1__srmPrepareToGetRequest *req,
-//                          struct storm_get_filereq ***gfr_array_ptr)
-//{
-//    int i;
-//    int size;
-//    struct storm_get_filereq **gfr_array;
-//    if(NULL == req ||
-//       NULL == req->arrayOfFileRequests ||
-//       NULL == gfr_array_ptr)
-//        return EINVAL;
-//
-//    size = req->arrayOfFileRequests->__sizerequestArray;
-//    /* allocating memory for the array */
-//    *gfr_array_ptr =
-//        calloc(size+1, sizeof(struct storm_get_filereq *));  /* gfr_array will be NULL-terminated */
-//    if(NULL == *gfr_array_ptr)
-//        return ENOMEM;
-//
-//    /* allocating and filling the members of the array */
-//    gfr_array = *gfr_array_ptr;
-//    for(i=0; i<size; i++){
-//        gfr_array[i] = calloc(req->arrayOfFileRequests->__sizerequestArray, sizeof(struct storm_get_filereq ));
-//        if(NULL == gfr_array[i]){
-//            free_gfr_entry_array(*gfr_array_ptr);
-//            return ENOMEM;
-//        }
-//
-//        if(0 != gfr_entry_fill(req->arrayOfFileRequests->requestArray[i], gfr_array[i])){
-//            free_gfr_entry_array(*gfr_array_ptr);
-//            return EINVAL;
-//        }
-//    }
-//    return 0;
-//}
-//
-//static int ptgstatus_fill_from_getreq(struct soap *soap,
-//                                      struct ns1__srmStatusOfGetRequestResponse *rep,
-//                                      struct storm_get_filereq **gfr_array)
-//{
-//
-//
-//    return 0;
-//}
-//
-//static int storm_req_fill_from_put()
-//{
-//    return 0;
-//}
-//
-//static int storm_req_fill_from_copy()
-//{
-//    return 0;
-//}
-
 /***************************************************************************************/
 /*************************         SRM v2.2 ReleaseFiles       *************************/
 /***************************************************************************************/
@@ -1371,50 +1000,6 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
     return(SOAP_OK);
 }
 
-int ns1__srmSuspendRequest(struct soap *soap,
-                           struct ns1__srmSuspendRequestRequest *req,
-                           struct ns1__srmSuspendRequestResponse_ *rep)
-{
-    static const char *func = "SuspendRequest";
-    struct ns1__srmSuspendRequestResponse *repp;
-
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmSuspendRequestResponse))) == NULL ||
-        (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
-        return(SOAP_EOM);
-    }
-
-    repp->returnStatus->explanation = NULL;
-    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-    rep->srmSuspendRequestResponse = repp;
-
-    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
-
-    return(SOAP_OK);
-}
-
-int ns1__srmResumeRequest(struct soap *soap,
-                          struct ns1__srmResumeRequestRequest *req,
-                          struct ns1__srmResumeRequestResponse_ *rep)
-{
-    static const char *func = "ResumeRequest";
-    struct ns1__srmResumeRequestResponse *repp;
-
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmResumeRequestResponse))) == NULL ||
-        (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
-        return(SOAP_EOM);
-    }
-
-    repp->returnStatus->explanation = NULL;
-    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-    rep->srmResumeRequestResponse = repp;
-
-    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
-
-    return(SOAP_OK);
-}
-
-
-
 /**
  * This function is to discover what transfer protocols are supported.
  */
@@ -1710,4 +1295,46 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     extraInfoArray[1]->value = soap_strdup(soap, version);
 
     return SOAP_OK;
+}
+
+int ns1__srmSuspendRequest(struct soap *soap,
+                           struct ns1__srmSuspendRequestRequest *req,
+                           struct ns1__srmSuspendRequestResponse_ *rep)
+{
+    static const char *func = "SuspendRequest";
+    struct ns1__srmSuspendRequestResponse *repp;
+
+    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmSuspendRequestResponse))) == NULL ||
+        (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
+        return(SOAP_EOM);
+    }
+
+    repp->returnStatus->explanation = NULL;
+    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
+    rep->srmSuspendRequestResponse = repp;
+
+    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
+
+    return(SOAP_OK);
+}
+
+int ns1__srmResumeRequest(struct soap *soap,
+                          struct ns1__srmResumeRequestRequest *req,
+                          struct ns1__srmResumeRequestResponse_ *rep)
+{
+    static const char *func = "ResumeRequest";
+    struct ns1__srmResumeRequestResponse *repp;
+
+    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmResumeRequestResponse))) == NULL ||
+        (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
+        return(SOAP_EOM);
+    }
+
+    repp->returnStatus->explanation = NULL;
+    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
+    rep->srmResumeRequestResponse = repp;
+
+    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
+
+    return(SOAP_OK);
 }
