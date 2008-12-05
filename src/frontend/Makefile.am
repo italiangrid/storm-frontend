@@ -72,7 +72,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
 
 storm_frontend_DEPENDENCIES = libstormfrontend.la
 
-stdsioap2.c:
+stdsoap2.c:
 	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_DIR@)"
 	/bin/cp @GSOAP_DIR@/stdsoap2.c .
 
