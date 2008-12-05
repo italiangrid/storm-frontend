@@ -22,7 +22,7 @@ int get_supported_protocols(char ***sup_proto) {
     int nbprots = 0;
     int protlen = 10;
     char ** sup_protocols;
-    DBLISTPTR dblistptr;
+//    DBLISTPTR dblistptr;
 
     /* Connect to the database if not done yet */
 

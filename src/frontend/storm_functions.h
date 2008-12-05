@@ -86,8 +86,8 @@ int *C__storm_errno();
 
 //typedef char storm_dbrec_addr[21];
 typedef MYSQL_RES *DBLISTPTR;
-//typedef time_t storm_time_t;
-//typedef long long storm_size_t;
+typedef time_t storm_time_t;
+typedef long long storm_size_t;
 //typedef long storm_id_t;
 
 //struct storm_req {
