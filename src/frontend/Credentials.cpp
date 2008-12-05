@@ -1,18 +1,19 @@
 #include "Credentials.hpp"
 
 #include <cgsi_plugin.h>
+#include "FrontendConfiguration.hpp"
 
 using namespace storm;
 
 Credentials::Credentials(struct soap *soap)
 {
-    static const char* const funcName = "Credentials()"; 
+    static const char* const funcName = "Credentials()";
     char clientdn[256];
     char **fqans;
     int i, nbfqans, error;
-    
+
     _soap = soap;
-    
+
     // retrieving client DN
     _clientDN = string();
 #if defined(GSI_PLUGINS)
@@ -24,12 +25,12 @@ Credentials::Credentials(struct soap *soap)
     // retrieving FQANs
     _fqans_vector = vector<sql_string>();
     fqans = NULL;
-    
+
 #if defined(GSI_PLUGINS)
     nbfqans = 0;
     // fqans will point to a memory area in the soap structure: it must not be freed
     fqans = get_client_roles(_soap, &nbfqans);
-    
+
     if (fqans == NULL) {
         return;
     }
@@ -38,7 +39,7 @@ Credentials::Credentials(struct soap *soap)
     if ((nbfqans > 0) && (fqans == NULL)) {
         srmlogit(STORM_LOG_ERROR, funcName, "ERROR: FQAN not found (but they should exist): fqans=NULL\n");
     }
-    
+
     for (i=0; i<nbfqans; i++) {
         if (fqans[i] == NULL) {
             srmlogit(STORM_LOG_ERROR, funcName, "Strange error: NULL FQAN\n");
@@ -55,17 +56,17 @@ sql_string Credentials::getFQANsOneString()
     static const char* const funcName = "file_request::getFQANsOneString()";
     string returnString;
     int i;
-    
+
     for (i=0; i<_fqans_vector.size(); i++) {
         returnString += _fqans_vector[i];
         returnString += "#";
     }
-    
+
     // remove the last '#'
     if (returnString.length() > 0) {
         returnString.erase(returnString.length() - 1);
     }
-    
+
     return sql_string(returnString);
 };
 
@@ -74,21 +75,21 @@ sql_string Credentials::getFQANsOneString()
 //    static const char* const funcName = "Credentials::getFQANsOneString()";
 //    string returnString;
 //    int i;
-//    
+//
 //    for (i=0; i<_fqans_vector.size(); i++) {
 //        returnString += _fqans_vector[i];
 //        returnString += "#";
 //    }
-//    
+//
 //    // remove the last '#'
 //    if (returnString.length() > 0) {
 //        returnString.erase(returnString.length() - 1);
 //    }
-//    
+//
 //    return returnString;
 //}
 
-/** 
+/**
  * Saves the proxy to the default directory only if the user has delegated
  * credentials. Returns "true" if the proxy is successfully saved or "false"
  * otherwise.
@@ -97,13 +98,15 @@ bool Credentials::saveProxy(string requestToken)
 {
     static const char* const funcName = "Credentials::saveProxy()";
     bool result = false;
-    
+
 #if defined(GSI_PLUGINS)
+
+    FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 
     /* Check for delegated credentials */
     if (has_delegated_credentials(_soap)) {
         /* Export client credential to proxy_filename */
-        string proxy_filename(SRMV2_PROXY_DIR);
+        string proxy_filename = configuration->getProxyDir();
 
         proxy_filename += "/" + requestToken;
         char *tmp = strdup(proxy_filename.c_str()); // why export_delegated_cretentials() needs char* instead of const char *????
@@ -125,7 +128,7 @@ bool Credentials::saveProxy(string requestToken)
         srmlogit(STORM_LOG_DEBUG, funcName, "%s: has NOT delegated credentials to server\n", _clientDN.c_str());
     }
 #endif
-    
+
     return result;
 }
 
@@ -140,7 +143,7 @@ bool Credentials::saveProxy(string requestToken)
 //
 //        /*
 //         * The proxy will be writed to file, then it will be parsed by  the openssl functionalities.
-//         * Once parsed into a X509 structure, if it is a voms proxy, the creation date will be retrived by the voms api, 
+//         * Once parsed into a X509 structure, if it is a voms proxy, the creation date will be retrived by the voms api,
 //         * otherwise in case of simple proxy the expiration time will be retrived by openssl, and used tas discriminant into the DB.
 //         */
 //        int invalidCert = 0;
@@ -149,6 +152,7 @@ bool Credentials::saveProxy(string requestToken)
 //
 //        /* TODO: export to the DB instead of file */
 //        /* Export client credential to proxy_filename */
+//        // DO NOT USE SRMV2_PROXY_DIR... use FrontendConfiguration::getInstance()->getProxyDir();
 //        std::string proxy_filename(SRMV2_PROXY_DIR);
 //        srmlogit(STORM_LOG_INFO, func, "%s: %s\n", request.r_token().c_str(), "Client has delegated credentials to server");
 //
