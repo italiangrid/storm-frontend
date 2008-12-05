@@ -1,23 +1,32 @@
 /*
- * FrontendOptions.cpp
+ * FrontendConfiguration.cpp
  *
  *  Created on: Nov 21, 2008
  *      Author: alb
  */
 
 #include <stdexcept>
-#include "FrontendOptions.hpp"
+#include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 
-FrontendOptions::FrontendOptions() {
+FrontendConfiguration* FrontendConfiguration::instance= NULL;
+
+FrontendConfiguration* FrontendConfiguration::getInstance() {
+    if (instance == NULL)
+        instance = new FrontendConfiguration();
+
+    return instance;
+}
+
+FrontendConfiguration::FrontendConfiguration() {
     commandLineOptions.add(defineCommandLineOptions());
     configurationFileOptions.add(defineConfigFileOptions());
 }
 
-FrontendOptions::~FrontendOptions() {
+FrontendConfiguration::~FrontendConfiguration() {
 }
 
-void FrontendOptions::parseOptions(int argc, char* argv[]) {
+void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
 
     po::variables_map cmdline_vm;
 
@@ -59,7 +68,7 @@ void FrontendOptions::parseOptions(int argc, char* argv[]) {
 
 }
 
-void FrontendOptions::setCommandLineOptions(po::variables_map& vm) {
+void FrontendConfiguration::setCommandLineOptions(po::variables_map& vm) {
 
     helpRequested = false;
     versionRequested = false;
@@ -82,7 +91,7 @@ void FrontendOptions::setCommandLineOptions(po::variables_map& vm) {
 
 }
 
-void FrontendOptions::setConfigurationOptions(po::variables_map& vm) {
+void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_LOG_FILE))
         log_file = vm[OPTL_LOG_FILE].as<string> ();
@@ -133,91 +142,91 @@ void FrontendOptions::setConfigurationOptions(po::variables_map& vm) {
 
 }
 
-bool FrontendOptions::requestedHelp() {
+bool FrontendConfiguration::requestedHelp() {
     return helpRequested;
 }
 
-bool FrontendOptions::requestedVersion() {
+bool FrontendConfiguration::requestedVersion() {
     return versionRequested;
 }
 
-bool FrontendOptions::requestedDebug() {
+bool FrontendConfiguration::requestedDebug() {
     return debugMode;
 }
 
-bool FrontendOptions::foundConfigurationFile() {
+bool FrontendConfiguration::foundConfigurationFile() {
     return configurationFileFound;
 }
 
-bool FrontendOptions::mappingDisabled() {
+bool FrontendConfiguration::mappingDisabled() {
     return disableMapping;
 }
 
-bool FrontendOptions::vomsCheckDisabled() {
+bool FrontendConfiguration::vomsCheckDisabled() {
     return disableVOMSCheck;
 }
 
-int FrontendOptions::getDebugLevel() {
+int FrontendConfiguration::getDebugLevel() {
     return debugLevel;
 }
 
-string FrontendOptions::getDebugLevelString() {
+string FrontendConfiguration::getDebugLevelString() {
     return debugLevelString;
 }
 
-int FrontendOptions::getNumThreads() {
+int FrontendConfiguration::getNumThreads() {
     return numberOfThreads;
 }
 
-int FrontendOptions::getPort() {
+int FrontendConfiguration::getPort() {
     return port;
 }
 
-string FrontendOptions::getProxyDir() {
+string FrontendConfiguration::getProxyDir() {
     return proxy_dir;
 }
 
-string FrontendOptions::getProxyUser() {
+string FrontendConfiguration::getProxyUser() {
     return proxy_user;
 }
 
-string FrontendOptions::getXMLRPCEndpoint() {
+string FrontendConfiguration::getXMLRPCEndpoint() {
     return xmlrpc_host + ":" + xmlrpc_port + xmlrpc_path;
 }
 
-string FrontendOptions::getUser() {
+string FrontendConfiguration::getUser() {
     return user;
 }
 
-string FrontendOptions::getWSDLFilePath() {
+string FrontendConfiguration::getWSDLFilePath() {
     return wsdl_file;
 }
 
-string FrontendOptions::getLogFile() {
+string FrontendConfiguration::getLogFile() {
     return log_file;
 }
 
-string FrontendOptions::getDBHost() {
+string FrontendConfiguration::getDBHost() {
     return dbHost;
 }
 
-string FrontendOptions::getDBUser() {
+string FrontendConfiguration::getDBUser() {
     return dbUser;
 }
 
-string FrontendOptions::getDBUserPassword() {
+string FrontendConfiguration::getDBUserPassword() {
     return dbUserPassword;
 }
 
-void FrontendOptions::printHelpMessage() {
+void FrontendConfiguration::printHelpMessage() {
     cout << commandLineOptions << endl;
 }
 
-string FrontendOptions::getConfigurationFile() {
+string FrontendConfiguration::getConfigurationFile() {
     return configuration_file;
 }
 
-po::options_description FrontendOptions::defineConfigFileOptions() {
+po::options_description FrontendConfiguration::defineConfigFileOptions() {
 
     po::options_description configurationFileOptions("Configuration file options");
 
@@ -242,7 +251,7 @@ po::options_description FrontendOptions::defineConfigFileOptions() {
     return configurationFileOptions;
 }
 
-po::options_description FrontendOptions::defineCommandLineOptions() {
+po::options_description FrontendConfiguration::defineCommandLineOptions() {
     po::options_description commandLineOptions("Options");
     commandLineOptions.add_options()
         (string(OPTL_HELP + "," + OPT_HELP).c_str(), OPT_HELP_DESCRIPTION)
@@ -253,7 +262,7 @@ po::options_description FrontendOptions::defineCommandLineOptions() {
     return commandLineOptions;
 }
 
-int FrontendOptions::decodeDebugLevelOption(string& debugLevelString) {
+int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
 
     int debugLevel = STORM_LOG_ERROR;
 

@@ -187,41 +187,41 @@ int main(int argc, char** argv)
     //------------------------- Set configuration -----------------------------
     // ------------------------------------------------------------------------
 
-    FrontendOptions configuration;
+    FrontendConfiguration* configuration = FrontendConfiguration->getInstance();
 
     try {
-        configuration.parseOptions(argc, argv);
+        configuration->parseOptions(argc, argv);
     } catch (exception& e) {
         cout << e.what() << endl << endl;
         return 1;
     }
 
-    if (configuration.requestedHelp()) {
-        configuration.printHelpMessage();
+    if (configuration->requestedHelp()) {
+        configuration->printHelpMessage();
         return 0;
     }
 
-    if (configuration.requestedVersion()) {
+    if (configuration->requestedVersion()) {
         printf("Frontend version: ...");
         return 0;
     }
 
-    int nThreads = configuration.getNumThreads();
-    int port = configuration.getPort();
-    string log_file = configuration.getLogFile();
-    string wsdl_file_path = configuration.getWSDLFilePath();
-    string proxy_dir = configuration.getProxyDir();
-    string proxy_user = configuration.getProxyUser();
-    string xmlrpc_ep = configuration.getXMLRPCEndpoint();
-    string user = configuration.getUser();
-    string dbHost = configuration.getDBHost();
-    string dbUser = configuration.getDBUser();
-    string dbUserPasswd = configuration.getDBUserPassword();
-    bool debugMode = configuration.requestedDebug();
-    int debuglevel = configuration.getDebugLevel();
-    string debugLevelString = configuration.getDebugLevelString();
-    bool disableMapping = configuration.mappingDisabled();
-    bool disableVOMSCheck = configuration.vomsCheckDisabled();
+    int nThreads = configuration->getNumThreads();
+    int port = configuration->getPort();
+    string log_file = configuration->getLogFile();
+    string wsdl_file_path = configuration->getWSDLFilePath();
+    string proxy_dir = configuration->getProxyDir();
+    string proxy_user = configuration->getProxyUser();
+    string xmlrpc_ep = configuration->getXMLRPCEndpoint();
+    string user = configuration->getUser();
+    string dbHost = configuration->getDBHost();
+    string dbUser = configuration->getDBUser();
+    string dbUserPasswd = configuration->getDBUserPassword();
+    bool debugMode = configuration->requestedDebug();
+    int debuglevel = configuration->getDebugLevel();
+    string debugLevelString = configuration->getDebugLevelString();
+    bool disableMapping = configuration->mappingDisabled();
+    bool disableVOMSCheck = configuration->vomsCheckDisabled();
 
     // Run using "user" privileges
     if (runAsUser(user) != 0) {

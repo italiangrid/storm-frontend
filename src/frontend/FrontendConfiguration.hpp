@@ -1,5 +1,5 @@
 /*
- * FrontendOptions.h
+ * FrontendConfiguration.h
  *
  *  Created on: Nov 21, 2008
  *      Author: alb
@@ -108,11 +108,11 @@ ostream& operator<<(ostream& os, const vector<T>& v)
     return os;
 }
 
-
+// This class is a singleton. The creation is not thread-safe because it is
+// instantiated from main().
 class FrontendConfiguration {
 public:
-    FrontendConfiguration();
-    virtual ~FrontendConfiguration();
+    static FrontendConfiguration* getInstance();
 
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
@@ -139,11 +139,15 @@ public:
     string getConfigurationFile();
 
 private:
+    FrontendConfiguration();
+    virtual ~FrontendConfiguration();
     po::options_description defineConfigFileOptions();
     po::options_description defineCommandLineOptions();
     void setCommandLineOptions(po::variables_map& vm);
     void setConfigurationOptions(po::variables_map& vm);
     int decodeDebugLevelOption(string& debugLevel);
+
+    FrontendConfiguration* instance;
 
     po::options_description configurationFileOptions;
     po::options_description commandLineOptions;
