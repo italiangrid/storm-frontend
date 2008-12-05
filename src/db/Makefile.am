@@ -37,7 +37,9 @@ INCLUDES = -I$(top_builddir)/src/frontend \
     -I/usr/include/mysql \
     @MYSQL_CFLAGS@
 
+#noinst_INCLUDES = storm_mysql.h
+
 noinst_LTLIBRARIES = libstormdb.la
 
-libstormdb_la_SOURCES = storm_mysql_ifce.cpp mysql_query.cpp mysql_query.hpp
+libstormdb_la_SOURCES = storm_mysql_ifce.cpp mysql_query.cpp mysql_query.hpp storm_mysql.h
 
