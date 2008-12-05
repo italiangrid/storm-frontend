@@ -42,9 +42,8 @@ storm_frontend_LDADD = -lstormfrontend -lstormdb \
     @BOOST_LDADD@ \
     -lz -lm -luuid -lidn
 
-noinst_INCLUDES = Cglobals.h Cgrp.h Cinit.h Cnetdb.h Cpool_api.h \
-  Cpwd.h Cthread_api.h Cthread_flags.h osdep.h \
-  serrno.h srm_server.h storm_api.h storm_constants.h storm_functions.h \
+noinst_INCLUDES = osdep.h serrno.h storm_api.h \
+  srm_server.h storm_constants.h storm_functions.h \
   storm_limits.h storm_util.h srmlogit.h \
   xmlrpc_decode.h xmlrpc_encode.h \
   $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \

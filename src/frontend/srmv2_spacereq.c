@@ -2,28 +2,14 @@
  * $Id$
  */
 
-
-#include <sys/types.h>
-#include "Cnetdb.h"
 #include "storm_functions.h"
-#include "serrno.h"
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"
 #include "xmlrpc_encode.h"
 #include "xmlrpc_decode.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <cgsi_plugin.h>
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
-
-/* Data types for communication with the backend via XML-RPC*/
-
-#define NAME "Xmlrpc-c Test Client"
-#define VERSION "1.0"
 
 /*************************************************************************************/
 /*                           Space Management Functions                              */

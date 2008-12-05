@@ -9,21 +9,11 @@
  * the SRM 2.2 specification.
  */
 
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/stat.h>
-#include "Cgrp.h"
-#include "Cnetdb.h"
-#include "Cpwd.h"
-#include "storm_util.h"
 #include "storm_functions.h"
-#include "serrno.h"
 #include "srmv2H.h"
-
 #include "xmlrpc_encode.h"
 #include "xmlrpc_decode.h"
 #include "srmlogit.h"
-
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 

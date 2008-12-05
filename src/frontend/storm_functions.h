@@ -4,11 +4,11 @@
 
 #ifndef _STORM_FUNCTIONS_H
 #define _STORM_FUNCTIONS_H
-#if defined(_WIN32)
-#include <sys/utime.h>
-#else
+//#if defined(_WIN32)
+//#include <sys/utime.h>
+//#else
 #include <utime.h>
-#endif
+//#endif
 #include <mysql.h>
 #include "srm_server.h"
 #include "storm_constants.h"
@@ -228,47 +228,12 @@ struct storm_acl {
         unsigned char   a_perm;
 };
 
-
-            /* function prototypes */
-/* File & Dir operations */
-EXTERN_C int DLL_DECL storm_getacl _PROTO((const char *, int, struct storm_acl *));
-EXTERN_C int DLL_DECL storm_mkdir _PROTO((const char *, mode_t));
-EXTERN_C int DLL_DECL storm_rmdir _PROTO((const char *));
-EXTERN_C int DLL_DECL storm_rm _PROTO((int, char **, int *, struct storm_filestatus **));
-EXTERN_C int DLL_DECL storm_statg _PROTO((const char *, const char *, struct storm_filestatg *));
-
-/* Request operations */
-EXTERN_C int DLL_DECL storm_getreqid _PROTO((const char *, int *, struct storm_tokeninfo **));
-EXTERN_C int DLL_DECL storm_putdone _PROTO((char *, int, char **, int *, struct storm_filestatus **));
-EXTERN_C int DLL_DECL storm_abortreq _PROTO((char *));
-EXTERN_C int DLL_DECL storm_extendfilelife _PROTO((char *, char *, time_t, time_t *));
-
-
 /* Database operations */
 EXTERN_C int storm_opendb _PROTO((char *, char *, char *, struct srm_dbfd *));
 EXTERN_C int storm_start_tr _PROTO((int, struct srm_dbfd *));
-EXTERN_C int storm_unique_id _PROTO((struct srm_dbfd *, u_signed64 *));
-EXTERN_C int storm_insert_gfr_entry _PROTO((struct srm_dbfd *, struct storm_get_filereq *, storm_id_t));
-EXTERN_C storm_id_t storm_insert_pending_entry _PROTO((struct srm_dbfd *, struct storm_req *));
 EXTERN_C int storm_end_tr _PROTO((struct srm_dbfd *));
 EXTERN_C void storm_abort_tr _PROTO((struct srm_dbfd *));
-EXTERN_C int storm_insert_xferreq_entry _PROTO((struct srm_dbfd *, struct storm_req *));
-EXTERN_C int storm_insert_pfr_entry _PROTO((struct srm_dbfd *, struct storm_put_filereq *));
-EXTERN_C int storm_insert_xferreq_entry _PROTO((struct srm_dbfd *, struct storm_req *));
-EXTERN_C int storm_insert_cpr_entry _PROTO((struct srm_dbfd *, struct storm_copy_filereq *));
-EXTERN_C int storm_get_req_by_token _PROTO((struct srm_dbfd *, char *, struct storm_req *, int, storm_dbrec_addr *));
-EXTERN_C int storm_get_pending_req_by_token _PROTO((struct srm_dbfd *, char *, struct storm_req *, int, storm_dbrec_addr *));
-EXTERN_C int storm_list_gfr_entry _PROTO((struct srm_dbfd *, int, char *, struct storm_get_filereq *, int, storm_dbrec_addr *, int, DBLISTPTR *));
-EXTERN_C int storm_get_gfr_by_surl _PROTO((struct srm_dbfd *, char *, char *, struct storm_get_filereq *, int, storm_dbrec_addr *));
-EXTERN_C int storm_list_pfr_entry _PROTO((struct srm_dbfd *, int, char *, struct storm_put_filereq *, int, storm_dbrec_addr *, int, DBLISTPTR *));
-EXTERN_C int storm_get_pfr_by_surl _PROTO((struct srm_dbfd *, char *, char *, struct storm_put_filereq *, int, storm_dbrec_addr *));
-EXTERN_C int storm_list_cpr_entry _PROTO((struct srm_dbfd *, int, char *, struct storm_copy_filereq *, int, storm_dbrec_addr *, int, DBLISTPTR *));
-EXTERN_C int storm_list_protocol _PROTO((struct srm_dbfd *dbfd, char **protocol, int nbprot, int protlen, storm_dbrec_addr *rec_addr));
-EXTERN_C int storm_get_cpr_by_surl _PROTO((struct srm_dbfd *, char *, char *, struct storm_copy_filereq *, int, storm_dbrec_addr *));
-EXTERN_C int storm_relonefile _PROTO((struct srm_srv_thread_info *, char *, char, char *, int *));
-EXTERN_C int storm_getonereqsummary _PROTO((struct srm_srv_thread_info *, char *,char *, int *, int *, int *));
 EXTERN_C void set_savepoint _PROTO((struct srm_dbfd *, const char *));
 EXTERN_C void rollback_to_savepoint _PROTO((struct srm_dbfd *, const char *));
-EXTERN_C int _srmv2_init_contex(struct soap *soap, struct conn_extra_info *info, const char *func);
 #endif
 

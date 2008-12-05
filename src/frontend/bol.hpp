@@ -18,11 +18,7 @@
  */
 
 // C includes
-#include "storm_functions.h"
-#include "serrno.h"
-#include "srm_server.h"
 #include "srmv2H.h"
-#include "storm_util.h"
 #include "srmlogit.h"
 
 // STL includes
@@ -35,6 +31,7 @@
 
 // parent
 #include "file_request.hpp"
+
 namespace storm{
 class bol : public file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> {
 public:

@@ -2,20 +2,12 @@
  * $Id$
  */
 
-#include <string.h>
-#include <sys/types.h>
-#include <uuid/uuid.h>
-#include "storm_functions.h"
-#include "serrno.h"
 #include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"
-
 #include "xmlrpc_decode.h"
 #include "xmlrpc_encode.h"
-
-#include <cgsi_plugin.h>
 #include "frontend_version.h"
 
 extern int nb_supported_protocols;
