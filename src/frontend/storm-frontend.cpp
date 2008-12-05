@@ -34,7 +34,7 @@
 
 #include <exception>
 
-#include "FrontendOptions.hpp"
+#include "FrontendConfiguration.hpp"
 #include <boost/threadpool.hpp>
 #include <boost/bind.hpp>
 
@@ -51,7 +51,7 @@ char* wsdl_file;
 char** supported_protocols;
 
 int nb_supported_protocols;
-int jid;
+//int jid;
 
 uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
@@ -181,13 +181,13 @@ int main(int argc, char** argv)
     void *process_request(void *);
 
     // Set pid in global variable
-    jid = getpid();
+    //jid = getpid();
 
     // ------------------------------------------------------------------------
     //------------------------- Set configuration -----------------------------
     // ------------------------------------------------------------------------
 
-    FrontendConfiguration* configuration = FrontendConfiguration->getInstance();
+    FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 
     try {
         configuration->parseOptions(argc, argv);

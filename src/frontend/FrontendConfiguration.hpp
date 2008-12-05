@@ -147,7 +147,7 @@ private:
     void setConfigurationOptions(po::variables_map& vm);
     int decodeDebugLevelOption(string& debugLevel);
 
-    FrontendConfiguration* instance;
+    static FrontendConfiguration* instance;
 
     po::options_description configurationFileOptions;
     po::options_description commandLineOptions;

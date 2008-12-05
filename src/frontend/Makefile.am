@@ -64,7 +64,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
     srmv2_bol.cpp srmv2_status_bol.cpp \
     srmv2_copy.cpp  srmv2_status_copy.cpp \
-    FrontendOptions.cpp FrontendOptions.hpp \
+    FrontendConfiguration.cpp FrontendConfiguration.hpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
