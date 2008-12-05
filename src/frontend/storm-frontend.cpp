@@ -175,7 +175,8 @@ int setProxyUserGlobalVariables(string& proxy_user) {
     return 0;
 }
 
-static int srm_main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     char *func = "srm_main";
     void *process_request(void *);
 
@@ -290,8 +291,9 @@ static int srm_main(int argc, char** argv) {
 
     /* Get list of supported protocols */
     if ((nb_supported_protocols = get_supported_protocols(&supported_protocols)) < 0) {
-        srmlogit(STORM_LOG_ERROR, func, SRM02, "get_supported_protocols", strerror(ENOMEM));
-        return (SYERR);
+        srmlogit(STORM_LOG_ERROR, func, "Error in get_supported_protocols(): unable to retrieve "
+                 "supported protocols from the DB.");
+        exit(1);
     }
 
     if (0 != check_environment()) {
@@ -384,13 +386,6 @@ static int srm_main(int argc, char** argv) {
     free(soap_data);
 
     return (exit_code);
-}
-
-int main(int argc, char **argv) {
-
-    int exit_code = srm_main(argc, argv);
-
-    exit(exit_code);
 }
 
 void *

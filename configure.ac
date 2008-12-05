@@ -178,7 +178,6 @@ AC_CONFIG_FILES([Makefile \
     src/db/Makefile \
     src/frontend/Makefile \
     src/frontend/frontend_version.h
-    src/frontend/srm_server.h \
     storm-frontend.spec \
     clean.sh])
 
