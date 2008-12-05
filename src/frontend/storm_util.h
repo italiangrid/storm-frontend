@@ -5,13 +5,9 @@
 #ifndef _STORM_UTIL_H
 #define _STORM_UTIL_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define SRM_EP_PATH "/srm/V2/Server"   // Temporary (test Sim....)
-#define SURL_MAXSIZE 256
 
 #include <openssl/x509.h>
 
@@ -39,25 +35,15 @@ typedef unsigned long long unsignedLong64;
 
 #define MAX_PORT_NUMBER 1<<16
 
-int get_supported_protocols(char ***);
-int is_surl_local (char *surl);
-char *pfnfromturl (char *turl);
-char *sfnfromsurl (char *surl);
-char* reconvertStatusCode(int  code);
-//int convertStatusCode(char*  code);
-
 /* Prototype definitions */
+int get_supported_protocols(char ***);
+char* reconvertStatusCode(int  code);
+int convertStatusCode(char*  code);
 int convertPermission(char *mode);
 int convertFileStorageType(char *fstype);
 int convertFileType(char* ftype);
 int convertSpaceType(char *stype);
 int convertStatusCode(char*  code);
-
-void printLine();
-void printChar();
-int parseSURL_getEndpoint (const char *surl, char **endpoint, char **sfn);
-int parseSURL_noSFN_getEndpoint (const char *surl, char **endpoint);
-int parseSURL(const char *surl);
 STACK_OF(X509) *load_chain(const char *certfile);
 
 #ifdef __cplusplus
