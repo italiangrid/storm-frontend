@@ -1,5 +1,5 @@
 
-stormetcsysconfdir = $(sysconfdir)/sysconfig
+stormetcsysconfdir = $(sysconfdir)
 dist_stormetcsysconf_DATA = storm-frontend.conf
 
 logrotatedir = $(sysconfdir)/logrotate
