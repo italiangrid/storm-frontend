@@ -311,7 +311,7 @@ int main(int argc, char** argv)
 
     while (stay_running) {
 
-        while (soap_valid_socket(soap_accept(soap_data))) {
+        while (!soap_valid_socket(soap_accept(soap_data))) {
             if (!stay_running)
                 break;
         }
