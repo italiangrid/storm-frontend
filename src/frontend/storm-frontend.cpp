@@ -222,6 +222,13 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    try {
+        configuration->checkConfigurationData();
+    } catch (exception& e) {
+        cout << e.what() << endl << endl;
+        return 1;
+    }
+
     // Setting global variables... TODO: do not use global variables
     // DB stuff
     db_user = strdup(dbUser.c_str());

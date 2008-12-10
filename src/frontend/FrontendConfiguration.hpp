@@ -19,7 +19,10 @@ using namespace std;
 
 // Costants
 static const string DEFAULT_CONFIGURATION_FILE = "storm-frontend.conf";
-static const string DEFAULT_LOG_FILE = "storm-frontend.log";
+static const string DEFAULT_GRIDMAPFILE = "/etc/grid-security/grid-mapfile";
+static const string DEFAULT_HOST_CERT_FILE = "/etc/grid-security/hostcert.pem";
+static const string DEFAULT_HOST_KEY_FILE = "/etc/grid-security/hostkey.pem";
+static const string DEFAULT_LOG_FILE_NAME = "storm-frontend.log";
 static const string DEFAULT_WSDL_FILE = "";
 static const string DEFAULT_XMLRPC_HOST = "localhost";
 static const string DEFAULT_XMLRPC_PORT = "8080";
@@ -46,9 +49,17 @@ static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via
 static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
 static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
-static const string OPT_LOG_FILE = "l";
-static const string OPTL_LOG_FILE = "logfile";
-static const char* OPT_LOG_FILE_DESCRIPTION = "Use <arg> as log file";
+static const string OPTL_GRIDMAFILE = "security.gridmapfile";
+
+static const string OPTL_HOST_CERT = "security.hostcert";
+
+static const string OPTL_HOST_KEY = "security.hostkey";
+
+static const string OPT_LOG_FILE_NAME = "l";
+static const string OPTL_LOG_FILE_NAME = "log.filename";
+static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
+
+static const string OPTL_LOG_FILE_DIR = "log.dir";
 
 static const string OPT_NUM_THREADS = "t";
 static const string OPTL_NUM_THREADS = "threads.number";
@@ -116,6 +127,7 @@ public:
 
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
+    void checkConfigurationData();
 
     bool requestedHelp();
     bool requestedVersion();
@@ -137,6 +149,9 @@ public:
     string getDBUser();
     string getDBUserPassword();
     string getConfigurationFile();
+    string getGridmapfile();
+    string getHostCertFile();
+    string getHostKeyFile();
 
 private:
     FrontendConfiguration();
@@ -146,6 +161,8 @@ private:
     void setCommandLineOptions(po::variables_map& vm);
     void setConfigurationOptions(po::variables_map& vm);
     int decodeDebugLevelOption(string& debugLevel);
+    void checkCreateDir(string dirAbsolutePath);
+    void checkFile(sting fileAbsolutePath);
 
     static FrontendConfiguration* instance;
 
@@ -162,6 +179,7 @@ private:
     int debugLevel;
     int port;
     string log_file;
+    string log_file_dir;
     string proxy_dir;
     string proxy_user;
     string user;
@@ -174,6 +192,9 @@ private:
     string dbUser;
     string dbUserPassword;
     string configuration_file;
+    string gridmapfile;
+    string hostcertfile;
+    string hostkeyfile;
 
 };
 

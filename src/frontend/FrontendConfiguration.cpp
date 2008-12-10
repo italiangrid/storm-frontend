@@ -6,6 +6,7 @@
  */
 
 #include <stdexcept>
+#include <sys/stat.h>
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 
@@ -68,77 +69,16 @@ void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
 
 }
 
-void FrontendConfiguration::setCommandLineOptions(po::variables_map& vm) {
+void FrontendConfiguration::checkConfigurationData() {
 
-    helpRequested = false;
-    versionRequested = false;
-    debugMode = false;
-    configurationFileFound = false;
+    checkDir(proxy_dir);
 
-    if (vm.count(OPTL_HELP))
-        helpRequested = true;
+    if (!log_file_dir.empty())
+        checkDir(log_file_dir);
 
-    if (vm.count(OPTL_VERSION))
-        versionRequested = true;
-
-    if (vm.count(OPTL_DEBUG))
-        debugMode = true;
-
-    if (vm.count(OPTL_CONFIG_FILE)) {
-        configurationFileFound = true;
-        configuration_file = vm[OPTL_CONFIG_FILE].as<string>();
-    }
-
-}
-
-void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
-
-    if (vm.count(OPTL_LOG_FILE))
-        log_file = vm[OPTL_LOG_FILE].as<string> ();
-
-    if (vm.count(OPTL_NUM_THREADS))
-        numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
-
-    if (vm.count(OPTL_DEBUG_LEVEL))
-        debugLevelString = vm[OPTL_DEBUG_LEVEL].as<string> ();
-
-    debugLevel = decodeDebugLevelOption(debugLevelString);
-
-    if (vm.count(OPTL_PROXY_DIR))
-        proxy_dir = vm[OPTL_PROXY_DIR].as<string> ();
-
-    if (vm.count(OPTL_PORT))
-        port = vm[OPTL_PORT].as<int> ();
-
-    if (vm.count(OPTL_XMLRPC_HOST))
-        xmlrpc_host = vm[OPTL_XMLRPC_HOST].as<string> ();
-
-    if (vm.count(OPTL_XMLRPC_PORT))
-        xmlrpc_port = vm[OPTL_XMLRPC_PORT].as<string> ();
-
-    if (vm.count(OPTL_XMLRPC_PATH))
-        xmlrpc_path = vm[OPTL_XMLRPC_PATH].as<string> ();
-
-    if (vm.count(OPTL_PROXY_USER))
-        proxy_user = vm[OPTL_PROXY_USER].as<string> ();
-
-    if (vm.count(OPTL_USER))
-        user = vm[OPTL_USER].as<string> ();
-
-    if (vm.count(OPTL_WSDL_FILE))
-        wsdl_file = vm[OPTL_WSDL_FILE].as<string> ();
-
-    if (vm.count(OPTL_DB_HOST))
-        dbHost = vm[OPTL_DB_HOST].as<string> ();
-
-    if (vm.count(OPTL_DB_USER))
-        dbUser = vm[OPTL_DB_USER].as<string> ();
-
-    if (vm.count(OPTL_DB_USER_PASSWORD))
-        dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
-
-    disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
-    disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
+    checkFile(gridmapfile);
+    checkFile(hostcertfile);
+    checkFile(hostkeyfile);
 
 }
 
@@ -203,7 +143,7 @@ string FrontendConfiguration::getWSDLFilePath() {
 }
 
 string FrontendConfiguration::getLogFile() {
-    return log_file;
+    return log_file_dir + "/" + log_file;
 }
 
 string FrontendConfiguration::getDBHost() {
@@ -226,27 +166,45 @@ string FrontendConfiguration::getConfigurationFile() {
     return configuration_file;
 }
 
+string FrontendConfiguration::getGridmapfile() {
+    return gridmapfile;
+}
+
+string FrontendConfiguration::getHostCertFile() {
+    return hostcertfile;
+}
+
+string FrontendConfiguration::getHostKeyFile() {
+    return hostkeyfile;
+}
+
+/******************************** Private methods ****************************/
+
 po::options_description FrontendConfiguration::defineConfigFileOptions() {
 
     po::options_description configurationFileOptions("Configuration file options");
 
     configurationFileOptions.add_options()
         (string(OPTL_NUM_THREADS + "," + OPT_NUM_THREADS).c_str(), po::value<int>()->default_value(DEFAULT_THREADS_NUMBER), OPT_NUM_THREADS_DESCRIPTION)
-        (string(OPTL_LOG_FILE + "," + OPT_LOG_FILE).c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE), OPT_LOG_FILE_DESCRIPTION)
+        (string(OPTL_LOG_FILE_NAME + "," + OPT_LOG_FILE_NAME).c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), "")
+        (OPTL_LOG_FILE_DIR.c_str(), po::value<string>(), "")
         (string(OPTL_PROXY_DIR + "," + OPT_PROXY_DIR).c_str(), po::value<string>(), OPT_PROXY_DIR_DESCRIPTION)
         (string(OPTL_PORT + "," + OPT_PORT).c_str(), po::value<int>()->default_value(DEFAULT_PORT), OPT_PORT_DESCRIPTION)
-        (string(OPTL_XMLRPC_HOST).c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
-        (string(OPTL_XMLRPC_PORT).c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
-        (string(OPTL_XMLRPC_PATH).c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
+        (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
+        (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
+        (OPTL_XMLRPC_PATH.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
         (string(OPTL_PROXY_USER + "," + OPT_PROXY_USER).c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
         (string(OPTL_USER + "," + OPT_USER).c_str(), po::value<string>(), OPT_USER_DESCRIPTION)
         (string(OPTL_WSDL_FILE + "," + OPT_WSDL_FILE).c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
         (string(OPTL_DEBUG_LEVEL + "," + OPT_DEBUG_LEVEL).c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
-        (string(OPTL_DB_HOST).c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
-        (string(OPTL_DB_USER).c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
-        (string(OPTL_DB_USER_PASSWORD).c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
-        (string(OPTL_DISABLE_MAPPING).c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
-        (string(OPTL_DISABLE_VOMSCHECK).c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
+        (OPTL_DB_HOST.c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
+        (OPTL_DB_USER.c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
+        (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
+        (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
+        (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION)
+        (OPTL_GRIDMAFILE.c_str(), po::value<string>()->default_value(DEFAULT_GRIDMAPFILE), "")
+        (OPTL_HOST_CERT.c_str(), po::value<string>()->default_value(DEFAULT_HOST_CERT_FILE), "")
+        (OPTL_HOST_KEY.c_str(), po::value<string>()->default_value(DEFAULT_HOST_KEY_FILE), "");
 
     return configurationFileOptions;
 }
@@ -260,6 +218,94 @@ po::options_description FrontendConfiguration::defineCommandLineOptions() {
         (string(OPTL_DEBUG + "," + OPT_DEBUG).c_str(), OPT_DEBUG_DESCRIPTION);
 
     return commandLineOptions;
+}
+
+void FrontendConfiguration::setCommandLineOptions(po::variables_map& vm) {
+
+    helpRequested = false;
+    versionRequested = false;
+    debugMode = false;
+    configurationFileFound = false;
+
+    if (vm.count(OPTL_HELP))
+        helpRequested = true;
+
+    if (vm.count(OPTL_VERSION))
+        versionRequested = true;
+
+    if (vm.count(OPTL_DEBUG))
+        debugMode = true;
+
+    if (vm.count(OPTL_CONFIG_FILE)) {
+        configurationFileFound = true;
+        configuration_file = vm[OPTL_CONFIG_FILE].as<string>();
+    }
+
+}
+
+void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
+
+    if (vm.count(OPTL_LOG_FILE_NAME))
+        log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
+
+    if (vm.count(OPTL_LOG_FILE_DIR))
+        log_file_dir = vm[OPTL_LOG_FILE_DIR].as<string> ();
+    else
+        log_file_dir = "";
+
+    if (vm.count(OPTL_NUM_THREADS))
+        numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
+
+    if (vm.count(OPTL_DEBUG_LEVEL))
+        debugLevelString = vm[OPTL_DEBUG_LEVEL].as<string> ();
+
+    debugLevel = decodeDebugLevelOption(debugLevelString);
+
+    if (vm.count(OPTL_PROXY_DIR))
+        proxy_dir = vm[OPTL_PROXY_DIR].as<string> ();
+
+    if (vm.count(OPTL_PORT))
+        port = vm[OPTL_PORT].as<int> ();
+
+    if (vm.count(OPTL_XMLRPC_HOST))
+        xmlrpc_host = vm[OPTL_XMLRPC_HOST].as<string> ();
+
+    if (vm.count(OPTL_XMLRPC_PORT))
+        xmlrpc_port = vm[OPTL_XMLRPC_PORT].as<string> ();
+
+    if (vm.count(OPTL_XMLRPC_PATH))
+        xmlrpc_path = vm[OPTL_XMLRPC_PATH].as<string> ();
+
+    if (vm.count(OPTL_PROXY_USER))
+        proxy_user = vm[OPTL_PROXY_USER].as<string> ();
+
+    if (vm.count(OPTL_USER))
+        user = vm[OPTL_USER].as<string> ();
+
+    if (vm.count(OPTL_WSDL_FILE))
+        wsdl_file = vm[OPTL_WSDL_FILE].as<string> ();
+
+    if (vm.count(OPTL_DB_HOST))
+        dbHost = vm[OPTL_DB_HOST].as<string> ();
+
+    if (vm.count(OPTL_DB_USER))
+        dbUser = vm[OPTL_DB_USER].as<string> ();
+
+    if (vm.count(OPTL_DB_USER_PASSWORD))
+        dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
+
+    if (vm.count(OPTL_GRIDMAFILE))
+        gridmapfile = vm[OPTL_GRIDMAFILE].as<string> ();
+
+    if (vm.count(OPTL_HOST_CERT))
+        hostcertfile = vm[OPTL_HOST_CERT].as<string> ();
+
+    if (vm.count(OPTL_HOST_KEY))
+        hostkeyfile = vm[OPTL_HOST_KEY].as<string> ();
+
+    disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
+    disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
+
 }
 
 int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
@@ -284,4 +330,49 @@ int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
         debugLevel = STORM_LOG_DEBUG4;
 
     return debugLevel;
+}
+
+void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
+    struct stat statInfo;
+
+    int ret = stat(dirAbsolutePath.c_str(), &statInfo);
+
+    if (ret != 0) {
+        if (mkdir(dirAbsolutePath.c_str(), S_IRWXU) != 0) {
+            throw runtime_error("Cannot create directory \"" + dirAbsolutePath + "\". "
+                    "Currently running as user \"" + user + "\".");
+        }
+        stat(dirAbsolutePath.c_str(), &statInfo);
+    }
+
+    if (!S_ISDIR(statInfo.st_mode)) {
+        throw runtime_error("Not a directory: " + dirAbsolutePath);
+    }
+
+    if (access(dirAbsolutePath.c_str(), W_OK| X_OK) != 0) {
+        throw runtime_error("Permission denied (need \"wx\") for directory \"" + dirAbsolutePath + "\". "
+                "Currently running as user \"" + user  + "\".");
+    }
+
+}
+
+void FrontendConfiguration::checkFile(string fileAbsolutePath) {
+
+    struct stat statInfo;
+
+    int ret = stat(dirAbsolutePath.c_str(), &statInfo);
+
+    if (ret !=0 ) {
+        throw runtime_error("File doesn't exists: " + fileAbsolutePath);
+    }
+
+    if (S_ISDIR(statInfo.st_mode)) {
+        throw runtime_error("Error looking for a file but a directory were found: "
+                + fileAbsolutePath);
+    }
+
+    if (access(fileAbsolutePath.c_str(), R_OK) != 0) {
+        throw runtime_error("Read permission needed for file: " + fileAbsolutePath);
+    }
+
 }
