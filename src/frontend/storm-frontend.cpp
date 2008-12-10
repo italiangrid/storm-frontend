@@ -266,7 +266,7 @@ int main(int argc, char** argv)
 
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
-    soap_data->accept_timeout = 0;
+    soap_data->accept_timeout = 10;
     int flags;
 #if defined(GSI_PLUGINS)
     flags = CGSI_OPT_DELEG_FLAG;
