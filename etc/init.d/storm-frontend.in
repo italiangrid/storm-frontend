@@ -41,9 +41,9 @@ case "$1" in
     FE_USER=` cat $CONFIGURATION_FILE | grep "fe.user" | awk -F"=" '{gsub( /[ \t]+/, "" ); print $2}'`
 
     mkdir -p @PREFIX@/var
-    chown -R $FE_USER @PREFIX@/* > /dev/null
+    chown -R $FE_USER @PREFIX@/* >& /dev/null
     if [ ! $? -eq 0 ]; then
-        echo "Error: invalid user \'$FE_USER\'"
+        echo "Error: invalid user '$FE_USER' (in $CONFIGURATION_FILE)"
         exit 1
     fi
 
