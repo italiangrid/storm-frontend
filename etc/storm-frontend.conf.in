@@ -1,4 +1,4 @@
-##### StoRM FE config file #####
+##### StoRM frontend configuration file #####
 user = root
 threads.number = 5
 port = 8440
@@ -9,7 +9,7 @@ debug.level = DEBUG2
 security.disable.mapping = false
 security.disable.vomscheck = false
 
-# XMLRPC server information
+# Backend XMLRPC server information
 xmlrpc.host = devrb.cnaf.infn.it
 #xmlrpc.host = devwn01.cnaf.infn.it
 #xmlrpc.port = 8080
@@ -25,6 +25,4 @@ db.passwd = password
 
 # WSDL to be returned to a GET request
 wsdl.file = @prefix@/wsdl/srm.v2.2.wsdl
-#### SECONDOOOOOOOOOOOOOOOOOOOOO ######
-#### TERZOOOOOOOOOOOOOOOOOOOOOOOOOOO ###########
-##############################################
+
