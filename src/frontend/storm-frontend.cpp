@@ -48,6 +48,7 @@ gid_t proxy_gid = 0;
 // SIGSTOP handler. Used to stop the daemon.
 void sigint_handler(int sig)
 {
+    srmlogit(STORM_LOG_NONE, "SIGINT_handler", "Caught SIGINT: stopping frontend...\n");
     stay_running = false;
 }
 
@@ -332,7 +333,6 @@ int main(int argc, char** argv)
 
     }
 
-    srmlogit(STORM_LOG_NONE, func, "Stopping frontend...\n");
     srmlogit(STORM_LOG_NONE, func, "Waiting for active requests to finish...\n");
     tp.wait();
     soap_end(soap_data);
