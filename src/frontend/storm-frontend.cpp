@@ -311,6 +311,8 @@ int main(int argc, char** argv)
     while (stay_running) {
 
         if (soap_accept(soap_data) < 0) {
+            if (soap_data->errnum == SOAP_EOF)
+                srmlogit(STORM_LOG_ERROR, func, "EOFFFFF\n");
             srmlogit(STORM_LOG_ERROR, func, "Error in soap_accept(): %s\n", strerror(
                     soap_data->errnum));
             exit_code = 1;
