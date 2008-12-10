@@ -6,10 +6,10 @@ GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 
 MAINTAINERCLEANFILES = Makefile.in stdsoap2.c
 
-stormmandir = $(mandir)/man8
-stormman_DATA = srmv2.man
+#stormmandir = $(mandir)/man8
+#stormman_DATA = srmv2.man
 
-EXTRA_DIST = srmv2.man
+#EXTRA_DIST = srmv2.man
 
 INCLUDES = -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \

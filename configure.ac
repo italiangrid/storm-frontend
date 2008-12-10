@@ -12,7 +12,7 @@
 AC_INIT([storm-frontend], [1.4.0], [luca.magnoni@cnaf.infn.it])
 
 # Release number
-AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [00])
+AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [08])
 
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
@@ -70,7 +70,8 @@ AC_SUBST([BOOST_LDADD], ["/home/storm/boost_install/lib/libboost_program_options
 # ========================================================================
 # Globus libraries
 # ========================================================================
-AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_gcc32dbgpthr "])
+AC_SUBST([GLOBUS_FLAVOR], [gcc32dbgpthr])
+AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_$GLOBUS_FLAVOR "])
 
 # ========================================================================
 # GSOAP

@@ -1,6 +1,14 @@
 # $Id: Makefile.am 4399 2008-03-14 11:00:26Z alb $
 
-dist_data_DATA = typemap.dat srm.v2.2.wsdl
+#wsdldir = ${prefix}/wsdl
+#wsdl_DATA = srm.v2.2.wsdl
+#noinst_DATA = typemap.dat
+
+EXTRA_DIST = srm.v2.2.wsdl typemap.dat
+
+instdir = ${prefix}/wsdl
+inst_DATA = srm.v2.2.wsdl
+noinst_DATA = typemap.dat
 
 # If this file exists means that the skeletons has been already generated
 FLAG_FILE = skeletons_generated.lock

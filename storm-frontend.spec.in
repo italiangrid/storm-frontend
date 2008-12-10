@@ -3,13 +3,13 @@
 %define release      @STORM_FRONTEND_RELEASE_NUMBER@
 %define flavor       @GLOBUS_FLAVOR@
 %define builddir     $RPM_BUILD_DIR/%{name}-%{flavor}-%{version}
-%define globusdir    @GLOBUS_LOCATION@
-%define stormdir     @STORM_DIR@
-%define glitedir     @GLITE_LOCATION@
-%define gsoapdir     @GSOAP_DIR@
-%define gsoapgsidir  @GSOAPGSI_DIR@
-%define mysqldir     @MYSQL_DIR@
-%define xmlrpccdir   @XMLRPC_C_DIR@
+#%define globusdir    @GLOBUS_LOCATION@
+#%define stormdir     @STORM_DIR@
+#%define glitedir     @GLITE_LOCATION@
+#%define gsoapdir     @GSOAP_DIR@
+#%define gsoapgsidir  @GSOAPGSI_DIR@
+#%define mysqldir     @MYSQL_DIR@
+#%define xmlrpccdir   @XMLRPC_C_DIR@
 %define prefix       @PREFIX@
 
 Name:           %{name}-%{flavor}
@@ -25,10 +25,10 @@ AutoReqProv:    no
 Requires:       curl >= 7.15.3
 Requires:       xmlrpc-c >= 1.04
 Requires:       CGSI_gSOAP_2.7-voms >= 1.2.1-2
-Requires:       castor-lib
-BuildRoot:      /var/tmp/%{name}-%{flavor}-%{version}
+BuildRoot:      /var/tmp/%{name}-%{version}
 Prefix:         %{prefix}
-Summary:        Provides the the srmv2 storm server. 
+Summary:        StoRM frontend server (SRM v2 implementation). 
+
 %description
 This is the installation bundle for the srmv2 storm server.
 This server is the SRM Front-End server of the StoRM utility
@@ -39,106 +39,29 @@ filesystem.
 %setup -n @PACKAGE@-%{version}
 
 %build
-./configure --prefix=%{prefix} --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-gsoapgsi-dir=%{gsoapgsidir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
+#./configure --prefix=%{prefix} --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
+./configure --prefix=%{prefix} 
 make
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-
 mkdir -p $RPM_BUILD_ROOT/etc/cron.d
-mv -f $RPM_BUILD_ROOT/%{prefix}/etc/logrotate/storm-frontend.cron $RPM_BUILD_ROOT/etc/cron.d/
-
-# Build the file-list automatically :)
-cd $RPM_BUILD_ROOT
-find . -type d | sed '1,3d;s,^\.,\%attr(-\,root\,root) \%dir ,' > $RPM_BUILD_DIR/file.list.%{name}
-find . -type f | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}
-find . -type l | sed 's,^\.,\%attr(-\,root\,root) ,' >> $RPM_BUILD_DIR/file.list.%{name}
+mv -f $RPM_BUILD_ROOT/%{prefix}/etc/cron.d/storm-frontend.cron $RPM_BUILD_ROOT/etc/cron.d/
+mkdir -p $RPM_BUILD_ROOT/etc/init.d
+mv -f $RPM_BUILD_ROOT/%{prefix}/etc/init.d/storm-frontend $RPM_BUILD_ROOT/etc/init.d
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-rm ../file.list.%{name}
 
-%files -f ../file.list.%{name}
-
-%pre
-# Before installing the rpm, save the files that could been modified by the administrator
-if [ -e %{prefix}/etc/init.d/storm-frontend ]
-then
-    mv %{prefix}/etc/init.d/storm-frontend{,_custom_config.tmp}
-fi
-if [ -e %{prefix}/etc/sysconfig/storm-frontend.nsconfig ]
-then
-    mv %{prefix}/etc/sysconfig/storm-frontend.nsconfig{,.custom_config.tmp}
-fi
-
-%post
-# add storm-frontend at startup 
-id storm >&/dev/null || adduser -r storm
-
-# add symbolic link
-ln -sf %{prefix}/etc/init.d/storm-frontend /etc/init.d/storm-frontend
-
-# If it is an upgrade operation keep custom configurations
-if [ -e  %{prefix}/etc/init.d/storm-frontend_custom_config.tmp ]
-then
-    mv %{prefix}/etc/init.d/storm-frontend{,.rpmnew}
-    mv %{prefix}/etc/init.d/storm-frontend{_custom_config.tmp,}
-fi
-if [ -e  %{prefix}/etc/sysconfig/storm-frontend.nsconfig.custom_config.tmp ]
-then
-    mv %{prefix}/etc/sysconfig/storm-frontend.nsconfig{,.rpmnew}
-    mv %{prefix}/etc/sysconfig/storm-frontend.nsconfig{.custom_config.tmp,}
-fi
-
-for i in %{prefix}/etc/sysconfig/*; do
-    file=$(basename $i)
-    if [ -h /etc/sysconfig/$file ]; then
-        rm /etc/sysconfig/$file
-    elif [ -e /etc/sysconfig/$file ]; then
-        nfile=/etc/sysconfig/$file.rpmnew
-        while [ -e $nfile ]; do
-            nfile=$nfile.$(date -I)
-        done
-        mv $file $nfile
-    fi
-    ln -s $i /etc/sysconfig/$file
-done
-
-/sbin/chkconfig --add storm-frontend
-
-# creating proxy directory 
-if [ ! -e %{prefix}/var/proxies ]
-then
-  mkdir -p %{prefix}/var/proxies
-  chown storm %{prefix}/var/proxies
-fi
-# execution flag on the dabase scripts
-chmod u=rwx,g=rx,o=r %{prefix}/etc/db/storm_database_config.sh
-chmod u=rwx,g=rx,o=r %{prefix}/etc/db/storm_mysql_config.sh
-
-%postun
-if [ ! -e  %{prefix}/etc/init.d/storm-frontend ]
-then
-  rm -f /etc/init.d/storm-frontend
-  if [ -e %{prefix}/etc/sysconfig/storm-frontend.nsconfig.rpmnew ]; then
-    rm -f %{prefix}/etc/sysconfig/storm-frontend.nsconfig.rpmnew
-  fi
-  if [ -e %{prefix}/etc/init.d/storm-frontend.rpmnew ]; then
-    rm -f %{prefix}/etc/init.d/storm-frontend.rpmnew
-  fi
-  if [ -d %{prefix}/etc/ ]; then
-    cd %{prefix}/etc/
-    if [ -d sysconfig/ ]; then
-      rmdir sysconfig/
-    fi
-    if [ -d init.d/ ]; then
-      rmdir init.d/
-    fi
-    cd ..
-    rmdir etc/
-  fi
-fi
-rm -rf %{prefix}/var/
+%files
+%defattr(755,root,root)
+/etc/init.d/storm-frontend
+%defattr(-,root,root)
+/etc/cron.d/storm-frontend.cron
+%{prefix}/etc/logrotate/storm-frontend.logrotate
+%{prefix}/sbin/storm-frontend
+%{prefix}/wsdl/srm.v2.2.wsdl
+%config(noreplace) %{prefix}/etc/storm-frontend.conf
 
