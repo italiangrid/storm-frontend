@@ -26,8 +26,11 @@
 #include "FrontendConfiguration.hpp"
 #include <boost/threadpool.hpp>
 #include <boost/bind.hpp>
+#include <signal.h>
 
 #define NAME "StoRM SRM v2.2"
+
+static bool stay_running = true;
 
 char *db_pwd;
 char *db_srvr;
@@ -38,10 +41,15 @@ char* wsdl_file;
 char** supported_protocols;
 
 int nb_supported_protocols;
-//int jid;
 
 uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
+
+// SIGSTOP handler. Used to stop the daemon.
+void sigint_handler(int sig)
+{
+    stay_running = false;
+}
 
 static int http_get(struct soap *soap) {
 
@@ -125,9 +133,6 @@ int main(int argc, char** argv)
 {
     char *func = "srm_main";
     void *process_request(void *);
-
-    // Set pid in global variable
-    //jid = getpid();
 
     // ------------------------------------------------------------------------
     //------------------------- Set configuration -----------------------------
@@ -258,11 +263,6 @@ int main(int argc, char** argv)
         }
     }
 
-#if ! defined(_WIN32)
-    signal(SIGPIPE, SIG_IGN);
-    signal(SIGXFSZ, SIG_IGN);
-#endif
-
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
     soap_data->accept_timeout = 0;
@@ -299,13 +299,15 @@ int main(int argc, char** argv)
 
     boost::threadpool::fifo_pool tp(nThreads);
 
+    signal(SIGINT, sigint_handler);
+
     srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully started...\n");
 
     /******************************* main loop ******************************/
     struct soap *tsoap;
     int exit_code = 0;
 
-    while (1) {
+    while (stay_running) {
 
         if (soap_accept(soap_data) < 0) {
             srmlogit(STORM_LOG_ERROR, func, "Error in soap_accept(): %s\n", strerror(
@@ -330,11 +332,14 @@ int main(int argc, char** argv)
 
     }
 
+    srmlogit(STORM_LOG_NONE, func, "Stopping frontend...\n");
+    srmlogit(STORM_LOG_NONE, func, "Waiting for active requests to finish...\n");
     tp.wait();
     soap_end(soap_data);
     soap_done(soap_data);
     free(soap_data);
 
+    srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
     return (exit_code);
 }
 
