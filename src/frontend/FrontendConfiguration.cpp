@@ -384,7 +384,7 @@ void FrontendConfiguration::checkFile(string fileAbsolutePath) {
 
 }
 
-string FrontendConfiguration::setUsingEnvironment(const char* envVar, string& defaultValue) {
+string FrontendConfiguration::setUsingEnvironment(const char* envVar, const string& defaultValue) {
     char* envVal = getenv(envVar);
 
     if (envVal == NULL) {
