@@ -58,14 +58,14 @@ case "$1" in
         RETVAL=0
         echo "$prog started."
     else
-        echo "Error: $prog not started."
+        echo "Error: $prog not started (see the log file for the details)."
         RETVAL=1
     fi
     ;;
   stop)
     if [ -f $PIDFILE ]; then
         echo -n "Stopping $prog... "
-        kill -2 -`cat $PIDFILE` >& /dev/null
+        kill -2 `cat $PIDFILE` >& /dev/null
         if [ $? -eq 0 ]; then
             rm -f $PIDFILE
             rm -f $LOCKFILE
