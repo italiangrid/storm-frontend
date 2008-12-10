@@ -55,8 +55,6 @@ void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
         throw runtime_error(msg);
     }
 
-    cout << "Reading configuration file: " << configuration_file_path << "...\n";
-
     try {
         store(parse_config_file(conf_file, configurationFileOptions), config_vm);
     } catch (exception& e) {
