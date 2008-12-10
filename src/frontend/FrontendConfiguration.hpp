@@ -61,6 +61,10 @@ static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
 
 static const string OPTL_LOG_FILE_DIR = "log.dir";
 
+static const string OPT_DEBUG_LEVEL = "v";
+static const string OPTL_DEBUG_LEVEL = "log.debuglevel";
+static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
+
 static const string OPT_NUM_THREADS = "t";
 static const string OPTL_NUM_THREADS = "threads.number";
 static const char* OPT_NUM_THREADS_DESCRIPTION = "Use <arg> threads";
@@ -93,10 +97,6 @@ static const char* OPT_USER_DESCRIPTION = "Run the frontend as user <arg>";
 static const string OPT_WSDL_FILE = "w";
 static const string OPTL_WSDL_FILE = "wsdl.file";
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
-
-static const string OPT_DEBUG_LEVEL = "v";
-static const string OPTL_DEBUG_LEVEL = "debug.level";
-static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
 
 static const string OPT_DEBUG = "d";
 static const string OPTL_DEBUG = "debug-mode";
