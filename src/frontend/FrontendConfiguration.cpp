@@ -79,6 +79,7 @@ void FrontendConfiguration::checkConfigurationData() {
     checkFile(gridmapfile);
     checkFile(hostcertfile);
     checkFile(hostkeyfile);
+    checkFile(wsdl_file);
 
 }
 
@@ -202,9 +203,9 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
         (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
         (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
         (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION)
-        (OPTL_GRIDMAFILE.c_str(), po::value<string>()->default_value(DEFAULT_GRIDMAPFILE), "")
-        (OPTL_HOST_CERT.c_str(), po::value<string>()->default_value(DEFAULT_HOST_CERT_FILE), "")
-        (OPTL_HOST_KEY.c_str(), po::value<string>()->default_value(DEFAULT_HOST_KEY_FILE), "");
+        (OPTL_GRIDMAFILE.c_str(), po::value<string>(), "")
+        (OPTL_HOST_CERT.c_str(), po::value<string>(), "")
+        (OPTL_HOST_KEY.c_str(), po::value<string>(), "");
 
     return configurationFileOptions;
 }
@@ -296,12 +297,18 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_GRIDMAFILE))
         gridmapfile = vm[OPTL_GRIDMAFILE].as<string> ();
+    else
+        gridmapfile = setUsingEnvironment("GRIDMAP", DEFAULT_GRIDMAPFILE);
 
     if (vm.count(OPTL_HOST_CERT))
         hostcertfile = vm[OPTL_HOST_CERT].as<string> ();
+    else
+        hostcertfile = setUsingEnvironment("X509_USER_CERT", DEFAULT_HOST_CERT_FILE);
 
     if (vm.count(OPTL_HOST_KEY))
         hostkeyfile = vm[OPTL_HOST_KEY].as<string> ();
+    else
+        hostkeyfile = setUsingEnvironment("X509_USER_KEY", DEFAULT_HOST_KEY_FILE);
 
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
@@ -374,5 +381,17 @@ void FrontendConfiguration::checkFile(string fileAbsolutePath) {
     if (access(fileAbsolutePath.c_str(), R_OK) != 0) {
         throw runtime_error("Read permission needed for file: " + fileAbsolutePath);
     }
+
+}
+
+string FrontendConfiguration::setUsingEnvironment(const char* envVar, string& defaultValue) {
+    char* envVal = getenv(envVar);
+
+    if (envVal == NULL) {
+        setenv(envVar, defaultValue.c_str(), 0);
+        return defaultValue;
+    }
+
+    return string(envVal);
 
 }

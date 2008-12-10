@@ -268,6 +268,11 @@ int main(int argc, char** argv)
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
+
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_GRIDMAFILE, configuration->getGridmapfile().c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_HOST_CERT.c_str(), configuration->getHostCertFile().c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_HOST_KEY.c_str(), configuration->getHostKeyFile().c_str());
+
     if (disableMapping) {
         srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_DISABLE_MAPPING.c_str());
     } else {

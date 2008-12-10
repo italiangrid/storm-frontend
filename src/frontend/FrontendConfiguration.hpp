@@ -163,6 +163,7 @@ private:
     int decodeDebugLevelOption(string& debugLevel);
     void checkCreateDir(string dirAbsolutePath);
     void checkFile(string fileAbsolutePath);
+    string setUsingEnvironment(const char* envVar, string defaultValue);
 
     static FrontendConfiguration* instance;
 
