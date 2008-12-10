@@ -34,17 +34,17 @@ map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
 
     int num_fields = mysql_num_fields(res);
     MYSQL_FIELD *fields = mysql_fetch_fields(res);
-    
+
     map<string, vector<string> > *dbmap = new map<string, vector<string> >();
     for(int i = 0; i < num_fields; i++)
         (*dbmap)[fields[i].name]=vector<string>();
-        
+
     MYSQL_ROW row;
     while(NULL != (row = mysql_fetch_row(res)))
         for(int i = 0; i<num_fields; i++)
             (*dbmap)[fields[i].name].push_back((row[i] == NULL? "" : row[i]));
 
-    mysql_free_result(res);    
+    mysql_free_result(res);
     return dbmap;
 
 }
@@ -53,15 +53,15 @@ map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
  * CONNECTION FUNCTIONS *
  ************************/
 EXTERN_C int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct srm_dbfd *dbfd)
-{               
+{
     static const char *func = "storm_opendb";
     int ntries;
-        
+
     (void) mysql_init(&dbfd->mysql);
     ntries = 0;
     while (1) {
         if (mysql_real_connect(&dbfd->mysql, db_srvr, db_user, db_pwd, "storm_db", 0, NULL, 0)) {
-            srmlogit(STORM_LOG_INFO, func, "Connected to the DB.\n"); 
+            srmlogit(STORM_LOG_INFO, func, "Connected to the DB.\n");
             return (0);
         } else {
             srmlogit (STORM_LOG_ERROR, func, "CONNECT error: %s\n", mysql_error(&dbfd->mysql));
@@ -69,7 +69,7 @@ EXTERN_C int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct srm
         if (ntries++ >= MAXRETRY) break;
         sleep(RETRYI);
     }
-    srmlogit (STORM_LOG_ERROR, func, "Too many connection attempts to the DB. Cowardly refusing to continue.\n");
+    srmlogit (STORM_LOG_ERROR, func, "Cannot connect to the DB.\n");
     serrno = seinternal;
     return (-1);
 }
@@ -125,7 +125,7 @@ EXTERN_C void rollback_to_savepoint(struct srm_dbfd *dbfd, const char * name)
 EXTERN_C int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, const char *sql_stmt, MYSQL_RES **res)
 {
     srmlogit(STORM_LOG_DEBUG2, func, "Executing query: ``%s''\n", sql_stmt);
-    
+
     if (mysql_query(&dbfd->mysql, sql_stmt)) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s\n", mysql_error (&dbfd->mysql));
         serrno = seinternal;
@@ -144,7 +144,7 @@ EXTERN_C int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, co
  ***************/
 /* free() a request->protocols array. This function should not be
  * called directly. You probably want call free_storm_req()
- * instead... 
+ * instead...
  * request should be not-NULL. request->protocols can be NULL.
 */
 EXTERN_C int free_storm_req_transfer_params(struct storm_req *request)
@@ -155,7 +155,7 @@ EXTERN_C int free_storm_req_transfer_params(struct storm_req *request)
 
     if(NULL == request->protocols )
         return 0;
-    
+
     for(i=0; NULL != request->protocols[i]; i++)
         free(request->protocols[i]);
 
@@ -178,7 +178,7 @@ EXTERN_C void free_gfr_entry_array(struct storm_get_filereq **gfr_array)
     return;
 }
 
-/* free() a storm_req struct 
+/* free() a storm_req struct
  * request should be not-NULL. request->protocols can be NULL.
 */
 EXTERN_C int free_storm_req(struct storm_req *request)
@@ -209,7 +209,7 @@ static void storm_decode_cpr_entry(MYSQL_ROW row,
     else
         cpr_entry->f_ordinal = -1;
     i++;
-    
+
     if(row[i])
         strcpy(cpr_entry->from_surl, row[i]);
     i++;
@@ -277,14 +277,14 @@ static void storm_decode_gfr_entry(MYSQL_ROW row, int lock, storm_dbrec_addr *re
     else
         gfr_entry->f_ordinal = -1;
     i++;
-    
+
     if(row[i])
         strcpy(gfr_entry->from_surl, row[i]);
     i++;
 
     if(row[i]){
         if(NULL == gfr_entry->lifetime)
-            gfr_entry->lifetime = (u_signed64 *)malloc(sizeof(u_signed64));     
+            gfr_entry->lifetime = (u_signed64 *)malloc(sizeof(u_signed64));
         *(gfr_entry->lifetime) = atoi (row[i]);
     }else
         gfr_entry->lifetime = NULL;
@@ -339,14 +339,14 @@ static void storm_decode_pfr_entry(MYSQL_ROW row,
     int i = 0;
 
     if (lock) strcpy(*rec_addr, row[i++]);
-    
+
     if (row[i]) strcpy(pfr_entry->r_token, row[i]);
     i++;
 
     if (row[i]) pfr_entry->f_ordinal = atoi(row[i]);
     else pfr_entry->f_ordinal = -1;
     i++;
-    
+
     if(row[i]) strcpy(pfr_entry->to_surl, row[i]);
     i++;
 
@@ -390,7 +390,7 @@ static void storm_decode_xferreq_entry(MYSQL_ROW row, int lock, storm_dbrec_addr
     int i = 0;
 
     if (lock) strcpy(*rec_addr, row[i++]);
-    
+
     storm_req->r_ordinal = atoi(row[i++]);
     strcpy(storm_req->r_token, row[i++]);
     storm_req->r_uid = atoi(row[i++]);
@@ -558,7 +558,7 @@ EXTERN_C int storm_get_pending_req_by_token(struct srm_dbfd *dbfd, char *r_token
 {
     static const char *func = "storm_get_pending_req_by_token";
     static const char *query =
-                        "SELECT R_ORDINAL, R_TOKEN, R_UID, R_GID, CLIENT_DN, CLIENTHOST, R_TYPE, " 
+                        "SELECT R_ORDINAL, R_TOKEN, R_UID, R_GID, CLIENT_DN, CLIENTHOST, R_TYPE, "
                         "PROTOCOL, U_TOKEN, FLAGS, RETRYTIME, NBREQFILES, CTIME, STIME, ETIME, STATUS, ERRSTRING "
                         "FROM storm_pending_req "
                         "WHERE r_token = '%s'";
@@ -573,9 +573,9 @@ EXTERN_C int storm_get_pending_req_by_token(struct srm_dbfd *dbfd, char *r_token
     MYSQL_ROW row;
 
     sprintf(sql_stmt, lock ? query4upd : query, r_token);
-    
+
     if (storm_exec_query(func, dbfd, sql_stmt, &res)) return(-1);
-    
+
     if ((row = mysql_fetch_row(res)) == NULL) {
         mysql_free_result(res);
         return(-ENOENT);
@@ -610,15 +610,15 @@ EXTERN_C int storm_get_pfr_by_surl(struct srm_dbfd *dbfd,
     MYSQL_ROW row;
 
     sprintf(sql_stmt, lock ? query4upd : query, r_token, to_surl);
-    
+
     if (storm_exec_query(func, dbfd, sql_stmt, &res)) return(-1);
-    
+
     if ((row = mysql_fetch_row(res)) == NULL) {
         mysql_free_result (res);
         serrno = ENOENT;
         return(-1);
     }
-    
+
     storm_decode_pfr_entry(row, lock, rec_addr, pfr_entry);
     mysql_free_result (res);
     return(0);
@@ -642,11 +642,11 @@ EXTERN_C int storm_get_req_by_token(struct srm_dbfd *dbfd, char *r_token, struct
     char sql_stmt[1024];
     MYSQL_RES *res;
     MYSQL_ROW row;
-        
+
     snprintf(sql_stmt,1024, lock ? query4upd : query, r_token);
-    
+
     if (storm_exec_query(func, dbfd, sql_stmt, &res)) return(-1);
-    
+
     if ((row = mysql_fetch_row(res)) == NULL) {
         mysql_free_result(res);
         return(-ENOENT);
@@ -704,7 +704,7 @@ EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
             return -1;
         }
     }
-    
+
     srmlogit(STORM_LOG_DEBUG2,func,"Executing query: ``%s''\n",sql_stmt);
     if (mysql_query (&dbfd->mysql, sql_stmt)) {
         if (mysql_errno (&dbfd->mysql) == ER_DUP_ENTRY)
@@ -719,7 +719,7 @@ EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
     return (0);
 }
 
-/* 
+/*
    This function take a gfr_entry struct pointer and the ID of the
    request and insert a get entry into the DB.
 
@@ -732,12 +732,12 @@ EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
    in case of error, serrno can be:
    ENOMEM     => error allocating memory (probably in snprintf)
 */
-EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd, 
-                           struct storm_get_filereq *gfr_entry, 
+EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
+                           struct storm_get_filereq *gfr_entry,
                            storm_id_t request_id)
 {
     static const char *func = "storm_insert_gfr_entry";
-    static const char *diroption_stmt = 
+    static const char *diroption_stmt =
         "INSERT INTO request_DirOption "
         "(isSourceADirectory, allLevelRecursive, numOfLevels) values "
         "(%s, %s, %s)";
@@ -745,7 +745,7 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
         "INSERT INTO request_Get "
         "(request_DirOptionID, request_queueID, sourceSURL) values "
         "(%s, %lu, '%s')";
-    static const char *getstatus_stmt = 
+    static const char *getstatus_stmt =
         "INSERT INTO status_Get"
         "(statusCode,  request_GetID) values"
         "(%d,  %lu)";
@@ -764,12 +764,12 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
         serrno = EINVAL;
         return -1;
     }
-    
+
     /* Insert into request_DirOption table, if needed */
     if(NULL != gfr_entry->diroption){
         struct storm_diroption *d = gfr_entry->diroption;
         ret = snprintf(
-            sql_stmt, 2880, diroption_stmt, 
+            sql_stmt, 2880, diroption_stmt,
             itoa(srcdir_str, d->srcdir),
             d->recursive <0 ? "NULL" : itoa(recursive_str, d->recursive),
             d->numlevel <0 ? "NULL" : itoa(numlevel_str, d->numlevel));
@@ -782,7 +782,7 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
             serrno = seinternal;
             return -1;
         }
-        diroptionID = (storm_id_t) mysql_insert_id(&dbfd->mysql);       
+        diroptionID = (storm_id_t) mysql_insert_id(&dbfd->mysql);
     }else{
         diroptionID = -1;
         strcpy(diroptionID_str,"NULL");
@@ -804,10 +804,10 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
         return -2;
     }
     getID = mysql_insert_id(&dbfd->mysql);
-    
+
     /* Insert into status_Get */
     ret = snprintf(
-        sql_stmt, 2880, getstatus_stmt, 
+        sql_stmt, 2880, getstatus_stmt,
         SRM_USCOREREQUEST_USCOREQUEUED,
         (unsigned long)getID);
     if ((ret >= 2880) || (ret < 0)) {
@@ -823,8 +823,8 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_insert_gfr_entry_array(struct srm_dbfd *dbfd, 
-                                 struct storm_get_filereq **gfr_array, 
+EXTERN_C int storm_insert_gfr_entry_array(struct srm_dbfd *dbfd,
+                                 struct storm_get_filereq **gfr_array,
                                  storm_id_t request_id)
 {
     int i;
@@ -835,7 +835,7 @@ EXTERN_C int storm_insert_gfr_entry_array(struct srm_dbfd *dbfd,
         if(0 != ret)
             return ret;
     }
-    return 0;   
+    return 0;
 }
 
 /* This function uses the MYSQL_RES res and fill the array pointed by
@@ -851,8 +851,8 @@ EXTERN_C int storm_insert_gfr_entry_array(struct srm_dbfd *dbfd,
 
    Note: this function does not call mysql_free_result().
  */
-static int _fill_getreq_array_from_dbres(MYSQL_RES *res, 
-                                         struct storm_get_filereq ***gfr_array_ptr, 
+static int _fill_getreq_array_from_dbres(MYSQL_RES *res,
+                                         struct storm_get_filereq ***gfr_array_ptr,
                                          struct storm_req *req)
 {
 /* Cfr storm_get_request_status.
@@ -903,7 +903,7 @@ static int _fill_getreq_array_from_dbres(MYSQL_RES *res,
     gfr_array = *gfr_array_ptr;
     if(NULL == gfr_array)
         return ENOMEM;
-    
+
     for (i = 0; NULL != (row = mysql_fetch_row(res)); i++){
         if(0 == i){ /* Check if the nbreqfiles field is correct */
             if(atoi(row[4]) > size){
@@ -941,7 +941,7 @@ static int _fill_getreq_array_from_dbres(MYSQL_RES *res,
             strncpy(gfr_array[i]->turl, row[8], ST_MAXSFNLEN+1);
     }
     /* Global status of the request */
-    
+
     if(req->nr_waiting > 0){ /* Some request not yet completed */
         if(req->status != SRM_USCOREREQUEST_USCOREINPROGRESS
            && req->status != SRM_USCOREREQUEST_USCOREQUEUED) /* should never happen */
@@ -960,11 +960,11 @@ static int _fill_getreq_array_from_dbres(MYSQL_RES *res,
     return 0;
 }
 /* request status */
-/* 
+/*
  * request->r_type MUST be filled. It will be used to distinguish
  *                            between Get request and Put request.
  * request->r_token MUST be filled.
- * 
+ *
  * request_array must a *** pointer to a struct storm_get_filereq,
  * storm_put_filereq or storm_copy_filereq. The array will be
  * allocated dinamically. Please, call free_gfr_entry_array() to free
@@ -1001,20 +1001,20 @@ EXTERN_C int storm_get_gfr_status(struct srm_dbfd *dbfd,
     MYSQL_RES *res;
     MYSQL_ROW row;
 
-    if(NULL == filerequest_array 
-       || NULL == request 
+    if(NULL == filerequest_array
+       || NULL == request
        || NULL == dbfd)
         return EINVAL;
 
     /* Check if the request is in progress */
     ret = snprintf(sql_stmt, sql_size, select_process_stmt, request->r_token, request->r_type);
     if ((ret >= sql_size) || (ret < 0))
-        return ENOMEM;    
+        return ENOMEM;
 
     if (0 != storm_exec_query(func, dbfd, sql_stmt, &res))
         return serrno;
-    
-    
+
+
     /* If not in progress, check if the request is queued */
     if(0 == (num_rows = mysql_num_rows(res))){
         ret = snprintf(sql_stmt, sql_size, select_queue_stmt, request->r_token, request->r_type);
@@ -1035,7 +1035,7 @@ EXTERN_C int storm_get_gfr_status(struct srm_dbfd *dbfd,
         request->status = SRM_USCOREREQUEST_USCOREQUEUED;
     }else
         request->status = SRM_USCOREREQUEST_USCOREINPROGRESS;
-    
+
     ret = _fill_getreq_array_from_dbres(res,filerequest_array, request);
 
     mysql_free_result(res);
@@ -1049,7 +1049,7 @@ EXTERN_C int storm_get_gfr_status(struct srm_dbfd *dbfd,
   -1             generic inserting error
   -ENOPROTOOPT   protocols not supported
 */
-EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd, 
+EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
                                       struct storm_req *storm_req)
 {
     static const char *func = "storm_insert_pending_entry";
@@ -1069,18 +1069,18 @@ EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
     char pinlifetime_str[sizeof(storm_req->lifetime)*2+3];
     char ftype_str[4];
     char overwrite_str[4];
-    
-    static const char *protocol_stmt = 
+
+    static const char *protocol_stmt =
         "INSERT INTO request_TransferProtocols "
         "(request_queueID, config_protocolsID) values "
-        "(%lu, '%s')"; 
+        "(%lu, '%s')";
 
     ret = snprintf(
-        sql_stmt, sql_size, insert_stmt, 
-        storm_req->client_dn, 
+        sql_stmt, sql_size, insert_stmt,
+        storm_req->client_dn,
         storm_req->u_token[0] == '\0'? "NULL" : storm_req->u_token,
         storm_req->f_type == DB_FILE_TYPE_UNKNOWN? "NULL" : ctoa(ftype_str, storm_req->f_type),
-        storm_req->r_token, 
+        storm_req->r_token,
         storm_req->r_type,
         storm_req->overwrite == DB_OVERWRITE_UNKNOWN ? "NULL": ctoa(overwrite_str, storm_req->overwrite),
         storm_req->pinlifetime < 0? "NULL" : itoa(pinlifetime_str, storm_req->pinlifetime),
@@ -1091,9 +1091,9 @@ EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
         serrno = ENOMEM;
         return(-1);
     }
-    
+
     srmlogit(STORM_LOG_DEBUG2, func, "Executing query: ``%s''\n", sql_stmt);
-    
+
     if (mysql_query(&dbfd->mysql, sql_stmt)) {
         if (mysql_errno(&dbfd->mysql) == ER_DUP_ENTRY) serrno = EEXIST;
         else {
@@ -1129,7 +1129,7 @@ EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
                 return -1;
         }
     }
-    
+
     /* Insert into request_ClientNetworks NOT IMPLEMENTED (but very
      * like the above code) */
 
@@ -1168,7 +1168,7 @@ EXTERN_C int storm_insert_pfr_entry(struct srm_dbfd *dbfd, struct storm_put_file
         serrno=ENOMEM;
         return -1;
     }
-        
+
     if(NULL != pfr_entry->lifetime){
         ret = snprintf (sql_stmt, 2880, insert_stmt,
                  pfr_entry->r_token, pfr_entry->f_ordinal, pfr_entry->to_surl,
@@ -1212,7 +1212,7 @@ EXTERN_C int storm_insert_pfr_entry(struct srm_dbfd *dbfd, struct storm_put_file
 EXTERN_C int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_req *storm_req)
 {
     static const char *func = "storm_insert_xferreq_entry";
-    static char insert_stmt[] = 
+    static char insert_stmt[] =
                 "INSERT INTO storm_req (R_ORDINAL, R_TOKEN, R_UID, R_GID, CLIENT_DN, CLIENTHOST, "
                 "R_TYPE, PROTOCOL, U_TOKEN, FLAGS, RETRYTIME, NBREQFILES, CTIME, STIME, ETIME, "
                 "STATUS, ERRSTRING) "
@@ -1249,7 +1249,7 @@ EXTERN_C int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_req 
 EXTERN_C int storm_list_cpr_entry(struct srm_dbfd *dbfd,
                      int bol,
                      char *r_token,
-                     struct storm_copy_filereq *cpr_entry, 
+                     struct storm_copy_filereq *cpr_entry,
                      int lock,
                      storm_dbrec_addr *rec_addr,
                      int endlist,
@@ -1286,17 +1286,17 @@ EXTERN_C int storm_list_cpr_entry(struct srm_dbfd *dbfd,
         }
         if (storm_exec_query(func, dbfd, sql_stmt, dblistptr)) return(-1);
     }
-    
+
     if ((row = mysql_fetch_row (*dblistptr)) == NULL) return (1);
     storm_decode_cpr_entry (row, lock, rec_addr, cpr_entry);
-    
+
     return (0);
 }
 
 EXTERN_C int storm_list_gfr_entry(struct srm_dbfd *dbfd,
                          int bol,
                          char *r_token,
-                         struct storm_get_filereq *gfr_entry, 
+                         struct storm_get_filereq *gfr_entry,
                          int lock,
                          storm_dbrec_addr *rec_addr,
                          int endlist,
@@ -1324,7 +1324,7 @@ EXTERN_C int storm_list_gfr_entry(struct srm_dbfd *dbfd,
         if (*dblistptr) mysql_free_result(*dblistptr);
         return(1);
     }
-    
+
     if (bol) {
         ret = snprintf(sql_stmt, 1024, lock ? query4upd : query, r_token);
         if((ret>=1024) || (ret<0)) {
@@ -1334,16 +1334,16 @@ EXTERN_C int storm_list_gfr_entry(struct srm_dbfd *dbfd,
 
         if (storm_exec_query(func, dbfd, sql_stmt, dblistptr)) return(-1);
     }
-    
+
     if ((row = mysql_fetch_row (*dblistptr)) == NULL) return(1);
     storm_decode_gfr_entry(row, lock, rec_addr, gfr_entry);
-    
+
     return (0);
 }
 
 EXTERN_C int storm_list_pending_req(struct srm_dbfd *dbfd,
                        int bol,
-                       struct storm_req *storm_req, 
+                       struct storm_req *storm_req,
                        int lock,
                        storm_dbrec_addr *rec_addr,
                        int endlist,
@@ -1386,7 +1386,7 @@ EXTERN_C int storm_list_pending_req(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token, struct storm_put_filereq *pfr_entry, 
+EXTERN_C int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token, struct storm_put_filereq *pfr_entry,
                      int lock, storm_dbrec_addr *rec_addr, int endlist, DBLISTPTR *dblistptr)
 {
     static const char *func = "storm_list_pfr_entry";
@@ -1410,16 +1410,16 @@ EXTERN_C int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token,
         if (*dblistptr) mysql_free_result(*dblistptr);
         return(1);
     }
-    
+
     if (bol) {
         sprintf(sql_stmt, lock ? query4upd : query, r_token);
         if (storm_exec_query(func, dbfd, sql_stmt, dblistptr)) return(-1);
     }
-    
+
     if ((row = mysql_fetch_row(*dblistptr)) == NULL) return(1);
-    
+
     storm_decode_pfr_entry(row, lock, rec_addr, pfr_entry);
-    
+
     return(0);
 }
 
@@ -1427,7 +1427,7 @@ EXTERN_C int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token,
    array. protlen is the lenght of each string in the array.  If
    called with protocol == NULL or nbprot = 0, then only the number of
    supported protocols are returned.  If protocol != NULL then the
-   array will be filled with the supported protocols. 
+   array will be filled with the supported protocols.
 
    In case of error a negative integer is returned.
    If nbrot < number of supported protocols, then -(number of supported protocols + 10) are returned.
@@ -1443,11 +1443,11 @@ EXTERN_C int storm_list_protocol(struct srm_dbfd *dbfd,
     int i, nb_sup_proto;
     DBLISTPTR dblistptr;
     MYSQL_ROW row;
-    
+
     if (storm_exec_query(func, dbfd, query, &dblistptr)) return(-1);
     nb_sup_proto = 0;
     nb_sup_proto = mysql_num_rows(dblistptr);
-    
+
     if ((0 == nbprot) || (NULL == protocol)) {
         mysql_free_result(dblistptr);
         return(nb_sup_proto);
@@ -1462,7 +1462,7 @@ EXTERN_C int storm_list_protocol(struct srm_dbfd *dbfd,
         protocol[i][protlen-1] = '\0';
         i++;
     }
-    
+
     mysql_free_result(dblistptr);
     return(i);
 }

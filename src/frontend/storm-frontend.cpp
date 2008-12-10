@@ -43,47 +43,6 @@ int nb_supported_protocols;
 uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
 
-/**
- * check environment variables contents.
- *
- * @return 0 if environment is safe
- *
- * @return -1 otherwise
- */
-int check_environment() {
-    char *gridmap;
-    char *gridmapdir;
-    struct stat stbuf;
-    int ret;
-
-#ifdef GSI_PLUGINS
-    /* environment is set? */
-    gridmap = getenv("GRIDMAP");
-    gridmapdir = getenv("GRIDMAPDIR");
-    if (NULL == gridmap || NULL == gridmapdir)
-        return -1;
-
-    /* grid-mapfile is a file? */
-    ret = stat(gridmap, &stbuf);
-    if (0 != ret || ! S_ISREG(stbuf.st_mode))
-        return -1;
-
-    /* grid-mapfile file is readable? */
-    if ( 0 != access(gridmap, R_OK) )
-        return -1;
-
-    /* gridmapdir is a directory? */
-    ret = stat(gridmapdir,&stbuf);
-    if (0 != ret || !S_ISDIR(stbuf.st_mode))
-        return -1;
-
-    /* gridmapdir is readable and executable? */
-    if ( 0 != access(gridmapdir, R_OK & X_OK) )
-        return -1;
-#endif
-    return 0;
-}
-
 static int http_get(struct soap *soap) {
 
     int fd = open(wsdl_file, O_RDONLY | O_NONBLOCK);
@@ -290,11 +249,6 @@ int main(int argc, char** argv)
         srmlogit(STORM_LOG_ERROR, func, "Error in get_supported_protocols(): unable to retrieve "
                  "supported protocols from the DB.");
         exit(1);
-    }
-
-    if (0 != check_environment()) {
-        srmlogit(STORM_LOG_ERROR, func, "Environment not safe! Exiting\n");
-        exit(CONFERR);
     }
 
     if (! debugMode) { // fork and leave the daemon in background
