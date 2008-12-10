@@ -66,7 +66,7 @@ static const string OPTL_DEBUG_LEVEL = "log.debuglevel";
 static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
 
 static const string OPT_NUM_THREADS = "t";
-static const string OPTL_NUM_THREADS = "threads.number";
+static const string OPTL_NUM_THREADS = "fe.threads.number";
 static const char* OPT_NUM_THREADS_DESCRIPTION = "Use <arg> threads";
 
 static const string OPT_PROXY_DIR = "P";
@@ -78,20 +78,20 @@ static const string OPTL_PROXY_USER = "proxy.user";
 static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
 
 static const string OPT_PORT = "p";
-static const string OPTL_PORT = "port";
+static const string OPTL_PORT = "fe.port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPTL_XMLRPC_HOST = "xmlrpc.host";
+static const string OPTL_XMLRPC_HOST = "be.xmlrpc.host";
 static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
 
-static const string OPTL_XMLRPC_PORT = "xmlrpc.port";
+static const string OPTL_XMLRPC_PORT = "be.xmlrpc.port";
 static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
 
-static const string OPTL_XMLRPC_PATH = "xmlrpc.path";
+static const string OPTL_XMLRPC_PATH = "be.xmlrpc.path";
 static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
 static const string OPT_USER = "u";
-static const string OPTL_USER = "user";
+static const string OPTL_USER = "fe.user";
 static const char* OPT_USER_DESCRIPTION = "Run the frontend as user <arg>";
 
 static const string OPT_WSDL_FILE = "w";
