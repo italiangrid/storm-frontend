@@ -259,7 +259,7 @@ int main(int argc, char** argv)
     srmlogit(STORM_LOG_NONE, func, "---------------------- Configuration ------------------\n");
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), port);
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_LOG_FILE.c_str(), log_file.c_str());
+    srmlogit(STORM_LOG_NONE, func, "logfile=%s\n", log_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
