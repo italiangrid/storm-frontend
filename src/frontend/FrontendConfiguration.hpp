@@ -162,7 +162,7 @@ private:
     void setConfigurationOptions(po::variables_map& vm);
     int decodeDebugLevelOption(string& debugLevel);
     void checkCreateDir(string dirAbsolutePath);
-    void checkFile(sting fileAbsolutePath);
+    void checkFile(string fileAbsolutePath);
 
     static FrontendConfiguration* instance;
 
