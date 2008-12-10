@@ -12,7 +12,7 @@
 AC_INIT([storm-frontend], [1.4.0], [luca.magnoni@cnaf.infn.it])
 
 # Release number
-AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [08])
+AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [00])
 
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
