@@ -71,10 +71,10 @@ void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
 
 void FrontendConfiguration::checkConfigurationData() {
 
-    checkDir(proxy_dir);
+    checkCreateDir(proxy_dir);
 
     if (!log_file_dir.empty())
-        checkDir(log_file_dir);
+        checkCreateDir(log_file_dir);
 
     checkFile(gridmapfile);
     checkFile(hostcertfile);
@@ -360,7 +360,7 @@ void FrontendConfiguration::checkFile(string fileAbsolutePath) {
 
     struct stat statInfo;
 
-    int ret = stat(dirAbsolutePath.c_str(), &statInfo);
+    int ret = stat(fileAbsolutePath.c_str(), &statInfo);
 
     if (ret !=0 ) {
         throw runtime_error("File doesn't exists: " + fileAbsolutePath);
