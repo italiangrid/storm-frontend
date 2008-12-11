@@ -77,7 +77,7 @@ void FrontendConfiguration::checkConfigurationData() {
         dir = getParentPath(log_file);
         checkCreateDir(dir);
     } catch (exception& e) {
-        throw runtime_error("Error while attempting to create \"" + dir + "\". " + string(e.what()));
+        throw runtime_error("Error while attempting to create \"" + dir + "\".\n" + string(e.what()));
     }
 
     checkFile(log_file);
