@@ -70,8 +70,9 @@ void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
 
 void FrontendConfiguration::checkConfigurationData() {
 
+    string dir;
     try {
-        string dir = proxy_dir;
+        dir = proxy_dir;
         checkCreateDir(dir);
         dir = getParentPath(log_file);
         checkCreateDir(dir);
