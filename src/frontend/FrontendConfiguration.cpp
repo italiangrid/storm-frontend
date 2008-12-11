@@ -363,10 +363,10 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
 
     if (access(dirAbsolutePath.c_str(), W_OK| X_OK) != 0) {
         if (statInfo.st_mode & S_IWOTH)
-
+            cout << "ok W: " << dirAbsolutePath << endl;
 
         if (statInfo.st_mode & S_IXOTH)
-            cout << "ok X\n";
+            cout << "ok X: " << dirAbsolutePath << endl;
 
         if (!((statInfo.st_mode & S_IWOTH) && (statInfo.st_mode & S_IXOTH))) {
             throw runtime_error("Permission denied (\"wx\" is needed) for directory \""
