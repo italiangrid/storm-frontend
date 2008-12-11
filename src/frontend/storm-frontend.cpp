@@ -294,6 +294,8 @@ int main(int argc, char** argv)
         struct srm_srv_thread_info* srm_srv_thread_info;
         srm_srv_thread_info = (struct srm_srv_thread_info*) soap_malloc(tsoap, sizeof(struct srm_srv_thread_info));
 
+        srm_srv_thread_info->db_open_done = 0;
+
         tsoap->user = srm_srv_thread_info;
 
         tp.schedule(boost::bind(process_request, tsoap));
