@@ -34,7 +34,7 @@ struct srm_dbfd {
 };
 
 struct srm_srv_thread_info {
-    int             s;      // socket for communication with client
+    bool            is_used;      // socket for communication with client
     int             db_open_done;
     struct srm_dbfd dbfd;
     char            errbuf[PRTBUFSZ];

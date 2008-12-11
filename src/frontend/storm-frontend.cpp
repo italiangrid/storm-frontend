@@ -232,6 +232,7 @@ int main(int argc, char** argv)
 
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
+    // non-blocking soap_accept()... exit from soap_accept() every 5 secs if no requests arrived
     soap_data->accept_timeout = 5;
     int flags;
 #if defined(GSI_PLUGINS)
@@ -264,6 +265,17 @@ int main(int argc, char** argv)
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     xmlrpc_env_clean(&env);
 
+    /*** Initialize MySQL connection pool ***/
+    struct srm_srv_thread_info** mysql_connection_pool;
+
+    mysql_connection_pool = new (struct srm_srv_thread_info (*[nThreads]));
+
+    for (int i=0; i<nThreads; i++) {
+        mysql_connection_pool[i] = new struct srm_srv_thread_info();
+        mysql_connection_pool[i]->is_used = false;
+        mysql_connection_pool[i]->db_open_done = 0;
+    }
+
     boost::threadpool::fifo_pool tp(nThreads);
 
     signal(SIGINT, sigint_handler);
@@ -291,10 +303,17 @@ int main(int argc, char** argv)
             break;
         }
 
-        struct srm_srv_thread_info* srm_srv_thread_info;
-        srm_srv_thread_info = (struct srm_srv_thread_info*) soap_malloc(tsoap, sizeof(struct srm_srv_thread_info));
+        // Get next available MySQL connection
+        struct srm_srv_thread_info* srm_srv_thread_info = NULL;
 
-        srm_srv_thread_info->db_open_done = 0;
+        while (srm_srv_thread_info == NULL) {
+            for (int i=0; i<nThreads; i++) {
+                if (! mysql_connection_pool[i]->is_used) {
+                    srm_srv_thread_info = mysql_connection_pool[i];
+                }
+            }
+            srmlogit(STORM_LOG_ERROR, func, "No MySQL connections available... trying again, but this is a BUG\n");
+        }
 
         tsoap->user = srm_srv_thread_info;
 
@@ -307,6 +326,12 @@ int main(int argc, char** argv)
     soap_end(soap_data);
     soap_done(soap_data);
     free(soap_data);
+
+    for (int i=0; i<nThreads; i++) {
+        delete mysql_connection_pool[i];
+    }
+
+    delete[] mysql_connection_pool;
 
     srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
     return (exit_code);
