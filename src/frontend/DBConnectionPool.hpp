@@ -20,7 +20,7 @@ public:
 private:
     struct srm_srv_thread_info** mysql_connection_pool;
     int _pool_size;
-    static pthread_mutex_t log_mutex;
+    static pthread_mutex_t mtx;
 
 
 };

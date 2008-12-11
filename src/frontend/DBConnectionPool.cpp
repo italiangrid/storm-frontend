@@ -8,7 +8,7 @@
 #include "DBConnectionPool.hpp"
 #include "srmlogit.h"
 
-DBConnectionPool::pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t DBConnectionPool::mtx = PTHREAD_MUTEX_INITIALIZER;
 
 DBConnectionPool::DBConnectionPool(int pool_size) {
     mysql_connection_pool = new (struct srm_srv_thread_info(*[nThreads]));
@@ -28,7 +28,7 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
 
     srm_srv_thread_info* free_connection = NULL;
 
-    pthread_mutex_lock(&log_mutex);
+    pthread_mutex_lock(&mtx);
 
     bool found = false;
     for (int i=0; i<_pool_size; i++) {
@@ -47,7 +47,7 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
             }
         }
     }
-    pthread_mutex_unlock(&log_mutex);
+    pthread_mutex_unlock(&mtx);
 
     return free_connection;
 
