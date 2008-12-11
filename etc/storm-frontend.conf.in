@@ -1,5 +1,4 @@
 ##### StoRM frontend configuration file #####
-fe.user = root
 fe.threads.number = 5
 fe.port = 8440
 
