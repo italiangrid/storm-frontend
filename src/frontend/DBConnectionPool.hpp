@@ -19,8 +19,10 @@ public:
 
 private:
     struct srm_srv_thread_info** mysql_connection_pool;
+    boost::thread::id* id_map;
     int _pool_size;
-    static pthread_mutex_t mtx;
+    int _curr_size;
+    pthread_mutex_t mtx;
 
 
 };

@@ -6,7 +6,6 @@
 #define _SRM_SERVER_H
 
 #include <mysql.h>
-#include <boost/thread.hpp>
 
             /* srm server constants */
 #define MAXRETRY 2
@@ -31,11 +30,11 @@ struct srm_dbfd {
 };
 
 struct srm_srv_thread_info {
-    bool              is_used;
-    boost::thread::id thread_owner_id;
-    int               db_open_done;
-    struct srm_dbfd   dbfd;
-    char              errbuf[PRTBUFSZ];
+    int              is_used;
+//    int              thread_owner_id;
+    int              db_open_done;
+    struct srm_dbfd  dbfd;
+    char             errbuf[PRTBUFSZ];
 };
 
 /* srm server exit codes */
