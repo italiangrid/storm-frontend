@@ -23,7 +23,7 @@ static char sccsid[] = "@(#)$RCSfile$ $Revision$ $Date$ CERN Jean-Philippe Baud"
 
 extern int jid;
 
-static pthread_mutex_t log_mutex= PTHREAD_MUTEX_INITIALIZER;;
+static pthread_mutex_t log_mutex= PTHREAD_MUTEX_INITIALIZER;
 
 static FILE *log_fd = NULL;
 static int loglevel = STORM_LOG_ERROR;

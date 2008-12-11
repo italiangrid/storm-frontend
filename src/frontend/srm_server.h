@@ -5,9 +5,8 @@
 #ifndef _SRM_SERVER_H
 #define _SRM_SERVER_H
 
-#ifdef USE_MYSQL
 #include <mysql.h>
-#endif
+#include <boost/thread.hpp>
 
             /* srm server constants */
 #define MAXRETRY 2
@@ -27,17 +26,16 @@ extern char *xmlrpc_endpoint;
 /* srm server structures */
 struct srm_dbfd {
     int     idx;        // index in array of srm_dbfd
-#ifdef USE_MYSQL
-    MYSQL       mysql;
-#endif
+    MYSQL   mysql;
     int     tr_started;
 };
 
 struct srm_srv_thread_info {
-    bool            is_used;      // socket for communication with client
-    int             db_open_done;
-    struct srm_dbfd dbfd;
-    char            errbuf[PRTBUFSZ];
+    bool              is_used;
+    boost::thread::id thread_owner_id;
+    int               db_open_done;
+    struct srm_dbfd   dbfd;
+    char              errbuf[PRTBUFSZ];
 };
 
 /* srm server exit codes */
