@@ -302,12 +302,12 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_HOST_CERT))
         hostcertfile = vm[OPTL_HOST_CERT].as<string> ();
     else
-        hostcertfile = setUsingEnvironment("X509_HOST_CERT", DEFAULT_HOST_CERT_FILE);
+        hostcertfile = setUsingEnvironment("X509_USER_CERT", DEFAULT_HOST_CERT_FILE);
 
     if (vm.count(OPTL_HOST_KEY))
         hostkeyfile = vm[OPTL_HOST_KEY].as<string> ();
     else
-        hostkeyfile = setUsingEnvironment("X509_HOST_KEY", DEFAULT_HOST_KEY_FILE);
+        hostkeyfile = setUsingEnvironment("X509_USER_KEY", DEFAULT_HOST_KEY_FILE);
 
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
