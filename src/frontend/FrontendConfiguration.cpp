@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <sys/stat.h>
 #include <string>
+#include <pwd.h>
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 
