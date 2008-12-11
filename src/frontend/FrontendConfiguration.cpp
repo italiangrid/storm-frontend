@@ -362,7 +362,7 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
     }
 
     if (access(dirAbsolutePath.c_str(), W_OK| X_OK) != 0) {
-        throw runtime_error("Permission denied (need \"wx\") for directory \"" + dirAbsolutePath + "\". "
+        throw runtime_error("Permission denied (\"wx\" is needed) for directory \"" + dirAbsolutePath + "\". "
                 "Currently running as user \"" + user  + "\".");
     }
 
