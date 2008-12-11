@@ -23,6 +23,10 @@ FrontendConfiguration* FrontendConfiguration::getInstance() {
 FrontendConfiguration::FrontendConfiguration() {
     commandLineOptions.add(defineCommandLineOptions());
     configurationFileOptions.add(defineConfigFileOptions());
+
+    struct passwd* pwd = getpwuid(getuid());
+    user.assign(pwd->pw_name);
+
 }
 
 FrontendConfiguration::~FrontendConfiguration() {
@@ -199,7 +203,6 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
         (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
         (OPTL_XMLRPC_PATH.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
         (string(OPTL_PROXY_USER + "," + OPT_PROXY_USER).c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
-        (string(OPTL_USER + "," + OPT_USER).c_str(), po::value<string>(), OPT_USER_DESCRIPTION)
         (string(OPTL_WSDL_FILE + "," + OPT_WSDL_FILE).c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
         (string(OPTL_DEBUG_LEVEL + "," + OPT_DEBUG_LEVEL).c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
         (OPTL_DB_HOST.c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
@@ -278,9 +281,6 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_PROXY_USER))
         proxy_user = vm[OPTL_PROXY_USER].as<string> ();
-
-    if (vm.count(OPTL_USER))
-        user = vm[OPTL_USER].as<string> ();
 
     if (vm.count(OPTL_WSDL_FILE))
         wsdl_file = vm[OPTL_WSDL_FILE].as<string> ();

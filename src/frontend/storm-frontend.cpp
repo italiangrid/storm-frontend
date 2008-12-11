@@ -77,33 +77,6 @@ static int http_get(struct soap *soap) {
     return SOAP_OK;
 }
 
-int runAsUser(string& user) {
-
-    struct passwd *pwd;
-
-    if (user.empty()) {
-
-        // Get current user name
-        pwd = getpwuid(getuid());
-        user.assign(pwd->pw_name);
-
-    } else {
-
-        // Get information on the requested user
-        pwd = getpwnam(user.c_str());
-        if (NULL == pwd) { // error
-            return CONFERR;
-        }
-
-        if (setgid(pwd->pw_uid) || setuid(pwd->pw_gid)) {
-            return CONFERR;
-        }
-
-    }
-
-    return 0;
-}
-
 int setProxyUserGlobalVariables(string& proxy_user) {
 
     struct passwd *pwd;
@@ -165,7 +138,6 @@ int main(int argc, char** argv)
     string proxy_dir = configuration->getProxyDir();
     string proxy_user = configuration->getProxyUser();
     string xmlrpc_ep = configuration->getXMLRPCEndpoint();
-    string user = configuration->getUser();
     string dbHost = configuration->getDBHost();
     string dbUser = configuration->getDBUser();
     string dbUserPasswd = configuration->getDBUserPassword();
@@ -174,12 +146,6 @@ int main(int argc, char** argv)
     string debugLevelString = configuration->getDebugLevelString();
     bool disableMapping = configuration->mappingDisabled();
     bool disableVOMSCheck = configuration->vomsCheckDisabled();
-
-    // Run using "user" privileges
-    if (runAsUser(user) != 0) {
-        fprintf(stderr, "Error: cannot run as user \"%s\".\n", user.c_str());
-        return 1;
-    }
 
     // Proxy User
     if (setProxyUserGlobalVariables(proxy_user) != 0) {
@@ -220,7 +186,7 @@ int main(int argc, char** argv)
 
     srmlogit_set_debuglevel(debuglevel);
 
-    srmlogit(STORM_LOG_NONE, func, "Starting StoRM frontend as user: %s\n", user.c_str());
+    srmlogit(STORM_LOG_NONE, func, "Starting StoRM frontend as user: %s\n", configuration->getUser().c_str());
     srmlogit(STORM_LOG_NONE, func, "---------------------- Configuration ------------------\n");
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), port);

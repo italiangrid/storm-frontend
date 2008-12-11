@@ -88,10 +88,6 @@ static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC 
 static const string OPTL_XMLRPC_PATH = "be.xmlrpc.path";
 static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
-static const string OPT_USER = "u";
-static const string OPTL_USER = "fe.user";
-static const char* OPT_USER_DESCRIPTION = "Run the frontend as user <arg>";
-
 static const string OPT_WSDL_FILE = "w";
 static const string OPTL_WSDL_FILE = "wsdl.file";
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
