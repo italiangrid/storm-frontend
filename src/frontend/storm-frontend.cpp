@@ -26,6 +26,7 @@
 #include "FrontendConfiguration.hpp"
 #include <boost/threadpool.hpp>
 #include <boost/bind.hpp>
+#include "DBConnectionPool.hpp"
 #include <signal.h>
 
 #define NAME "StoRM SRM v2.2"
@@ -41,6 +42,8 @@ char* wsdl_file;
 char** supported_protocols;
 
 int nb_supported_protocols;
+
+DBConnectionPool* mysql_connection_pool;
 
 uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
@@ -265,17 +268,7 @@ int main(int argc, char** argv)
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     xmlrpc_env_clean(&env);
 
-    /*** Initialize MySQL connection pool ***/
-    struct srm_srv_thread_info** mysql_connection_pool;
-
-    mysql_connection_pool = new (struct srm_srv_thread_info (*[nThreads]));
-
-    for (int i=0; i<nThreads; i++) {
-        mysql_connection_pool[i] = new struct srm_srv_thread_info();
-        mysql_connection_pool[i]->is_used = false;
-        mysql_connection_pool[i]->db_open_done = 0;
-    }
-
+    mysql_connection_pool = new DBConnectionPool(nThreads);
     boost::threadpool::fifo_pool tp(nThreads);
 
     signal(SIGINT, sigint_handler);
@@ -303,19 +296,7 @@ int main(int argc, char** argv)
             break;
         }
 
-        // Get next available MySQL connection
-        struct srm_srv_thread_info* srm_srv_thread_info = NULL;
-
-        while (srm_srv_thread_info == NULL) {
-            for (int i=0; i<nThreads; i++) {
-                if (! mysql_connection_pool[i]->is_used) {
-                    srm_srv_thread_info = mysql_connection_pool[i];
-                }
-            }
-            srmlogit(STORM_LOG_ERROR, func, "No MySQL connections available... trying again, but this is a BUG\n");
-        }
-
-        tsoap->user = srm_srv_thread_info;
+        //tsoap->user = srm_srv_thread_info;
 
         tp.schedule(boost::bind(process_request, tsoap));
 
@@ -327,11 +308,11 @@ int main(int argc, char** argv)
     soap_done(soap_data);
     free(soap_data);
 
-    for (int i=0; i<nThreads; i++) {
-        delete mysql_connection_pool[i];
-    }
-
-    delete[] mysql_connection_pool;
+//    for (int i=0; i<nThreads; i++) {
+//        delete mysql_connection_pool[i];
+//    }
+//
+//    delete[] mysql_connection_pool;
 
     srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
     return (exit_code);
@@ -340,12 +321,11 @@ int main(int argc, char** argv)
 void *
 process_request(void *soap_vp) {
     struct soap *soap = (struct soap *) soap_vp;
-    struct srm_srv_thread_info *thip = (struct srm_srv_thread_info *) soap->user;
+//    struct srm_srv_thread_info *thip = (struct srm_srv_thread_info *) soap->user;
+    struct srm_srv_thread_info *thip = mysql_connection_pool->getConnection(boost::this_thread::get_id());
     soap->recv_timeout = SOAP_RECV_TIMEOUT;
     soap->send_timeout = SOAP_SEND_TIMEOUT;
     soap_serve(soap);
-
-    thip->s = -1;
 
     soap_end(soap);
     soap_done(soap);
