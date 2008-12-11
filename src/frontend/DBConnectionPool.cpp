@@ -37,6 +37,7 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
     for (i=0; i<_curr_size; i++) {
         if (id_map[i] == tid) {
             found = true;
+            srmlogit(STORM_LOG_DEBUG, "DBConnectionPool", "Thread already registered\n");
             break;
         }
     }
@@ -49,6 +50,8 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
         free_connection = mysql_connection_pool[i];
         free_connection->is_used = true;
     }
+
+    srmlogit(STORM_LOG_DEBUG, "DBConnectionPool", "Assigned connection: %d\n", i);
 
     pthread_mutex_unlock(&mtx);
 
