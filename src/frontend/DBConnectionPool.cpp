@@ -46,6 +46,7 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
         free_connection = mysql_connection_pool[i];
     } else {
         i = _curr_size;
+        id_map[i] = tid;
         _curr_size++;
         free_connection = mysql_connection_pool[i];
         free_connection->is_used = true;
