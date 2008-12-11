@@ -24,6 +24,7 @@
 #include <xmlrpc-c/client.h>
 #include <exception>
 #include "FrontendConfiguration.hpp"
+#include <boost/thread.hpp>
 #include <boost/threadpool.hpp>
 #include <boost/bind.hpp>
 #include "DBConnectionPool.hpp"
