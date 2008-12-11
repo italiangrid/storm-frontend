@@ -368,11 +368,12 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
         if (statInfo.st_mode & S_IXOTH)
             cout << "ok X: " << dirAbsolutePath << endl;
 
-        if (!((statInfo.st_mode & S_IWOTH) && (statInfo.st_mode & S_IXOTH))) {
+        if (! ((statInfo.st_mode & S_IWOTH) && (statInfo.st_mode & S_IXOTH)) ) {
             throw runtime_error("Permission denied (\"wx\" is needed) for directory \""
                     + dirAbsolutePath + "\". "
                 "Currently running as user \"" + user + "\".");
         }
+        cout << "Passa liscio\n";
     }
 
 }
