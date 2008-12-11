@@ -350,7 +350,7 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
     if (ret != 0) {
         checkCreateDir(getParentPath(dirAbsolutePath));
 
-        int err = mkdir(dirAbsolutePath.c_str());
+        int err = mkdir(dirAbsolutePath.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
         cout << "Err is: "<< err << " user: " << getuid() << " group: " << getgid() << endl;
 
