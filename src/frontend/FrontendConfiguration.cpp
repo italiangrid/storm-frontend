@@ -7,6 +7,7 @@
 
 #include <stdexcept>
 #include <sys/stat.h>
+#include <string>
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 
@@ -71,9 +72,9 @@ void FrontendConfiguration::checkConfigurationData() {
 
     checkCreateDir(proxy_dir);
 
-    if (!log_file_dir.empty())
-        checkCreateDir(log_file_dir);
+    checkCreateDir(getParentPath(log_file));
 
+    checkFile(log_file);
     checkFile(gridmapfile);
     checkFile(hostcertfile);
     checkFile(hostkeyfile);
@@ -186,7 +187,6 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
     configurationFileOptions.add_options()
         (string(OPTL_NUM_THREADS + "," + OPT_NUM_THREADS).c_str(), po::value<int>()->default_value(DEFAULT_THREADS_NUMBER), OPT_NUM_THREADS_DESCRIPTION)
         (string(OPTL_LOG_FILE_NAME + "," + OPT_LOG_FILE_NAME).c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), "")
-        (OPTL_LOG_FILE_DIR.c_str(), po::value<string>(), "")
         (string(OPTL_PROXY_DIR + "," + OPT_PROXY_DIR).c_str(), po::value<string>(), OPT_PROXY_DIR_DESCRIPTION)
         (string(OPTL_PORT + "," + OPT_PORT).c_str(), po::value<int>()->default_value(DEFAULT_PORT), OPT_PORT_DESCRIPTION)
         (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
@@ -246,11 +246,6 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_LOG_FILE_NAME))
         log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
-
-    if (vm.count(OPTL_LOG_FILE_DIR))
-        log_file_dir = vm[OPTL_LOG_FILE_DIR].as<string> ();
-    else
-        log_file_dir = "";
 
     if (vm.count(OPTL_NUM_THREADS))
         numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
@@ -338,11 +333,17 @@ int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
 }
 
 void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
+
+    if (dirAbsolutePath.empty())
+        return;
+
     struct stat statInfo;
 
     int ret = stat(dirAbsolutePath.c_str(), &statInfo);
 
     if (ret != 0) {
+        checkCreateDir(getParentPath(dirAbsolutePath));
+
         if (mkdir(dirAbsolutePath.c_str(), S_IRWXU) != 0) {
             throw runtime_error("Cannot create directory \"" + dirAbsolutePath + "\". "
                     "Currently running as user \"" + user + "\".");
@@ -382,6 +383,8 @@ void FrontendConfiguration::checkFile(string fileAbsolutePath) {
 
 }
 
+
+
 string FrontendConfiguration::setUsingEnvironment(const char* envVar, const string& defaultValue) {
     char* envVal = getenv(envVar);
 
@@ -391,5 +394,31 @@ string FrontendConfiguration::setUsingEnvironment(const char* envVar, const stri
     }
 
     return string(envVal);
+
+}
+
+string FrontendConfiguration::getFilename(string path) {
+
+    size_t pos = path.find_last_of('/');
+
+    if (pos == string::npos)
+        return path;
+
+    return path.substr(pos + 1);
+
+}
+
+string FrontendConfiguration::getParentPath(string path) {
+
+    string parentPath("");
+
+    size_t pos = path.find_last_of('/');
+
+    if (pos == string::npos)
+        return parentPath;
+
+    parentPath = path.substr(0, pos);
+
+    return parentPath;
 
 }
