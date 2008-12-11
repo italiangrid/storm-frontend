@@ -39,30 +39,26 @@ extern "C" {
 using namespace std;
 
 template<typename soap_in_t, typename soap_out_t>
-int __process_file_request(struct soap *soap,
-                           storm::file_request<soap_in_t, soap_out_t> &request,
-                           soap_in_t *req,
-                           soap_out_t **resp)
-{
-    static const char * const func = "__process_file_request<>"; 
-    struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *>(soap->user);
-    
-	//Generete Unique request identifier as REQUEST TOKEN
+int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soap_out_t> &request,
+        soap_in_t *req, soap_out_t **resp) {
+    static const char * const func = "__process_file_request<>";
+    struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
+
+    //Generete Unique request identifier as REQUEST TOKEN
     uuid_t uuid;
-    char r_token[ST_MAXDPMTOKENLEN+1];
-    uuid_generate (uuid);
-    uuid_unparse (uuid, r_token);
-    
+    char r_token[ST_MAXDPMTOKENLEN + 1];
+    uuid_generate(uuid);
+    uuid_unparse(uuid, r_token);
+
     // Set the Request Token into the request
     request.r_token(r_token);
-    
+
     srmlogit(STORM_LOG_DEBUG, func, "Request token: %s\n", request.r_token().c_str());
 
     // Connect to the DB, if needed.
     if (!(thip->db_open_done)) {
         if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-            *resp = request.error_response(SRM_USCOREINTERNAL_USCOREERROR,
-                                           "DB open error");
+            *resp = request.error_response(SRM_USCOREINTERNAL_USCOREERROR, "DB open error");
             return SOAP_OK;
         }
         thip->db_open_done = 1;
@@ -73,31 +69,28 @@ int __process_file_request(struct soap *soap,
         try {
             request.load(req);
         } catch (storm::invalid_request x) {
-            srmlogit(STORM_LOG_DEBUG, func,
-                     "Error loading data for request token %s: %s\n",
-                     r_token, x.what());
+            srmlogit(STORM_LOG_DEBUG, func, "Error loading data for request token %s: %s\n",
+                    r_token, x.what());
             request.r_token(""); // We do not want to send the Request token, in case of error.
-            *resp = request.error_response(SRM_USCOREINVALID_USCOREREQUEST,
-                                           x.what());
+            *resp = request.error_response(SRM_USCOREINVALID_USCOREREQUEST, x.what());
             return SOAP_OK;
         }
-        
+
         // Temporary hack: proxy saved as a file. TODO: insert the proxy into DB.
         request.saveProxy();
-		
-		try {
+
+        try {
             request.insert(&thip->dbfd);
         } catch (storm_db::mysql_exception x) {
             srmlogit(STORM_LOG_ERROR, func,
-                     "mysql exception inserting data for request token %s. Error: %s\n",
-                     r_token, x.what());
+                    "mysql exception inserting data for request token %s. Error: %s\n", r_token,
+                    x.what());
             request.r_token(""); // Do not supply a request token in case of error.
-            *resp = request.error_response(SRM_USCOREFAILURE,
-                                           "Generic DB error");
+            *resp = request.error_response(SRM_USCOREFAILURE, "Generic DB error");
             return SOAP_OK;
         } catch (storm::not_supported x) {
-           srmlogit(STORM_LOG_ERROR, func,
-                     "not_supported exception for request token %s. Error: %s\n", r_token, x.what());
+            srmlogit(STORM_LOG_ERROR, func,
+                    "not_supported exception for request token %s. Error: %s\n", r_token, x.what());
             request.r_token("");
             *resp = request.error_response(SRM_USCORENOT_USCORESUPPORTED, x.what());
             return SOAP_OK;
@@ -107,10 +100,9 @@ int __process_file_request(struct soap *soap,
         *resp = request.response();
 
     } catch (bad_alloc x) {
-        srmlogit(STORM_LOG_ERROR, func,
-                 "bad_allc exception.  token: %s, error: %s\n",
-                 r_token, x.what());
-        srmlogit(STORM_LOG_ERROR,func,"bad_alloc exception catched: %s\n",x.what());
+        srmlogit(STORM_LOG_ERROR, func, "bad_allc exception.  token: %s, error: %s\n", r_token,
+                x.what());
+        srmlogit(STORM_LOG_ERROR,func, "bad_alloc exception catched: %s\n", x.what());
         return SOAP_EOM;
     }
     return SOAP_OK;
