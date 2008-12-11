@@ -3,8 +3,7 @@ fe.threads.number = 5
 fe.port = 8440
 
 # Log options
-log.filename = storm-frontend.log
-log.dir = @prefix@/var/log
+log.filename = @prefix@/var/log/storm-frontend.log
 log.debuglevel = DEBUG2
 
 # Security settings
