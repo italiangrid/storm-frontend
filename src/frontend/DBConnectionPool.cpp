@@ -9,7 +9,7 @@
 #include "srmlogit.h"
 
 DBConnectionPool::DBConnectionPool(int pool_size) {
-    pthread_mutex_t DBConnectionPool::mtx = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
     mysql_connection_pool = new (struct srm_srv_thread_info(*[pool_size]));
     id_map = new (boost::thread::id[pool_size]);
     _curr_size = 0;
