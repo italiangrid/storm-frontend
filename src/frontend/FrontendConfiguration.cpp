@@ -70,9 +70,14 @@ void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
 
 void FrontendConfiguration::checkConfigurationData() {
 
-    checkCreateDir(proxy_dir);
-
-    checkCreateDir(getParentPath(log_file));
+    try {
+        string dir = proxy_dir;
+        checkCreateDir(dir);
+        dir = getParentPath(log_file);
+        checkCreateDir(dir);
+    } catch (exception& e) {
+        throw runtime_error("Error while attempting to create \"" + dir + "\". " + string(e.what()));
+    }
 
     checkFile(log_file);
     checkFile(gridmapfile);
