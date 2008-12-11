@@ -291,9 +291,8 @@ int main(int argc, char** argv)
             break;
         }
 
-        struct srm_srv_thread_info
-                *srm_srv_thread_info = (struct srm_srv_thread_info*) soap_malloc(tsoap,
-                        sizeof(struct srm_srv_thread_info));
+        struct srm_srv_thread_info* srm_srv_thread_info;
+        srm_srv_thread_info = (struct srm_srv_thread_info*) soap_malloc(tsoap, sizeof(struct srm_srv_thread_info));
 
         tsoap->user = srm_srv_thread_info;
 
