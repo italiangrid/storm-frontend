@@ -13,7 +13,7 @@ pthread_mutex_t DBConnectionPool::mtx = PTHREAD_MUTEX_INITIALIZER;
 DBConnectionPool::DBConnectionPool(int pool_size) {
     mysql_connection_pool = new (struct srm_srv_thread_info(*[pool_size]));
 
-    for (int i = 0; i < nThreads; i++) {
+    for (int i = 0; i < pool_size; i++) {
         mysql_connection_pool[i] = new struct srm_srv_thread_info();
         mysql_connection_pool[i]->is_used = false;
         mysql_connection_pool[i]->db_open_done = 0;
