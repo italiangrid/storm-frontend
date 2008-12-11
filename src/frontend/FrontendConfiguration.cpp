@@ -352,7 +352,7 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
 
         int err = mkdir(dirAbsolutePath.c_str(), S_IRWXU);
 
-        cout << "Err is: "<< err << endl;
+        cout << "Err is: "<< err << " user: " << getuid() << " group: " << getgid() << endl;
 
         if (err != 0) {
             throw runtime_error("Cannot create directory \"" + dirAbsolutePath + "\". "
