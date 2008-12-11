@@ -85,7 +85,6 @@ void FrontendConfiguration::checkConfigurationData() {
         throw runtime_error("Error while attempting to create \"" + dir + "\".\n" + string(e.what()));
     }
 
-    checkFile(log_file);
     checkFile(gridmapfile);
     checkFile(hostcertfile);
     checkFile(hostkeyfile);
@@ -351,11 +350,7 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
     if (ret != 0) {
         checkCreateDir(getParentPath(dirAbsolutePath));
 
-        int err = mkdir(dirAbsolutePath.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-
-        cout << "Err is: "<< err << " user: " << getuid() << " group: " << getgid() << endl;
-
-        if (err != 0) {
+        if (mkdir(dirAbsolutePath.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
             throw runtime_error("Cannot create directory \"" + dirAbsolutePath + "\". "
                     "Currently running as user \"" + user + "\".");
         }
