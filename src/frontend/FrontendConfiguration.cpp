@@ -362,6 +362,12 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
     }
 
     if (access(dirAbsolutePath.c_str(), W_OK| X_OK) != 0) {
+        if (statInfo.st_mode & S_IWOTH)
+            srmlogit(STORM_LOG_NONE, "pippo", "OK W");
+
+        if (statInfo.st_mode & S_IXOTH)
+                    srmlogit(STORM_LOG_NONE, "pippo", "OK X");
+
         if (!((statInfo.st_mode & S_IWOTH) && (statInfo.st_mode & S_IXOTH))) {
             throw runtime_error("Permission denied (\"wx\" is needed) for directory \""
                     + dirAbsolutePath + "\". "
