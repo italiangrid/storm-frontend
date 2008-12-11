@@ -324,6 +324,7 @@ process_request(void *soap_vp) {
     struct soap *soap = (struct soap *) soap_vp;
 //    struct srm_srv_thread_info *thip = (struct srm_srv_thread_info *) soap->user;
     struct srm_srv_thread_info *thip = mysql_connection_pool->getConnection(boost::this_thread::get_id());
+    soap->user = thip;
     soap->recv_timeout = SOAP_RECV_TIMEOUT;
     soap->send_timeout = SOAP_SEND_TIMEOUT;
     soap_serve(soap);
