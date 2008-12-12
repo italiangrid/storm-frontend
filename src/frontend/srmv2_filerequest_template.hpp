@@ -45,7 +45,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
     static const char* func = "__process_file_request<>";
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
 
-    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, request.getClientDN.c_str());
+    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, request.getClientDN().c_str());
     srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,
                                                               (soap->ip>>8)  & 0xFF, (soap->ip) & 0xFF);
 
