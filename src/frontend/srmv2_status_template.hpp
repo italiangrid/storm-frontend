@@ -26,71 +26,69 @@
 using namespace std;
 
 template<typename soap_response_t>
-int __process_request_status (struct soap * soap,
-                              const char * const r_token,
-                              storm::file_status<soap_response_t> &status,
-                              soap_response_t **resp)
+int __process_request_status(struct soap * soap, const char * const r_token, const char* funcName,
+        storm::file_status<soap_response_t> &status, soap_response_t **resp)
 
 {
-    struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *>(soap->user);
-    char clientdn[256];
-    if(NULL == r_token){
-        *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST,
-                                      "Empty request token");
+    struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
+    string clientDN = status.getClientDN();
+
+    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, clientDN.c_str());
+    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
+             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
+
+    if (NULL == r_token) {
+        *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST, "Empty request token");
         return SOAP_OK;
     }
-    string requestToken(r_token);
 
-#if defined(GSI_PLUGINS)
-    get_client_dn(soap, clientdn, sizeof(clientdn));
-#endif
+    string requestToken(r_token);
 
     // load data from DB
     if (!(thip->db_open_done)) {
         if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-            *resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR,
-                                 "DB open error");
+            *resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR, "DB open error");
             return SOAP_OK;
         }
         thip->db_open_done = 1;
     }
-    
 
-// Try for possible soap_bad_alloc
-    try{
+    // Try for possible soap_bad_alloc
+    try {
 
         try {
             status.load(&thip->dbfd, requestToken);
-        }catch (token_not_found x) {            
-            srmlogit(STORM_LOG_DEBUG, "__process_request_status<>", 
-                     "No request by token %s", requestToken.c_str());
-            *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST, 
-                                              "No request by that token");
+        } catch (token_not_found x) {
+            srmlogit(STORM_LOG_DEBUG, "__process_request_status<>", "No request by token %s",
+                    requestToken.c_str());
+            *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST,
+                    "No request by that token");
             return SOAP_OK;
-        }catch(storm_db::mysql_exception x){
-            srmlogit(STORM_LOG_ERROR, "__process_request_status<>", 
-                     "mysql exception laoding status for request token %s. Error: %s\n",
-                     requestToken.c_str(), x.what());
+        } catch (storm_db::mysql_exception x) {
+            srmlogit(STORM_LOG_ERROR, "__process_request_status<>",
+                    "mysql exception laoding status for request token %s. Error: %s\n",
+                    requestToken.c_str(), x.what());
             *resp = status.error_response(SRM_USCOREFAILURE,
-                                          "Generic error quering the status for the request");
+                    "Generic error quering the status for the request");
             return SOAP_OK;
         }
 
         // is client authorized?
         // i.e., the same DN must have issued the Copy request and this Status request
-        if (! status.is_authorized(clientdn)){
-            
-            *resp = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, 
-                                          "The request was made from another DN."
-                                          " You're not authorized to inspect it.");
+        if (!status.is_authorized(clientDN)) {
+
+            *resp = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE,
+                    "The request was made from another DN."
+                        " You're not authorized to inspect it.");
             return SOAP_OK;
         }
 
         // OK, fill in SOAP output structure
         *resp = status.response();
-    
-    }catch(bad_alloc x){
-        srmlogit(STORM_LOG_ERROR,"__process_request_status<>()","bad_alloc exception catched: %s\n",x.what());
+
+    } catch (bad_alloc x) {
+        srmlogit(STORM_LOG_ERROR,"__process_request_status<>()",
+                "bad_alloc exception catched: %s\n", x.what());
         return SOAP_EOM;
     }
     return SOAP_OK;

@@ -18,6 +18,8 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
         struct ns1__srmStatusOfPutRequestRequest *req,
         struct ns1__srmStatusOfPutRequestResponse_ *rep)
 {
+    static const char* funcName = "srmStatusOfPutRequest";
+
     storm::put_status status(soap);
 
     // If the request contains some surl, then fill the put_status object
@@ -38,6 +40,8 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
         struct ns1__srmStatusOfGetRequestRequest *req,
         struct ns1__srmStatusOfGetRequestResponse_ *rep)
 {
+    static const char* funcName = "srmStatusOfGetRequest";
+
     storm::get_status status(soap);
 
     // If the request contains some surl, then fill the get_status object
@@ -59,6 +63,8 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
         struct ns1__srmStatusOfCopyRequestRequest *req,
         struct ns1__srmStatusOfCopyRequestResponse_ *rep)
 {
+    static const char* funcName = "srmStatusOfCopyRequest";
+
     storm::copy_status status(soap);
 
     // If the request contains some surl, then fill the copy_status object
@@ -83,8 +89,13 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
         struct ns1__srmStatusOfBringOnlineRequestRequest *req,
         struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep)
 {
-    static const char * const func = "ns1_srmStatusOfBringOnline(C++)";
+    static const char* func = "srmStatusOfBringOnLineRequest";
     struct ns1__srmStatusOfBringOnlineRequestResponse *repp;
+    storm::Credentials credentials(soap);
+
+    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", func, credentials.getClientDN().c_str());
+    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
+             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
 
     try {
         repp = storm::soap_calloc<ns1__srmStatusOfBringOnlineRequestResponse>(soap);

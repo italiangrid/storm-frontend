@@ -66,6 +66,11 @@ int ns1__srmBringOnline (struct soap *soap,
 {
     static const char* funcName = "srmBringOnline";
     struct ns1__srmBringOnlineResponse *repp;
+    storm::Credentials credentials(soap);
+
+    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, credentials.getClientDN().c_str());
+    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
+             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
 
     try {
         repp = storm::soap_calloc<ns1__srmBringOnlineResponse>(soap);
