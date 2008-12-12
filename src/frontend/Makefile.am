@@ -51,12 +51,13 @@ noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
 noinst_LTLIBRARIES = libstormfrontend.la
 
 libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
-    srmv2_status_template.hpp \
-    bol.cpp bol.hpp bol_status.cpp bol_status.hpp srmv2_bol.cpp srmv2_status_bol.cpp \
-    ptp.cpp ptp.hpp put_status.cpp put_status.hpp srmv2_ptp.cpp srmv2_status_put.cpp \
-    ptg.cpp ptg.hpp get_status.cpp get_status.hpp srmv2_ptg.cpp srmv2_status_get.cpp \
-    copy.cpp copy.hpp copy_status.cpp copy_status.hpp srmv2_copy.cpp  srmv2_status_copy.cpp \
-    file_request.hpp file_status.hpp srmv2_filerequest_template.hpp \
+    file_request.hpp srmv2_filerequest_template.hpp \
+    srmv2_status_template.hpp file_status.hpp \
+    bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
+    ptp.cpp ptp.hpp put_status.cpp put_status.hpp \
+    ptg.cpp ptg.hpp get_status.cpp get_status.hpp \
+    copy.cpp copy.hpp copy_status.cpp copy_status.hpp \
+    asynch.cpp asynch_status.cpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     DBConnectionPool.cpp DBConnectionPool.hpp \

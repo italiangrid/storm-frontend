@@ -12,6 +12,7 @@
 #include "ptg.hpp"
 #include "copy.hpp"
 #include "bol.hpp"
+#include "srmlogit.h"
 
 extern "C"int ns1__srmPrepareToPut (struct soap *soap,
         struct ns1__srmPrepareToPutRequest *req,
