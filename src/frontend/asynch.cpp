@@ -1,0 +1,85 @@
+/*
+ * asynch.cpp
+ *
+ *  Created on: Dec 12, 2008
+ *      Author: alb
+ */
+
+#include "srmv2H.h"
+#include "srmlogit.h"
+#include "srmv2_filerequest_template.hpp"
+#include "ptp.hpp"
+#include "ptg.hpp"
+#include "copy.hpp"
+#include "bol.hpp"
+
+extern "C"int ns1__srmPrepareToPut (struct soap *soap,
+        struct ns1__srmPrepareToPutRequest *req,
+        struct ns1__srmPrepareToPutResponse_ *rep)
+{
+    static const char * const func = "ns1_srmPrepareToPut(C++)";
+
+    storm::ptp request(soap);
+
+    int soap_status = __process_file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse>
+    (soap, request, req, &rep->srmPrepareToPutResponse);
+
+    return soap_status;
+}
+
+extern "C"int ns1__srmPrepareToGet(struct soap *soap,
+        struct ns1__srmPrepareToGetRequest *req,
+        struct ns1__srmPrepareToGetResponse_ *rep)
+{
+    static const char * const func = "ns1_srmPrepareToGet(C++)";
+
+    storm::ptg request(soap);
+
+    int soap_status = __process_file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse>
+    (soap, request, req, &rep->srmPrepareToGetResponse);
+
+    return soap_status;
+}
+
+extern "C"int ns1__srmCopy (struct soap *soap,
+        struct ns1__srmCopyRequest *req,
+        struct ns1__srmCopyResponse_ *rep)
+{
+    static const char * const func = "ns1_srmCopy(C++)";
+
+    storm::copy request(soap);
+
+    int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse>(
+            soap, request, req, &rep->srmCopyResponse);
+
+    return soap_status;
+}
+
+extern "C"int ns1__srmBringOnline (struct soap *soap,
+        struct ns1__srmBringOnlineRequest *req,
+        struct ns1__srmBringOnlineResponse_ *rep)
+{
+    static const char * const func = "ns1_srmBringOnline(C++)";
+    struct ns1__srmBringOnlineResponse *repp;
+
+    try {
+        repp = storm::soap_calloc<ns1__srmBringOnlineResponse>(soap);
+        repp->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(soap);
+    }
+    catch (soap_bad_alloc) {
+        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
+        return SOAP_EOM;
+    }
+    catch (std::invalid_argument) {
+        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
+        return SOAP_NULL;
+    }
+
+    repp->returnStatus->statusCode = SRM_USCORESUCCESS;
+    repp->returnStatus->explanation = "This functionality is not meaningful for StoRM.";
+    rep->srmBringOnlineResponse = repp;
+
+    srmlogit(STORM_LOG_INFO, func, "Completed. Status: SRM_SUCCESS\n");
+
+    return(SOAP_OK);
+}
