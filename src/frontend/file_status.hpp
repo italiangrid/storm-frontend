@@ -40,132 +40,128 @@ typedef std::map<std::string, std::string> file_status_result_t;
 typedef std::vector<file_status_result_t> file_status_results_t;
 //#include "file_status_interface.hpp"
 
-class token_not_found : public std::exception {
-public: 
-    token_not_found(){};
-    token_not_found(std::string reason){errmsg=reason.c_str();}
-    const char *what() const throw() {return errmsg;}
+class token_not_found: public std::exception {
+public:
+    token_not_found() {};
+    token_not_found(std::string reason) { errmsg = reason.c_str(); }
+    const char *what() const throw() { return errmsg; }
+
 private:
     const char *errmsg;
 };
 
-namespace storm {    
-    // Template Class file_status
-    template<typename soap_out_t>
-    class file_status  
+namespace storm {
+// Template Class file_status
+template<typename soap_out_t>
+class file_status {
+public:
+    /// Ctor taking DB connection parameters
+    file_status(struct soap * soap) :
+        _soap(soap), _results_filled(false)
     {
-    public:
-        /// Ctor taking DB connection parameters
-        file_status(struct soap * soap) : _soap(soap), _results_filled(false){_response = NULL;};
-
-        /// Construct from DB and client supplied requestToken
-  
-        /// Fill in SOAP output data structure
-        virtual soap_out_t* response(){};
-
-        virtual soap_out_t* error_response(const ns1__TStatusCode SRM_ERROR_CODE, 
-                                           const char * const SRM_ERROR_EXPLANATION)
-            {
-                _status = SRM_ERROR_CODE;
-                _explanation = SRM_ERROR_EXPLANATION;
-                return response();
-            }
-
-        virtual bool is_authorized(const std::string& clientdn) { return (_client_dn == clientdn); }
-
-//        virtual void load(struct srm_dbfd *db, const std::string &requestToken, const std::vector<const std::string> &surls) = 0;
-        virtual void load(struct srm_dbfd *db, const std::string &requestToken)
-            {
-                // Load from DB using the specified query and add the
-                // results to _results
-                
-                srmlogit(STORM_LOG_DEBUG, "file_status::load", "file_status::load()\n");
-                storm_db::vector_exec_query(db, _query, _results);
-
-                if(!_results_filled){
-                    try {
-                        _fill_common_value();
-                    }catch(...){
-                    }
-                }
-                
-            }
-
-    protected:
-        virtual void _fill_common_value() 
-            {
-                // Fill common value for all requests.
-                _n_files = _results.size();
-                if(_n_files == 0)
-                    throw ENOENT;
-                file_status_result_t row0(_results.at(0));
-
-                if(row0["client_dn"].size()== 0)
-                    throw ENOENT;
-                _status = static_cast<ns1__TStatusCode>(atoi(row0["status"].c_str()));
-                _explanation = row0["errstring"];
-                _client_dn = row0["client_dn"];
-                _r_token = row0["r_token"];
-                _s_token = row0["s_token"];
-                _u_token = row0["u_token"];
-                _f_type = row0["config_FileStorageTypeID"][0];
-                _overwrite = row0["config_OverwriteID"][0];
-                _r_type = row0["config_RequestTypeID"];
-                _access_pattern = row0["config_AccessPatternID"][0];
-
-                _n_completed = atoi(row0["numOfCompleted"].c_str());
-                _n_waiting = atoi(row0["numOfWaiting"].c_str());
-                _n_failed = atoi(row0["numOfFailed"].c_str());
-
-                // WARNING: this are all storm_time_t, not int!
-                _remainingTime = atoi(row0["remainingTotalTime"].c_str());
-                _pinLifetime = atoi(row0["pinLifetime"].c_str());
-                _lifetime = atoi(row0["fileLifetime"].c_str());
-                _retrytime = atoi(row0["retrytime"].c_str());
-                _results_filled=true;
-            }
-
-        virtual void _empty_results()
-            {
-
-                _results.clear();
-            }
-
-        // i altri campi comuni da 'request_queue'
-        std::string _query;
-
-        soap * _soap;
-        struct srm_dbfd *_db;
-
-        sql_string _client_dn;
-        std::vector<std::string> _fqans;
-        ns1__TStatusCode _status; // Staus of the SRM request
-        std::string _explanation;
-        sql_string _r_token; // Request Token
-        std::string _u_token; // User Token
-        std::string _s_token; // Space Token
-        // std::string _proxy;
-        char _f_type;
-        char _overwrite;
-        char _access_pattern;
-        std::string _r_type;
-        storm_time_t _retrytime;
-        storm_time_t _pinLifetime; // -1 = not specified
-        storm_time_t _remainingTime; // -1 = not specified
-        storm_time_t _lifetime;
-        int _n_files;
-        int _n_completed;
-        int _n_waiting;
-        int _n_failed;
-        int _n_aborted;
-
-        file_status_results_t  _results;
-        bool _results_filled;
-        soap_out_t* _response;
+        _response = NULL;
     };
 
+    /// Construct from DB and client supplied requestToken
+
+    /// Fill in SOAP output data structure
+    virtual soap_out_t* response() {};
+
+    virtual soap_out_t* error_response(const ns1__TStatusCode SRM_ERROR_CODE,
+            const char * const SRM_ERROR_EXPLANATION)
+    {
+        _status = SRM_ERROR_CODE;
+        _explanation = SRM_ERROR_EXPLANATION;
+        return response();
+    }
+
+    virtual bool is_authorized(const std::string& clientdn) {
+        return (_client_dn == clientdn);
+    }
+
+    virtual void load(struct srm_dbfd *db, const std::string &requestToken) {
+        // Load from DB using the specified query and add the
+        // results to _results
+
+        srmlogit(STORM_LOG_DEBUG, "file_status::load", "file_status::load()\n");
+        storm_db::vector_exec_query(db, _query, _results);
+
+        if (!_results_filled) {
+            try {
+                _fill_common_value();
+            } catch (...) {
+            }
+        }
+    }
+
+protected:
+    virtual void _fill_common_value() {
+        // Fill common value for all requests.
+        _n_files = _results.size();
+        if (_n_files == 0)
+            throw ENOENT;
+        file_status_result_t row0(_results.at(0));
+
+        if (row0["client_dn"].size() == 0)
+            throw ENOENT;
+        _status = static_cast<ns1__TStatusCode> (atoi(row0["status"].c_str()));
+        _explanation = row0["errstring"];
+        _client_dn = row0["client_dn"];
+        _r_token = row0["r_token"];
+        _s_token = row0["s_token"];
+        _u_token = row0["u_token"];
+        _f_type = row0["config_FileStorageTypeID"][0];
+        _overwrite = row0["config_OverwriteID"][0];
+        _r_type = row0["config_RequestTypeID"];
+        _access_pattern = row0["config_AccessPatternID"][0];
+
+        _n_completed = atoi(row0["numOfCompleted"].c_str());
+        _n_waiting = atoi(row0["numOfWaiting"].c_str());
+        _n_failed = atoi(row0["numOfFailed"].c_str());
+
+        // WARNING: this are all storm_time_t, not int!
+        _remainingTime = atoi(row0["remainingTotalTime"].c_str());
+        _pinLifetime = atoi(row0["pinLifetime"].c_str());
+        _lifetime = atoi(row0["fileLifetime"].c_str());
+        _retrytime = atoi(row0["retrytime"].c_str());
+        _results_filled = true;
+    }
+
+    virtual void _empty_results() { _results.clear(); }
+
+    // altri campi comuni da 'request_queue'
+    std::string _query;
+
+    soap * _soap;
+    struct srm_dbfd *_db;
+
+    sql_string _client_dn;
+    std::vector<std::string> _fqans;
+    ns1__TStatusCode _status; // Staus of the SRM request
+    std::string _explanation;
+    sql_string _r_token; // Request Token
+    std::string _u_token; // User Token
+    std::string _s_token; // Space Token
+    // std::string _proxy;
+    char _f_type;
+    char _overwrite;
+    char _access_pattern;
+    std::string _r_type;
+    storm_time_t _retrytime;
+    storm_time_t _pinLifetime; // -1 = not specified
+    storm_time_t _remainingTime; // -1 = not specified
+    storm_time_t _lifetime;
+    int _n_files;
+    int _n_completed;
+    int _n_waiting;
+    int _n_failed;
+    int _n_aborted;
+
+    file_status_results_t _results;
+    bool _results_filled;
+    soap_out_t* _response;
+};
 
 }
 
 #endif //FILE_STATUS_STATUS_HPP
-
