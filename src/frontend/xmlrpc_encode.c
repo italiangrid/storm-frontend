@@ -1,11 +1,11 @@
 
 /**
  * \file xml_encode.c
- * 
+ *
  * This file contains the functions implementing, for each input type of srmv2.2, the functions
  * that encode a specified type into an xml structure.
  */
- 
+
 #include "xmlrpc_encode.h"
 #include <stdio.h>
 #include <cgsi_plugin.h>
@@ -32,12 +32,12 @@ int encode_lifetimeValue(const char *callerName,
                          xmlrpc_value *xmlStruct)
 {
     ULONG64 longValue;
-    
+
     if (lifetimeVal == NULL) {
         srmlogit(STORM_LOG_ERROR, callerName, "Warning: missing %s parameter\n", fieldName);
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     longValue = *lifetimeVal;
     return encode_ULONG64(callerName, env_addr, &longValue, fieldName, xmlStruct);
 }
@@ -59,7 +59,7 @@ int encode_arrayOfString(const char *callerName,
     char **stringArray;
     int i, nbItems;
     xmlrpc_value *xml_string, *xml_arrayOfString;
-    
+
     if (arrayOfString == NULL) {
         srmlogit(STORM_LOG_ERROR, callerName, "Warning: missing arrayOfString parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
@@ -87,10 +87,10 @@ int encode_arrayOfString(const char *callerName,
             xmlrpc_DECREF(xml_string);
         }
     }
-    
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_arrayOfString);
     xmlrpc_DECREF(xml_arrayOfString);
-    
+
     return(0);
 }
 
@@ -113,7 +113,7 @@ int encode_arrayOfUnsignedLong(const char *callerName,
     int i, nbItems;
     ULONG64 *unsignedLongArray;
     xmlrpc_value *xml_arrayOfLong, *xml_string;
-    
+
     if (arrayOfUnsignedLong == NULL) {
         srmlogit(STORM_LOG_ERROR, callerName, "Warning: missing arrayOfUnsignedLong parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
@@ -123,7 +123,7 @@ int encode_arrayOfUnsignedLong(const char *callerName,
         srmlogit(STORM_LOG_ERROR, callerName, "Warning: missing arrayOfUnsignedLong parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     unsignedLongArray = arrayOfUnsignedLong->unsignedLongArray;
     xml_arrayOfLong = xmlrpc_array_new(env_addr);
     for (i=0; i<nbItems; i++) {
@@ -132,10 +132,10 @@ int encode_arrayOfUnsignedLong(const char *callerName,
         xmlrpc_array_append_item(env_addr, xml_arrayOfLong, xml_string);
         xmlrpc_DECREF(xml_string);
     }
-    
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_arrayOfLong);
     xmlrpc_DECREF(xml_arrayOfLong);
-    
+
     return(0);
 }
 
@@ -150,16 +150,16 @@ int encode_arrayOfUnsignedLong(const char *callerName,
 int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_intVal;
-    
+
     if (intVal == NULL) {
         srmlogit(STORM_LOG_DEBUG, callerName, "Warning: missing int parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     xml_intVal = xmlrpc_int_new(env_addr, *intVal);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_intVal);
     xmlrpc_DECREF(xml_intVal);
-    
+
     return(0);
 }
 
@@ -174,16 +174,16 @@ int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *
 int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char *fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_boolVal;
-    
+
     if (boolVal == NULL) {
         srmlogit(STORM_LOG_DEBUG, callerName, "Warning: missing bool parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     xml_boolVal = xmlrpc_bool_new(env_addr, *boolVal);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_boolVal);
     xmlrpc_DECREF(xml_boolVal);
-    
+
     return(0);
 }
 
@@ -201,7 +201,7 @@ int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64
 {
     char long64Str[NUM_OF_LONG_CHR];
     xmlrpc_value *xml_string;
-    
+
     if (long64Val == NULL) {
         srmlogit(STORM_LOG_DEBUG, callerName,"Warning: missing ULONG64 parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
@@ -211,7 +211,7 @@ int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64
     xml_string = xmlrpc_string_new(env_addr, long64Str);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_string);
     xmlrpc_DECREF(xml_string);
-    
+
     return(0);
 }
 
@@ -224,17 +224,17 @@ int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64
  * @param xmlStruct The xmlrpc destination variable.
  */
 int encode_retentionPolicyInfo(const char *callerName,
-                               xmlrpc_env *env_addr, 
+                               xmlrpc_env *env_addr,
                                struct ns1__TRetentionPolicyInfo *retentionPolicyInfo,
                                xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_retentionPolicyInfo, *xml_intVal;
-    
+
     if (retentionPolicyInfo == NULL) {
         srmlogit(STORM_LOG_ERROR, callerName,"Warning: missing retentionPolicyInfo parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     xml_retentionPolicyInfo = xmlrpc_struct_new(env_addr);
     // Encode retentionPolicy field
     xml_intVal = xmlrpc_int_new(env_addr, retentionPolicyInfo->retentionPolicy);
@@ -246,10 +246,10 @@ int encode_retentionPolicyInfo(const char *callerName,
         xmlrpc_struct_set_value(env_addr, xml_retentionPolicyInfo, "accessLatency", xml_intVal);
         xmlrpc_DECREF(xml_intVal);
     }
-    
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, "retentionPolicyInfo", xml_retentionPolicyInfo);
     xmlrpc_DECREF(xml_retentionPolicyInfo);
-    
+
     return(0);
 }
 
@@ -264,13 +264,13 @@ int encode_retentionPolicyInfo(const char *callerName,
 int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_addr, char *spaceToken, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_spaceToken;
-    
+
     if (spaceToken == NULL) return(ENCODE_ERR_MISSING_PARAM);
-    
+
     xml_spaceToken = xmlrpc_string_new(env_addr, spaceToken);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userSpaceTokenDescription", xml_spaceToken);
     xmlrpc_DECREF(xml_spaceToken);
-    
+
     return(0);
 }
 
@@ -287,10 +287,8 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     char clientdn[256], **fqans;
     int i, nbfqans, error;
     xmlrpc_value *userDN, *fqansArray, *fqansItem;
-    
+
     clientdn[0] = 0;    // Initialized to empty string
-    
-#if defined(GSI_PLUGINS)
 
     /* Get DN and FQAN from the CGSI plugin and the CGSI_VOMS plugin */
     get_client_dn(soap, clientdn, sizeof(clientdn));
@@ -311,7 +309,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
     srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
     xmlrpc_DECREF(userDN);
-    
+
     srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);
 
     if (nbfqans > 0) {
@@ -331,17 +329,6 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
         if (!error) xmlrpc_struct_set_value(env_addr, xmlStruct, "userFQANS", fqansArray);
         xmlrpc_DECREF(fqansArray);
     }
-#else
-    /* No CGSI plugin found */
-    fqans = NULL;
-    if (NULL == authID) srmlogit(STORM_LOG_INFO, callerName, "Current FE compiled without CGSI plugin. UserDN=authID=NULL\n");
-    else {
-        userDN = xmlrpc_string_new(env_addr, authID);
-        xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
-        xmlrpc_DECREF(userDN);
-        srmlogit(STORM_LOG_INFO, callerName, "Current FE compiled without CGSI plugin. UserDN=authID=%s\n", authID);
-    }
-#endif
     return(0);
 }
 
@@ -361,32 +348,32 @@ int encode_ArrayOfAnyURI(const char *callerName,
     char **urlArray;
     int i, nbsurls;
     xmlrpc_value *xml_urlArray, *xml_SURL;
-    
+
     if (arrayOfSURLs == NULL) return(ENCODE_ERR_MISSING_PARAM);
-    
-    nbsurls = arrayOfSURLs->__sizeurlArray; 
+
+    nbsurls = arrayOfSURLs->__sizeurlArray;
     if (nbsurls < 1) return(ENCODE_ERR_GENERAL_ERROR);
-    
+
     urlArray = arrayOfSURLs->urlArray;
     if (urlArray == NULL) return(ENCODE_ERR_MISSING_PARAM);
-    
+
     xml_urlArray = xmlrpc_array_new(env_addr);
-    
+
     for (i=0; i<nbsurls; i++) {
         if (urlArray[i] == NULL) {
             srmlogit(STORM_LOG_DEBUG, callerName, "SURL[%d] is NULL \n", i);
             continue;
         }
         srmlogit(STORM_LOG_DEBUG, callerName, "SURL[%d]: %s\n", i, urlArray[i]);
-        
+
         xml_SURL = xmlrpc_string_new(env_addr, urlArray[i]);
         xmlrpc_array_append_item(env_addr, xml_urlArray, xml_SURL);
         xmlrpc_DECREF(xml_SURL);
     }
-    
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_urlArray);
     xmlrpc_DECREF(xml_urlArray);
-    
+
     return(0);
 }
 
@@ -408,7 +395,7 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
     struct ns1__TExtraInfo **extraInfoArray;
     int i, arraySize;
     xmlrpc_value *infoArray, *infoElement;
-    
+
     if (NULL == extraInfo) {
         srmlogit(STORM_LOG_ERROR, callerName, "Warning: missing ArrayOfTExtraInfo parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
@@ -418,36 +405,36 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
         srmlogit(STORM_LOG_ERROR, callerName, "Warning: missing ArrayOfTExtraInfo parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     extraInfoArray = extraInfo->extraInfoArray;
     infoArray = xmlrpc_array_new(env_addr);
-    
+
     for (i=0; i<arraySize; i++) {
-        
+
         if (extraInfoArray[i] == NULL) {
             srmlogit(STORM_LOG_DEBUG, callerName, "StorageSystemInfo[%d] is NULL\n", i);
             continue;
         }
-        
+
         infoElement = xmlrpc_struct_new(env_addr);
-        
+
         if (extraInfoArray[i]->key == NULL) {
             srmlogit(STORM_LOG_DEBUG, callerName, "StorageSystemInfo[%d] is NULL\n", i);
             continue;
         }
         xmlrpc_struct_set_value(env_addr, infoElement, "key", xmlrpc_string_new(env_addr, extraInfoArray[i]->key));
-        
+
         if (extraInfoArray[i]->value != NULL)
             xmlrpc_struct_set_value(env_addr, infoElement, "value", xmlrpc_string_new(env_addr, extraInfoArray[i]->value));
-        
+
         xmlrpc_array_append_item(env_addr, infoArray, infoElement);
         xmlrpc_DECREF(infoElement);
     }
-    
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, infoArray);
-    
+
     xmlrpc_DECREF(infoArray);
-    
+
     return(0);
 }
 
@@ -462,12 +449,12 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
 int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, char* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_val;
-    
+
     if (NULL == value) {
         srmlogit(STORM_LOG_DEBUG, callerName, "Optional parameter %s=NULL\n", fieldName);
         return(ENCODE_ERR_MISSING_PARAM);
     }
-        
+
     xml_val = xmlrpc_string_new(env_addr, value);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_val);
     xmlrpc_DECREF(xml_val);
@@ -475,7 +462,7 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
         srmlogit(STORM_LOG_ERROR, callerName, "Error inserting string field: %s [%d]\n", env_addr->fault_string, env_addr->fault_code);
         return(ENCODE_ERR_ENCODING_ERROR);
     }
-    
+
     srmlogit(STORM_LOG_DEBUG, callerName, "%s=%s\n", fieldName, value);
     return(0);
 }
@@ -500,18 +487,18 @@ int encode_TTransferParameters(const char *callerName,
         srmlogit(STORM_LOG_DEBUG, callerName, "Warning: missing transferParameters parameter\n");
         return(ENCODE_ERR_MISSING_PARAM);
     }
-    
+
     xml_transferParametersStruct = xmlrpc_struct_new(env_addr);
-    
-    if (transferParameters->accessPattern != NULL)    
+
+    if (transferParameters->accessPattern != NULL)
         encode_int(callerName, env_addr, (int *) transferParameters->accessPattern, "accessPattern", xml_transferParametersStruct);
-    
+
     if (transferParameters->connectionType != NULL)
         encode_int(callerName, env_addr, (int *) transferParameters->connectionType, "connectionType", xml_transferParametersStruct);
-        
+
     encode_arrayOfString(callerName, env_addr, transferParameters->arrayOfClientNetworks, "arrayOfClientNetworks", xml_transferParametersStruct);
     encode_arrayOfString(callerName, env_addr, transferParameters->arrayOfTransferProtocols, "arrayOfTransferProtocols", xml_transferParametersStruct);
-    
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_transferParametersStruct);
     return(0);
 }
