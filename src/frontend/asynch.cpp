@@ -18,12 +18,12 @@ extern "C"int ns1__srmPrepareToPut (struct soap *soap,
         struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep)
 {
-    static const char * const func = "ns1_srmPrepareToPut(C++)";
+    static const char * const funcName = "PrepareToPut";
 
     storm::ptp request(soap);
 
     int soap_status = __process_file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse>
-    (soap, request, req, &rep->srmPrepareToPutResponse);
+    (soap, request, funcName, req, &rep->srmPrepareToPutResponse);
 
     return soap_status;
 }
@@ -32,12 +32,12 @@ extern "C"int ns1__srmPrepareToGet(struct soap *soap,
         struct ns1__srmPrepareToGetRequest *req,
         struct ns1__srmPrepareToGetResponse_ *rep)
 {
-    static const char * const func = "ns1_srmPrepareToGet(C++)";
+    static const char * const funcName = "ns1_srmPrepareToGet(C++)";
 
     storm::ptg request(soap);
 
     int soap_status = __process_file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse>
-    (soap, request, req, &rep->srmPrepareToGetResponse);
+    (soap, request, funcName, req, &rep->srmPrepareToGetResponse);
 
     return soap_status;
 }
@@ -46,12 +46,12 @@ extern "C"int ns1__srmCopy (struct soap *soap,
         struct ns1__srmCopyRequest *req,
         struct ns1__srmCopyResponse_ *rep)
 {
-    static const char * const func = "ns1_srmCopy(C++)";
+    static const char * const funcName = "ns1_srmCopy(C++)";
 
     storm::copy request(soap);
 
     int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse>(
-            soap, request, req, &rep->srmCopyResponse);
+            soap, request, funcName, req, &rep->srmCopyResponse);
 
     return soap_status;
 }
@@ -60,7 +60,7 @@ extern "C"int ns1__srmBringOnline (struct soap *soap,
         struct ns1__srmBringOnlineRequest *req,
         struct ns1__srmBringOnlineResponse_ *rep)
 {
-    static const char * const func = "ns1_srmBringOnline(C++)";
+    static const char * const funcName = "ns1_srmBringOnline(C++)";
     struct ns1__srmBringOnlineResponse *repp;
 
     try {
@@ -68,11 +68,11 @@ extern "C"int ns1__srmBringOnline (struct soap *soap,
         repp->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(soap);
     }
     catch (soap_bad_alloc) {
-        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
+        srmlogit(STORM_LOG_ERROR, funcName, "Memory allocation error (response structure)!\n");
         return SOAP_EOM;
     }
     catch (std::invalid_argument) {
-        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
+        srmlogit(STORM_LOG_ERROR, funcName, "soap pointer is NULL!\n");
         return SOAP_NULL;
     }
 
