@@ -276,7 +276,9 @@ void ptp::insert(struct srm_dbfd *db) {
 
     query_s << "current_timestamp() )";
 
+    // Start DB transaction
     storm_start_tr(0, _db);
+
     // Insert into request_queue
     int request_id;
     try {
@@ -285,11 +287,45 @@ void ptp::insert(struct srm_dbfd *db) {
         storm_abort_tr(_db);
         throw e.what();
     }
+
+    // Insert into request_TransferProtocols using the request_ID
+    int inserted = 0;
+    for (std::vector<sql_string>::const_iterator i = _protocols.begin(); i != _protocols.end(); ++i) {
+        std::ostringstream query_s;
+        query_s << "INSERT into request_TransferProtocols "
+            "(request_queueID, config_protocolsID) values (";
+        query_s << request_id << ", '" << *i << "')";
+
+        try {
+            storm_db::ID_exec_query(_db, query_s.str());
+        } catch (storm_db::mysql_exception e) {
+            srmlogit(STORM_LOG_ERROR, "ptp::insert()",
+                    "Error: requested protocol \"%s\" is not supported (mysql error: %s)\n",
+                    i->c_str(), e.what());
+            continue;
+        }
+        inserted++;
+    }
+
+    if (0 == inserted && _protocols.size() != 0) { // All requested protocols are not supported
+        storm_abort_tr(_db);
+        // Request status
+        status(SRM_USCORENOT_USCORESUPPORTED);
+
+        // File status
+        for (std::vector<ptp::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
+            i->status(SRM_USCOREFAILURE);
+            i->explanation("None of the requested transfer protocols is supported");
+        }
+
+        throw storm::not_supported("None of the requested transfer protocols is supported");
+    }
+
+
     // Insert into request_Put using the requestID
     for (std::vector<ptp::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
         std::ostringstream query_s;
-        query_s
-                << "INSERT INTO request_Put (targetSURL, expectedFileSize, request_queueID) VALUES ";
+        query_s << "INSERT INTO request_Put (targetSURL, expectedFileSize, request_queueID) VALUES ";
         query_s << "('" << i->surl << "', ";
         if (i->has_expected_size)
             query_s << i->expected_size;
@@ -314,7 +350,7 @@ void ptp::insert(struct srm_dbfd *db) {
             continue;
         }
 
-        // Insert into status_Put using the request_GetID
+        // Insert into status_Put using the request_PutID
         std::ostringstream query2_s;
         query2_s << "INSERT INTO status_Put (request_PutID, statusCode) values (";
         query2_s << put_id << ", " << SRM_USCOREREQUEST_USCOREQUEUED << ")";
@@ -329,33 +365,6 @@ void ptp::insert(struct srm_dbfd *db) {
             continue;
         }
     }
-    // Check the nr of successfully inserted qery.
-
-    // Insert into request_TransferProtocols using the request_ID
-    // CONTROLLA CHE ALMENO UNO ABBIA SUCCESSO
-    int inserted = 0;
-    for (std::vector<sql_string>::const_iterator i = _protocols.begin(); i != _protocols.end(); ++i) { // separati insert, nel caso che uno solo fallisca.
-        std::ostringstream query_s;
-        query_s
-                << "INSERT into request_TransferProtocols (request_queueID, config_protocolsID) values (";
-        query_s << request_id << ", '" << *i << "')";
-        try {
-            storm_db::ID_exec_query(_db, query_s.str());
-        } catch (storm_db::mysql_exception e) {
-            srmlogit(STORM_LOG_ERROR, "ptp::insert()",
-                    "Error %s inserting transfer protocol %s into DB. Continuing\n", e.what(),
-                    i->c_str());
-            continue;
-        }
-        ++inserted;
-    }
-    if (0 == inserted && _protocols.size() != 0) { // No protocol available
-        storm_abort_tr(_db);
-        status(SRM_USCORENOT_USCORESUPPORTED);
-        throw storm::not_supported("None of the supplied protocols is supported");
-    }
-
-    // Check the number of correctly inserted protocols.
 
     storm_end_tr(_db);
     // insert into retention policy, clientNetworks, extrainfo, VOMS
