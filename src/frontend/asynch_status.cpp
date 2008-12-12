@@ -30,7 +30,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
     }
 
     int soap_status = __process_request_status<ns1__srmStatusOfPutRequestResponse>
-    (soap, req->requestToken, status, &rep->srmStatusOfPutRequestResponse);
+    (soap, req->requestToken, funcName, status, &rep->srmStatusOfPutRequestResponse);
 
     return soap_status;
 }
@@ -52,7 +52,7 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
     }
 
     int soap_status = __process_request_status<ns1__srmStatusOfGetRequestResponse>
-        (soap, req->requestToken, status, &rep->srmStatusOfGetRequestResponse);
+        (soap, req->requestToken, funcName, status, &rep->srmStatusOfGetRequestResponse);
 
     return soap_status;
 
@@ -76,13 +76,12 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
         }
     }
 
-    int soap_status = __process_request_status<ns1__srmStatusOfCopyRequestResponse> (soap, req->requestToken,
-            status, &rep->srmStatusOfCopyRequestResponse);
+    int soap_status = __process_request_status<ns1__srmStatusOfCopyRequestResponse>
+    (soap, req->requestToken, funcName, status, &rep->srmStatusOfCopyRequestResponse);
 
     return soap_status;
 
 }
-
 
 extern "C"
 int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
