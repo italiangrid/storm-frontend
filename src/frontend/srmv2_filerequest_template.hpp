@@ -39,10 +39,10 @@ extern "C" {
 using namespace std;
 
 template<typename soap_in_t, typename soap_out_t>
-int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soap_out_t> &request,
-        const char* const funcName, soap_in_t *req, soap_out_t **resp)
+int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soap_out_t>& request,
+        const char* funcName, soap_in_t *req, soap_out_t **resp)
 {
-    static const char * const func = "__process_file_request<>";
+    static const char* const func = "__process_file_request<>";
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
 
     srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, request.getClientDN.c_str());

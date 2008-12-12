@@ -18,7 +18,7 @@ extern "C"int ns1__srmPrepareToPut (struct soap *soap,
         struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep)
 {
-    static const char* const funcName = "PrepareToPut";
+    static const char* funcName = "srmPrepareToPut";
 
     storm::ptp request(soap);
 
@@ -32,7 +32,7 @@ extern "C"int ns1__srmPrepareToGet(struct soap *soap,
         struct ns1__srmPrepareToGetRequest *req,
         struct ns1__srmPrepareToGetResponse_ *rep)
 {
-    static const char * const funcName = "ns1_srmPrepareToGet(C++)";
+    static const char* funcName = "srmPrepareToGet";
 
     storm::ptg request(soap);
 
@@ -46,7 +46,7 @@ extern "C"int ns1__srmCopy (struct soap *soap,
         struct ns1__srmCopyRequest *req,
         struct ns1__srmCopyResponse_ *rep)
 {
-    static const char * const funcName = "ns1_srmCopy(C++)";
+    static const char* funcName = "srmCopy";
 
     storm::copy request(soap);
 
@@ -60,7 +60,7 @@ extern "C"int ns1__srmBringOnline (struct soap *soap,
         struct ns1__srmBringOnlineRequest *req,
         struct ns1__srmBringOnlineResponse_ *rep)
 {
-    static const char * const funcName = "ns1_srmBringOnline(C++)";
+    static const char* funcName = "srmBringOnline";
     struct ns1__srmBringOnlineResponse *repp;
 
     try {
