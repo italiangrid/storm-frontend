@@ -57,10 +57,12 @@ class file_status {
 public:
     /// Ctor taking DB connection parameters
     file_status(struct soap * soap) :
-        _soap(soap), _results_filled(false)
+        _soap(soap), _results_filled(false), _credentials(soap)
     {
         _response = NULL;
     };
+
+    std::string getClientDN() { return _credentials.getDN(); };
 
     /// Construct from DB and client supplied requestToken
 
@@ -128,6 +130,8 @@ protected:
     }
 
     virtual void _empty_results() { _results.clear(); }
+
+    storm::Credentials _credentials;
 
     // altri campi comuni da 'request_queue'
     std::string _query;

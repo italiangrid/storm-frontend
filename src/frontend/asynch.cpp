@@ -14,11 +14,12 @@
 #include "bol.hpp"
 #include "srmlogit.h"
 
-extern "C"int ns1__srmPrepareToPut (struct soap *soap,
+extern "C"
+int ns1__srmPrepareToPut (struct soap *soap,
         struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep)
 {
-    const char* funcName = "srmPrepareToPut";
+    static const char* funcName = "srmPrepareToPut";
 
     storm::ptp request(soap);
 
@@ -28,7 +29,8 @@ extern "C"int ns1__srmPrepareToPut (struct soap *soap,
     return soap_status;
 }
 
-extern "C"int ns1__srmPrepareToGet(struct soap *soap,
+extern "C"
+int ns1__srmPrepareToGet(struct soap *soap,
         struct ns1__srmPrepareToGetRequest *req,
         struct ns1__srmPrepareToGetResponse_ *rep)
 {
@@ -42,7 +44,8 @@ extern "C"int ns1__srmPrepareToGet(struct soap *soap,
     return soap_status;
 }
 
-extern "C"int ns1__srmCopy (struct soap *soap,
+extern "C"
+int ns1__srmCopy (struct soap *soap,
         struct ns1__srmCopyRequest *req,
         struct ns1__srmCopyResponse_ *rep)
 {
@@ -56,7 +59,8 @@ extern "C"int ns1__srmCopy (struct soap *soap,
     return soap_status;
 }
 
-extern "C"int ns1__srmBringOnline (struct soap *soap,
+extern "C"
+int ns1__srmBringOnline (struct soap *soap,
         struct ns1__srmBringOnlineRequest *req,
         struct ns1__srmBringOnlineResponse_ *rep)
 {
