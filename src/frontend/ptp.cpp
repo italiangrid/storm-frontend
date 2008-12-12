@@ -314,7 +314,7 @@ void ptp::insert(struct srm_dbfd *db) {
 
         // File status
         for (std::vector<ptp::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
-            i->status(SRM_USCOREFAILURE);
+            i->status = SRM_USCOREFAILURE;
             i->explanation("None of the requested transfer protocols is supported");
         }
 
