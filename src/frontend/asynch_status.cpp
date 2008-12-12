@@ -55,6 +55,30 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 }
 
 extern "C"
+int ns1__srmStatusOfCopyRequest(struct soap *soap,
+        struct ns1__srmStatusOfCopyRequestRequest *req,
+        struct ns1__srmStatusOfCopyRequestResponse_ *rep)
+{
+    storm::copy_status status(soap);
+
+    // If the request contains some surl, then fill the copy_status object
+    if ((NULL != req->arrayOfSourceSURLs) && (NULL != req->arrayOfTargetSURLs)) {
+        if (req->arrayOfSourceSURLs->__sizeurlArray == req->arrayOfTargetSURLs->__sizeurlArray) {
+            for (int i = 0; i < req->arrayOfSourceSURLs->__sizeurlArray; ++i)
+                status.add_requested_surl(req->arrayOfSourceSURLs->urlArray[i],
+                        req->arrayOfTargetSURLs->urlArray[i]);
+        }
+    }
+
+    int soap_status = __process_request_status<ns1__srmStatusOfCopyRequestResponse> (soap, req->requestToken,
+            status, &rep->srmStatusOfCopyRequestResponse);
+
+    return soap_status;
+
+}
+
+
+extern "C"
 int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
         struct ns1__srmStatusOfBringOnlineRequestRequest *req,
         struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep)
