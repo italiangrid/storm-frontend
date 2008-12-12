@@ -129,7 +129,7 @@ protected:
         _results_filled = true;
     }
 
-    virtual void _empty_results() { _results.clear(); }
+    virtual void _empty_results() { _results.clear(); };
 
     storm::Credentials _credentials;
 
