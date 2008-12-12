@@ -30,6 +30,7 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
         storm::file_status<soap_response_t> &status, soap_response_t **resp)
 
 {
+    static const char* func = "__process_request_status<>";
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
     string clientDN = status.getClientDN();
 
@@ -59,13 +60,11 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
         try {
             status.load(&thip->dbfd, requestToken);
         } catch (token_not_found x) {
-            srmlogit(STORM_LOG_DEBUG, "__process_request_status<>", "No request by token %s",
-                    requestToken.c_str());
-            *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST,
-                    "No request by that token");
+            srmlogit(STORM_LOG_DEBUG, func, "No request by token %s", requestToken.c_str());
+            *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST, "No request by that token");
             return SOAP_OK;
         } catch (storm_db::mysql_exception x) {
-            srmlogit(STORM_LOG_ERROR, "__process_request_status<>",
+            srmlogit(STORM_LOG_ERROR, func,
                     "mysql exception laoding status for request token %s. Error: %s\n",
                     requestToken.c_str(), x.what());
             *resp = status.error_response(SRM_USCOREFAILURE,
@@ -87,8 +86,7 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
         *resp = status.response();
 
     } catch (bad_alloc x) {
-        srmlogit(STORM_LOG_ERROR,"__process_request_status<>()",
-                "bad_alloc exception catched: %s\n", x.what());
+        srmlogit(STORM_LOG_ERROR, func, "bad_alloc exception catched: %s\n", x.what());
         return SOAP_EOM;
     }
     return SOAP_OK;
