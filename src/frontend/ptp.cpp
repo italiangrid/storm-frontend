@@ -313,10 +313,15 @@ void ptp::insert(struct srm_dbfd *db) {
         status(SRM_USCORENOT_USCORESUPPORTED);
 
         // File status
-        for (std::vector<ptp::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
-            i->status = static_cast<ns1__TStatusCode>(SRM_USCOREFAILURE);
-            i->explanation.assign("None of the requested transfer protocols is supported");
+        for (int i=0; i<_surls.size(); i++) {
+            _surls.at(i).status = SRM_USCOREFAILURE;
+            _surls.at(i).explanation("None of the requested transfer protocols is supported");
         }
+//        for (std::vector<ptp::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
+//            i->status = static_cast<ns1__TStatusCode>(SRM_USCOREFAILURE);
+//            i->explanation = "None of the requested transfer protocols is supported";
+//        }
+
 
         throw storm::not_supported("None of the requested transfer protocols is supported");
     }
