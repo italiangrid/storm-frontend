@@ -52,7 +52,7 @@ map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
 /************************
  * CONNECTION FUNCTIONS *
  ************************/
-EXTERN_C int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct srm_dbfd *dbfd)
+extern "C" int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct srm_dbfd *dbfd)
 {
     static const char *func = "storm_opendb";
     int ntries;
@@ -74,7 +74,7 @@ EXTERN_C int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct srm
     return (-1);
 }
 
-EXTERN_C void storm_closedb(struct srm_dbfd *dbfd)
+extern "C" void storm_closedb(struct srm_dbfd *dbfd)
 {
     mysql_close (&dbfd->mysql);
     return ;
@@ -84,28 +84,28 @@ EXTERN_C void storm_closedb(struct srm_dbfd *dbfd)
 /*************************
  * TRANSACTION FUNCTIONS *
  *************************/
-EXTERN_C int storm_start_tr(int s, struct srm_dbfd *dbfd)
+extern "C" int storm_start_tr(int s, struct srm_dbfd *dbfd)
 {
     (void) mysql_query(&dbfd->mysql, "BEGIN");
-    dbfd->tr_started = 1;
+//    dbfd->tr_started = 1;
     return(0);
 }
 
-EXTERN_C int storm_end_tr(struct srm_dbfd *dbfd)
+extern "C" int storm_end_tr(struct srm_dbfd *dbfd)
 {
     (void) mysql_query(&dbfd->mysql, "COMMIT");
-    dbfd->tr_started = 0;
+//    dbfd->tr_started = 0;
     return(0);
 }
 
-EXTERN_C void storm_abort_tr(struct srm_dbfd *dbfd)
+extern "C" void storm_abort_tr(struct srm_dbfd *dbfd)
 {
     (void) mysql_query (&dbfd->mysql, "ROLLBACK");
     dbfd->tr_started = 0;
     return ;
 }
 
-EXTERN_C void set_savepoint(struct srm_dbfd *dbfd, const char * name)
+extern "C" void set_savepoint(struct srm_dbfd *dbfd, const char * name)
 {
     std::string query("SAVEPOINT ");
     query+=name;
@@ -113,7 +113,7 @@ EXTERN_C void set_savepoint(struct srm_dbfd *dbfd, const char * name)
     return ;
 }
 
-EXTERN_C void rollback_to_savepoint(struct srm_dbfd *dbfd, const char * name)
+extern "C" void rollback_to_savepoint(struct srm_dbfd *dbfd, const char * name)
 {
     std::string query("ROLLBACK TO SAVEPOINT ");
     query+=name;
@@ -122,7 +122,7 @@ EXTERN_C void rollback_to_savepoint(struct srm_dbfd *dbfd, const char * name)
 }
 
 
-EXTERN_C int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, const char *sql_stmt, MYSQL_RES **res)
+extern "C" int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, const char *sql_stmt, MYSQL_RES **res)
 {
     srmlogit(STORM_LOG_DEBUG2, func, "Executing query: ``%s''\n", sql_stmt);
 
@@ -147,7 +147,7 @@ EXTERN_C int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, co
  * instead...
  * request should be not-NULL. request->protocols can be NULL.
 */
-EXTERN_C int free_storm_req_transfer_params(struct storm_req *request)
+extern "C" int free_storm_req_transfer_params(struct storm_req *request)
 {
     int i;
     if(NULL == request)
@@ -163,7 +163,7 @@ EXTERN_C int free_storm_req_transfer_params(struct storm_req *request)
 }
 
 /* free() a storm_get_filereq array */
-EXTERN_C void free_gfr_entry_array(struct storm_get_filereq **gfr_array)
+extern "C" void free_gfr_entry_array(struct storm_get_filereq **gfr_array)
 {
     int i;
     if(NULL == gfr_array)
@@ -181,7 +181,7 @@ EXTERN_C void free_gfr_entry_array(struct storm_get_filereq **gfr_array)
 /* free() a storm_req struct
  * request should be not-NULL. request->protocols can be NULL.
 */
-EXTERN_C int free_storm_req(struct storm_req *request)
+extern "C" int free_storm_req(struct storm_req *request)
 {
     int ret = free_storm_req_transfer_params(request);
     if(0 != ret)
@@ -419,7 +419,7 @@ static void storm_decode_xferreq_entry(MYSQL_ROW row, int lock, storm_dbrec_addr
  * QUERING FUNCTIONS *
  *********************/
 
-EXTERN_C int storm_get_cpr_by_surl(struct srm_dbfd *dbfd,
+extern "C" int storm_get_cpr_by_surl(struct srm_dbfd *dbfd,
                       char *r_token,
                       char *surl,
                       struct storm_copy_filereq *cpr_entry,
@@ -461,7 +461,7 @@ EXTERN_C int storm_get_cpr_by_surl(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_get_cpr_by_surls(struct srm_dbfd *dbfd,
+extern "C" int storm_get_cpr_by_surls(struct srm_dbfd *dbfd,
                        char *r_token,
                        char *from_surl,
                        char *to_surl,
@@ -505,7 +505,7 @@ EXTERN_C int storm_get_cpr_by_surls(struct srm_dbfd *dbfd,
 }
 
 
-EXTERN_C int storm_get_gfr_by_surl(struct srm_dbfd *dbfd,
+extern "C" int storm_get_gfr_by_surl(struct srm_dbfd *dbfd,
                           char *r_token,
                           char *from_surl,
                           struct storm_get_filereq *gfr_entry,
@@ -553,7 +553,7 @@ EXTERN_C int storm_get_gfr_by_surl(struct srm_dbfd *dbfd,
 }
 
 
-EXTERN_C int storm_get_pending_req_by_token(struct srm_dbfd *dbfd, char *r_token, struct storm_req *storm_req,
+extern "C" int storm_get_pending_req_by_token(struct srm_dbfd *dbfd, char *r_token, struct storm_req *storm_req,
                                    int lock, storm_dbrec_addr *rec_addr)
 {
     static const char *func = "storm_get_pending_req_by_token";
@@ -586,7 +586,7 @@ EXTERN_C int storm_get_pending_req_by_token(struct srm_dbfd *dbfd, char *r_token
 }
 
 
-EXTERN_C int storm_get_pfr_by_surl(struct srm_dbfd *dbfd,
+extern "C" int storm_get_pfr_by_surl(struct srm_dbfd *dbfd,
                           char *r_token,
                           char *to_surl,
                           struct storm_put_filereq *pfr_entry,
@@ -624,7 +624,7 @@ EXTERN_C int storm_get_pfr_by_surl(struct srm_dbfd *dbfd,
     return(0);
 }
 
-EXTERN_C int storm_get_req_by_token(struct srm_dbfd *dbfd, char *r_token, struct storm_req *storm_req,
+extern "C" int storm_get_req_by_token(struct srm_dbfd *dbfd, char *r_token, struct storm_req *storm_req,
                            int lock, storm_dbrec_addr *rec_addr)
 {
     static const char *func = "storm_get_req_by_token";
@@ -657,7 +657,7 @@ EXTERN_C int storm_get_req_by_token(struct srm_dbfd *dbfd, char *r_token, struct
 }
 
 
-EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
+extern "C" int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
                        struct storm_copy_filereq *cpr_entry)
 {
     static const char *func ="storm_insert_cpr_entry";
@@ -732,7 +732,7 @@ EXTERN_C int storm_insert_cpr_entry(struct srm_dbfd *dbfd,
    in case of error, serrno can be:
    ENOMEM     => error allocating memory (probably in snprintf)
 */
-EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
+extern "C" int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
                            struct storm_get_filereq *gfr_entry,
                            storm_id_t request_id)
 {
@@ -823,7 +823,7 @@ EXTERN_C int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_insert_gfr_entry_array(struct srm_dbfd *dbfd,
+extern "C" int storm_insert_gfr_entry_array(struct srm_dbfd *dbfd,
                                  struct storm_get_filereq **gfr_array,
                                  storm_id_t request_id)
 {
@@ -977,7 +977,7 @@ static int _fill_getreq_array_from_dbres(MYSQL_RES *res,
  *     ENOENT  there is no request with the given request token
  *     serrno  the value of the global var serrno as returned by storm_exec_query()
  */
-EXTERN_C int storm_get_gfr_status(struct srm_dbfd *dbfd,
+extern "C" int storm_get_gfr_status(struct srm_dbfd *dbfd,
                          struct storm_req *request,
                          struct storm_get_filereq ***filerequest_array)
 {
@@ -1049,7 +1049,7 @@ EXTERN_C int storm_get_gfr_status(struct srm_dbfd *dbfd,
   -1             generic inserting error
   -ENOPROTOOPT   protocols not supported
 */
-EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
+extern "C" storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
                                       struct storm_req *storm_req)
 {
     static const char *func = "storm_insert_pending_entry";
@@ -1140,7 +1140,7 @@ EXTERN_C storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
     return(storm_req->request_id);
 }
 
-EXTERN_C int storm_insert_pfr_entry(struct srm_dbfd *dbfd, struct storm_put_filereq *pfr_entry)
+extern "C" int storm_insert_pfr_entry(struct srm_dbfd *dbfd, struct storm_put_filereq *pfr_entry)
 {
     static const char *func = "storm_insert_pfr_entry";
     static const char *insert_stmt =
@@ -1209,7 +1209,7 @@ EXTERN_C int storm_insert_pfr_entry(struct srm_dbfd *dbfd, struct storm_put_file
     return (0);
 }
 
-EXTERN_C int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_req *storm_req)
+extern "C" int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_req *storm_req)
 {
     static const char *func = "storm_insert_xferreq_entry";
     static char insert_stmt[] =
@@ -1246,7 +1246,7 @@ EXTERN_C int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_req 
     return (0);
 }
 
-EXTERN_C int storm_list_cpr_entry(struct srm_dbfd *dbfd,
+extern "C" int storm_list_cpr_entry(struct srm_dbfd *dbfd,
                      int bol,
                      char *r_token,
                      struct storm_copy_filereq *cpr_entry,
@@ -1293,7 +1293,7 @@ EXTERN_C int storm_list_cpr_entry(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_list_gfr_entry(struct srm_dbfd *dbfd,
+extern "C" int storm_list_gfr_entry(struct srm_dbfd *dbfd,
                          int bol,
                          char *r_token,
                          struct storm_get_filereq *gfr_entry,
@@ -1341,7 +1341,7 @@ EXTERN_C int storm_list_gfr_entry(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_list_pending_req(struct srm_dbfd *dbfd,
+extern "C" int storm_list_pending_req(struct srm_dbfd *dbfd,
                        int bol,
                        struct storm_req *storm_req,
                        int lock,
@@ -1386,7 +1386,7 @@ EXTERN_C int storm_list_pending_req(struct srm_dbfd *dbfd,
     return (0);
 }
 
-EXTERN_C int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token, struct storm_put_filereq *pfr_entry,
+extern "C" int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token, struct storm_put_filereq *pfr_entry,
                      int lock, storm_dbrec_addr *rec_addr, int endlist, DBLISTPTR *dblistptr)
 {
     static const char *func = "storm_list_pfr_entry";
@@ -1432,7 +1432,7 @@ EXTERN_C int storm_list_pfr_entry(struct srm_dbfd *dbfd, int bol, char *r_token,
    In case of error a negative integer is returned.
    If nbrot < number of supported protocols, then -(number of supported protocols + 10) are returned.
 */
-EXTERN_C int storm_list_protocol(struct srm_dbfd *dbfd,
+extern "C" int storm_list_protocol(struct srm_dbfd *dbfd,
                         char **protocol,
                         int nbprot,
                         int protlen,
