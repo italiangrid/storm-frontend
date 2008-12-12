@@ -307,7 +307,9 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     /* Encode the userDN field */
     userDN = xmlrpc_string_new(env_addr, clientdn);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
-    srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
+    srmlogit(STORM_LOG_INFO, callerName, "UserDN=%s\n", clientdn);
+    srmlogit(STORM_LOG_INFO, func, "IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,
+                                                       (soap->ip>>8)  & 0xFF, (soap->ip) & 0xFF);
     xmlrpc_DECREF(userDN);
 
     srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);
