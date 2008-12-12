@@ -18,12 +18,12 @@ extern "C"int ns1__srmPrepareToPut (struct soap *soap,
         struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep)
 {
-    static const char* funcName = "srmPrepareToPut";
+    const char* funcName = "srmPrepareToPut";
 
     storm::ptp request(soap);
 
     int soap_status = __process_file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse>
-    (soap, request, funcName, req, &rep->srmPrepareToPutResponse);
+        (soap, request, funcName, req, &rep->srmPrepareToPutResponse);
 
     return soap_status;
 }
