@@ -35,6 +35,7 @@
 #include "sql_string.hpp"
 
 #include "soap_util.hpp"
+#include "Credentials.hpp"
 
 typedef std::map<std::string, std::string> file_status_result_t;
 typedef std::vector<file_status_result_t> file_status_results_t;
@@ -129,7 +130,7 @@ protected:
         _results_filled = true;
     }
 
-    virtual void _empty_results() { _results.clear(); };
+    virtual void _empty_results() { _results.clear(); }
 
     storm::Credentials _credentials;
 
