@@ -18,7 +18,7 @@ extern "C"int ns1__srmPrepareToPut (struct soap *soap,
         struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep)
 {
-    static const char * const funcName = "PrepareToPut";
+    static const char* const funcName = "PrepareToPut";
 
     storm::ptp request(soap);
 
@@ -80,7 +80,7 @@ extern "C"int ns1__srmBringOnline (struct soap *soap,
     repp->returnStatus->explanation = "This functionality is not meaningful for StoRM.";
     rep->srmBringOnlineResponse = repp;
 
-    srmlogit(STORM_LOG_INFO, func, "Completed. Status: SRM_SUCCESS\n");
+    srmlogit(STORM_LOG_INFO, funcName, "Completed. Status: SRM_SUCCESS\n");
 
     return(SOAP_OK);
 }
