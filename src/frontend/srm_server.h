@@ -24,14 +24,12 @@ extern char *xmlrpc_endpoint;
 
 /* srm server structures */
 struct srm_dbfd {
-    int     idx;        // index in array of srm_dbfd
     MYSQL   mysql;
     int     tr_started;
 };
 
 struct srm_srv_thread_info {
     int              is_used;
-//    int              thread_owner_id;
     int              db_open_done;
     struct srm_dbfd  dbfd;
     char             errbuf[PRTBUFSZ];
