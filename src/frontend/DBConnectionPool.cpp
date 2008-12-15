@@ -9,18 +9,34 @@
 #include "srmlogit.h"
 
 DBConnectionPool::DBConnectionPool(int pool_size) {
-    pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
-    mysql_connection_pool = new (struct srm_srv_thread_info(*[pool_size]));
-    id_map = new (boost::thread::id[pool_size]);
-    _curr_size = 0;
 
-    for (int i = 0; i < pool_size; i++) {
+    pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+
+    mysql_connection_pool = new (struct srm_srv_thread_info(*[pool_size]));
+
+    id_map = new (boost::thread::id[pool_size]);
+
+    _curr_size = 0;
+    _pool_size = pool_size;
+
+    for (int i = 0; i < _pool_size; i++) {
         mysql_connection_pool[i] = new struct srm_srv_thread_info();
         mysql_connection_pool[i]->is_used = false;
         mysql_connection_pool[i]->db_open_done = 0;
     }
 
-    _pool_size = pool_size;
+
+}
+
+DBConnectionPool::~DBConnectionPool() {
+
+    for (int i=0; i<_pool_size; i++) {
+        delete mysql_connection_pool[i];
+    }
+
+    delete [] mysql_connection_pool;
+
+    delete [] id_map;
 
 }
 

@@ -15,6 +15,7 @@
 class DBConnectionPool {
 public:
     DBConnectionPool(int pool_size);
+    ~DBConnectionPool();
     srm_srv_thread_info* getConnection(boost::thread::id thread_id);
 
 private:

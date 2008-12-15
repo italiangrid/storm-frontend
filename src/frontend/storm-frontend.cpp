@@ -297,40 +297,38 @@ int main(int argc, char** argv)
             break;
         }
 
-        //tsoap->user = srm_srv_thread_info;
-
         tp.schedule(boost::bind(process_request, tsoap));
 
     }
 
-    srmlogit(STORM_LOG_NONE, func, "Waiting for active requests to finish...\n");
+    srmlogit(STORM_LOG_NONE, func, "Active tasks: %l\n", tp.active());
+    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %l\n", tp.pending());
+    srmlogit(STORM_LOG_NONE, func, "Waiting for active and pending tasks to finish...\n");
+
     tp.wait();
+
     soap_end(soap_data);
     soap_done(soap_data);
     free(soap_data);
 
-//    for (int i=0; i<nThreads; i++) {
-//        delete mysql_connection_pool[i];
-//    }
-//
-//    delete[] mysql_connection_pool;
+    delete mysql_connection_pool;
 
     srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
     return (exit_code);
 }
 
 void *
-process_request(void *soap_vp) {
-    struct soap *soap = (struct soap *) soap_vp;
-//    struct srm_srv_thread_info *thip = (struct srm_srv_thread_info *) soap->user;
-    struct srm_srv_thread_info *thip = mysql_connection_pool->getConnection(boost::this_thread::get_id());
-    soap->user = thip;
+process_request(void *soap) {
+
+    soap->user = mysql_connection_pool->getConnection(boost::this_thread::get_id());
     soap->recv_timeout = SOAP_RECV_TIMEOUT;
     soap->send_timeout = SOAP_SEND_TIMEOUT;
+
     soap_serve(soap);
 
     soap_end(soap);
     soap_done(soap);
     free(soap);
-    return (NULL);
+
+    return NULL;
 }
