@@ -52,7 +52,6 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
     for (i=0; i<_curr_size; i++) {
         if (id_map[i] == tid) {
             found = true;
-            srmlogit(STORM_LOG_DEBUG, "DBConnectionPool", "Thread already registered\n");
             break;
         }
     }
@@ -60,6 +59,10 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
     if (found) {
         free_connection = mysql_connection_pool[i];
     } else {
+        srmlogit(STORM_LOG_DEBUG, "DBConnectionPool", "Creating new connection (number %d) to the DB\n", _curr_size);
+
+        if (_curr_size == _pool_size)
+            srmlogit(STORM_LOG_ERROR, "DBConnectionPool", "BUG: connection pool overflow!\n");
 
         pthread_mutex_lock(&mtx);
         i = _curr_size;
