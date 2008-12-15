@@ -29,7 +29,6 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
 
     srm_srv_thread_info* free_connection = NULL;
 
-    pthread_mutex_lock(&mtx);
 
     bool found = false;
     int i;
@@ -45,16 +44,19 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
     if (found) {
         free_connection = mysql_connection_pool[i];
     } else {
+
+        pthread_mutex_lock(&mtx);
         i = _curr_size;
         id_map[i] = tid;
         _curr_size++;
+        pthread_mutex_unlock(&mtx);
+
         free_connection = mysql_connection_pool[i];
         free_connection->is_used = true;
     }
 
     srmlogit(STORM_LOG_DEBUG, "DBConnectionPool", "Assigned connection: %d\n", i);
 
-    pthread_mutex_unlock(&mtx);
 
     return free_connection;
 
