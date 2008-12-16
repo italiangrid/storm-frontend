@@ -9,7 +9,7 @@
 #*
 #*********************************************************************
 
-AC_INIT([storm-frontend], [1.4.0], [luca.magnoni@cnaf.infn.it])
+AC_INIT([storm-frontend], [1.4.0])
 
 # Release number
 AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [00])

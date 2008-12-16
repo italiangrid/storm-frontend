@@ -20,7 +20,8 @@ INCLUDES = -I$(top_srcdir)/src/db \
     @XMLRPC_C_CFLAGS@ \
     @GSOAPGSI_CFLAGS@ \
     -I@GSOAP_DIR@ \
-    -I@BOOST_INCLUDE_DIR@
+    -I@BOOST_INCLUDE_DIR@ \
+    $(MTCCFLAGS)
 
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
