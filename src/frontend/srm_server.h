@@ -5,7 +5,7 @@
 #ifndef _SRM_SERVER_H
 #define _SRM_SERVER_H
 
-#include <mysql.h>
+#include <mysql/mysql.h>
 
             /* srm server constants */
 #define MAXRETRY 2

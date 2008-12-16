@@ -107,7 +107,7 @@ if test ! \( -d $MYSQL_DIR \); then
 fi
 AC_MSG_RESULT(["$MYSQL_DIR" found])
 
-AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR/include/mysql -DUSE_MYSQL" ])
+AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR -DUSE_MYSQL" ])
 AC_SUBST([MYSQL_LDFLAGS], [" -L$MYSQL_DIR/lib/mysql" ])
 AC_SUBST([MYSQL_LDADD], [-lmysqlclient_r])
 

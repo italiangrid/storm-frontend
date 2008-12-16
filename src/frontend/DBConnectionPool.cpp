@@ -6,8 +6,8 @@
  */
 
 #include "DBConnectionPool.hpp"
-#include <mysql.h>
 #include "srmlogit.h"
+#include <mysql/mysql.h>
 
 DBConnectionPool::DBConnectionPool(int pool_size) {
 

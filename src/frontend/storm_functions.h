@@ -6,7 +6,7 @@
 #define _STORM_FUNCTIONS_H
 
 #include <utime.h>
-#include <mysql.h>
+#include <mysql/mysql.h>
 #include "srm_server.h"
 #include "storm_constants.h"
 //#include "osdep.h"

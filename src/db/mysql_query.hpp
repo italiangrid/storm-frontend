@@ -8,7 +8,7 @@
 #include <exception>
 #include <stdexcept>
 
-#include <mysql.h>
+#include <mysql/mysql.h>
 #include "storm_functions.h"
 
 namespace storm_db {

@@ -19,8 +19,7 @@ INCLUDES = -I$(top_builddir)/src/frontend \
     -I$(top_srcdir)/src/frontend \
     -I$(GENERATED_GSOAP_INCLUDES) \
     -I/usr/include/mysql \
-    -I@BOOST_INCLUDE_DIR@ \
-    @MYSQL_CFLAGS@
+    -I@BOOST_INCLUDE_DIR@
 
 #noinst_INCLUDES = storm_mysql.h
 

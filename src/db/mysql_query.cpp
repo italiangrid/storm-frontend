@@ -1,5 +1,6 @@
 #include "srmlogit.h"
-#include <mysqld_error.h>
+#include <mysql/mysqld_error.h>
+#include <mysql/mysql.h>
 
 #include <string>
 #include <map>

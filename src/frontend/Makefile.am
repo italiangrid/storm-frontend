@@ -20,7 +20,6 @@ INCLUDES = -I$(top_srcdir)/src/db \
     @XMLRPC_C_CFLAGS@ \
     @GSOAPGSI_CFLAGS@ \
     -I@GSOAP_DIR@ \
-    @MYSQL_CFLAGS@ \
     -I@BOOST_INCLUDE_DIR@
 
 sbin_PROGRAMS = storm-frontend

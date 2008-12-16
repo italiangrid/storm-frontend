@@ -26,8 +26,8 @@ extern "C" {
 #include <string>
 #include <vector>
 
-#include <mysqld_error.h>
-#include <mysql.h>
+#include <mysql/mysqld_error.h>
+#include <mysql/mysql.h>
 
 #include <exception>
 #include <stdexcept>

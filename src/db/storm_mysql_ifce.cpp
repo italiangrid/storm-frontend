@@ -3,7 +3,8 @@
  * All rights reserved
  */
 
-#include <mysqld_error.h>
+#include <mysql/mysqld_error.h>
+#include <mysql/mysql.h>
 #include "storm_functions.h"
 #include "srmlogit.h"
 #include "srmv2H.h"
