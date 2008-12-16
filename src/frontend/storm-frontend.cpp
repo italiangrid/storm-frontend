@@ -301,8 +301,8 @@ int main(int argc, char** argv)
 
     }
 
-    srmlogit(STORM_LOG_NONE, func, "Active tasks: %l\n", tp.active());
-    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %l\n", tp.pending());
+    srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", tp.active());
+    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %ld\n", tp.pending());
     srmlogit(STORM_LOG_NONE, func, "Waiting for active and pending tasks to finish...\n");
 
     tp.wait();
