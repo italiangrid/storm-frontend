@@ -84,9 +84,6 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
             return SOAP_OK;
         }
 
-        // Temporary hack: proxy saved as a file. TODO: insert the proxy into DB.
-        request.saveProxy();
-
         try {
 
             request.insert(&thip->dbfd);

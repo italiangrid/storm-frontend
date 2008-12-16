@@ -29,7 +29,7 @@ using namespace storm;
 void
 copy::load(struct ns1__srmCopyRequest *req)
 {
-    if (NULL == req)     
+    if (NULL == req)
         throw invalid_request("Request is NULL");
     if (NULL == req->arrayOfFileRequests)
         throw invalid_request("SURLs array is NULL");
@@ -38,8 +38,8 @@ copy::load(struct ns1__srmCopyRequest *req)
 
     // Initial values
     _retrytime = -1; // -1 = not specified
-    _pinLifetime = -1; 
-    _remainingTime = -1; 
+    _pinLifetime = -1;
+    _remainingTime = -1;
     _lifetime = -1;
     _overwrite = DB_OVERWRITE_UNKNOWN;
     _f_type = DB_FILE_TYPE_UNKNOWN;
@@ -78,7 +78,7 @@ copy::load(struct ns1__srmCopyRequest *req)
         u_token(req->userRequestDescription);
 
     // Request Token will be not written
-    
+
     // File Storage Type
     if (NULL != req->targetFileStorageType)
         switch(*req->targetFileStorageType) {
@@ -94,7 +94,7 @@ copy::load(struct ns1__srmCopyRequest *req)
         default:
             throw std::string("Invalid desiredFileStorageType");
         }
-    
+
     // Overwrite Option
     if (NULL != req->overwriteOption) {
         switch(*req->overwriteOption) {
@@ -102,9 +102,9 @@ copy::load(struct ns1__srmCopyRequest *req)
             _overwrite = DB_OVERWRITE_NEVER;
             //overwrite(DB_OVERWRITE_NEVER);
             break;
-        case ALWAYS: 
+        case ALWAYS:
             _overwrite = DB_OVERWRITE_ALWAYS;
-//            overwrite(DB_OVERWRITE_ALWAYS);         
+//            overwrite(DB_OVERWRITE_ALWAYS);
             break;
         case WHEN_USCOREFILES_USCOREARE_USCOREDIFFERENT:
             _overwrite = DB_OVERWRITE_IF_DIFFERENT;
@@ -115,7 +115,7 @@ copy::load(struct ns1__srmCopyRequest *req)
         }
     }
     // Total Request Time
-    
+
     // Target SURL lifetime
     if (req->desiredTargetSURLLifeTime != NULL)
     	_lifetime = *req->desiredTargetSURLLifeTime;
@@ -129,6 +129,9 @@ copy::load(struct ns1__srmCopyRequest *req)
     // retention policy
 
     // Storage System Info
+
+    // Temporary hack: proxy saved as a file. TODO: insert the proxy into the DB.
+    saveProxy();
 }
 
 
@@ -144,12 +147,12 @@ copy::response()
 
     _response->returnStatus->statusCode = status();
     if ( NULL == _response->returnStatus->explanation )
-        _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());   
+        _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
     else // how to free() memory allocated with soap_strdup???
         snprintf(_response->returnStatus->explanation,
                  strlen(_response->returnStatus->explanation),
                  _explanation.c_str());
-    
+
     // Fill per-surl info.
     try{
         if (NULL == _response->arrayOfFileStatuses)
@@ -164,10 +167,10 @@ copy::response()
             i != _surls.end();
             ++i, ++n) {
             if (NULL == _response->arrayOfFileStatuses->statusArray[n])
-                _response->arrayOfFileStatuses->statusArray[n] 
+                _response->arrayOfFileStatuses->statusArray[n]
                     = storm::soap_calloc<ns1__TCopyRequestFileStatus>(_soap);
             if (NULL == _response->arrayOfFileStatuses->statusArray[n]->status )
-                _response->arrayOfFileStatuses->statusArray[n]->status  
+                _response->arrayOfFileStatuses->statusArray[n]->status
                     = storm::soap_calloc<ns1__TReturnStatus>(_soap);
             _response->arrayOfFileStatuses->statusArray[n]->sourceSURL = soap_strdup(_soap, i->source.c_str());
             _response->arrayOfFileStatuses->statusArray[n]->targetSURL = soap_strdup(_soap, i->target.c_str());
@@ -176,8 +179,8 @@ copy::response()
         }
     } catch(std::invalid_argument x) {
         // continuing???
-    }                 
-    
+    }
+
     // Fill request token
     if (NULL == _response->requestToken) {
         if (_r_token.size() > 0)
@@ -221,10 +224,10 @@ void copy::insert(struct srm_dbfd *db)
     } else {
         query_s << "'" << overwrite() << "', ";
     }
-    
+
     query_s << "'" << _r_type << "', ";
     query_s << "'" << getClientDN() << "', ";
-    
+
     if (u_token().empty()) {
         query_s << nullcomma;
     } else {
@@ -257,7 +260,7 @@ void copy::insert(struct srm_dbfd *db)
 
     query_s << status() << ", "<< _n_files;
     query_s << ", 0, " << _n_files << ",0 , ";
-    
+
     // Temporary hack: using the proxy column to store FQANs
     sql_string fqansOneString = _credentials.getFQANsOneString();
     if (fqansOneString.empty()) {
@@ -265,7 +268,7 @@ void copy::insert(struct srm_dbfd *db)
     } else {
         query_s << "'" << fqansOneString << "', ";
     }
-    
+
     query_s << "current_timestamp() )";
 
     storm_start_tr(0, _db);
@@ -293,7 +296,7 @@ void copy::insert(struct srm_dbfd *db)
             query_d << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) values (";
             if (false == i->isdirectory)
                 query_d << "0, ";
-            else 
+            else
                 query_d << "1, ";
 
             if (i->allrecursive == -1)
@@ -337,7 +340,7 @@ void copy::insert(struct srm_dbfd *db)
             // Poi dobbiamo impostare la stringa di errore.
             // Infine aggiorniamo _n_failed.
             // Dobbiamo fare un continue, sempre che funzioni, e continuare con le altre surl.
-            
+
             _response_errno = e;
             _response_error = "DB error inserting surl " + i->source;
             _response_error += " into request_Copy. Errno: "+e;
@@ -345,7 +348,7 @@ void copy::insert(struct srm_dbfd *db)
             ++_n_failed;
             continue;
         }
-        
+
 
         // Insert into status_Copy using the request_GetID
         std::ostringstream query2_s;
@@ -353,7 +356,7 @@ void copy::insert(struct srm_dbfd *db)
         query2_s << copy_id << ", " << SRM_USCOREREQUEST_USCOREQUEUED <<")";
         try{
             storm_db::ID_exec_query(_db, query2_s.str());
-        } catch(int e) {          
+        } catch(int e) {
             _response_errno = e;
             _response_error = "DB error inserting into status_Copy";
             _response_error += ". Errno: "+e;
