@@ -6,6 +6,7 @@
  */
 
 #include "DBConnectionPool.hpp"
+#include <mysql.h>
 #include "srmlogit.h"
 
 DBConnectionPool::DBConnectionPool(int pool_size) {
@@ -21,8 +22,8 @@ DBConnectionPool::DBConnectionPool(int pool_size) {
 
     for (int i = 0; i < _pool_size; i++) {
         mysql_connection_pool[i] = new struct srm_srv_thread_info();
-        mysql_connection_pool[i]->is_used = false;
-        mysql_connection_pool[i]->db_open_done = 0;
+        mysql_connection_pool[i]->is_used = 0;          // i.e. = false
+        mysql_connection_pool[i]->db_open_done = 0;     // i.e. = false
     }
 
 
@@ -31,6 +32,11 @@ DBConnectionPool::DBConnectionPool(int pool_size) {
 DBConnectionPool::~DBConnectionPool() {
 
     for (int i=0; i<_pool_size; i++) {
+
+        if ((mysql_connection_pool[i]->is_used == 1) && (mysql_connection_pool[i]->db_open_done == 1)) {
+            mysql_close(&((mysql_connection_pool[i]->dbfd).mysql));
+        }
+
         delete mysql_connection_pool[i];
     }
 

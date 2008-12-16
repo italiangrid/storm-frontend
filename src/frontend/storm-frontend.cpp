@@ -318,8 +318,7 @@ int main(int argc, char** argv)
 }
 
 void *
-process_request(void *soap_vp) {
-    struct soap* soap = (struct soap*) soap_vp;
+process_request(struct soap* soap) {
     soap->user = mysql_connection_pool->getConnection(boost::this_thread::get_id());
     soap->recv_timeout = SOAP_RECV_TIMEOUT;
     soap->send_timeout = SOAP_SEND_TIMEOUT;
