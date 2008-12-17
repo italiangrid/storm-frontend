@@ -236,21 +236,21 @@ int main(int argc, char** argv)
     srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
 
     if (!configuration->checkFileReadPerm(configuration->getGridmapfile())) {
-        srmlogit(STORM_LOG_WARN, func, "Read permission is needed for file: %s\n",
+        srmlogit(STORM_LOG_WARNING, func, "Read permission is needed for file: %s\n",
                 configuration->getGridmapfile().c_str());
     }
 
     if (!configuration->checkFileReadPerm(configuration->getHostCertFile())) {
-        srmlogit(STORM_LOG_WARN, func, "Read permission is needed for file: %s\n",
+        srmlogit(STORM_LOG_WARNING, func, "Read permission is needed for file: %s\n",
                 configuration->getHostCertFile().c_str());
     }
 
     if (!configuration->checkFileReadPerm(configuration->getHostKeyFile())) {
-        srmlogit(STORM_LOG_WARN, func, "Read permission is needed for file: %s\n",
+        srmlogit(STORM_LOG_WARNING, func, "Read permission is needed for file: %s\n",
                 configuration->getHostKeyFile().c_str());
     }
 
-    /* Get list of supported protocols */
+    /**** Get list of supported protocols ****/
     if ((nb_supported_protocols = get_supported_protocols(&supported_protocols)) < 0) {
         srmlogit(STORM_LOG_ERROR, func, "Error in get_supported_protocols(): unable to retrieve "
             "supported protocols from the DB.");
@@ -264,24 +264,27 @@ int main(int argc, char** argv)
         }
     }
 
+    /**** gSOAP and CGSI_gSOAP plugin initializaion ****/
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
+
     soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
-    // non-blocking soap_accept()... exit from soap_accept() every 5 secs if no requests arrived
+    // non-blocking soap_accept()... exit from soap_accept() every 5 secs if no requests arrive
     soap_data->accept_timeout = 5;
-    int flags;
-#if defined(GSI_PLUGINS)
-    flags = CGSI_OPT_DELEG_FLAG;
+    // supporting HTTP GET in order to reply the wsdl
+    soap_data->fget = http_get;
+//    soap_data->bind_flags |= SO_REUSEADDR;
+
+    int flags = CGSI_OPT_DELEG_FLAG;
     if (disableMapping) {
         flags |= CGSI_OPT_DISABLE_MAPPING;
         srmlogit(STORM_LOG_NONE, func, "Mapping disabled\n");
     }
     if (disableVOMSCheck) {
-            flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
-            srmlogit(STORM_LOG_NONE, func, "VOMS check disabled\n");
-        }
+        flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
+        srmlogit(STORM_LOG_NONE, func, "VOMS check disabled\n");
+    }
+
     soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
-#endif
-    soap_data->bind_flags |= SO_REUSEADDR;
 
     if (!soap_valid_socket(soap_bind(soap_data, NULL, port, BACKLOG))) {
         soap_print_fault(soap_data, stderr);
@@ -290,18 +293,17 @@ int main(int argc, char** argv)
         exit(SYERR);
     }
 
-    // supporting HTTP GET in order to reply the wsdl
-    soap_data->fget = http_get;
-
-    /* Start up XML-RPC client library. */
+    /**** Start up XML-RPC client library. ****/
     xmlrpc_env env;
     xmlrpc_env_init(&env);
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     xmlrpc_env_clean(&env);
 
+    /**** Init pools ****/
     mysql_connection_pool = new DBConnectionPool(nThreads);
     boost::threadpool::fifo_pool tp(nThreads);
 
+    // SIGINT (kill -2) to stop the frontend
     signal(SIGINT, sigint_handler);
 
     srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully started...\n");
@@ -344,6 +346,6 @@ int main(int argc, char** argv)
     delete mysql_connection_pool;
 
     srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
+
     return (exit_code);
 }
-
