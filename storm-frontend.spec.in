@@ -56,12 +56,12 @@ mv -f $RPM_BUILD_ROOT/%{prefix}/etc/init.d/storm-frontend $RPM_BUILD_ROOT/etc/in
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(755,root,root)
-/etc/init.d/storm-frontend
 %defattr(-,root,root)
 /etc/cron.d/storm-frontend.cron
 %{prefix}/etc/logrotate/storm-frontend.logrotate
 %{prefix}/sbin/storm-frontend
 %{prefix}/wsdl/srm.v2.2.wsdl
 %config(noreplace) %{prefix}/etc/storm-frontend.conf
+%defattr(755,root,root)
+%config(noreplace) /etc/init.d/storm-frontend
 

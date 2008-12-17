@@ -27,7 +27,7 @@ case "$1" in
         exit 1
     fi
 
-    echo -n "Starting $prog as user $STORM_FE_USER... "
+    echo -n "Starting $prog as user \"$STORM_FE_USER\"... "
 
     # Check if another instance is already running
     if [ -e $LOCKFILE ]; then
