@@ -103,7 +103,7 @@ case "$1" in
             if [ -f $LOCKFILE ]; then
                 echo "$prog dead but subsys ($LOCKFILE) locked"
             else
-                echo "$prog is not running"
+                echo "$prog is NOT running"
             fi
         fi
     fi
