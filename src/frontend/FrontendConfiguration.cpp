@@ -87,7 +87,7 @@ void FrontendConfiguration::checkConfigurationData() {
 
 }
 
-bool FrontendConfiguration::checkFileReadPerm(string fileAbsolutePath) {
+void FrontendConfiguration::checkFileReadPerm(string fileAbsolutePath) {
 
     struct stat statInfo;
 

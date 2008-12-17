@@ -235,19 +235,22 @@ int main(int argc, char** argv)
     }
     srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
 
-    if (!configuration->checkFileReadPerm(configuration->getGridmapfile())) {
-        srmlogit(STORM_LOG_WARNING, func, "Read permission is needed for file: %s\n",
-                configuration->getGridmapfile().c_str());
+    try {
+        configuration->checkFileReadPerm(configuration->getGridmapfile());
+    } catch (exception& e) {
+        srmlogit(STORM_LOG_WARNING, func, "%s\n", e.what());
     }
 
-    if (!configuration->checkFileReadPerm(configuration->getHostCertFile())) {
-        srmlogit(STORM_LOG_WARNING, func, "Read permission is needed for file: %s\n",
-                configuration->getHostCertFile().c_str());
+    try {
+        configuration->checkFileReadPerm(configuration->getHostCertFile());
+    } catch (exception& e) {
+        srmlogit(STORM_LOG_WARNING, func, "%s\n", e.what());
     }
 
-    if (!configuration->checkFileReadPerm(configuration->getHostKeyFile())) {
-        srmlogit(STORM_LOG_WARNING, func, "Read permission is needed for file: %s\n",
-                configuration->getHostKeyFile().c_str());
+    try {
+        configuration->checkFileReadPerm(configuration->getHostKeyFile());
+    } catch (exception& e) {
+        srmlogit(STORM_LOG_WARNING, func, "%s\n", e.what());
     }
 
     /**** Get list of supported protocols ****/

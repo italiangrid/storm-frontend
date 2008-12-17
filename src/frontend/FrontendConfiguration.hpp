@@ -122,7 +122,7 @@ public:
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
     void checkConfigurationData();
-    bool checkFileReadPerm(string fileAbsolutePath);
+    void checkFileReadPerm(string fileAbsolutePath);
 
     bool requestedHelp();
     bool requestedVersion();
