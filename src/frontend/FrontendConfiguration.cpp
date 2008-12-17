@@ -86,8 +86,8 @@ void FrontendConfiguration::checkConfigurationData() {
     }
 
     checkFile(gridmapfile);
-    checkFile(hostcertfile);
-    checkFile(hostkeyfile);
+    //checkFile(hostcertfile);
+    //checkFile(hostkeyfile);
     checkFile(wsdl_file);
 
 }
