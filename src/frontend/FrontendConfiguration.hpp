@@ -122,6 +122,7 @@ public:
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
     void checkConfigurationData();
+    bool checkFileReadPerm(string fileAbsolutePath);
 
     bool requestedHelp();
     bool requestedVersion();
@@ -156,7 +157,6 @@ private:
     void setConfigurationOptions(po::variables_map& vm);
     int decodeDebugLevelOption(string& debugLevel);
     void checkCreateDir(string dirAbsolutePath);
-    void checkFile(string fileAbsolutePath);
     string setUsingEnvironment(const char* envVar, const string& defaultValue);
     string getFilename(string path);
     string getParentPath(string path);

@@ -85,10 +85,26 @@ void FrontendConfiguration::checkConfigurationData() {
         throw runtime_error("Error while attempting to create \"" + dir + "\".\n" + string(e.what()));
     }
 
-    checkFile(gridmapfile);
-    checkFile(hostcertfile);
-    checkFile(hostkeyfile);
-    checkFile(wsdl_file);
+}
+
+bool FrontendConfiguration::checkFileReadPerm(string fileAbsolutePath) {
+
+    struct stat statInfo;
+
+    int ret = stat(fileAbsolutePath.c_str(), &statInfo);
+
+    if (ret !=0 ) {
+        throw runtime_error("File doesn't exists: " + fileAbsolutePath);
+    }
+
+    if (S_ISDIR(statInfo.st_mode)) {
+        throw runtime_error("Error looking for a file but a directory were found: "
+                + fileAbsolutePath);
+    }
+
+    if (access(fileAbsolutePath.c_str(), R_OK) != 0) {
+        throw runtime_error("Read permission needed for file: " + fileAbsolutePath);
+    }
 
 }
 
@@ -370,29 +386,6 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
     }
 
 }
-
-void FrontendConfiguration::checkFile(string fileAbsolutePath) {
-
-    struct stat statInfo;
-
-    int ret = stat(fileAbsolutePath.c_str(), &statInfo);
-
-    if (ret !=0 ) {
-        throw runtime_error("File doesn't exists: " + fileAbsolutePath);
-    }
-
-    if (S_ISDIR(statInfo.st_mode)) {
-        throw runtime_error("Error looking for a file but a directory were found: "
-                + fileAbsolutePath);
-    }
-
-    if (access(fileAbsolutePath.c_str(), R_OK) != 0) {
-        throw runtime_error("Read permission needed for file: " + fileAbsolutePath);
-    }
-
-}
-
-
 
 string FrontendConfiguration::setUsingEnvironment(const char* envVar, const string& defaultValue) {
     char* envVal = getenv(envVar);
