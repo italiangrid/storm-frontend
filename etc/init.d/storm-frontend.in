@@ -2,12 +2,12 @@
 #
 # StoRM Frontend start script
 
-STORM_FE_USER=root
-RETVAL=0
+STORM_FE_USER=storm
+
 prog="storm-frontend"
 PIDDIR=/var/run
-PIDFILE=$PIDDIR/$prog.pid
 SUBSYSDIR=/var/lock/subsys
+PIDFILE=$PIDDIR/$prog.pid
 LOCKFILE=$SUBSYSDIR/$prog.lock
 
 FRONTEND_DAEMON=@PREFIX@/sbin/$prog
@@ -17,20 +17,38 @@ CONFIGURATION_FILE=@PREFIX@/etc/storm-frontend.conf
 [ ! -d $PIDDIR ] && mkdir -p $PIDDIR >& /dev/null
 [ ! -d $SUBSYSDIR ] && mkdir -p $SUBSYSDIR >& /dev/null
 
+RETVAL=0
+
 case "$1" in
   start)
-    echo "Starting $prog... "
-
     # Script must be launched as root
     if [ ! `whoami` = "root" ]; then
-        echo "Error: you must be root."
+        echo "Error: you must be root to run this script."
         exit 1
     fi
+
+    echo -n "Starting $prog as user $STORM_FE_USER... "
 
     # Check if another instance is already running
     if [ -e $LOCKFILE ]; then
         echo "Found lock file ($LOCKFILE). StoRM frontend already running."
         exit 1
+    fi
+
+    # Set the default location for hostcert and hostkey if the user is not root
+    if [ "root" != $STORM_FE_USER ]; then
+         # Set the default location for hostcert
+        if [ -z $X509_HOST_CERT ]; then
+            X509_HOST_CERT=/etc/grid-security/${STORM_FE_USER}/hostcert.pem
+        fi
+         # Set the default location for hostkey
+        if [ -z $X509_HOST_KEY ]; then
+            X509_HOST_KEY=/etc/grid-security/${STORM_FE_USER}/hostkey.pem
+        fi
+
+        # Make sure the FE can write the logfile and save the proxies        
+        mkdir -p @PREFIX@/var
+        chown ${STORM_FE_USER}:${STORM_FE_USER} @PREFIX@/var
     fi
 
     # Launch the frontend
@@ -42,9 +60,9 @@ case "$1" in
         rm -f $PIDFILE
         echo $pid > $PIDFILE
         RETVAL=0
-        echo "$prog started."
+        echo "ok."
     else
-        echo "Error: $prog not started (see the log file for the details)."
+        echo "ERROR: not started (see the log file for the details)."
         RETVAL=1
     fi
     ;;
