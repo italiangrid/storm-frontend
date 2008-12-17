@@ -180,8 +180,7 @@ AC_CONFIG_FILES([Makefile \
     src/db/Makefile \
     src/frontend/Makefile \
     src/frontend/frontend_version.h
-    storm-frontend.spec \
-    clean.sh])
+    storm-frontend.spec])
 
 AC_OUTPUT
 
