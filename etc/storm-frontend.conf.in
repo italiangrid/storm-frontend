@@ -1,6 +1,6 @@
 ##### StoRM frontend configuration file #####
-fe.threads.number = 5
-fe.port = 8440
+fe.threads.number = 50
+fe.port = 8444
 
 # Log options
 log.filename = @prefix@/var/log/storm-frontend.log
