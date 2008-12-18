@@ -9,9 +9,9 @@ log.debuglevel = DEBUG2
 # Security settings
 security.disable.mapping = false
 security.disable.vomscheck = false
-#security.gridmapfile = /etc/grid-security/grid-mapfile
-#security.hostcert = /etc/grid-security/hostcert.pem
-#security.hostkey = /etc/grid-security/hostkey.pem
+security.gridmapfile = /etc/grid-security/grid-mapfile
+security.hostcert = /etc/grid-security/storm/hostcert.pem
+security.hostkey = /etc/grid-security/storm/hostkey.pem
 
 # Backend XMLRPC server information
 be.xmlrpc.host = devrb.cnaf.infn.it
