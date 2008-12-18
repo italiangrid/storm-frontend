@@ -21,7 +21,7 @@ using namespace std;
 
 map<string, vector<string> > * exec_query(struct srm_dbfd *dbfd, string query)
 {
-    static const char * const func = "exec_queryPIPPPPPOOOOO";
+    static const char * const func = "exec_query";
     if (mysql_query(&dbfd->mysql, query.c_str())) {
         srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n", mysql_error (&dbfd->mysql), query.c_str());
         throw seinternal;
