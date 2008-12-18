@@ -35,18 +35,8 @@ case "$1" in
         exit 1
     fi
 
-    # Set the default location for hostcert and hostkey if the user is not root
+    # Make sure the FE can write the logfile and save the proxies
     if [ "root" != $STORM_FE_USER ]; then
-         # Set the default location for hostcert
-        if [ -z $X509_USER_CERT ]; then
-            export X509_USER_CERT=/etc/grid-security/${STORM_FE_USER}/hostcert.pem
-        fi
-         # Set the default location for hostkey
-        if [ -z $X509_USER_KEY ]; then
-            export X509_USER_KEY=/etc/grid-security/${STORM_FE_USER}/hostkey.pem
-        fi
-
-        # Make sure the FE can write the logfile and save the proxies        
         mkdir -p @PREFIX@/var
         chown ${STORM_FE_USER}:${STORM_FE_USER} @PREFIX@/var
     fi
