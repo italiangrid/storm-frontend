@@ -88,14 +88,14 @@ extern "C" void storm_closedb(struct srm_dbfd *dbfd)
 extern "C" int storm_start_tr(int s, struct srm_dbfd *dbfd)
 {
     (void) mysql_query(&dbfd->mysql, "BEGIN");
-//    dbfd->tr_started = 1;
+    dbfd->tr_started = 1;
     return(0);
 }
 
 extern "C" int storm_end_tr(struct srm_dbfd *dbfd)
 {
     (void) mysql_query(&dbfd->mysql, "COMMIT");
-//    dbfd->tr_started = 0;
+    dbfd->tr_started = 0;
     return(0);
 }
 
