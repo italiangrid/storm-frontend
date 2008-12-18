@@ -88,12 +88,13 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 
             request.insert(&thip->dbfd);
 
-        } catch (storm_db::mysql_exception x) {
+        } catch (storm_db::mysql_exception& e) {
             srmlogit(STORM_LOG_ERROR, func,
                     "mysql exception inserting data for request token %s. Error: %s\n", r_token,
-                    x.what());
+                    e.what());
             request.r_token(""); // Do not supply a request token in case of error.
-            *resp = request.error_response(SRM_USCOREFAILURE, "Generic DB error");
+            *resp = request.error_response(SRM_USCOREINTERNAL_USCOREERROR, "Database error. "
+                    "Might be caused by a high load of the database server... try again later.");
 
             return SOAP_OK;
 

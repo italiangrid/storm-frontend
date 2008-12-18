@@ -283,9 +283,9 @@ void ptp::insert(struct srm_dbfd *db) {
     int request_id;
     try {
         request_id = storm_db::ID_exec_query(_db, query_s.str());
-    } catch (storm_db::mysql_exception e) {
+    } catch (storm_db::mysql_exception& e) {
         storm_abort_tr(_db);
-        throw e.what();
+        throw e;
     }
 
     // Insert into request_TransferProtocols using the request_ID
