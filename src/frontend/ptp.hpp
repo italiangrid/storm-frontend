@@ -53,11 +53,13 @@ private:
         ns1__TStatusCode status;
         std::string explanation;
     };
-    
+
+    void set_surl_status(ns1__TStatusCode status);
+
     std::vector<ptp::surl_t> _surls;
     struct ns1__srmPrepareToPutResponse * _response;
     std::vector<sql_string> _protocols;
-    
+
 };
 }
 #endif // __PTP_HPP

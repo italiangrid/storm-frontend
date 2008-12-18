@@ -285,6 +285,7 @@ void ptp::insert(struct srm_dbfd *db) {
         request_id = storm_db::ID_exec_query(_db, query_s.str());
     } catch (storm_db::mysql_exception& e) {
         storm_abort_tr(_db);
+        set_surl_status(SRM_USCOREFAILURE);
         throw e;
     }
 
@@ -311,12 +312,7 @@ void ptp::insert(struct srm_dbfd *db) {
         storm_abort_tr(_db);
         // Request status
         status(SRM_USCORENOT_USCORESUPPORTED);
-
-        // File status
-        for (int i=0; i<_surls.size(); i++) {
-            _surls.at(i).status = SRM_USCOREFAILURE;
-            _surls.at(i).explanation = "None of the requested transfer protocols is supported";
-        }
+        set_surl_status(SRM_USCOREFAILURE);
 
         throw storm::not_supported("None of the requested transfer protocols is supported");
     }
@@ -370,4 +366,10 @@ void ptp::insert(struct srm_dbfd *db) {
     // insert into retention policy, clientNetworks, extrainfo, VOMS
     // attribute using the requestID
 
+}
+
+void ptp::set_surl_status(ns1__TStatusCode status) {
+    for (int i = 0; i < _surls.size(); i++) {
+        _surls.at(i).status = SRM_USCOREFAILURE;
+    }
 }
