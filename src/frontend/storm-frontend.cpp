@@ -303,6 +303,7 @@ int main(int argc, char** argv)
     xmlrpc_env_clean(&env);
 
     /**** Init pools ****/
+    // the size of mysql_connection pool and thread pool MUST be the same
     mysql_connection_pool = new DBConnectionPool(nThreads);
     boost::threadpool::fifo_pool tp(nThreads);
 
