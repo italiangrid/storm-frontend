@@ -157,12 +157,15 @@ vector<map<string, string> > * vector_exec_query(struct srm_dbfd *dbfd, const st
  *                 an AUTO_INCREMENT value.
  */
 int ID_exec_query(struct srm_dbfd *dbfd, string query) {
+
     pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
+
     if (NULL != p) {
         if (NULL != p->second)
             mysql_free_result(p->second);
         delete p;
     }
+
     return mysql_insert_id(&dbfd->mysql);
 }
 
