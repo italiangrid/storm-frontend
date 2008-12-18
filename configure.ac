@@ -29,7 +29,6 @@ fi
 
 AC_SUBST([PREFIX], [$prefix])
 
-DEFAULT_STORM_DIR=/home/storm
 DEFAULT_GSOAP_DIR=/usr/local/gsoap-2.7/bin
 DEFAULT_XMLRPC_C_DIR=/usr
 DEFAULT_CURL_LOCATION=/usr
@@ -44,21 +43,6 @@ AC_CHECK_LIB([pthread], [main])
 AC_C_CONST
 AC_TYPE_SIZE_T
 AC_CHECK_FUNCS(getenv)
-
-# ========================================================================
-# StoRM directory
-# ========================================================================
-AC_MSG_CHECKING([for StoRM directory])
-if test -z $STORM_DIR; then
-    STORM_DIR=$DEFAULT_STORM_DIR
-fi
-if test ! \( -d $STORM_DIR \); then
-    AC_MSG_ERROR([no such directory "$STORM_DIR"])
-fi
-AC_MSG_RESULT(["$STORM_DIR" found])
-
-AC_SUBST([STORM_DIR])
-AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
 
 # ========================================================================
 # Boost

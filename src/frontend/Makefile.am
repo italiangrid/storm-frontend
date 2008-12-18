@@ -16,7 +16,6 @@ INCLUDES = -I$(top_srcdir)/src/db \
     -I@GSOAPGSI_DIR@/include \
     -I/opt/glite/include/glite/security/voms \
     -I/opt/globus/include/gcc32/ \
-    @STORM_CFLAGS@ \
     @XMLRPC_C_CFLAGS@ \
     @GSOAPGSI_CFLAGS@ \
     -I@GSOAP_DIR@ \
