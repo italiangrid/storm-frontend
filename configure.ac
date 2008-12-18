@@ -63,9 +63,8 @@ AC_SUBST([STORM_CFLAGS], [" -I$STORM_DIR/include "])
 # ========================================================================
 # Boost
 # ========================================================================
-AC_SUBST([BOOST_INCLUDE_DIR], [/home/storm/boost_install/include/boost-1_37])
-AC_SUBST([BOOST_LDADD], ["/home/storm/boost_install/lib/libboost_program_options-gcc34-mt-1_37.a /home/storm/boost_install/lib/libboost_thread-gcc34-mt-1_37.a"])
-#AC_SUBST([BOOST_LDADD], ["/usr/lib/libboost_program_options.a"])
+AC_SUBST([BOOST_INCLUDE_DIR], [/usr/include/boost-1_37])
+AC_SUBST([BOOST_LDADD], ["/usr/lib/libboost_program_options-gcc34-mt-1_37.a /usr/lib/libboost_thread-gcc34-mt-1_37.a"])
 
 # ========================================================================
 # Globus libraries

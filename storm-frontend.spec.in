@@ -47,10 +47,6 @@ make
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/etc/cron.d
-mv -f $RPM_BUILD_ROOT/%{prefix}/etc/cron.d/storm-frontend.cron $RPM_BUILD_ROOT/etc/cron.d/
-mkdir -p $RPM_BUILD_ROOT/etc/init.d
-mv -f $RPM_BUILD_ROOT/%{prefix}/etc/init.d/storm-frontend $RPM_BUILD_ROOT/etc/init.d
 
 %clean
 rm -rf $RPM_BUILD_ROOT
