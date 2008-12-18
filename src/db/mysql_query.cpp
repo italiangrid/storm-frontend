@@ -11,13 +11,16 @@
 using namespace std;
 
 static pair<MYSQL_FIELD *, MYSQL_RES *> * _query_init(struct srm_dbfd *dbfd, string query) {
-    static const char * const func = "exec_query";
+    static const char * const func = "_query_init";
+
     srmlogit(STORM_LOG_DEBUG, func, "Executing query ``%s''\n", query.c_str());
+
     if (mysql_query(&dbfd->mysql, query.c_str())) {
         srmlogit(STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n", mysql_error(
                 &dbfd->mysql), query.c_str());
         throw storm_db::mysql_exception(&dbfd->mysql);
     }
+
     MYSQL_RES *res;
     MYSQL_FIELD *fields;
     if (0 != mysql_field_count(&dbfd->mysql)) { // The stmt has no result.
