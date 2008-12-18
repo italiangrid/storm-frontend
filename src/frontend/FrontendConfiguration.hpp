@@ -31,6 +31,10 @@ static const string DEFAULT_DEBUG_LEVEL = "INFO";
 static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_PORT = 8444;
 
+static const char* ENVVAR_GRIDMAP = "GRIDMAP";
+static const char* ENVVAR_X509_USER_CERT = "X509_USER_CERT";
+static const char* ENVVAR_X509_USER_KEY = "X509_USER_KEY";
+
 static const string OPT_HELP = "h";
 static const string OPTL_HELP = "help";
 static const char* OPT_HELP_DESCRIPTION = "Print this message";
@@ -157,7 +161,7 @@ private:
     void setConfigurationOptions(po::variables_map& vm);
     int decodeDebugLevelOption(string& debugLevel);
     void checkCreateDir(string dirAbsolutePath);
-    string setUsingEnvironment(const char* envVar, const string& defaultValue);
+    string getFromEnvironment(const char* envVar, const string& defaultValue);
     string getFilename(string path);
     string getParentPath(string path);
 

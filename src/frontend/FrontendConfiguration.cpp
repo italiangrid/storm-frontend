@@ -310,20 +310,26 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
 
-    if (vm.count(OPTL_GRIDMAFILE))
+    if (vm.count(OPTL_GRIDMAFILE)) {
         gridmapfile = vm[OPTL_GRIDMAFILE].as<string> ();
-    else
-        gridmapfile = setUsingEnvironment("GRIDMAP", DEFAULT_GRIDMAPFILE);
+        setenv(ENVVAR_GRIDMAP, gridmapfile.c_str(), 1);
+    } else {
+        gridmapfile = getFromEnvironment(ENVVAR_GRIDMAP, DEFAULT_GRIDMAPFILE);
+    }
 
-    if (vm.count(OPTL_HOST_CERT))
+    if (vm.count(OPTL_HOST_CERT)) {
         hostcertfile = vm[OPTL_HOST_CERT].as<string> ();
-    else
-        hostcertfile = setUsingEnvironment("X509_USER_CERT", DEFAULT_HOST_CERT_FILE);
+        setenv(ENVVAR_X509_USER_CERT, hostcertfile.c_str(), 1);
+    } else {
+        hostcertfile = getFromEnvironment(ENVVAR_X509_USER_CERT, DEFAULT_HOST_CERT_FILE);
+    }
 
-    if (vm.count(OPTL_HOST_KEY))
+    if (vm.count(OPTL_HOST_KEY)) {
         hostkeyfile = vm[OPTL_HOST_KEY].as<string> ();
-    else
-        hostkeyfile = setUsingEnvironment("X509_USER_KEY", DEFAULT_HOST_KEY_FILE);
+        setenv(ENVVAR_X509_USER_KEY, hostkeyfile.c_str(), 1);
+    } else {
+        hostkeyfile = getFromEnvironment(ENVVAR_X509_USER_KEY, DEFAULT_HOST_KEY_FILE);
+    }
 
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
@@ -387,13 +393,11 @@ void FrontendConfiguration::checkCreateDir(string dirAbsolutePath) {
 
 }
 
-string FrontendConfiguration::setUsingEnvironment(const char* envVar, const string& defaultValue) {
+string FrontendConfiguration::getFromEnvironment(const char* envVar, const string& defaultValue) {
     char* envVal = getenv(envVar);
 
     if (envVal == NULL) {
-        if (setenv(envVar, defaultValue.c_str(), 0) != 0) {
-            return "Error: cannot set environment";
-        }
+        setenv(envVar, defaultValue.c_str(), 0);
         return defaultValue;
     }
 
