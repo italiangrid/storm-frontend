@@ -67,8 +67,10 @@ DBConnectionPool::getConnection(boost::thread::id tid) {
     } else {
         srmlogit(STORM_LOG_DEBUG, "DBConnectionPool", "Creating new connection (number %d) to the DB\n", _curr_size);
 
-        if (_curr_size == _pool_size)
+        if (_curr_size == _pool_size) {
             srmlogit(STORM_LOG_ERROR, "DBConnectionPool", "BUG: connection pool overflow!\n");
+            return NULL;
+        }
 
         pthread_mutex_lock(&mtx);
         i = _curr_size;

@@ -31,7 +31,15 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
 
 {
     static const char* func = "__process_request_status<>";
+
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
+
+    if (thip == NULL) {
+        *resp = request.error_response(SRM_USCOREFATAL_USCOREINTERNAL_USCOREERROR,
+                "Cannot get DB connect from the pool");
+        return SOAP_OK;
+    }
+
     string clientDN = status.getClientDN();
 
     srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, clientDN.c_str());

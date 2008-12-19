@@ -43,7 +43,14 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         const char* funcName, soap_in_t *req, soap_out_t **resp)
 {
     static const char* func = "__process_file_request<>";
-    struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *> (soap->user);
+
+    struct srm_srv_thread_info* thip = static_cast<srm_srv_thread_info *> (soap->user);
+
+    if (thip == NULL) {
+        *resp = request.error_response(SRM_USCOREFATAL_USCOREINTERNAL_USCOREERROR,
+                "Cannot get DB connect from the pool");
+        return SOAP_OK;
+    }
 
     srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, request.getClientDN().c_str());
     srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,

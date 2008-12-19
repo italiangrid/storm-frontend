@@ -107,9 +107,12 @@ int setProxyUserGlobalVariables(string& proxy_user) {
     return 0;
 }
 
+/*************************** Function: process_request() *********************/
 void *
 process_request(struct soap* soap) {
+
     soap->user = mysql_connection_pool->getConnection(boost::this_thread::get_id());
+
     soap->recv_timeout = SOAP_RECV_TIMEOUT;
     soap->send_timeout = SOAP_SEND_TIMEOUT;
 
@@ -121,6 +124,10 @@ process_request(struct soap* soap) {
 
     return NULL;
 }
+
+/*****************************************************************************/
+/************************************ Main ***********************************/
+/*****************************************************************************/
 
 int main(int argc, char** argv)
 {
