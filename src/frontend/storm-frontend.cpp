@@ -340,10 +340,14 @@ int main(int argc, char** argv)
             break;
         }
 
-        tp.schedule(boost::bind(process_request, tsoap));
+        bool isScheduled = tp.schedule(boost::bind(process_request, tsoap));
 
-        srmlogit(STORM_LOG_NONE, func, "AUDIT - Active tasks: %ld\n", tp.active());
-        srmlogit(STORM_LOG_NONE, func, "AUDIT - Pending tasks: %ld\n", tp.pending());
+        if (!isScheduled) {
+            srmlogit(STORM_LOG_ERROR, func, "ERROR: failed to schedule task\n");
+        }
+
+        srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp.active());
+        srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp.pending());
 
     }
 
