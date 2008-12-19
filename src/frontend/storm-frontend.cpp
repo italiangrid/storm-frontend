@@ -342,6 +342,9 @@ int main(int argc, char** argv)
 
         tp.schedule(boost::bind(process_request, tsoap));
 
+        srmlogit(STORM_LOG_NONE, func, "AUDIT - Active tasks: %ld\n", tp.active());
+        srmlogit(STORM_LOG_NONE, func, "AUDIT - Pending tasks: %ld\n", tp.pending());
+
     }
 
     srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", tp.active());
