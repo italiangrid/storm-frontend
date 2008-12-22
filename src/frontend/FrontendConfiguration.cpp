@@ -144,6 +144,14 @@ int FrontendConfiguration::getNumThreads() {
     return numberOfThreads;
 }
 
+int FrontendConfiguration::getThreadpoolMaxPending() {
+    return threadpool_max_pending;
+}
+
+int FrontendConfiguration::getGsoapMaxPending() {
+    return gsoap_max_pending;
+}
+
 int FrontendConfiguration::getPort() {
     return port;
 }
@@ -211,16 +219,18 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
     po::options_description configurationFileOptions("Configuration file options");
 
     configurationFileOptions.add_options()
-        (string(OPTL_NUM_THREADS + "," + OPT_NUM_THREADS).c_str(), po::value<int>()->default_value(DEFAULT_THREADS_NUMBER), OPT_NUM_THREADS_DESCRIPTION)
-        (string(OPTL_LOG_FILE_NAME + "," + OPT_LOG_FILE_NAME).c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), "")
-        (string(OPTL_PROXY_DIR + "," + OPT_PROXY_DIR).c_str(), po::value<string>(), OPT_PROXY_DIR_DESCRIPTION)
-        (string(OPTL_PORT + "," + OPT_PORT).c_str(), po::value<int>()->default_value(DEFAULT_PORT), OPT_PORT_DESCRIPTION)
+        (OPTL_NUM_THREADS.c_str(), po::value<int>()->default_value(DEFAULT_THREADS_NUMBER), EMPTY_DESCRIPTION)
+        (OPTL_MAX_THREADPOOL_PENDING.c_str(), po::value<int>()->default_value(DEFAULT_THREADPOOL_MAX_PENDING), EMPTY_DESCRIPTION)
+        (OPTL_MAX_GSOAP_PENDING.c_str(), po::value<int>()->default_value(DEFAULT_GSOAP_MAX_PENDING), EMPTY_DESCRIPTION)
+        (OPTL_LOG_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), EMPTY_DESCRIPTION)
+        (OPTL_PROXY_DIR.c_str(), po::value<string>(), OPT_PROXY_DIR_DESCRIPTION)
+        (OPTL_PORT.c_str(), po::value<int>()->default_value(DEFAULT_PORT), OPT_PORT_DESCRIPTION)
         (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
         (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
         (OPTL_XMLRPC_PATH.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
-        (string(OPTL_PROXY_USER + "," + OPT_PROXY_USER).c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
-        (string(OPTL_WSDL_FILE + "," + OPT_WSDL_FILE).c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
-        (string(OPTL_DEBUG_LEVEL + "," + OPT_DEBUG_LEVEL).c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
+        (OPTL_PROXY_USER.c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
+        (OPTL_WSDL_FILE.c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
+        (OPTL_DEBUG_LEVEL.c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
         (OPTL_DB_HOST.c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
         (OPTL_DB_USER.c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
         (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
@@ -272,12 +282,11 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_LOG_FILE_NAME))
         log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
 
-    if (vm.count(OPTL_NUM_THREADS))
-        numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
+    numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
+    threadpool_max_pending = vm[OPTL_MAX_THREADPOOL_PENDING].as<int> ();
+    gsoap_max_pending = vm[OPTL_MAX_GSOAP_PENDING].as<int> ();
 
-    if (vm.count(OPTL_DEBUG_LEVEL))
-        debugLevelString = vm[OPTL_DEBUG_LEVEL].as<string> ();
-
+    debugLevelString = vm[OPTL_DEBUG_LEVEL].as<string> ();
     debugLevel = decodeDebugLevelOption(debugLevelString);
 
     if (vm.count(OPTL_PROXY_DIR))

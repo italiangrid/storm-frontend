@@ -158,6 +158,8 @@ int main(int argc, char** argv)
     }
 
     int nThreads = configuration->getNumThreads();
+    int threadpool_max_pending = configuration->getThreadpoolMaxPending();
+    int gsoap_max_pending = configuration->getGsoapMaxPending();
     int port = configuration->getPort();
     string log_file = configuration->getLogFile();
     string wsdl_file_path = configuration->getWSDLFilePath();
@@ -296,7 +298,7 @@ int main(int argc, char** argv)
 
     soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
 
-    if (!soap_valid_socket(soap_bind(soap_data, NULL, port, BACKLOG))) {
+    if (!soap_valid_socket(soap_bind(soap_data, NULL, port, gsoap_max_pending))) {
         soap_print_fault(soap_data, stderr);
         soap_done(soap_data);
         free(soap_data);
@@ -328,10 +330,12 @@ int main(int argc, char** argv)
 
         while (!soap_valid_socket(soap_accept(soap_data))) {
             if (!stay_running)
+                // received a SIGINT
                 break;
         }
 
         if (!stay_running)
+            // received a SIGINT
             break;
 
         if ((tsoap = soap_copy(soap_data)) == NULL) {
@@ -340,11 +344,24 @@ int main(int argc, char** argv)
             break;
         }
 
-        bool isScheduled = tp.schedule(boost::bind(process_request, tsoap));
+        while (tp.pending() >= threadpool_max_pending); // workaround for a bug in threadpool
 
-        if (!isScheduled) {
-            srmlogit(STORM_LOG_ERROR, func, "ERROR: failed to schedule task\n");
+        try {
+
+            bool isScheduled = tp.schedule(boost::bind(process_request, tsoap));
+
+            if (!isScheduled) {
+                srmlogit(STORM_LOG_ERROR, func, "ERROR: failed to schedule task... the request is LOST\n");
+                soap_done(tsoap);
+                soap_free(tsoap);
+            }
+
+        } catch (exception& e) {
+            srmlogit(STORM_LOG_ERROR, func, "Cannot schedule task: %s\n", e.what());
+            soap_done(tsoap);
+            soap_free(tsoap);
         }
+
 
         srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp.active());
         srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp.pending());

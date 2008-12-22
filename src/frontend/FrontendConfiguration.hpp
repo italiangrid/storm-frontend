@@ -29,7 +29,11 @@ static const string DEFAULT_XMLRPC_PORT = "8080";
 static const string DEFAULT_XMLRPC_PATH = "/RPC2";
 static const string DEFAULT_DEBUG_LEVEL = "INFO";
 static const int DEFAULT_THREADS_NUMBER = 20;
+static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
+static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
+
+static const char* EMPTY_DESCRIPTION = "";
 
 static const char* ENVVAR_GRIDMAP = "GRIDMAP";
 static const char* ENVVAR_X509_USER_CERT = "X509_USER_CERT";
@@ -47,6 +51,10 @@ static const string OPT_CONFIG_FILE = "c";
 static const string OPTL_CONFIG_FILE = "config-file";
 static const char* OPT_CONFIG_FILE_DESCRIPTION = "Configuration file";
 
+static const string OPT_DEBUG = "d";
+static const string OPTL_DEBUG = "debug-mode";
+static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
+
 static const string OPTL_DISABLE_MAPPING = "security.disable.mapping";
 static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
 
@@ -59,29 +67,26 @@ static const string OPTL_HOST_CERT = "security.hostcert";
 
 static const string OPTL_HOST_KEY = "security.hostkey";
 
-static const string OPT_LOG_FILE_NAME = "l";
 static const string OPTL_LOG_FILE_NAME = "log.filename";
 static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
 
-static const string OPT_DEBUG_LEVEL = "v";
 static const string OPTL_DEBUG_LEVEL = "log.debuglevel";
 static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
 
-static const string OPT_NUM_THREADS = "t";
-static const string OPTL_NUM_THREADS = "fe.threads.number";
-static const char* OPT_NUM_THREADS_DESCRIPTION = "Use <arg> threads";
+static const string OPTL_PORT = "fe.port";
+static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPT_PROXY_DIR = "P";
+static const string OPTL_NUM_THREADS = "fe.threadpool.threads_number";
+
+static const string OPTL_MAX_THREADPOOL_PENDING = "fe.threadpool.max_pending";
+
+static const string OPTL_MAX_GSOAP_PENDING = "fe.gsoap.max_pending";
+
 static const string OPTL_PROXY_DIR = "proxy.dir";
 static const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
 
-static const string OPT_PROXY_USER = "U";
 static const string OPTL_PROXY_USER = "proxy.user";
 static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
-
-static const string OPT_PORT = "p";
-static const string OPTL_PORT = "fe.port";
-static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
 static const string OPTL_XMLRPC_HOST = "be.xmlrpc.host";
 static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
@@ -92,13 +97,8 @@ static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC 
 static const string OPTL_XMLRPC_PATH = "be.xmlrpc.path";
 static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
-static const string OPT_WSDL_FILE = "w";
 static const string OPTL_WSDL_FILE = "wsdl.file";
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
-
-static const string OPT_DEBUG = "d";
-static const string OPTL_DEBUG = "debug-mode";
-static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
 
 static const string OPTL_DB_HOST = "db.host";
 static const char* OPT_DB_HOST_DESCRIPTION = "Machine hosting the DB";
@@ -136,6 +136,8 @@ public:
     bool vomsCheckDisabled();
     int getDebugLevel();
     int getNumThreads();
+    int getThreadpoolMaxPending();
+    int getGsoapMaxPending();
     int getPort();
     string getDebugLevelString();
     string getProxyDir();
@@ -177,6 +179,8 @@ private:
     bool disableMapping;
     bool disableVOMSCheck;
     int numberOfThreads;
+    int threadpool_max_pending;
+    int gsoap_max_pending;
     int debugLevel;
     int port;
     string log_file;
