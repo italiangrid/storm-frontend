@@ -76,11 +76,11 @@ static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERR
 static const string OPTL_PORT = "fe.port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPTL_NUM_THREADS = "fe.threadpool.threads_number";
+static const string OPTL_NUM_THREADS = "fe.threadpool.threads.number";
 
-static const string OPTL_MAX_THREADPOOL_PENDING = "fe.threadpool.max_pending";
+static const string OPTL_MAX_THREADPOOL_PENDING = "fe.threadpool.maxpending";
 
-static const string OPTL_MAX_GSOAP_PENDING = "fe.gsoap.max_pending";
+static const string OPTL_MAX_GSOAP_PENDING = "fe.gsoap.maxpending";
 
 static const string OPTL_PROXY_DIR = "proxy.dir";
 static const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
