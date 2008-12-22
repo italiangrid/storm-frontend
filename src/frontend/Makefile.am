@@ -50,8 +50,8 @@ noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
 noinst_LTLIBRARIES = libstormfrontend.la
 
 libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
-    file_request.hpp srmv2_filerequest_template.hpp \
-    srmv2_status_template.hpp file_status.hpp \
+    file_request.hpp filerequest_template.hpp \
+    status_template.hpp file_status.hpp \
     bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
     ptp.cpp ptp.hpp put_status.cpp put_status.hpp \
     ptg.cpp ptg.hpp get_status.cpp get_status.hpp \
