@@ -7,7 +7,7 @@
 
 #include "srmv2H.h"
 #include "srmlogit.h"
-#include "srmv2_status_template.hpp"
+#include "status_template.hpp"
 #include "put_status.hpp"
 #include "get_status.hpp"
 #include "copy_status.hpp"

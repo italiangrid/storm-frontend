@@ -7,7 +7,7 @@
 
 #include "srmv2H.h"
 #include "srmlogit.h"
-#include "srmv2_filerequest_template.hpp"
+#include "filerequest_template.hpp"
 #include "ptp.hpp"
 #include "ptg.hpp"
 #include "copy.hpp"
