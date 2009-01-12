@@ -71,7 +71,7 @@ static const string OPTL_LOG_FILE_NAME = "log.filename";
 static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
 
 static const string OPTL_DEBUG_LEVEL = "log.debuglevel";
-static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2, DEBUG3";
+static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2";
 
 static const string OPTL_PORT = "fe.port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";

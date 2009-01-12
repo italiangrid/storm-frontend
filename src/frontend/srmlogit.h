@@ -23,8 +23,6 @@
 #define STORM_LOG_INFO 3
 #define STORM_LOG_DEBUG 4
 #define STORM_LOG_DEBUG2 5
-#define STORM_LOG_DEBUG3 6
-#define STORM_LOG_DEBUG4 7
 
 #ifdef __cplusplus
 extern "C" {

@@ -361,10 +361,9 @@ int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
         debugLevel = STORM_LOG_DEBUG;
     else if (debugLevelString == "DEBUG2")
         debugLevel = STORM_LOG_DEBUG2;
-    else if (debugLevelString == "DEBUG3")
-        debugLevel = STORM_LOG_DEBUG3;
-    else if (debugLevelString == "DEBUG4")
-        debugLevel = STORM_LOG_DEBUG4;
+    else
+        throw runtime_error("Error: unknown debug level value " + debugLevelString 
+                            + ". Allowed values are: ERROR, WARN, INFO, DEBUG, DEBUG2.");
 
     return debugLevel;
 }

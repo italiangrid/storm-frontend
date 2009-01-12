@@ -6,7 +6,7 @@ fe.gsoap.maxpending = 2000           # default is 2000
 
 # Log options
 log.filename = @prefix@/var/log/storm-frontend.log
-log.debuglevel = INFO
+log.debuglevel = INFO      # Allowed values: ERROR, WARN, INFO, DEBUG, DEBUG2.
 
 # Security settings
 #security.disable.mapping = false     # default is "false"
