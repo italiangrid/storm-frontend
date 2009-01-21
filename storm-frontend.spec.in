@@ -15,10 +15,10 @@
 Name:           %{name}-%{flavor}
 Version:        %{version}
 Release:        %{release}
-Vendor:         INFN FIRB Grid.It Project (2004)
-Packager:       storm@infn.it
-Copyright:      INFN License
-URL:            http://grid-it.cnaf.infn.it/storm
+Vendor:         INFN - CNAF (2009)
+Packager:       Alberto Forti <alberto.forti@cnaf.infn.it> 
+Copyright:      Apache License, Version 2.0.
+URL:            http://storm.forge.cnaf.infn.it
 Source:         @PACKAGE@-%{version}.tar.gz
 Group:          Application/Generic
 AutoReqProv:    no
@@ -27,13 +27,16 @@ Requires:       xmlrpc-c >= 1.04
 Requires:       CGSI_gSOAP_2.7-voms >= 1.2.1-2
 BuildRoot:      /var/tmp/%{name}-%{version}
 Prefix:         %{prefix}
-Summary:        StoRM frontend server (SRM v2 implementation). 
+Summary:        The StoRM FrontEnd component. 
 
 %description
-This is the installation bundle for the srmv2 storm server.
-This server is the SRM Front-End server of the StoRM utility
-package that implements an SRM interface to a GPFS parallel
-filesystem.
+This is the installation bundle for the StoRM FrontEnd server.
+
+StoRM provides an SRM interface to any POSIX
+filesystem with direct file access ("file:" transport protocol), but
+can take advantage of special features of high performance parallel and cluster file systems, as 
+GPFS from IBM and Lustre from SUN.
+
 
 %prep
 %setup -n @PACKAGE@-%{version}
