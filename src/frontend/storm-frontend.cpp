@@ -17,6 +17,7 @@
 #include "srmlogit.h"
 #include <signal.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pwd.h>
@@ -29,9 +30,11 @@
 #include <boost/bind.hpp>
 #include "DBConnectionPool.hpp"
 #include <signal.h>
+#include "frontend_version.h"
 
 #define NAME "StoRM SRM v2.2"
 
+static string lock_file_name = "/var/lock/storm-frontend.lock";
 static bool stay_running = true;
 
 char *db_pwd;
@@ -56,13 +59,51 @@ void sigint_handler(int sig)
     stay_running = false;
 }
 
+int create_lock_file() {
+
+    struct stat stat_struct;
+    int stat_code = stat(filename, &stat_struct);
+
+    if (stat_code == 0) {
+        printf("Error: found lock file: %s\n", lock_file_name.c_str());
+        return -1;
+    }
+
+    FILE* fd = fopen(lock_file_name, "w");
+    if (fd == NULL) {
+        printf("Error: cannot create lock file \"%s\"\n", lock_file_name.c_str());
+        return 1;
+    }
+    fclose(fd);
+
+    return 0;
+}
+
+int remove_lock_file() {
+
+    struct stat stat_struct;
+    int stat_code = stat(filename, &stat_struct);
+
+    if (stat_code != 0) {
+        return 0;
+    }
+
+    if (remove(lock_file_name.c_str()) != 0) {
+        printf("Error: cannot remove lock file \"%s\" (consider to remove it by hand)",
+                lock_file_name.c_str());
+        return -1;
+    }
+
+    return 0;
+}
+
 static int http_get(struct soap *soap) {
 
     int fd = open(wsdl_file, O_RDONLY | O_NONBLOCK);
     char buf[10240]; /* 10k */
     int nr = 0;
 
-    srmlogit(STORM_LOG_DEBUG,"http_get", "Ricevo richiesta GET\n");
+    srmlogit(STORM_LOG_DEBUG,"http_get", "Receives GET request\n");
     soap_response(soap, SOAP_HTML); // HTTP response header with text/html
     if (-1 == fd) {
         srmlogit(STORM_LOG_ERROR,"http_get", "Error opening file %s. (%s)\n", wsdl_file, strerror(
@@ -129,10 +170,23 @@ process_request(struct soap* soap) {
 /************************************ Main ***********************************/
 /*****************************************************************************/
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) {
+    int status_code;
+
+    try {
+        status_code = frontend_main(argc, argv);
+    } catch (exception& e) {
+        // do nothing, just go on and remove the lock file
+    }
+
+    remove_lock_file();
+
+    return status_code;
+}
+
+int frontend_main(int argc, char** argv)
 {
-    char *func = "srm_main";
-//    void *process_request(void *);
+    char *func = "main";
 
     // ------------------------------------------------------------------------
     //------------------------- Set configuration -----------------------------
@@ -153,7 +207,7 @@ int main(int argc, char** argv)
     }
 
     if (configuration->requestedVersion()) {
-        printf("Frontend version: ...");
+        printf("Frontend version: %s\n", frontend_version);
         return 0;
     }
 
@@ -268,15 +322,18 @@ int main(int argc, char** argv)
     if ((nb_supported_protocols = get_supported_protocols(&supported_protocols)) < 0) {
         srmlogit(STORM_LOG_ERROR, func, "Error in get_supported_protocols(): unable to retrieve "
             "supported protocols from the DB.");
-        exit(1);
+        return 1;
     }
 
     if (! debugMode) { // fork and leave the daemon in background
         int pid = fork();
         if (pid > 0) {
-            exit(0);
+            return 0;
         }
     }
+
+    if (create_lock_file() != 0)
+        return -1;
 
     /**** gSOAP and CGSI_gSOAP plugin initializaion ****/
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
@@ -304,7 +361,7 @@ int main(int argc, char** argv)
         soap_print_fault(soap_data, stderr);
         soap_done(soap_data);
         free(soap_data);
-        exit(SYERR);
+        return SYERR;
     }
 
     /**** Start up XML-RPC client library. ****/
