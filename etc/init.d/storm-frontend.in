@@ -55,7 +55,7 @@ case "$1" in
     if [ $? -eq 0 ]; then
         check_if_running
         if [ $? -eq 1 ]; then
-            echo "StoRM frontend already running."
+            echo "already running."
             exit 1
         else
             # There's an old PIDFILE (maybe previous instance was crashed)
@@ -84,7 +84,11 @@ case "$1" in
     fi
     ;;
   stop)
-    if [ -f $PIDFILE ]; then
+    check_if_running
+    if [ $? -eq 0 ]; then
+        echo "$prog already stopped"
+        RETVAL=0
+    else
         echo -n "Stopping $prog.."
         kill -2 `cat $PIDFILE` >& /dev/null
         if [ $? -eq 0 ]; then
