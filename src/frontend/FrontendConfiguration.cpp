@@ -180,6 +180,10 @@ string FrontendConfiguration::getLogFile() {
     return log_file_dir + "/" + log_file;
 }
 
+string FrontendConfiguration::getLockFile() {
+    return lockfile;
+}
+
 string FrontendConfiguration::getDBHost() {
     return dbHost;
 }

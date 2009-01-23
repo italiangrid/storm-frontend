@@ -62,14 +62,14 @@ void sigint_handler(int sig)
 int create_lock_file() {
 
     struct stat stat_struct;
-    int stat_code = stat(filename, &stat_struct);
+    int stat_code = stat(lock_file_name.c_str(), &stat_struct);
 
     if (stat_code == 0) {
         printf("Error: found lock file: %s\n", lock_file_name.c_str());
         return -1;
     }
 
-    FILE* fd = fopen(lock_file_name, "w");
+    FILE* fd = fopen(lock_file_name.c_str(), "w");
     if (fd == NULL) {
         printf("Error: cannot create lock file \"%s\"\n", lock_file_name.c_str());
         return 1;
@@ -82,7 +82,7 @@ int create_lock_file() {
 int remove_lock_file() {
 
     struct stat stat_struct;
-    int stat_code = stat(filename, &stat_struct);
+    int stat_code = stat(lock_file_name.c_str(), &stat_struct);
 
     if (stat_code != 0) {
         return 0;
@@ -169,20 +169,6 @@ process_request(struct soap* soap) {
 /*****************************************************************************/
 /************************************ Main ***********************************/
 /*****************************************************************************/
-
-int main(int argc, char** argv) {
-    int status_code;
-
-    try {
-        status_code = frontend_main(argc, argv);
-    } catch (exception& e) {
-        // do nothing, just go on and remove the lock file
-    }
-
-    remove_lock_file();
-
-    return status_code;
-}
 
 int frontend_main(int argc, char** argv)
 {
@@ -445,3 +431,18 @@ int frontend_main(int argc, char** argv)
 
     return (exit_code);
 }
+
+int main(int argc, char** argv) {
+    int status_code;
+
+    try {
+        status_code = frontend_main(argc, argv);
+    } catch (exception& e) {
+        // do nothing, just go on and remove the lock file
+    }
+
+    remove_lock_file();
+
+    return status_code;
+}
+
