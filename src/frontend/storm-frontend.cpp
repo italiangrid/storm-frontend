@@ -34,7 +34,7 @@
 
 #define NAME "StoRM SRM v2.2"
 
-static string lock_file_name = "/var/lock/storm-frontend.lock";
+static string lock_file_name;
 static bool stay_running = true;
 
 char *db_pwd;
@@ -228,6 +228,8 @@ int frontend_main(int argc, char** argv)
     string debugLevelString = configuration->getDebugLevelString();
     bool disableMapping = configuration->mappingDisabled();
     bool disableVOMSCheck = configuration->vomsCheckDisabled();
+    lock_file_name = configuration->getLockFile();
+
 
     // Proxy User
     if (setProxyUserGlobalVariables(proxy_user) != 0) {

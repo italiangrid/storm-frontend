@@ -238,7 +238,8 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
         (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION)
         (OPTL_GRIDMAFILE.c_str(), po::value<string>(), "")
         (OPTL_HOST_CERT.c_str(), po::value<string>(), "")
-        (OPTL_HOST_KEY.c_str(), po::value<string>(), "");
+        (OPTL_HOST_KEY.c_str(), po::value<string>(), "")
+        (OPTL_LOCKFILE.c_str(), po::value<string>()->default_value(DEFAULT_LOCKFILE), "");
 
     return configurationFileOptions;
 }
@@ -342,6 +343,7 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
+    lockfile = vm[OPTL_LOCKFILE].as<string>();
 
 }
 
@@ -362,7 +364,7 @@ int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
     else if (debugLevelString == "DEBUG2")
         debugLevel = STORM_LOG_DEBUG2;
     else
-        throw runtime_error("Error: unknown debug level value " + debugLevelString 
+        throw runtime_error("Error: unknown debug level value " + debugLevelString
                             + ". Allowed values are: ERROR, WARN, INFO, DEBUG, DEBUG2.");
 
     return debugLevel;
