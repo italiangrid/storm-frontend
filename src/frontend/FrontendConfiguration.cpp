@@ -180,10 +180,6 @@ string FrontendConfiguration::getLogFile() {
     return log_file_dir + "/" + log_file;
 }
 
-string FrontendConfiguration::getLockFile() {
-    return lockfile;
-}
-
 string FrontendConfiguration::getDBHost() {
     return dbHost;
 }
@@ -242,8 +238,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
         (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION)
         (OPTL_GRIDMAFILE.c_str(), po::value<string>(), "")
         (OPTL_HOST_CERT.c_str(), po::value<string>(), "")
-        (OPTL_HOST_KEY.c_str(), po::value<string>(), "")
-        (OPTL_LOCKFILE.c_str(), po::value<string>()->default_value(DEFAULT_LOCKFILE), "");
+        (OPTL_HOST_KEY.c_str(), po::value<string>(), "");
 
     return configurationFileOptions;
 }
@@ -347,7 +342,6 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
-    lockfile = vm[OPTL_LOCKFILE].as<string>();
 
 }
 

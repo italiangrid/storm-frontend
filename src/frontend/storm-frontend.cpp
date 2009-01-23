@@ -35,7 +35,6 @@
 
 #define NAME "StoRM SRM v2.2"
 
-static string lock_file_name;
 static bool stay_running = true;
 
 char *db_pwd;
@@ -58,44 +57,6 @@ void sigint_handler(int sig)
 {
     srmlogit(STORM_LOG_NONE, "SIGINT_handler", "Caught SIGINT: stopping frontend...\n");
     stay_running = false;
-}
-
-int create_lock_file() {
-
-    struct stat stat_struct;
-    int stat_code = stat(lock_file_name.c_str(), &stat_struct);
-
-    if (stat_code == 0) {
-        printf("Error: found lock file: %s\n", lock_file_name.c_str());
-        return -1;
-    }
-
-    FILE* fd = fopen(lock_file_name.c_str(), "w");
-    if (fd == NULL) {
-        printf("Error: cannot create lock file \"%s\"\n", lock_file_name.c_str());
-        return 1;
-    }
-    fclose(fd);
-
-    return 0;
-}
-
-int remove_lock_file() {
-
-    struct stat stat_struct;
-    int stat_code = stat(lock_file_name.c_str(), &stat_struct);
-
-    if (stat_code != 0) {
-        return 0;
-    }
-
-    if (remove(lock_file_name.c_str()) != 0) {
-        printf("Error: cannot remove lock file \"%s\" (consider to remove it by hand)",
-                lock_file_name.c_str());
-        return -1;
-    }
-
-    return 0;
 }
 
 static int http_get(struct soap *soap) {
@@ -171,7 +132,7 @@ process_request(struct soap* soap) {
 /************************************ Main ***********************************/
 /*****************************************************************************/
 
-int frontend_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     char *func = "main";
 
@@ -215,8 +176,6 @@ int frontend_main(int argc, char** argv)
     string debugLevelString = configuration->getDebugLevelString();
     bool disableMapping = configuration->mappingDisabled();
     bool disableVOMSCheck = configuration->vomsCheckDisabled();
-    lock_file_name = configuration->getLockFile();
-
 
     // Proxy User
     if (setProxyUserGlobalVariables(proxy_user) != 0) {
@@ -320,11 +279,6 @@ int frontend_main(int argc, char** argv)
             return 0;
         }
     }
-
-    if (create_lock_file() != 0)
-        return -1;
-
-    srmlogit(STORM_LOG_INFO, func, "Created lock file %s\n", lock_file_name.c_str());
 
     /**** gSOAP and CGSI_gSOAP plugin initializaion ****/
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
@@ -434,21 +388,3 @@ int frontend_main(int argc, char** argv)
 
     return (exit_code);
 }
-
-int main(int argc, char** argv) {
-    int status_code;
-
-    try {
-        status_code = frontend_main(argc, argv);
-    } catch (exception& e) {
-        // do nothing, just go on and remove the lock file
-    }
-
-    if (remove_lock_file() == 0)
-        srmlogit(STORM_LOG_INFO, "", "Removed lock file %s\n", lock_file_name.c_str());
-    else
-        srmlogit(STORM_LOG_ERROR, "", "Error: cannot remove lock file \"%s\" (it must be removed by hand)\n", lock_file_name.c_str());
-
-    return status_code;
-}
-

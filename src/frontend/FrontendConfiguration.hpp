@@ -23,7 +23,6 @@ static const string DEFAULT_GRIDMAPFILE = "/etc/grid-security/grid-mapfile";
 static const string DEFAULT_HOST_CERT_FILE = "/etc/grid-security/hostcert.pem";
 static const string DEFAULT_HOST_KEY_FILE = "/etc/grid-security/hostkey.pem";
 static const string DEFAULT_LOG_FILE_NAME = "storm-frontend.log";
-static const string DEFAULT_LOCKFILE = "/var/lock";
 static const string DEFAULT_WSDL_FILE = "";
 static const string DEFAULT_XMLRPC_HOST = "localhost";
 static const string DEFAULT_XMLRPC_PORT = "8080";
@@ -76,8 +75,6 @@ static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERR
 
 static const string OPTL_PORT = "fe.port";
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
-
-static const string OPTL_LOCKFILE = "fe.lockfile";
 
 static const string OPTL_NUM_THREADS = "fe.threadpool.threads.number";
 
@@ -156,7 +153,6 @@ public:
     string getGridmapfile();
     string getHostCertFile();
     string getHostKeyFile();
-    string getLockFile();
 
 private:
     FrontendConfiguration();
@@ -204,7 +200,6 @@ private:
     string gridmapfile;
     string hostcertfile;
     string hostkeyfile;
-    string lockfile;
 
 };
 
