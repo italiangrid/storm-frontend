@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pwd.h>
+#include <unistd.h>
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #include <exception>
@@ -323,6 +324,8 @@ int frontend_main(int argc, char** argv)
     if (create_lock_file() != 0)
         return -1;
 
+    srmlogit(STORM_LOG_INFO, func, "Created lock file %s\n", lock_file_name.c_str());
+
     /**** gSOAP and CGSI_gSOAP plugin initializaion ****/
     struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
 
@@ -441,7 +444,10 @@ int main(int argc, char** argv) {
         // do nothing, just go on and remove the lock file
     }
 
-    remove_lock_file();
+    if (remove_lock_file() == 0)
+        srmlogit(STORM_LOG_INFO, "", "Removed lock file %s\n", lock_file_name.c_str());
+    else
+        srmlogit(STORM_LOG_ERROR, "", "Error: cannot remove lock file \"%s\" (it must be removed by hand)\n", lock_file_name.c_str());
 
     return status_code;
 }

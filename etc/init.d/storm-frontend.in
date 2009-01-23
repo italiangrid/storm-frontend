@@ -8,14 +8,35 @@ prog="storm-frontend"
 PIDDIR=/var/run
 SUBSYSDIR=/var/lock/subsys
 PIDFILE=$PIDDIR/$prog.pid
-LOCKFILE=$SUBSYSDIR/$prog.lock
 
 FRONTEND_DAEMON=@PREFIX@/sbin/$prog
 CONFIGURATION_FILE=@PREFIX@/etc/storm-frontend.conf
 
+get_pid() {
+   if [ -e $PIDFILE ]; then
+       PID=`cat $PIDFILE`
+   else
+       return 1    # means error
+   fi
+   return 0        # meand success
+}
+
+check_if_running() {
+    get_pid
+    if [ $? -ne 0 ]; then
+        return 0  # means "false", not running
+    fi
+    IS_UP=`netstat -lp | grep $PID`
+    if [ -z "$IS_UP" ]; then
+        return 0  # means "false", not running
+    fi
+    return 1      # means "true", is running
+}
+
+
 # Blindly attempt to create useful directories
 [ ! -d $PIDDIR ] && mkdir -p $PIDDIR >& /dev/null
-[ ! -d $SUBSYSDIR ] && mkdir -p $SUBSYSDIR >& /dev/null
+#[ ! -d $SUBSYSDIR ] && mkdir -p $SUBSYSDIR >& /dev/null
 
 RETVAL=0
 
@@ -30,11 +51,19 @@ case "$1" in
     echo -n "Starting $prog as user \"$STORM_FE_USER\"... "
 
     # Check if another instance is already running
-    if [ -e $LOCKFILE ]; then
-        echo "Found lock file ($LOCKFILE). StoRM frontend already running."
-        exit 1
+    get_pid
+    if [ $? -eq 0 ]; then
+        check_if_running
+        if [ $? -eq 1 ]; then
+            echo "StoRM frontend already running."
+            exit 1
+        else
+            # There's an old PIDFILE (maybe previous instance was crashed)
+            # and it must be removed
+            rm -f $PIDFILE
+        fi
     fi
-
+    
     # Make sure the FE can write the logfile and save the proxies
     if [ "root" != $STORM_FE_USER ]; then
         mkdir -p @PREFIX@/var
@@ -45,9 +74,7 @@ case "$1" in
     su -s /bin/bash $STORM_FE_USER -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE"
 
     if [ $? -eq 0 ]; then
-        touch $LOCKFILE
         pid=`ps -eo pid,ppid,comm | grep " 1 $prog$" | awk '{print $1}'`
-        rm -f $PIDFILE
         echo $pid > $PIDFILE
         RETVAL=0
         echo "ok."
@@ -58,44 +85,38 @@ case "$1" in
     ;;
   stop)
     if [ -f $PIDFILE ]; then
-        echo -n "Stopping $prog... "
+        echo -n "Stopping $prog.."
         kill -2 `cat $PIDFILE` >& /dev/null
         if [ $? -eq 0 ]; then
+            check_if_running
+            while [ $? -eq 1 ]; do
+                echo -n "."
+                sleep 1
+                check_if_running
+            done
             rm -f $PIDFILE
-            rm -f $LOCKFILE
             RETVAL=0
-            echo "ok"
+            echo " ok"
         else
             RETVAL=1
-            echo "error"
+            echo " error"
         fi
     fi            
     ;;
   restart)
     $0 stop
-    sleep 5
+    sleep 1
     if [ $? -eq 0 ]; then
         $0 start
     fi
     RETVAL=$?
     ;;
   status)
-    pid=`ps -eo pid,ppid,comm | grep " 1 $prog" | awk '{print $1}'`
-    if [ -n "$pid" ]; then
-        echo "$prog (pid $pid) is running..."
+    check_if_running
+    if [ $? -eq 1 ]; then
+        echo "$prog (pid $PID) is running..."
     else
-        if [ -f $PIDFILE ]; then
-            pid=`head -1 $PIDFILE`
-            if [ "$pid" != "" ] ; then
-                echo "$prog dead but pid file exists"
-            fi
-        else
-            if [ -f $LOCKFILE ]; then
-                echo "$prog dead but subsys ($LOCKFILE) locked"
-            else
-                echo "$prog is NOT running"
-            fi
-        fi
+        echo "$prog is NOT running"
     fi
     ;;
   *)

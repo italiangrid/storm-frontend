@@ -1,9 +1,8 @@
 ##### StoRM frontend configuration file #####
 fe.port = 8444
 fe.threadpool.threads.number = 50
-fe.threadpool.maxpending = 200       # default is 200
-fe.gsoap.maxpending = 2000           # default is 2000
-fe.lockfile = @prefix@/var           # default is /var/lock
+fe.threadpool.maxpending = 200                  # default is 200
+fe.gsoap.maxpending = 2000                      # default is 2000
 
 # Log options
 log.filename = @prefix@/var/log/storm-frontend.log
