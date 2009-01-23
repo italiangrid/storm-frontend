@@ -1,6 +1,6 @@
 
 stormetcsysconfdir = $(sysconfdir)
-dist_stormetcsysconf_DATA = storm-frontend.conf
+dist_stormetcsysconf_DATA = storm-frontend.conf.template
 
 crondir =  $(sysconfdir)/cron.d
 dist_cron_DATA = ./cron.d/storm-frontend.cron

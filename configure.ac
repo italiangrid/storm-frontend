@@ -156,7 +156,7 @@ AC_CONFIG_HEADERS([config.h])
 # Files ".in" and ".am" to be processed
 AC_CONFIG_FILES([Makefile \
     etc/Makefile \
-    etc/storm-frontend.conf \
+    etc/storm-frontend.conf.template \
     etc/init.d/storm-frontend \
     wsdl/Makefile \
     src/Makefile \

@@ -60,7 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/etc/logrotate/storm-frontend.logrotate
 %{prefix}/sbin/storm-frontend
 %{prefix}/wsdl/srm.v2.2.wsdl
-%config(noreplace) %{prefix}/etc/storm-frontend.conf
+%{prefix}/etc/storm-frontend.conf.template
 %defattr(755,root,root)
 %config(noreplace) /etc/init.d/storm-frontend
 
