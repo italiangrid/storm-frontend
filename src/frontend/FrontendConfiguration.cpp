@@ -319,30 +319,12 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
 
-    if (vm.count(OPTL_GRIDMAFILE)) {
-        gridmapfile = vm[OPTL_GRIDMAFILE].as<string> ();
-        setenv(ENVVAR_GRIDMAP, gridmapfile.c_str(), 1);
-    } else {
-        gridmapfile = getFromEnvironment(ENVVAR_GRIDMAP, DEFAULT_GRIDMAPFILE);
-    }
-
-    if (vm.count(OPTL_HOST_CERT)) {
-        hostcertfile = vm[OPTL_HOST_CERT].as<string> ();
-        setenv(ENVVAR_X509_USER_CERT, hostcertfile.c_str(), 1);
-    } else {
-        hostcertfile = getFromEnvironment(ENVVAR_X509_USER_CERT, DEFAULT_HOST_CERT_FILE);
-    }
-
-    if (vm.count(OPTL_HOST_KEY)) {
-        hostkeyfile = vm[OPTL_HOST_KEY].as<string> ();
-        setenv(ENVVAR_X509_USER_KEY, hostkeyfile.c_str(), 1);
-    } else {
-        hostkeyfile = getFromEnvironment(ENVVAR_X509_USER_KEY, DEFAULT_HOST_KEY_FILE);
-    }
-
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
 
+    gridmapfile = getFromEnvironment(ENVVAR_GRIDMAP, DEFAULT_GRIDMAPFILE);
+    hostcertfile = getFromEnvironment(ENVVAR_X509_USER_CERT, DEFAULT_HOST_CERT_FILE);
+    hostkeyfile = getFromEnvironment(ENVVAR_X509_USER_KEY, DEFAULT_HOST_KEY_FILE);
 }
 
 int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
@@ -405,7 +387,6 @@ string FrontendConfiguration::getFromEnvironment(const char* envVar, const strin
     char* envVal = getenv(envVar);
 
     if (envVal == NULL) {
-        //setenv(envVar, defaultValue.c_str(), 0);
         return defaultValue;
     }
 

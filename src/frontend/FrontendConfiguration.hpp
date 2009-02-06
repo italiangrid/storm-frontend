@@ -61,12 +61,6 @@ static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via
 static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
 static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
-static const string OPTL_GRIDMAFILE = "security.gridmapfile";
-
-static const string OPTL_HOST_CERT = "security.hostcert";
-
-static const string OPTL_HOST_KEY = "security.hostkey";
-
 static const string OPTL_LOG_FILE_NAME = "log.filename";
 static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
 

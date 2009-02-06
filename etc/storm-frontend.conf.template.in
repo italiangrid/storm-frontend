@@ -11,9 +11,6 @@ log.debuglevel = INFO      # Allowed values: ERROR, WARN, INFO, DEBUG, DEBUG2.
 # Security settings
 #security.disable.mapping = false     # default is "false"
 #security.disable.vomscheck = false   # default is "false"
-security.gridmapfile = /etc/grid-security/grid-mapfile
-security.hostcert = /etc/grid-security/storm/hostcert.pem
-security.hostkey = /etc/grid-security/storm/hostkey.pem
 
 # Backend XMLRPC server information
 be.xmlrpc.host = locahost
