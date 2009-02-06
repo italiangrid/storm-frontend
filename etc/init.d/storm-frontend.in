@@ -12,6 +12,14 @@ PIDFILE=$PIDDIR/$prog.pid
 FRONTEND_DAEMON=@PREFIX@/sbin/$prog
 CONFIGURATION_FILE=@PREFIX@/etc/storm-frontend.conf
 
+if [ -z $GRIDMAPDIR ]; then
+    export GRIDMAPDIR=/etc/grid-security/gridmapdir
+fi
+
+if [ -z $GRIDMAP ]; then
+    export GRIDMAP=/etc/grid-security/grid-mapfile
+fi
+
 get_pid() {
    if [ -e $PIDFILE ]; then
        PID=`cat $PIDFILE`
@@ -65,13 +73,16 @@ case "$1" in
     fi
     
     # Make sure the FE can write the logfile and save the proxies
+    # and set environment variable
     if [ "root" != $STORM_FE_USER ]; then
         mkdir -p @PREFIX@/var
         chown ${STORM_FE_USER}:${STORM_FE_USER} @PREFIX@/var
+        export X509_USER_CERT=/etc/grid-security/$STORM_FE_USER/hostcert.pem
+        export X509_USER_KEY=/etc/grid-security/$STORM_FE_USER/hostkey.pem
     fi
 
     # Launch the frontend
-    su -s /bin/bash $STORM_FE_USER -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE"
+    su -m -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE" $STORM_FE_USER
 
     if [ $? -eq 0 ]; then
         pid=`ps -eo pid,ppid,comm | grep " 1 $prog$" | awk '{print $1}'`
