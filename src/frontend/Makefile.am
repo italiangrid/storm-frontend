@@ -4,7 +4,7 @@ MTCCFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
 
 GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 
-MAINTAINERCLEANFILES = Makefile.in stdsoap2.c
+MAINTAINERCLEANFILES = Makefile.in
 
 #stormmandir = $(mandir)/man8
 #stormman_DATA = srmv2.man
@@ -18,9 +18,11 @@ INCLUDES = -I$(top_srcdir)/src/db \
     -I/opt/globus/include/gcc32/ \
     @XMLRPC_C_CFLAGS@ \
     @GSOAPGSI_CFLAGS@ \
-    -I@GSOAP_DIR@ \
     -I@BOOST_INCLUDE_DIR@ \
+    -I@GSOAP_DIR@/include \
     $(MTCCFLAGS)
+
+# -I@GSOAP_DIR@
 
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
@@ -38,6 +40,7 @@ storm_frontend_LDADD = -lstormfrontend -lstormdb \
     @GSOAPGSI_LDADD@ \
     @GLOBUS_PKG_LIBS@ \
     @BOOST_LDADD@ \
+    @GSOAP_LDADD@ \
     -lz -lm -luuid -lidn
 
 noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
@@ -67,14 +70,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
     storm_util.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c \
-    stdsoap2.c \
     $(noinst_INCLUDES)
 
 storm_frontend_DEPENDENCIES = libstormfrontend.la
 
-stdsoap2.c:
-	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_DIR@)"
-	/bin/cp @GSOAP_DIR@/stdsoap2.c .
-
-distclean-local:
-	rm -f stdsoap2.c

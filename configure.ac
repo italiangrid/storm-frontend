@@ -29,7 +29,7 @@ fi
 
 AC_SUBST([PREFIX], [$prefix])
 
-DEFAULT_GSOAP_DIR=/usr/local/gsoap-2.7/bin
+DEFAULT_GSOAP_DIR=/usr/local/gsoap_install
 DEFAULT_XMLRPC_C_DIR=/usr
 DEFAULT_CURL_LOCATION=/usr
 DEFAULT_GLITE_LOCATION=/opt/glite
@@ -69,7 +69,8 @@ fi
 AC_MSG_RESULT(["$GSOAP_DIR" found])
 
 AC_SUBST([GSOAP_DIR])
-AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated])
+AC_SUBST([GSOAP_LDADD], [$GSOAP_DIR/lib/libgsoap.a])
+AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated-sources])
 
 # ========================================================================
 # gSOAP GSI plugin
