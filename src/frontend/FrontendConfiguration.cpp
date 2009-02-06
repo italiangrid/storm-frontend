@@ -405,7 +405,7 @@ string FrontendConfiguration::getFromEnvironment(const char* envVar, const strin
     char* envVal = getenv(envVar);
 
     if (envVal == NULL) {
-        setenv(envVar, defaultValue.c_str(), 0);
+        //setenv(envVar, defaultValue.c_str(), 0);
         return defaultValue;
     }
 
