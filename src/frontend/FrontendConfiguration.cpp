@@ -235,10 +235,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
         (OPTL_DB_USER.c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
         (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
         (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
-        (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION)
-        (OPTL_GRIDMAFILE.c_str(), po::value<string>(), "")
-        (OPTL_HOST_CERT.c_str(), po::value<string>(), "")
-        (OPTL_HOST_KEY.c_str(), po::value<string>(), "");
+        (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
 
     return configurationFileOptions;
 }
