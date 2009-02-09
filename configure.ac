@@ -29,7 +29,7 @@ fi
 
 AC_SUBST([PREFIX], [$prefix])
 
-DEFAULT_GSOAP_DIR=/usr/local/gsoap_install
+DEFAULT_GSOAP_DIR=/usr/local/install/gsoap
 DEFAULT_XMLRPC_C_DIR=/usr
 DEFAULT_CURL_LOCATION=/usr
 DEFAULT_GLITE_LOCATION=/opt/glite
