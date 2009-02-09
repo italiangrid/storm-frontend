@@ -84,8 +84,17 @@ case "$1" in
     if [ "root" != $STORM_FE_USER ]; then
         mkdir -p @PREFIX@/var
         chown ${STORM_FE_USER}:${STORM_FE_USER} @PREFIX@/var
-        export X509_USER_CERT=/etc/grid-security/$STORM_FE_USER/hostcert.pem
-        export X509_USER_KEY=/etc/grid-security/$STORM_FE_USER/hostkey.pem
+        STORM_USER_CERT_DIR=/etc/grid-security/$STORM_FE_USER
+        if [ -d $STORM_USER_CERT_DIR ]; then
+            export X509_USER_CERT=$STORM_USER_CERT_DIR/hostcert.pem
+            export X509_USER_KEY=$STORM_USER_CERT_DIR/hostkey.pem
+        else
+            echo "Error: Directory $STORM_USER_CERT_DIR does not exists. You should:"
+            echo "1. make sure the user \"$STORM_FE_USER\" exists"
+            echo "2. create that directory and put there hostcert.pem and hostkey.pem"
+            echo "3. make sure user \"$STORM_FE_USER\" has the rights to read that files."
+            exit 1
+        fi
     fi
 
     # Launch the frontend

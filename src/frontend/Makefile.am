@@ -2,7 +2,7 @@
 
 MTCCFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
 
-GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
+GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/$(GSOAP_GENERATED_CODE_DIR_NAME)
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -13,34 +13,30 @@ MAINTAINERCLEANFILES = Makefile.in
 
 INCLUDES = -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
-    -I@GSOAPGSI_DIR@/include \
+    -I$(GSOAPGSI_DIR)/include \
     -I/opt/glite/include/glite/security/voms \
     -I/opt/globus/include/gcc32/ \
-    @XMLRPC_C_CFLAGS@ \
-    @GSOAPGSI_CFLAGS@ \
-    -I@BOOST_INCLUDE_DIR@ \
-    -I@GSOAP_DIR@/include \
+    $(XMLRPC_C_CFLAGS) \
+    $(GSOAPGSI_CFLAGS) \
+    -I$(BOOST_INCLUDE_DIR) \
+    -I$(GSOAP_DIR)/include \
     $(MTCCFLAGS)
-
-# -I@GSOAP_DIR@
 
 sbin_PROGRAMS = storm-frontend
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
 storm_frontend_SOURCES = storm-frontend.cpp
-storm_frontend_LDFLAGS = -L../db \
-    @MYSQL_LDFLAGS@ \
-    @GLITE_LDFLAGS@
+storm_frontend_LDFLAGS = -L../db $(MYSQL_LDFLAGS) $(GLITE_LDFLAGS)
 storm_frontend_LDADD = -lstormfrontend -lstormdb \
-    @GLITE_LDFLAGS@ -lvomsc \
-    @MYSQL_LDADD@ \
-    @XMLRPC_C_LDADD@ \
-    @CURL_LDADD@ \
-    @GSOAPGSI_LDADD@ \
-    @GLOBUS_PKG_LIBS@ \
-    @BOOST_LDADD@ \
-    @GSOAP_LDADD@ \
+    $(GLITE_LDFLAGS) -lvomsc \
+    $(MYSQL_LDADD) \
+    $(XMLRPC_C_LDADD) \
+    $(CURL_LDADD) \
+    $(GSOAPGSI_LDADD) \
+    $(GLOBUS_PKG_LIBS) \
+    $(BOOST_LDADD) \
+    $(GSOAP_LDADD) \
     -lz -lm -luuid -lidn
 
 noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
