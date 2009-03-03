@@ -28,6 +28,7 @@ static const string DEFAULT_XMLRPC_HOST = "localhost";
 static const string DEFAULT_XMLRPC_PORT = "8080";
 static const string DEFAULT_XMLRPC_PATH = "/RPC2";
 static const string DEFAULT_DEBUG_LEVEL = "INFO";
+static const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING = "3";
 static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
@@ -73,6 +74,8 @@ static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 static const string OPTL_NUM_THREADS = "fe.threadpool.threads.number";
 
 static const string OPTL_MAX_THREADPOOL_PENDING = "fe.threadpool.maxpending";
+
+static const string OPTL_SLEEP_THREADPOOL_MAX_PENDING = "fe.threadpool.maxpending.sleep";
 
 static const string OPTL_MAX_GSOAP_PENDING = "fe.gsoap.maxpending";
 
@@ -133,6 +136,7 @@ public:
     int getThreadpoolMaxPending();
     int getGsoapMaxPending();
     int getPort();
+    unsigned int getThreadpoolMaxpendingSleepTime();
     string getDebugLevelString();
     string getProxyDir();
     string getProxyUser();
@@ -174,6 +178,7 @@ private:
     bool disableVOMSCheck;
     int numberOfThreads;
     int threadpool_max_pending;
+    unsigned int threadpool_max_pending_sleeptime;
     int gsoap_max_pending;
     int debugLevel;
     int port;

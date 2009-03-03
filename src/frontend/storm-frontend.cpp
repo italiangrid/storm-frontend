@@ -161,6 +161,7 @@ int main(int argc, char** argv)
 
     int nThreads = configuration->getNumThreads();
     int threadpool_max_pending = configuration->getThreadpoolMaxPending();
+    unsigned int sleep_max_pending = configuration->getThreadpoolMaxpendingSleepTime();
     int gsoap_max_pending = configuration->getGsoapMaxPending();
     int port = configuration->getPort();
     string log_file = configuration->getLogFile();
@@ -221,6 +222,7 @@ int main(int argc, char** argv)
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), port);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), nThreads);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_THREADPOOL_PENDING.c_str(), threadpool_max_pending);
+    srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), sleep_max_pending);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_GSOAP_PENDING.c_str(), gsoap_max_pending);
     srmlogit(STORM_LOG_NONE, func, "logfile=%s\n", log_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
