@@ -149,7 +149,7 @@ int FrontendConfiguration::getThreadpoolMaxPending() {
 }
 
 unsigned int FrontendConfiguration::getThreadpoolMaxpendingSleepTime() {
-    return atoi(threadpool_max_pending_sleeptime);
+    return threadpool_max_pending_sleeptime;
 }
 
 int FrontendConfiguration::getGsoapMaxPending() {
