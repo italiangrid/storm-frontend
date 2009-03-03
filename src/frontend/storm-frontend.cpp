@@ -346,7 +346,9 @@ int main(int argc, char** argv)
             break;
         }
 
-        while (tp.pending() >= threadpool_max_pending); // workaround for a bug in threadpool
+        while (tp.pending() >= threadpool_max_pending) { // workaround for a bug in threadpool
+            sleep(sleep_max_pending);
+        }
 
         try {
 
