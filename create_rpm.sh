@@ -1,3 +1,3 @@
 autoreconf --install --force
-./configure CFLAGS=-g CXXFLAGS=-g
+./configure
 make rpm
