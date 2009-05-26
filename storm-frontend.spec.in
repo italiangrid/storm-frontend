@@ -25,6 +25,7 @@ AutoReqProv:    no
 Requires:       curl >= 7.15.3
 Requires:       xmlrpc-c >= 1.04
 Requires:       CGSI_gSOAP_2.7-voms >= 1.2.1-2
+Obsoletes:      srmv2-storm-server
 BuildRoot:      /var/tmp/%{name}-%{version}
 Prefix:         %{prefix}
 Summary:        The StoRM FrontEnd component. 
