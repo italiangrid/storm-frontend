@@ -25,7 +25,7 @@ AutoReqProv:    no
 Requires:       curl >= 7.15.3
 Requires:       xmlrpc-c >= 1.04
 Requires:       CGSI_gSOAP_2.7-voms >= 1.2.1-2
-Obsoletes:      srmv2-storm-server
+Obsoletes:      srmv2-storm-server-gcc32dbgpthr
 BuildRoot:      /var/tmp/%{name}-%{version}
 Prefix:         %{prefix}
 Summary:        The StoRM FrontEnd component. 
@@ -47,6 +47,13 @@ GPFS from IBM and Lustre from SUN.
 ./configure --prefix=%{prefix} 
 make
 
+%pre
+# Stop the old frontend if any.
+if [ -f /opt/srmv2storm/etc/init.d/srmv2storm ]; then
+    /opt/srmv2storm/etc/init.d/srmv2storm stop > /dev/null
+    exit 0
+fi
+
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
@@ -64,4 +71,8 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/etc/storm-frontend.conf.template
 %defattr(755,root,root)
 %config(noreplace) /etc/init.d/storm-frontend
+
+%preun
+/etc/init.d/storm-frontend stop > /dev/null
+echo "Frontend stopped"
 
