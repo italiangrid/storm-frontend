@@ -9,6 +9,7 @@
 #include "xmlrpc_decode.h"
 #include "xmlrpc_encode.h"
 #include "frontend_version.h"
+#include "Monitoring.hpp"
 
 extern int nb_supported_protocols;
 extern char **supported_protocols;
@@ -1162,8 +1163,10 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
     }
 #endif
     /************************ Allocate response structure *******************************/
-    if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse))))
+    if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse)))) {
+        storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
         return (SOAP_EOM);
+    }
 	repp->versionInfo = NULL;
     repp->otherInfo = NULL;
 
