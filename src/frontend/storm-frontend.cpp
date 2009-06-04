@@ -53,8 +53,7 @@ uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
 
 // SIGSTOP handler. Used to stop the daemon.
-void sigint_handler(int sig)
-{
+void sigint_handler(int sig) {
     srmlogit(STORM_LOG_NONE, "SIGINT_handler", "Caught SIGINT: stopping frontend...\n");
     stay_running = false;
 }
@@ -65,11 +64,10 @@ static int http_get(struct soap *soap) {
     char buf[10240]; /* 10k */
     int nr = 0;
 
-    srmlogit(STORM_LOG_DEBUG,"http_get", "Receives GET request\n");
+    srmlogit(STORM_LOG_DEBUG, "http_get", "Receives GET request\n");
     soap_response(soap, SOAP_HTML); // HTTP response header with text/html
     if (-1 == fd) {
-        srmlogit(STORM_LOG_ERROR,"http_get", "Error opening file %s. (%s)\n", wsdl_file, strerror(
-                errno));
+        srmlogit(STORM_LOG_ERROR, "http_get", "Error opening file %s. (%s)\n", wsdl_file, strerror(errno));
         soap_send(soap, "<html><body>Error in GET method</body><html>\n");
     } else {
         memset(buf, 0, 10240); /* uhmm... R&K: this should be already zero-ed... */
@@ -132,8 +130,7 @@ process_request(struct soap* soap) {
 /************************************ Main ***********************************/
 /*****************************************************************************/
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     char *func = "main";
 
     // ------------------------------------------------------------------------
@@ -164,7 +161,9 @@ int main(int argc, char** argv)
     unsigned int sleep_max_pending = configuration->getThreadpoolMaxpendingSleepTime();
     int gsoap_max_pending = configuration->getGsoapMaxPending();
     int port = configuration->getPort();
+    int audit_time_interval = configuration->getAuditTimeInterval;
     string log_file = configuration->getLogFile();
+    string audit_file = configuration->getAuditFile();
     string wsdl_file_path = configuration->getWSDLFilePath();
     string proxy_dir = configuration->getProxyDir();
     string proxy_user = configuration->getProxyUser();
@@ -199,10 +198,11 @@ int main(int argc, char** argv)
 
     // Initialize the loging system
     if (debugMode) {
-        srmlogit_init(NULL); // i.e. log to stderr
+        srmlogit_init(NULL, NULL); // i.e. log to stderr
         log_file.assign("stderr"); // Just because it's printed in the logs, see below.
+        audit_file.assign("stderr"); // Just because it's printed in the logs, see below.
     } else {
-        srmlogit_init(log_file.c_str());
+        srmlogit_init(log_file.c_str(), audit_file.c_str());
     }
 
     // WSDL file
@@ -225,6 +225,7 @@ int main(int argc, char** argv)
     srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), sleep_max_pending);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_GSOAP_PENDING.c_str(), gsoap_max_pending);
     srmlogit(STORM_LOG_NONE, func, "logfile=%s\n", log_file.c_str());
+    srmlogit(STORM_LOG_NONE, func, "auditfile=%s\n", audit_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
@@ -271,7 +272,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (! debugMode) { // fork and leave the daemon in background
+    if (!debugMode) { // fork and leave the daemon in background
         int pid = fork();
         if (pid > 0) {
             return 0;
@@ -286,7 +287,7 @@ int main(int argc, char** argv)
     soap_data->accept_timeout = 5;
     // supporting HTTP GET in order to reply the wsdl
     soap_data->fget = http_get;
-//    soap_data->bind_flags |= SO_REUSEADDR;
+    //    soap_data->bind_flags |= SO_REUSEADDR;
 
     int flags = CGSI_OPT_DELEG_FLAG;
     if (disableMapping) {
@@ -340,19 +341,26 @@ int main(int argc, char** argv)
     while (stay_running) {
 
         while (!soap_valid_socket(soap_accept(soap_data))) {
-            if (!stay_running)
+            if (!stay_running) {
                 // received a SIGINT
                 break;
+            }
         }
 
-        if (!stay_running)
+        if (!stay_running) {
             // received a SIGINT
             break;
+        }
 
-        if ((tsoap = soap_copy(soap_data)) == NULL) {
-            srmlogit(STORM_LOG_ERROR, func, "Error in soap_copy(): %s\n", strerror(ENOMEM));
-            exit_code = 1;
-            break;
+        while ((tsoap = soap_copy(soap_data)) == NULL) {
+            srmlogit(STORM_LOG_ERROR, func,
+                    "Error in soap_copy(), probably system busy retry in 3 seconds. Error message: %s\n",
+                    strerror(ENOMEM));
+            srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp->get_active());
+            srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp->get_pending());
+
+            // A memory allocation error here is probably due to system busy so... going to sleep for a while.
+            sleep(3);
         }
 
         try {
@@ -360,11 +368,10 @@ int main(int argc, char** argv)
             tp->schedule(boost::bind(process_request, tsoap));
 
         } catch (exception& e) {
-            srmlogit(STORM_LOG_ERROR, func, "Cannot schedule task: %s\n", e.what());
+            srmlogit(STORM_LOG_ERROR, func, "Cannot schedule task, request is lost: %s\n", e.what());
             soap_done(tsoap);
             soap_free(tsoap);
         }
-
 
         srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp->get_active());
         srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp->get_pending());

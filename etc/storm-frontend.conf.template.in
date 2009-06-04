@@ -1,12 +1,14 @@
 ##### StoRM frontend configuration file #####
 fe.port = 8444
 fe.threadpool.threads.number = 50
-#fe.threadpool.maxpending = 200                  # default is 200
-#fe.gsoap.maxpending = 2000                      # default is 2000
+#fe.gsoap.maxpending = 1000                      # default is 1000
 
 # Log options
 log.filename = @prefix@/var/log/storm-frontend.log
 log.debuglevel = INFO      # Allowed values: ERROR, WARN, INFO, DEBUG, DEBUG2.
+
+audit.filename = @prefix@/var/log/audit.log
+audit.timeInterval = 60   # default 60 seconds
 
 # Security settings
 #security.disable.mapping = false     # default is "false"

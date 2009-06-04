@@ -23,6 +23,7 @@ static const string DEFAULT_GRIDMAPFILE = "/etc/grid-security/grid-mapfile";
 static const string DEFAULT_HOST_CERT_FILE = "/etc/grid-security/hostcert.pem";
 static const string DEFAULT_HOST_KEY_FILE = "/etc/grid-security/hostkey.pem";
 static const string DEFAULT_LOG_FILE_NAME = "storm-frontend.log";
+static const string DEFAULT_AUDIT_FILE_NAME = "audit.log";
 static const string DEFAULT_WSDL_FILE = "";
 static const string DEFAULT_XMLRPC_HOST = "localhost";
 static const string DEFAULT_XMLRPC_PORT = "8080";
@@ -33,6 +34,7 @@ static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
+static const int DEFAULT_AUDIT_TIME_INTERVAL = 60;
 
 static const char* EMPTY_DESCRIPTION = "";
 
@@ -61,6 +63,12 @@ static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via
 
 static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
 static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
+
+static const string OPTL_AUDIT_FILE_NAME = "audit.filename";
+static const char* OPT_AUDIT_FILE_NAME_DESCRIPTION = "Use <arg> as audit file";
+
+static const string OPTL_AUDIT_TIME_INTERVAL = "audit.filename";
+static const char* OPT_AUDIT_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print audit information.";
 
 static const string OPTL_LOG_FILE_NAME = "log.filename";
 static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
@@ -136,6 +144,7 @@ public:
     int getThreadpoolMaxPending();
     int getGsoapMaxPending();
     int getPort();
+    int getAuditTimeInterval();
     unsigned int getThreadpoolMaxpendingSleepTime();
     string getDebugLevelString();
     string getProxyDir();
@@ -143,6 +152,7 @@ public:
     string getXMLRPCEndpoint();
     string getUser();
     string getWSDLFilePath();
+    string getAuditFile();
     string getLogFile();
     string getDBHost();
     string getDBUser();
@@ -182,8 +192,9 @@ private:
     int gsoap_max_pending;
     int debugLevel;
     int port;
+    int audit_time_interval;
+    string audit_file;
     string log_file;
-    string log_file_dir;
     string proxy_dir;
     string proxy_user;
     string user;
