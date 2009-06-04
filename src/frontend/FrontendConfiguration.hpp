@@ -67,7 +67,7 @@ static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS cred
 static const string OPTL_AUDIT_FILE_NAME = "audit.filename";
 static const char* OPT_AUDIT_FILE_NAME_DESCRIPTION = "Use <arg> as audit file";
 
-static const string OPTL_AUDIT_TIME_INTERVAL = "audit.filename";
+static const string OPTL_AUDIT_TIME_INTERVAL = "audit.timeInterval";
 static const char* OPT_AUDIT_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print audit information.";
 
 static const string OPTL_LOG_FILE_NAME = "log.filename";
