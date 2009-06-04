@@ -16,7 +16,7 @@
 
 #include "srmlogit.h"
 
-namespace monitoring {
+namespace storm {
 
 class Monitoring;
 

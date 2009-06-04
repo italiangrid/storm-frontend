@@ -330,8 +330,8 @@ int main(int argc, char** argv) {
     }
 
     // Init monitoring
-    Monitoring monitoring = Monitoring.getInstance();
-    monitoring.setTimeInterval(audit_time_interval);
+    storm::Monitoring* monitoring = storm::Monitoring::getInstance();
+    monitoring->setTimeInterval(audit_time_interval);
 
     // SIGINT (kill -2) to stop the frontend
     signal(SIGINT, sigint_handler);
