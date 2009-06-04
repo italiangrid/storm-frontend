@@ -26,8 +26,8 @@
 #include <xmlrpc-c/client.h>
 #include <exception>
 #include "FrontendConfiguration.hpp"
-#include <boost/thread.hpp>
-#include <boost/threadpool.hpp>
+#include "ThreadPool.hpp"
+//#include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include "DBConnectionPool.hpp"
 #include <signal.h>
@@ -316,7 +316,16 @@ int main(int argc, char** argv)
     /**** Init pools ****/
     // the size of mysql_connection pool and thread pool MUST be the same
     mysql_connection_pool = new DBConnectionPool(nThreads);
-    boost::threadpool::fifo_pool tp(nThreads);
+
+    ThreadPool *tp;
+    try {
+        tp = new ThreadPool(nThreads);
+    } catch (boost::thread_resource_error e) {
+        cout << "Cannot create all the requested threads, not enough resources.";
+        soap_done(soap_data);
+        free(soap_data);
+        return SYERR;
+    }
 
     // SIGINT (kill -2) to stop the frontend
     signal(SIGINT, sigint_handler);
@@ -346,19 +355,9 @@ int main(int argc, char** argv)
             break;
         }
 
-        while (tp.pending() >= threadpool_max_pending) { // workaround for a bug in threadpool
-            sleep(sleep_max_pending);
-        }
-
         try {
 
-            bool isScheduled = tp.schedule(boost::bind(process_request, tsoap));
-
-            if (!isScheduled) {
-                srmlogit(STORM_LOG_ERROR, func, "ERROR: failed to schedule task... the request is LOST\n");
-                soap_done(tsoap);
-                soap_free(tsoap);
-            }
+            tp->schedule(boost::bind(process_request, tsoap));
 
         } catch (exception& e) {
             srmlogit(STORM_LOG_ERROR, func, "Cannot schedule task: %s\n", e.what());
@@ -367,16 +366,16 @@ int main(int argc, char** argv)
         }
 
 
-        srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp.active());
-        srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp.pending());
+        srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp->get_active());
+        srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp->get_pending());
 
     }
 
-    srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", tp.active());
-    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %ld\n", tp.pending());
+    srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", tp->get_active());
+    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %ld\n", tp->get_pending());
     srmlogit(STORM_LOG_NONE, func, "Waiting for active and pending tasks to finish...\n");
 
-    tp.wait();
+    delete tp;
 
     soap_end(soap_data);
     soap_done(soap_data);
@@ -388,3 +387,4 @@ int main(int argc, char** argv)
 
     return (exit_code);
 }
+
