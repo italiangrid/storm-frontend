@@ -17,7 +17,7 @@ static char
 #include "srm_server.h"
 #include <stdio.h>
 #include <string.h>
-#include <boost/thread/mutex.hpp>
+//#include <boost/thread/mutex.hpp>
 
 #include <boost/thread.hpp>
 #include <sstream>
@@ -138,7 +138,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
         fd = log_fd;
     }
 
-    boost::scoped_lock lock(log_mutex);
+    boost::mutex::scoped_lock lock(log_mutex);
 
     fwrite(prtbuf, sizeof(char), strlen(prtbuf), fd);
     fflush(fd);
@@ -148,3 +148,4 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     errno = save_errno;
     return 0;
 }
+

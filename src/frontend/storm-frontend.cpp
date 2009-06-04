@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
     unsigned int sleep_max_pending = configuration->getThreadpoolMaxpendingSleepTime();
     int gsoap_max_pending = configuration->getGsoapMaxPending();
     int port = configuration->getPort();
-    int audit_time_interval = configuration->getAuditTimeInterval;
+    int audit_time_interval = configuration->getAuditTimeInterval();
     string log_file = configuration->getLogFile();
     string audit_file = configuration->getAuditFile();
     string wsdl_file_path = configuration->getWSDLFilePath();
