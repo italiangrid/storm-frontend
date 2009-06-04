@@ -9,7 +9,6 @@
 #include "xmlrpc_decode.h"
 #include "xmlrpc_encode.h"
 #include "frontend_version.h"
-#include "Monitoring.hpp"
 
 extern int nb_supported_protocols;
 extern char **supported_protocols;
@@ -1138,7 +1137,7 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
 /**
  * This functin is used to check the state of the SRM. It works as an "are you alive" type of call.
 */
-int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1__srmPingResponse_ *rep)
+int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1__srmPingResponse_ *rep)
 {
 	static const char *func = "Ping";
 	static const char *commandPrefix = "CMD:";
@@ -1164,7 +1163,6 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1_
 #endif
     /************************ Allocate response structure *******************************/
     if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse)))) {
-        storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
         return (SOAP_EOM);
     }
 	repp->versionInfo = NULL;
