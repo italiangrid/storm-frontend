@@ -27,7 +27,7 @@
 #include <exception>
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
-//#include <boost/thread.hpp>
+#include "Monitoring.hpp"
 #include <boost/bind.hpp>
 #include "DBConnectionPool.hpp"
 #include <signal.h>
@@ -226,6 +226,7 @@ int main(int argc, char** argv) {
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_GSOAP_PENDING.c_str(), gsoap_max_pending);
     srmlogit(STORM_LOG_NONE, func, "logfile=%s\n", log_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "auditfile=%s\n", audit_file.c_str());
+    srmlogit(STORM_LOG_NONE, func, "audit_time_interval=%u\n", audit_time_interval);
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
@@ -327,6 +328,10 @@ int main(int argc, char** argv) {
         free(soap_data);
         return SYERR;
     }
+
+    // Init monitoring
+    Monitoring monitoring = Monitoring.getInstance();
+    monitoring.setTimeInterval(audit_time_interval);
 
     // SIGINT (kill -2) to stop the frontend
     signal(SIGINT, sigint_handler);

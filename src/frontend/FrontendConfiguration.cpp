@@ -334,6 +334,7 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
+    audit_time_interval = vm[OPTL_AUDIT_TIME_INTERVAL].as<int> ();
 
     gridmapfile = getFromEnvironment(ENVVAR_GRIDMAP, DEFAULT_GRIDMAPFILE);
     hostcertfile = getFromEnvironment(ENVVAR_X509_USER_CERT, DEFAULT_HOST_CERT_FILE);
@@ -344,21 +345,22 @@ int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
 
     int debugLevel = STORM_LOG_ERROR;
 
-    if (debugLevelString == "NONE")
+    if (debugLevelString == "NONE") {
         debugLevel = STORM_LOG_NONE;
-    else if (debugLevelString == "ERROR")
+    } else if (debugLevelString == "ERROR") {
         debugLevel = STORM_LOG_ERROR;
-    else if (debugLevelString == "WARN")
+    } else if (debugLevelString == "WARN") {
         debugLevel = STORM_LOG_WARNING;
-    else if (debugLevelString == "INFO")
+    } else if (debugLevelString == "INFO") {
         debugLevel = STORM_LOG_INFO;
-    else if (debugLevelString == "DEBUG")
+    } else if (debugLevelString == "DEBUG") {
         debugLevel = STORM_LOG_DEBUG;
-    else if (debugLevelString == "DEBUG2")
+    } else if (debugLevelString == "DEBUG2") {
         debugLevel = STORM_LOG_DEBUG2;
-    else
+    } else {
         throw runtime_error("Error: unknown debug level value " + debugLevelString
                 + ". Allowed values are: ERROR, WARN, INFO, DEBUG, DEBUG2.");
+    }
 
     return debugLevel;
 }

@@ -86,11 +86,6 @@ private:
                 lk.unlock();
             }
         } catch (boost::thread_interrupted e) {
-            cout << "Bye!\n";
-        }
-
-        if (*stop) {
-            cout << "Bye by stop!\n";
         }
     }
 
