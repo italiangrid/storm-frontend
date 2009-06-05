@@ -291,9 +291,6 @@ void FrontendConfiguration::setCommandLineOptions(po::variables_map& vm) {
 
 void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
-    if (vm.count(OPTL_LOG_FILE_NAME))
-        log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
-
     numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
     threadpool_max_pending = vm[OPTL_MAX_THREADPOOL_PENDING].as<int> ();
     threadpool_max_pending_sleeptime = vm[OPTL_SLEEP_THREADPOOL_MAX_PENDING].as<unsigned int> ();
@@ -332,6 +329,8 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
 
+    log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
+    audit_file = vm[OPTL_AUDIT_FILE_NAME].as<string> ();
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
     audit_time_interval = vm[OPTL_AUDIT_TIME_INTERVAL].as<int> ();

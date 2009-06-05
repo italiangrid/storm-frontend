@@ -71,7 +71,7 @@ int srmlogit_init(const char* logfile, const char* auditfile) {
         audit_fd = fopen(auditfile, "a");
 
         if (audit_fd == NULL) {
-            fprintf(stderr, "Cannot open log file %s\n", auditfile);
+            fprintf(stderr, "Cannot open audit file %s\n", auditfile);
             fclose(log_fd);
             return 1;
         }
