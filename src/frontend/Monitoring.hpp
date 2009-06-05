@@ -93,8 +93,8 @@ public:
             _ping_errors++;
         }
 
-        if (executionTime > 0) {
-            if (_ping_aet > 0) {
+        if (executionTime != -1) {
+            if (_ping_aet != -1) {
                 _ping_aet = (_ping_aet + executionTime) / 2;
             } else {
                 _ping_aet = executionTime;
