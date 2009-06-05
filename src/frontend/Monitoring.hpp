@@ -94,7 +94,11 @@ public:
         }
 
         if (executionTime != -1) {
-            _ping_aet = (_ping_aet + executionTime) / 2;
+            if (_ping_aet == -1) {
+                _ping_aet = executionTime;
+            } else {
+                _ping_aet = (_ping_aet + executionTime) / 2;
+            }
         }
     }
 
