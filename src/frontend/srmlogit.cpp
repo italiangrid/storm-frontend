@@ -1,13 +1,3 @@
-/*
- * Copyright (C) 2004 by CERN
- * All rights reserved
- */
-
-#ifndef lint
-static char
-        sccsid[] =
-                "@(#)$RCSfile$ $Revision$ $Date$ CERN Jean-Philippe Baud";
-#endif /* not lint */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -72,7 +62,9 @@ int srmlogit_init(const char* logfile, const char* auditfile) {
 
         if (audit_fd == NULL) {
             fprintf(stderr, "Cannot open audit file %s\n", auditfile);
-            fclose(log_fd);
+            if (log_fd != NULL) {
+                fclose(log_fd);
+            }
             return 1;
         }
     }
@@ -130,15 +122,16 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
         sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
     }
 
+    boost::mutex::scoped_lock lock;
     FILE *fd;
 
-    if (loglevel == STORM_AUDIT) {
+    if (level == STORM_AUDIT) {
         fd = audit_fd;
+        lock = boost::mutex::scoped_lock(audit_mutex);
     } else {
         fd = log_fd;
+        lock = boost::mutex::scoped_lock(log_mutex);
     }
-
-    boost::mutex::scoped_lock lock(log_mutex);
 
     fwrite(prtbuf, sizeof(char), strlen(prtbuf), fd);
     fflush(fd);

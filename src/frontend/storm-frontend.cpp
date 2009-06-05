@@ -202,7 +202,6 @@ int main(int argc, char** argv) {
         log_file.assign("stderr"); // Just because it's printed in the logs, see below.
         audit_file.assign("stderr"); // Just because it's printed in the logs, see below.
     } else {
-        cout << log_file.c_str() << " " << audit_file.c_str() << endl;
         srmlogit_init(log_file.c_str(), audit_file.c_str());
     }
 

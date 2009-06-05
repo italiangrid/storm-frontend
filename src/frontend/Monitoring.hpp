@@ -13,6 +13,7 @@
 #include <boost/bind.hpp>
 
 #include <string>
+#include <iostream>
 
 #include "srmlogit.h"
 
@@ -54,7 +55,9 @@ private:
     }
 
     void pingSummary() {
+
         float rps = _ping_completed / _sleep_interval;
+
         srmlogit(STORM_AUDIT, _funcName, _template_msg, "Ping", _ping_completed, _ping_errors, rps, _ping_aet);
     }
 

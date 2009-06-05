@@ -13,6 +13,7 @@ void storm::thread_function(Monitoring* m) {
             }
 
             m->pingSummary();
+            m->resetData();
         }
     } catch (boost::thread_interrupted e) {
     }
