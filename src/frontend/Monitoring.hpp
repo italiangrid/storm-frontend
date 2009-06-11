@@ -84,7 +84,7 @@ public:
         return instance;
     }
 
-    void notifyPingCompleted(float executionTime, bool success) {
+    void notifyPingCompleted(long executionTimeInMills, bool success) {
         boost::mutex::scoped_lock lock(_ping_mutex);
 
         _ping_completed++;
@@ -93,11 +93,11 @@ public:
             _ping_errors++;
         }
 
-        if (executionTime != -1) {
+        if (executionTimeInMills != -1) {
             if (_ping_aet != -1) {
-                _ping_aet = (_ping_aet + executionTime) / 2;
+                _ping_aet = (_ping_aet + (executionTimeInMills / 1000)) / 2;
             } else {
-                _ping_aet = executionTime;
+                _ping_aet = executionTimeInMills / 1000;
             }
         }
     }
