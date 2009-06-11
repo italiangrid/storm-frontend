@@ -27,17 +27,17 @@ class Monitoring {
 private:
     static Monitoring* instance;
     const char* _funcName;
-    int _sleep_interval;
-    bool _stop;
+    volatile int _sleep_interval;
+    volatile bool _stop;
     boost::thread _monitoring_thread;
     const char* _template_msg;
 
     friend void thread_function(Monitoring* m);
 
     boost::mutex _ping_mutex;
-    int _ping_completed;
-    int _ping_errors;
-    float _ping_aet;
+    volatile int _ping_completed;
+    volatile int _ping_errors;
+    volatile float _ping_aet;
 
     Monitoring(int sleep_interval) {
 
@@ -84,7 +84,7 @@ public:
         return instance;
     }
 
-    void notifyPingCompleted(long executionTime, bool success) {
+    void notifyPingCompleted(float executionTime, bool success) {
         boost::mutex::scoped_lock lock(_ping_mutex);
 
         _ping_completed++;

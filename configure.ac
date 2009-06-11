@@ -30,6 +30,8 @@ fi
 AC_SUBST([PREFIX], [$prefix])
 
 DEFAULT_GSOAP_DIR=/usr/local/install/gsoap
+#DEFAULT_XMLRPC_C_DIR=/home/storm/install
+#DEFAULT_CURL_LOCATION=/home/storm/install
 DEFAULT_XMLRPC_C_DIR=/usr
 DEFAULT_CURL_LOCATION=/usr
 DEFAULT_GLITE_LOCATION=/opt/glite
@@ -123,6 +125,7 @@ AC_MSG_RESULT(["$XMLRPC_C_DIR" found])
 AC_SUBST([XMLRPC_C_CFLAGS], [" -I$XMLRPC_C_DIR/include "])
 AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/lib"])
 AC_SUBST([XMLRPC_C_LDADD], [" -L$XMLRPC_C_DIR/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok "])
+#AC_SUBST([XMLRPC_C_LDADD], [" /home/storm/install/lib/libxmlrpc_client.a /home/storm/install/lib/libxmlrpc.a /home/storm/install/lib/libxmlrpc_util.a -lxml2 "])
 
 # ========================================================================
 # Curl
@@ -136,8 +139,8 @@ if test ! \( -d $CURL_LOCATION \); then
 fi
 AC_MSG_RESULT(["$CURL_LOCATION" found])
 AC_SUBST([CURL_LIB_LOCATION], [$CURL_LOCATION/lib])
+#AC_SUBST([CURL_LDADD], [" /home/storm/install/lib/libcurl.a -lrt"])
 AC_SUBST([CURL_LDADD], [" -L$CURL_LOCATION/lib -lcurl "])
-#AC_SUBST([CURL_LDADD], [" -L$CURL_LOCATION/lib -lwwwapp -lwwwcache -lwwwcore -lwwwdir -lwwwfile -lwwwftp -lwwwgopher -lwwwhtml -lwwwinit -lwwwmime -lwwwmux -lwwwnews -lwwwstream -lwwwtelnet -lwwwzip -lwwwxml -lwwwutils -lwwwtrans -lwwwhttp -lmd5"])
 
 # ========================================================================
 # RPM directory
