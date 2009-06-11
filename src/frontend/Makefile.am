@@ -63,7 +63,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
-    ping.cpp \
+    synch.cpp \
     xmlrpc_decode.c xmlrpc_encode.c \
     storm_util.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
