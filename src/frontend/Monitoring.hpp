@@ -56,7 +56,7 @@ private:
 
     void pingSummary() {
 
-        float rps = _ping_completed / _sleep_interval;
+        float rps = (float) _ping_completed / (float) _sleep_interval;
 
         srmlogit(STORM_AUDIT, _funcName, _template_msg, "Ping", _ping_completed, _ping_errors, rps, _ping_aet);
     }
@@ -95,9 +95,9 @@ public:
 
         if (executionTimeInMills != -1) {
             if (_ping_aet != -1) {
-                _ping_aet = (_ping_aet + (executionTimeInMills / 1000)) / 2;
+                _ping_aet = (_ping_aet + ((float) executionTimeInMills / 1000.0)) / 2.0;
             } else {
-                _ping_aet = executionTimeInMills / 1000;
+                _ping_aet = (float) executionTimeInMills / 1000.0;
             }
         }
     }
