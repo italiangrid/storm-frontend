@@ -32,10 +32,14 @@
 // parent
 #include "file_request.hpp"
 
-namespace storm{
-class bol : public file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> {
+namespace storm {
+class bol: public file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> {
 public:
-    bol(struct soap *soap) : file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse>(soap){_response=NULL;};
+    bol(struct soap *soap) :
+        file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> (soap) {
+        _response = NULL;
+    }
+    ;
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmBringOnlineRequest *req);
     ns1__srmBringOnlineResponse * response();
@@ -43,9 +47,17 @@ public:
 private:
     class surl_t {
     public:
-        surl_t(std::string src): source(src),  has_diroption(false), status(SRM_USCOREREQUEST_USCOREQUEUED){};
-        surl_t(std::string src, bool isdir): source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED){isdirectory = isdir; n_levels = -1; allrecursive = -1;};
-        virtual ~surl_t(){};
+        surl_t(std::string src) :
+            source(src), has_diroption(false), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+        }
+        ;
+        surl_t(std::string src, bool isdir) :
+            source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+            isdirectory = isdir;
+            n_levels = -1;
+            allrecursive = -1;
+        };
+        virtual ~surl_t() {};
         sql_string source;
         bool has_diroption;
         bool isdirectory;
@@ -54,10 +66,10 @@ private:
         ns1__TStatusCode status;
         std::string explanation;
     };
-    
+
     std::vector<bol::surl_t> _surls;
     struct ns1__srmBringOnlineResponse * _response;
-    
+
 };
 }
 #endif // __BOL_HPP

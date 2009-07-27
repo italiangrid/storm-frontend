@@ -35,10 +35,14 @@
 #include "file_request.hpp"
 
 namespace storm {
-    
-class ptg : public storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> {
+
+class ptg: public storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> {
 public:
-    ptg(struct soap *soap) : storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse>(soap) { _response=NULL; };
+    ptg(struct soap *soap) :
+        storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse>(soap) {
+        _response = NULL;
+    }
+    ;
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmPrepareToGetRequest *req);
     struct ns1__srmPrepareToGetResponse* response();
@@ -46,7 +50,8 @@ public:
 private:
     class surl_t {
     public:
-        surl_t(std::string src, ns1__TDirOption *dirOption) : sourceSURL(src), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+        surl_t(std::string src, ns1__TDirOption *dirOption) :
+            sourceSURL(src), status(SRM_USCOREREQUEST_USCOREQUEUED) {
             if (dirOption == NULL) {
                 has_diroption = false;
             } else {
@@ -69,7 +74,7 @@ private:
             }
         };
         virtual ~surl_t() {};
-        
+
         sql_string sourceSURL;
         bool has_diroption;
         bool isdirectory;
@@ -78,11 +83,11 @@ private:
         ns1__TStatusCode status;
         std::string explanation;
     };
-    
+
     std::vector<ptg::surl_t> _surls;
     struct ns1__srmPrepareToGetResponse * _response;
     std::vector<sql_string> _protocols;
-    
+
 };
 
 }
