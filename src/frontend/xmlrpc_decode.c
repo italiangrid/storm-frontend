@@ -838,7 +838,7 @@ int decode_string(const char *callerName,
     
     xmlrpc_decompose_value(env_addr, xmlStruct, "{s:s,*}", fieldName, &strValue);
     if (env_addr->fault_occurred) {
-        srmlogit(STORM_LOG_WARNING, callerName, "%s not specified by BE\n", fieldName);
+        srmlogit(STORM_LOG_DEBUG, callerName, "%s not specified by BE\n", fieldName);
         return(DECODE_ERR_NOT_FOUND);
     }
     
