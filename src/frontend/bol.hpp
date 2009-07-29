@@ -47,17 +47,42 @@ public:
 private:
     class surl_t {
     public:
-        surl_t(std::string src) :
-            source(src), has_diroption(false), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+//        surl_t(std::string src) :
+//            source(src), has_diroption(false), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+//        };
+//        surl_t(std::string src, bool isdir) :
+//            source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+//            isdirectory = isdir;
+//            n_levels = -1;
+//            allrecursive = -1;
+//        };
+        surl_t(std::string src, ns1__TDirOption *dirOption) :
+            sourceSURL(src), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+
+            if (dirOption == NULL) {
+                has_diroption = false;
+            } else {
+                has_diroption = true;
+                isdirectory = dirOption->isSourceADirectory;
+                if (dirOption->allLevelRecursive == NULL) {
+                    allLevelRecursive = -1;
+                } else {
+                    if (*(dirOption->allLevelRecursive)) {
+                        allLevelRecursive = 1;
+                    } else {
+                        allLevelRecursive = 0;
+                    }
+                }
+                if (dirOption->numOfLevels == NULL) {
+                    n_levels = -1;
+                } else {
+                    n_levels = *(dirOption->numOfLevels);
+                }
+            }
+        };
+        virtual ~surl_t() {
         }
         ;
-        surl_t(std::string src, bool isdir) :
-            source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED) {
-            isdirectory = isdir;
-            n_levels = -1;
-            allrecursive = -1;
-        };
-        virtual ~surl_t() {};
         sql_string source;
         bool has_diroption;
         bool isdirectory;
@@ -67,6 +92,7 @@ private:
         std::string explanation;
     };
 
+    storm_time_t _deferredStartTime;
     std::vector<bol::surl_t> _surls;
     struct ns1__srmBringOnlineResponse * _response;
 

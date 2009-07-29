@@ -52,6 +52,7 @@ private:
     public:
         surl_t(std::string src, ns1__TDirOption *dirOption) :
             sourceSURL(src), status(SRM_USCOREREQUEST_USCOREQUEUED) {
+
             if (dirOption == NULL) {
                 has_diroption = false;
             } else {
