@@ -42,18 +42,30 @@ extern "C" {
 namespace storm {
 class invalid_request: public std::exception {
 public:
-    invalid_request() {};
-    invalid_request(std::string reason) { errmsg = reason.c_str(); }
-    const char *what() const throw() { return errmsg; }
+    invalid_request() {
+    }
+    ;
+    invalid_request(std::string reason) {
+        errmsg = reason.c_str();
+    }
+    const char *what() const throw () {
+        return errmsg;
+    }
 private:
     const char *errmsg;
 };
 
 class not_supported: public std::exception {
 public:
-    not_supported() { };
-    not_supported(std::string reason) { errmsg = reason.c_str(); }
-    const char *what() const throw() { return errmsg; }
+    not_supported() {
+    }
+    ;
+    not_supported(std::string reason) {
+        errmsg = reason.c_str();
+    }
+    const char *what() const throw () {
+        return errmsg;
+    }
 private:
     const char *errmsg;
 };
@@ -62,27 +74,39 @@ template<typename soap_in_t, typename soap_out_t>
 class file_request {
 public:
     file_request(struct soap *soap) :
-        _credentials(soap), _soap(soap) { };
+        _credentials(soap), _soap(soap) {
+    }
+    ;
 
-    virtual ~file_request() { };
+    virtual ~file_request() {
+    }
+    ;
 
     /**
      * Get the current client DN
      */
-    std::string getClientDN() { return _credentials.getDN(); };
+    std::string getClientDN() {
+        return _credentials.getDN();
+    }
+    ;
 
     void setClientDN(const char* clientDN) {
         _credentials.setDN(std::string(clientDN));
-    };
+    }
+    ;
 
     bool saveProxy() {
         _credentials.saveProxy(_r_token);
-    };
+    }
+    ;
 
     /**
      * Get the current status code of the file request
      */
-    ns1__TStatusCode status() { return _status; };
+    ns1__TStatusCode status() {
+        return _status;
+    }
+    ;
 
     /**
      * Set the current status code of the file request
@@ -93,12 +117,16 @@ public:
         ns1__TStatusCode old = _status;
         _status = static_cast<ns1__TStatusCode> (i);
         return old;
-    };
+    }
+    ;
 
     /**
      * Get the current explanation string
      */
-    std::string explanation() { return _explanation; };
+    std::string explanation() {
+        return _explanation;
+    }
+    ;
 
     /**
      * Set the current status explanation string
@@ -109,12 +137,44 @@ public:
         std::string old = _explanation;
         _explanation = s;
         return old;
-    };
+    }
+    ;
+
+    std::string sql_format(char c) {
+        std::string s(3);
+
+        s.append('\'');
+        s.append(c);
+        s.append('\'');
+        return s;
+    }
+    ;
+
+    std::string sql_format(std::string s) {
+        std::string s(s.length() + 2);
+
+        s.append('\'');
+        s.append(s);
+        s.append('\'');
+        return s;
+    }
+    ;
+
+    std::string sql_format(bool value) {
+        if (value) {
+            return "1";
+        }
+        return "0";
+    }
+    ;
 
     /**
      * get the current request token
      */
-    std::string r_token() { return _r_token; };
+    std::string r_token() {
+        return _r_token;
+    }
+    ;
 
     /**
      * Set the current request token
@@ -125,12 +185,16 @@ public:
         std::string old = _r_token;
         _r_token = s;
         return old;
-    };
+    }
+    ;
 
     /**
      * get the current user token
      */
-    std::string u_token() { return _u_token; };
+    std::string u_token() {
+        return _u_token;
+    }
+    ;
 
     /**
      * Set the current user token
@@ -141,12 +205,16 @@ public:
         std::string old = _u_token;
         _u_token = s;
         return old;
-    };
+    }
+    ;
 
     /**
      * get the current space token
      */
-    std::string s_token() { return _s_token; };
+    std::string s_token() {
+        return _s_token;
+    }
+    ;
 
     /**
      * Set the current space token
@@ -157,7 +225,8 @@ public:
         std::string old = _s_token;
         _s_token = s;
         return old;
-    };
+    }
+    ;
 
     /**
      * Set the proxy date
@@ -168,35 +237,50 @@ public:
         char* old = date;
         _proxy_date = date;
         return old;
-    };
+    }
+    ;
 
     /**
      * get the current date
      */
-    char* proxy_date() { return _proxy_date; };
+    char* proxy_date() {
+        return _proxy_date;
+    }
+    ;
 
     /**
      * Set the proxy
      * @param date X509*
      * @return void
      */
-    void proxy(X509* p) { _proxy = p; };
+    void proxy(X509* p) {
+        _proxy = p;
+    }
+    ;
 
     /**
      * get the current proxy
      */
-    X509* proxy() { return _proxy; };
+    X509* proxy() {
+        return _proxy;
+    }
+    ;
 
     std::vector<sql_string> getFQANsVector() {
         return _credentials.getFQANsVector();
-    };
+    }
+    ;
 
-    char overwrite() { return _overwrite; };
+    char overwrite() {
+        return _overwrite;
+    }
+    ;
 
     char overwrite(char o) {
         char old = _overwrite, _overwrite = o;
         return old;
-    };
+    }
+    ;
 
     virtual void load(soap_in_t *req) = 0;
     virtual void insert(struct srm_dbfd *dbfd) = 0;
@@ -205,7 +289,8 @@ public:
         _status = s;
         _explanation = expl;
         return response();
-    };
+    }
+    ;
 
 protected:
     soap* _soap;

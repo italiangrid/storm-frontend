@@ -200,40 +200,41 @@ void bol::insert(struct srm_dbfd *db) {
     if (_f_type == DB_FILE_TYPE_UNKNOWN) {
         query_s << nullcomma;
     } else {
-        query_s << "'" << _f_type << "', ";
+        query_s << sql_format(_f_type) << ", ";
     }
 
-    query_s << "'" << _r_type << "', ";
-    query_s << "'" << getClientDN() << "', ";
+    query_s << sql_format(_r_type) << ", ";
+    query_s << sql_format(getClientDN()) << ", ";
 
-    if (_pinLifetime == -1)
+    if (_pinLifetime == -1) {
         query_s << nullcomma;
-    else
+    } else {
         query_s << _pinLifetime << ", ";
-
-    if (_lifetime == -1)
+    }
+    if (_lifetime == -1) {
         query_s << nullcomma;
-    else
+    } else {
         query_s << _lifetime << ", ";
-
-    if (r_token().size() == 0)
-        throw std::string("Request token empty");
-    else {
-        query_s << "'" << r_token() << "', ";
     }
 
-    if (s_token().size() == 0)
-        query_s << "NULL, ";
-    else
-        query_s << "'" << s_token() << "', ";
+    if (r_token().size() == 0) {
+        throw std::string("Request token empty");
+    } else {
+        query_s << sql_format(r_token()) << ", ";
+    }
 
-    query_s << status() << ", " << _n_files;
-    query_s << ", 0, " << _n_files << ",0 , ";
+    if (s_token().size() == 0) {
+        query_s << nullcomma;
+    } else {
+        query_s << sql_format(s_token()) << ", ";
+    }
+
+    query_s << status() << ", " << _n_files << ", 0, " << _n_files << ",0 , ";
 
     // Temporary hack: using the proxy column to store FQANs
     sql_string fqansOneString = _credentials.getFQANsOneString();
     if (fqansOneString.empty()) {
-        query_s << "NULL, ";
+        query_s << nullcomma;
     } else {
         query_s << "'" << fqansOneString << "', ";
     }
@@ -241,18 +242,16 @@ void bol::insert(struct srm_dbfd *db) {
     query_s << "current_timestamp() )";
 
     storm_start_tr(0, _db);
+
     // Insert into request_queue
     int request_id;
     try {
         request_id = storm_db::ID_exec_query(_db, query_s.str());
-    } catch (int e) {
-        _response_errno = e;
-        _response_error = "DB error inserting into request_queue a BOL request";
-        _response_error += ". Errno: ";
-        _response_error += e;
+    } catch (storm_db::mysql_exception e) {
         storm_abort_tr( _db);
-        throw _response_error;
+        throw e.what();
     }
+
     // Insert into request_Bol using the requestID
     for (std::vector<bol::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
         // DirOption
@@ -261,76 +260,95 @@ void bol::insert(struct srm_dbfd *db) {
             std::ostringstream query_d;
             query_d
                     << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) values (";
-            if (false == i->isdirectory)
-                query_d << "0, ";
-            else
-                query_d << "1, ";
 
-            if (i->allrecursive == -1)
+            query_d << sql_format(i->isdirectory);
+
+            if (i->allrecursive == -1) {
                 query_d << "NULL, ";
-            else
+            } else {
                 query_d << "1, ";
+            }
 
-            if (i->n_levels != -1)
+            if (i->n_levels != -1) {
                 query_d << i->n_levels << ")";
-            else
+            } else {
                 query_d << "NULL )";
+            }
+
             set_savepoint(_db, "BOLFILE");
+
             try {
                 diroption_id = storm_db::ID_exec_query(_db, query_d.str());
-            } catch (int e) {
+            } catch (storm_db::mysql_exception e) {
 
-                _response_errno = 0;
-                _response_error = "DB error inserting DirOption for surl " + i->source;
-                _response_error += "Error = ";
-                _response_error += e;
+                srmlogit(STORM_LOG_ERROR, "bol::insert()",
+                        "Error %s inserting surl %s into request_DirOption. Continuing\n", e.what(),
+                        i->sourceSURL.c_str());
                 rollback_to_savepoint(_db, "BOLFILE");
+                ++_n_failed;
                 continue;
             }
         }
 
-        std::ostringstream query_s;
-        query_s << "INSERT INTO request_BoL (sourceSURL, request_queueID, request_DirOptionID) VALUES ";
-        query_s << "('" << i->source << "', ";
-        query_s << request_id << ", ";
-        if (i->has_diroption)
-            query_s << diroption_id << ")";
-        else
-            query_s << "NULL )";
+        std::ostringstream query1_s;
+
+        query1_s << "INSERT INTO request_BoL (sourceSURL, request_queueID, request_DirOptionID) VALUES ";
+        query1_s << sql_format(i->source) << ", ";
+        query1_s << request_id << ", ";
+
+        if (i->has_diroption) {
+            query1_s << diroption_id << ")";
+        } else {
+            query1_s << "NULL )";
+        }
+
         int bol_id;
         set_savepoint(_db, "BOLFILE");
         try {
-            bol_id = storm_db::ID_exec_query(_db, query_s.str());
+            bol_id = storm_db::ID_exec_query(_db, query1_s.str());
         } catch (int e) {
             // Qua impostiamo l'errore per il surl e lo dobbiamo dedurre dal tipo di errore di mysql.
             // Poi dobbiamo impostare la stringa di errore.
             // Infine aggiorniamo _n_failed.
             // Dobbiamo fare un continue, sempre che funzioni, e continuare con le altre surl.
-
-            _response_errno = e;
-            _response_error = "DB error inserting surl " + i->source;
-            _response_error += " into request_BoL. Errno: " + e;
+            srmlogit(STORM_LOG_ERROR, "bol::insert()",
+                    "Error %s inserting surl %s into request_BoL. Continuing\n", e.what(),
+                    i->sourceSURL.c_str());
             rollback_to_savepoint(_db, "BOLFILE");
             ++_n_failed;
             continue;
         }
 
-        // Insert into status_BoL using the request_GetID
+        // Insert into status_BoL using the request_BoLID
         std::ostringstream query2_s;
         query2_s << "INSERT INTO status_BoL (request_BoLID, statusCode) values (";
         query2_s << bol_id << ", " << SRM_USCOREREQUEST_USCOREQUEUED << ")";
+
         try {
             storm_db::ID_exec_query(_db, query2_s.str());
         } catch (int e) {
-            _response_errno = e;
-            _response_error = "DB error inserting into status_BoL";
-            _response_error += ". Errno: " + e;
+            srmlogit(STORM_LOG_ERROR, "bol::insert()",
+                    "Error %s inserting surl %s into status_BoL. Continuing\n", e.what(),
+                    i->sourceSURL.c_str());
             rollback_to_savepoint(_db, "BOLFILE");
             ++_n_failed;
             continue;
         }
     }
-    // Check the nr of successfully inserted qery.
+
+    // Insert into request_TransferProtocols using the request_ID
+    for (std::vector<sql_string>::const_iterator i = _protocols.begin(); i != _protocols.end(); ++i) { // separati insert, nel caso che uno solo fallisca.
+        query_s.str("INSERT into request_TransferProtocols (request_queueID, config_protocolsID) values (");
+        query_s << request_id << ", '" << *i << "')";
+
+        try {
+            storm_db::ID_exec_query(_db, query_s.str());
+        } catch (storm_db::mysql_exception e) {
+            srmlogit(STORM_LOG_ERROR, "ptg::insert()",
+                    "Error %s inserting transfer protocol %s into DB. Continuing\n", e.what(), i->c_str());
+            continue;
+        }
+    }
 
     // Check the number of correctly inserted protocols.
 

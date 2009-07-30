@@ -273,11 +273,9 @@ void ptg::insert(struct srm_dbfd *db) {
         if (i->has_diroption) { // Insert into request_DirOption
             query_s.str("");
             query_s << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) VALUES (";
-            if (i->isdirectory) {
-                query_s << "1, ";
-            } else {
-                query_s << "0, ";
-            }
+
+            query_d << sql_format(i->isdirectory);
+
             if (i->allLevelRecursive == -1) {
                 query_s << nullcomma;
             } else {
@@ -288,6 +286,7 @@ void ptg::insert(struct srm_dbfd *db) {
             } else {
                 query_s << i->n_levels << ")";
             }
+
             try {
                 dirOptionId = storm_db::ID_exec_query(_db, query_s.str());
             } catch (storm_db::mysql_exception e) {
