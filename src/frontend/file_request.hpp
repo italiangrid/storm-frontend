@@ -150,11 +150,11 @@ public:
     ;
 
     std::string sql_format(const std::string& s) {
-        std::string s = "'";
+        std::string formatted_s = "'";
 
-        s.append(s);
-        s.append("'");
-        return s;
+        formatted_s.append(s);
+        formatted_s.append("'");
+        return formatted_s;
     }
     ;
 
