@@ -61,7 +61,7 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     storm::bol request(soap);
 
     int soap_status = __process_file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> (
-            soap, request, funcName, req, &rep->srmPrepareToGetResponse);
+            soap, request, funcName, req, &rep->srmBringOnlineResponse);
 
     return soap_status;
 
