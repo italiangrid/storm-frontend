@@ -261,7 +261,7 @@ void bol::insert(struct srm_dbfd *db) {
             query_d
                     << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) values (";
 
-            query_d << sql_format(i->isdirectory);
+            query_d << sql_format(i->isdirectory) << ", ";
 
             if (i->allLevelRecursive == -1) {
                 query_d << "NULL, ";
