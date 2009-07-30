@@ -292,7 +292,7 @@ void bol::insert(struct srm_dbfd *db) {
 
         std::ostringstream query1_s;
 
-        query1_s << "INSERT INTO request_BoL (sourceSURL, request_queueID, request_DirOptionID) VALUES ";
+        query1_s << "INSERT INTO request_BoL (sourceSURL, request_queueID, request_DirOptionID) VALUES (";
         query1_s << sql_format(i->sourceSURL) << ", ";
         query1_s << request_id << ", ";
 
