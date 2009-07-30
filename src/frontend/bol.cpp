@@ -99,8 +99,8 @@ void bol::load(struct ns1__srmBringOnlineRequest *req) {
     }
 
     // Pin Lifetime
-    if (NULL != req->desiredPinLifeTime) {
-        _pinLifetime = *req->desiredPinLifeTime;
+    if (NULL != req->desiredLifeTime) {
+        _pinLifetime = *req->desiredLifeTime;
     }
 
     // Space Token
@@ -147,7 +147,7 @@ ns1__srmBringOnlineResponse* bol::response() {
         int n = 0;
         for (std::vector<bol::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i, ++n) {
 
-            struct ns1__TBringOnlineRequestFileStatus statusArray = storm::soap_calloc<
+            struct ns1__TBringOnlineRequestFileStatus *statusArray = storm::soap_calloc<
                     ns1__TBringOnlineRequestFileStatus>(_soap);
             _response->arrayOfFileStatuses->statusArray[n] = statusArray;
 

@@ -87,7 +87,7 @@ private:
         sql_string sourceSURL;
         bool has_diroption;
         bool isdirectory;
-        int allrecursive; // -1 means not supplied
+        int allLevelRecursive; // -1 means not supplied
         int n_levels; // -1 means not supplied
         unsigned long fileSize;
         int remainingPinTime;
@@ -100,6 +100,7 @@ private:
     int _deferredStartTime;
     std::vector<bol::surl_t> _surls;
     struct ns1__srmBringOnlineResponse * _response;
+    std::vector<sql_string> _protocols;
 
 };
 }
