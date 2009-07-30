@@ -143,9 +143,9 @@ public:
     std::string sql_format(char c) {
         std::string s();
 
-        s.append('\'');
-        s.append((const char) c);
-        s.append('\'');
+        s.append("\'");
+        s.append(1, (const char) c);
+        s.append("\'");
         return s;
     }
     ;
@@ -153,9 +153,9 @@ public:
     std::string sql_format(std::string s) {
         std::string s();
 
-        s.append('\'');
+        s.append("\'");
         s.append(s);
-        s.append('\'');
+        s.append("\'");
         return s;
     }
     ;
