@@ -274,7 +274,7 @@ void ptg::insert(struct srm_dbfd *db) {
             query_s.str("");
             query_s << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) VALUES (";
 
-            query_d << sql_format(i->isdirectory);
+            query_s << sql_format(i->isdirectory);
 
             if (i->allLevelRecursive == -1) {
                 query_s << nullcomma;
