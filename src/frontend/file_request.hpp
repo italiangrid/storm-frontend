@@ -141,10 +141,10 @@ public:
     ;
 
     std::string sql_format(char c) {
-        std::string s(3);
+        std::string s();
 
         s.append('\'');
-        s.append(c);
+        s.append((const char) c);
         s.append('\'');
         return s;
     }
