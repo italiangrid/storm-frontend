@@ -143,19 +143,19 @@ public:
     std::string sql_format(char c) {
         std::string s();
 
-        s.append("\'");
-        s.append(1, (const char) c);
-        s.append("\'");
+        s.append("'");
+        s.append(1, c);
+        s.append("'");
         return s;
     }
     ;
 
-    std::string sql_format(std::string s) {
+    std::string sql_format(const std::string& s) {
         std::string s();
 
-        s.append("\'");
+        s.append("'");
         s.append(s);
-        s.append("\'");
+        s.append("'");
         return s;
     }
     ;
