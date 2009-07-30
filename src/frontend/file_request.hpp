@@ -151,7 +151,7 @@ public:
     ;
 
     std::string sql_format(std::string s) {
-        std::string s(s.length() + 2);
+        std::string s();
 
         s.append('\'');
         s.append(s);

@@ -84,7 +84,7 @@ private:
         virtual ~surl_t() {
         }
         ;
-        sql_string source;
+        sql_string sourceSURL;
         bool has_diroption;
         bool isdirectory;
         int allrecursive; // -1 means not supplied
