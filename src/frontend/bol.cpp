@@ -151,7 +151,7 @@ ns1__srmBringOnlineResponse* bol::response() {
                     ns1__TBringOnlineRequestFileStatus>(_soap);
             _response->arrayOfFileStatuses->statusArray[n] = statusArray;
 
-            statusArray->sourceSURL = soap_strdup(_soap, i->source.c_str());
+            statusArray->sourceSURL = soap_strdup(_soap, i->sourceSURL.c_str());
             statusArray->fileSize = NULL;
             statusArray->estimatedWaitTime = NULL;
             statusArray->remainingPinTime = NULL;
@@ -263,7 +263,7 @@ void bol::insert(struct srm_dbfd *db) {
 
             query_d << sql_format(i->isdirectory);
 
-            if (i->allrecursive == -1) {
+            if (i->allLevelRecursive == -1) {
                 query_d << "NULL, ";
             } else {
                 query_d << "1, ";
@@ -293,7 +293,7 @@ void bol::insert(struct srm_dbfd *db) {
         std::ostringstream query1_s;
 
         query1_s << "INSERT INTO request_BoL (sourceSURL, request_queueID, request_DirOptionID) VALUES ";
-        query1_s << sql_format(i->source) << ", ";
+        query1_s << sql_format(i->sourceSURL) << ", ";
         query1_s << request_id << ", ";
 
         if (i->has_diroption) {
@@ -306,7 +306,7 @@ void bol::insert(struct srm_dbfd *db) {
         set_savepoint(_db, "BOLFILE");
         try {
             bol_id = storm_db::ID_exec_query(_db, query1_s.str());
-        } catch (int e) {
+        } catch (storm_db::mysql_exception e) {
             // Qua impostiamo l'errore per il surl e lo dobbiamo dedurre dal tipo di errore di mysql.
             // Poi dobbiamo impostare la stringa di errore.
             // Infine aggiorniamo _n_failed.
@@ -326,7 +326,7 @@ void bol::insert(struct srm_dbfd *db) {
 
         try {
             storm_db::ID_exec_query(_db, query2_s.str());
-        } catch (int e) {
+        } catch (storm_db::mysql_exception e) {
             srmlogit(STORM_LOG_ERROR, "bol::insert()",
                     "Error %s inserting surl %s into status_BoL. Continuing\n", e.what(),
                     i->sourceSURL.c_str());
