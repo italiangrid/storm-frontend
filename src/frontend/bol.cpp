@@ -127,58 +127,51 @@ void bol::load(struct ns1__srmBringOnlineRequest *req) {
 ns1__srmBringOnlineResponse* bol::response() {
 
     // soap struct status
-    if (NULL == _response) {
-        _response = storm::soap_calloc<ns1__srmBringOnlineResponse>(_soap);
-    }
-
-    if (NULL == _response->returnStatus) {
-        _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
-    }
+    _response = storm::soap_calloc<ns1__srmBringOnlineResponse>(_soap);
+    _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
 
     _response->returnStatus->statusCode = status();
-    if (NULL == _response->returnStatus->explanation) {
+
+    if (_explanation.c_str() != NULL) {
         _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
-    } else {
-        // how to free() memory allocated with soap_strdup???
-        snprintf(_response->returnStatus->explanation, strlen(_response->returnStatus->explanation),
-                _explanation.c_str());
     }
 
     // Fill per-surl info.
     try {
-        if (NULL == _response->arrayOfFileStatuses)
-            _response->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTBringOnlineRequestFileStatus>(
-                    _soap);
+        _response->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTBringOnlineRequestFileStatus>(_soap);
+        _response->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TBringOnlineRequestFileStatus>(
+                _soap, _surls.size());
 
-        if (NULL == _response->arrayOfFileStatuses->statusArray)
-            _response->arrayOfFileStatuses->statusArray = storm::soap_calloc<
-                    ns1__TBringOnlineRequestFileStatus>(_soap, _surls.size());
         _response->arrayOfFileStatuses->__sizestatusArray = _surls.size();
 
         int n = 0;
         for (std::vector<bol::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i, ++n) {
-            if (NULL == _response->arrayOfFileStatuses->statusArray[n])
-                _response->arrayOfFileStatuses->statusArray[n] = storm::soap_calloc<
-                        ns1__TBringOnlineRequestFileStatus>(_soap);
-            if (NULL == _response->arrayOfFileStatuses->statusArray[n]->status)
-                _response->arrayOfFileStatuses->statusArray[n]->status = storm::soap_calloc<
-                        ns1__TReturnStatus>(_soap);
-            _response->arrayOfFileStatuses->statusArray[n]->sourceSURL
-                    = soap_strdup(_soap, i->source.c_str());
-            _response->arrayOfFileStatuses->statusArray[n]->status->statusCode = i->status;
-            _response->arrayOfFileStatuses->statusArray[n]->status->explanation = soap_strdup(_soap,
-                    i->explanation.c_str());
+
+            struct ns1__TBringOnlineRequestFileStatus statusArray = storm::soap_calloc<
+                    ns1__TBringOnlineRequestFileStatus>(_soap);
+            _response->arrayOfFileStatuses->statusArray[n] = statusArray;
+
+            statusArray->sourceSURL = soap_strdup(_soap, i->source.c_str());
+            statusArray->fileSize = NULL;
+            statusArray->estimatedWaitTime = NULL;
+            statusArray->remainingPinTime = NULL;
+
+            statusArray->status = storm::soap_calloc<ns1__TReturnStatus>(_soap);
+            statusArray->status->statusCode = i->status;
+            statusArray->status->explanation = soap_strdup(_soap, i->explanation.c_str());
         }
     } catch (std::invalid_argument x) {
         // continuing???
     }
 
     // Fill request token
-    if (NULL == _response->requestToken) {
-        if (_r_token.size() > 0)
-            _response->requestToken = soap_strdup(_soap, r_token().c_str());
-    } else
-        snprintf(_response->requestToken, strlen(_response->requestToken), r_token().c_str());
+    if (_r_token.size() > 0) {
+        _response->requestToken = soap_strdup(_soap, r_token().c_str());
+    }
+
+    _response->remainingTotalRequestTime = NULL;
+    _response->remainingDeferredStartTime = NULL;
+
     return _response;
 }
 
@@ -186,6 +179,7 @@ void bol::insert(struct srm_dbfd *db) {
     _db = db;
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
+
     std::string q("INSERT INTO request_queue ("
         "  config_FileStorageTypeID"
         ", config_RequestTypeID"
@@ -202,10 +196,12 @@ void bol::insert(struct srm_dbfd *db) {
         ", proxy"
         ", timeStamp) values (");
     query_s << q;
-    if (_f_type == DB_FILE_TYPE_UNKNOWN)
+
+    if (_f_type == DB_FILE_TYPE_UNKNOWN) {
         query_s << nullcomma;
-    else
+    } else {
         query_s << "'" << _f_type << "', ";
+    }
 
     query_s << "'" << _r_type << "', ";
     query_s << "'" << getClientDN() << "', ";

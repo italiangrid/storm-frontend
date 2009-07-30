@@ -79,6 +79,7 @@ private:
                     n_levels = *(dirOption->numOfLevels);
                 }
             }
+            estimatedWaitTime = -1;
         };
         virtual ~surl_t() {
         }
@@ -88,11 +89,15 @@ private:
         bool isdirectory;
         int allrecursive; // -1 means not supplied
         int n_levels; // -1 means not supplied
+        unsigned long fileSize;
+        int remainingPinTime;
+        int estimatedWaitTime;
         ns1__TStatusCode status;
         std::string explanation;
     };
 
-    storm_time_t _deferredStartTime;
+    int _remainingTotalRequestTime;
+    int _deferredStartTime;
     std::vector<bol::surl_t> _surls;
     struct ns1__srmBringOnlineResponse * _response;
 
