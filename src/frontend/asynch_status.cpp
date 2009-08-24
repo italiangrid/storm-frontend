@@ -59,6 +59,28 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 }
 
 extern "C"
+int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
+        struct ns1__srmStatusOfBringOnlineRequestRequest *req,
+        struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep)
+{
+    static const char* funcName = "srmStatusOfBringOnLineRequest";
+
+    storm::bol_status status(soap);
+
+    // If the request contains some surl, then fill the get_status object
+    if (NULL != req->arrayOfSourceSURLs ) {
+        for (int i=0; i<req->arrayOfSourceSURLs->__sizeurlArray; ++i) {
+            status.add_requested_surl(req->arrayOfSourceSURLs->urlArray[i]);
+        }
+    }
+
+    int soap_status = __process_request_status<ns1__srmStatusOfBringOnlineRequestResponse>
+        (soap, req->requestToken, funcName, status, &rep->srmStatusOfBringOnlineRequestResponse);
+
+    return soap_status;
+}
+
+extern "C"
 int ns1__srmStatusOfCopyRequest(struct soap *soap,
         struct ns1__srmStatusOfCopyRequestRequest *req,
         struct ns1__srmStatusOfCopyRequestResponse_ *rep)
@@ -83,36 +105,36 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
 
 }
 
-extern "C"
-int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
-        struct ns1__srmStatusOfBringOnlineRequestRequest *req,
-        struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep)
-{
-    static const char* func = "srmStatusOfBringOnLineRequest";
-    struct ns1__srmStatusOfBringOnlineRequestResponse *repp;
-    storm::Credentials credentials(soap);
-
-    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", func, credentials.getDN().c_str());
-    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
-             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
-
-    try {
-        repp = storm::soap_calloc<ns1__srmStatusOfBringOnlineRequestResponse>(soap);
-        repp->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(soap);
-    }
-    catch (soap_bad_alloc) {
-        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
-        return SOAP_EOM;
-    }
-    catch (std::invalid_argument) {
-        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
-        return SOAP_NULL;
-    }
-
-    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-    repp->returnStatus->explanation = "srmBringOnLine implementation is synchronous";
-    rep->srmStatusOfBringOnlineRequestResponse = repp;
-    srmlogit(STORM_LOG_INFO, func, "Returning status: SRM_NOT_SUPPORTED\n");
-
-    return SOAP_OK;
-}
+//extern "C"
+//int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
+//        struct ns1__srmStatusOfBringOnlineRequestRequest *req,
+//        struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep)
+//{
+//    static const char* func = "srmStatusOfBringOnLineRequest";
+//    struct ns1__srmStatusOfBringOnlineRequestResponse *repp;
+//    storm::Credentials credentials(soap);
+//
+//    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", func, credentials.getDN().c_str());
+//    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
+//             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
+//
+//    try {
+//        repp = storm::soap_calloc<ns1__srmStatusOfBringOnlineRequestResponse>(soap);
+//        repp->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(soap);
+//    }
+//    catch (soap_bad_alloc) {
+//        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
+//        return SOAP_EOM;
+//    }
+//    catch (std::invalid_argument) {
+//        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
+//        return SOAP_NULL;
+//    }
+//
+//    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
+//    repp->returnStatus->explanation = "srmBringOnLine implementation is synchronous";
+//    rep->srmStatusOfBringOnlineRequestResponse = repp;
+//    srmlogit(STORM_LOG_INFO, func, "Returning status: SRM_NOT_SUPPORTED\n");
+//
+//    return SOAP_OK;
+//}

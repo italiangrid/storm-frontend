@@ -29,7 +29,6 @@ namespace storm{
     public:
         bol_status(struct soap * soap);
         void load(struct srm_dbfd *db, const std::string& requestToken);
-//         void load(struct srm_dbfd *db, const std::string &requestToken, const std::vector<const std::string> &surls);
         ns1__srmStatusOfBringOnlineRequestResponse * response();
 
         void add_requested_surl(const std::string &d){
