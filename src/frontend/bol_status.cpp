@@ -139,7 +139,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 void bol_status::__fill_bol_request() {
     // fill SURLs information
     // Loop on the requested SURLs checking if they were found in the result set
-    for (std::vector<storm::get_status::surl_req_t>::const_iterator i = _surls_req.begin(); i
+    for (std::vector<storm::bol_status::surl_req_t>::const_iterator i = _surls_req.begin(); i
             != _surls_req.end(); ++i) {
         bool surl_found = false;
 
@@ -198,7 +198,7 @@ void bol_status::__fill_bol_request() {
             }
 
         } else { // SURL not found in the result set
-            s = new get_status::surl_t(i->source());
+            s = new bol_status::surl_t(i->source());
             s->status = SRM_USCOREINVALID_USCOREPATH;
             s->explanation = "No information about this SURL";
             s->fileSize = -1;
