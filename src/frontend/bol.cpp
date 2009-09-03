@@ -241,7 +241,7 @@ void bol::insert(struct srm_dbfd *db) {
     }
 
     // deferredStartTime
-    query_s << _deferredStartTime >> ", ";
+    query_s << _deferredStartTime << ", ";
 
     query_s << "current_timestamp() )";
 
