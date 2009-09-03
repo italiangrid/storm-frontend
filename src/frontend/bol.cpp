@@ -194,6 +194,7 @@ void bol::insert(struct srm_dbfd *db) {
         ", numOfWaiting"
         ", numOfFailed"
         ", proxy"
+        ", deferredStartTime"
         ", timeStamp) values (");
     query_s << q;
 
@@ -238,6 +239,9 @@ void bol::insert(struct srm_dbfd *db) {
     } else {
         query_s << "'" << fqansOneString << "', ";
     }
+
+    // deferredStartTime
+    query_s << _deferredStartTime >> ", ";
 
     query_s << "current_timestamp() )";
 
