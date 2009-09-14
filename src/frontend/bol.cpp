@@ -342,13 +342,14 @@ void bol::insert(struct srm_dbfd *db) {
 
     // Insert into request_TransferProtocols using the request_ID
     for (std::vector<sql_string>::const_iterator i = _protocols.begin(); i != _protocols.end(); ++i) { // separati insert, nel caso che uno solo fallisca.
-        query_s.str("INSERT into request_TransferProtocols (request_queueID, config_protocolsID) values (");
+        qury_s.str("");
+        query_s << "INSERT INTO request_TransferProtocols (request_queueID, config_protocolsID) VALUES (";
         query_s << request_id << ", '" << *i << "')";
 
         try {
             storm_db::ID_exec_query(_db, query_s.str());
         } catch (storm_db::mysql_exception e) {
-            srmlogit(STORM_LOG_ERROR, "ptg::insert()",
+            srmlogit(STORM_LOG_ERROR, "bol::insert()",
                     "Error %s inserting transfer protocol %s into DB. Continuing\n", e.what(), i->c_str());
             continue;
         }
