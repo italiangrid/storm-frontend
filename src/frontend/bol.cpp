@@ -342,7 +342,7 @@ void bol::insert(struct srm_dbfd *db) {
 
     // Insert into request_TransferProtocols using the request_ID
     for (std::vector<sql_string>::const_iterator i = _protocols.begin(); i != _protocols.end(); ++i) { // separati insert, nel caso che uno solo fallisca.
-        qury_s.str("");
+        qurey_s.str("");
         query_s << "INSERT INTO request_TransferProtocols (request_queueID, config_protocolsID) VALUES (";
         query_s << request_id << ", '" << *i << "')";
 
