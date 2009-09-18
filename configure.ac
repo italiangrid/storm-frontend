@@ -9,7 +9,7 @@
 #*
 #*********************************************************************
 
-AC_INIT([storm-frontend], [1.4.0])
+AC_INIT([storm-frontend], [1.4.1])
 
 # Release number
 AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [01.sl4])
