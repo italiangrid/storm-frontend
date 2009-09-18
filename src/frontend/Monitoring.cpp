@@ -12,7 +12,7 @@ void storm::thread_function(Monitoring* m) {
                 break;
             }
 
-            if (_enabled) {
+            if (m->_enabled) {
                 m->pingSummary();
                 m->resetData();
             }
