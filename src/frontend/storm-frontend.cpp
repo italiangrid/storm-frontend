@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
     int gsoap_max_pending = configuration->getGsoapMaxPending();
     int port = configuration->getPort();
     int audit_time_interval = configuration->getAuditTimeInterval();
-    bool audit_enabled = configuration->auditEnabled();
+    bool audit_enabled = configuration->getAuditEnabled();
     string log_file = configuration->getLogFile();
     string audit_file = configuration->getAuditFile();
     string wsdl_file_path = configuration->getWSDLFilePath();
