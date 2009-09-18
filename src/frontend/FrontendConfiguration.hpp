@@ -140,7 +140,7 @@ public:
     bool requestedDebug();
     bool foundConfigurationFile();
     bool mappingDisabled();
-    bool auditEnabled();
+    bool getAuditEnabled();
     bool vomsCheckDisabled();
     int getDebugLevel();
     int getNumThreads();

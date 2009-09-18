@@ -108,7 +108,7 @@ void FrontendConfiguration::checkFileReadPerm(string fileAbsolutePath) {
 
 }
 
-bool FrontendConfiguration::auditEnabled() {
+bool FrontendConfiguration::getAuditEnabled() {
     return auditEnabled;
 }
 
