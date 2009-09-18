@@ -31,6 +31,7 @@ private:
     volatile bool _stop;
     boost::thread _monitoring_thread;
     const char* _template_msg;
+    bool _enabled;
 
     friend void thread_function(Monitoring* m);
 
@@ -41,6 +42,7 @@ private:
 
     Monitoring(int sleep_interval) {
 
+        _enabled = true;
         _funcName = "Monitoring";
         _stop = false;
 
@@ -100,6 +102,10 @@ public:
                 _ping_aet = (float) executionTimeInMills / 1000.0;
             }
         }
+    }
+
+    void setEnabled(bool val) {
+        _enabled = val;
     }
 
     void setTimeInterval(int timeInterval) {

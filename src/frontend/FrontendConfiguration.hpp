@@ -64,6 +64,8 @@ static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via
 static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
 static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
+static const string OPTL_AUDIT_ENABLED = "audit.enabled";
+
 static const string OPTL_AUDIT_FILE_NAME = "audit.filename";
 static const char* OPT_AUDIT_FILE_NAME_DESCRIPTION = "Use <arg> as audit file";
 
@@ -138,6 +140,7 @@ public:
     bool requestedDebug();
     bool foundConfigurationFile();
     bool mappingDisabled();
+    bool auditEnabled();
     bool vomsCheckDisabled();
     int getDebugLevel();
     int getNumThreads();
@@ -186,6 +189,7 @@ private:
     bool configurationFileFound;
     bool disableMapping;
     bool disableVOMSCheck;
+    bool auditEnabled;
     int numberOfThreads;
     int threadpool_max_pending;
     unsigned int threadpool_max_pending_sleeptime;

@@ -108,6 +108,10 @@ void FrontendConfiguration::checkFileReadPerm(string fileAbsolutePath) {
 
 }
 
+bool FrontendConfiguration::auditEnabled() {
+    return auditEnabled;
+}
+
 bool FrontendConfiguration::requestedHelp() {
     return helpRequested;
 }
@@ -236,6 +240,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), po::value<unsigned int>()->default_value(DEFAULT_SLEEP_THREADPOOL_MAX_PENDING), EMPTY_DESCRIPTION)
             (OPTL_MAX_GSOAP_PENDING.c_str(), po::value<int>()->default_value(DEFAULT_GSOAP_MAX_PENDING), EMPTY_DESCRIPTION)
             (OPTL_LOG_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), EMPTY_DESCRIPTION)
+            (OPTL_AUDIT_ENABLED.c_str(), po::value<bool>()->default_value(false), EMPTY_DESCRIPTION)
             (OPTL_AUDIT_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_AUDIT_FILE_NAME), EMPTY_DESCRIPTION)
             (OPTL_AUDIT_TIME_INTERVAL.c_str(), po::value<int>()->default_value(DEFAULT_AUDIT_TIME_INTERVAL), EMPTY_DESCRIPTION)
             (OPTL_PROXY_DIR.c_str(), po::value<string>(), OPT_PROXY_DIR_DESCRIPTION)
@@ -331,6 +336,7 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
     audit_file = vm[OPTL_AUDIT_FILE_NAME].as<string> ();
+    auditEnabled = vm[OPTL_AUDIT_ENABLED].as<bool> ();
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
     audit_time_interval = vm[OPTL_AUDIT_TIME_INTERVAL].as<int> ();
