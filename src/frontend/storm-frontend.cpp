@@ -234,7 +234,6 @@ int main(int argc, char** argv) {
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_HOST.c_str(), db_srvr);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER_PASSWORD.c_str(), db_pwd);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
 
     if (disableMapping) {
