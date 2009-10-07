@@ -45,6 +45,13 @@ void bol_status::load(struct srm_dbfd *db, const std::string &requestToken) {
         throw token_not_found();
     }
 
+    // TEMPORARY SOLUTION! TODO: find another way to manage the case of no SURLs specified in the request.
+    if (_surls_req.size() == 0) {
+		file_status_results_t::iterator i = _results.begin();
+		for (; i != _results.end(); ++i)
+			add_requested_surl((*i)["sourceSURL"]);
+	}
+
     __fill_bol_request();
 }
 
