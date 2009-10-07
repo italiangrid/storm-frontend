@@ -9,10 +9,10 @@
 #*
 #*********************************************************************
 
-AC_INIT([storm-frontend], [1.4.1])
+AC_INIT([storm-frontend], [1.5.0])
 
 # Release number
-AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [01.RC1.sl4])
+AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [01.sl4])
 
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
