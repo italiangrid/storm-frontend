@@ -7,7 +7,7 @@
 HttpPostClient::HttpPostClient(std::string url) {
 
     _path = std::string("/storm/checksum.json");
-    _url = null;
+    _url = NULL;
 
     _curl = curl_easy_init();
 
