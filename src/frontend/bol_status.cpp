@@ -17,6 +17,7 @@
 #include <string>
 #include "bol_status.hpp"
 #include "srmlogit.h"
+#include "FrontendConfiguration.hpp"
 
 using namespace storm;
 
