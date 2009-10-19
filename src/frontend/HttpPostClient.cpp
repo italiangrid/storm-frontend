@@ -44,13 +44,13 @@ long HttpPostClient::getHttpResponseCode() {
 }
 
 char* HttpPostClient::getUrl() {
-    if (_url != null) {
+    if (_url != NULL) {
         return _url;
     }
 
     std::string url = std::string("http://");
     url.append(_hostname);
-    url.append(':');
+    url.append(":");
     url.append(_port);
     url.append(path);
 
