@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <exception>
+#include "storm_utils.hpp"
 
 HttpPostClient::HttpPostClient(std::string url) {
 
@@ -51,7 +52,7 @@ char* HttpPostClient::getUrl() {
     std::string url = std::string("http://");
     url.append(_hostname);
     url.append(":");
-    url.append(_port);
+    url.append(to_string(_port));
     url.append(path);
 
     _url = (char*) calloc(url.size() + 1, 1);
