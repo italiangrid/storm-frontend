@@ -4,8 +4,9 @@
 #include <string.h>
 #include <exception>
 #include "storm_utils.hpp"
+#include "FrontendConfiguration.hpp"
 
-HttpPostClient::HttpPostClient(std::string url) {
+HttpPostClient::HttpPostClient() {
 
     _path = std::string("/storm/checksum.json");
     _url = NULL;

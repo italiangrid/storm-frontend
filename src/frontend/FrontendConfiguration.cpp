@@ -164,6 +164,14 @@ int FrontendConfiguration::getPort() {
     return port;
 }
 
+int FrontendConfiguration::getRecalltablePort() {
+    return recalltablePort;
+}
+
+bool FrontendConfiguration::isRecaltableEnabled() {
+    return recalltableEnabled;
+}
+
 int FrontendConfiguration::getAuditTimeInterval() {
     return audit_time_interval;
 }
@@ -178,6 +186,10 @@ string FrontendConfiguration::getProxyUser() {
 
 string FrontendConfiguration::getXMLRPCEndpoint() {
     return xmlrpc_host + ":" + xmlrpc_port + xmlrpc_path;
+}
+
+string FrontendConfiguration::getXmlRpcHost() {
+    return xmlrpc_host;
 }
 
 string FrontendConfiguration::getUser() {
@@ -248,6 +260,8 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
             (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
             (OPTL_XMLRPC_PATH.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
+            (OPTL_RECALLTABLE_PORT.c_str(), po::value<int>()->default_value(9998), EMPTY_DESCRIPTION)
+            (OPTL_RECALLTABLE_ENABLED.c_str(), po::value<bool>()->default_value(false), EMPTY_DESCRIPTION)
             (OPTL_PROXY_USER.c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
             (OPTL_WSDL_FILE.c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
             (OPTL_DEBUG_LEVEL.c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
@@ -340,6 +354,8 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
     disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
     audit_time_interval = vm[OPTL_AUDIT_TIME_INTERVAL].as<int> ();
+    recalltablePort = vm[OPTL_RECALLTABLE_PORT].as<int> ();
+    recalltableEnabled = vm[OPTL_RECALLTABLE_ENABLED].as<bool> ();
 
     gridmapfile = getFromEnvironment(ENVVAR_GRIDMAP, DEFAULT_GRIDMAPFILE);
     hostcertfile = getFromEnvironment(ENVVAR_X509_USER_CERT, DEFAULT_HOST_CERT_FILE);

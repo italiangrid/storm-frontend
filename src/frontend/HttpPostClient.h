@@ -6,7 +6,7 @@
 
 class HttpPostClient {
 public:
-    HttpPostClient(std::string url);
+    HttpPostClient();
     virtual ~HttpPostClient();
 
     int callService(std::string data);

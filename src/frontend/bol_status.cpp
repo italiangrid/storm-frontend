@@ -23,6 +23,13 @@ using namespace storm;
 namespace storm {
 bol_status::bol_status(struct soap * soap) :
     file_status<ns1__srmStatusOfBringOnlineRequestResponse> (soap) {
+
+    _recalltableEnabled = FrontendConfiguration::getInstance()->isRecaltableEnabled();
+
+    if (_recalltableEnabled) {
+        _recalltablePort = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
+        _recalltableHost = FrontendConfiguration::getInstance()->getXmlrpcHost();
+    }
 }
 
 void bol_status::load(struct srm_dbfd *db, const std::string &requestToken) {
@@ -100,6 +107,12 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
                 }
 
                 // Status of the surl
+                ns1__TStatusCode status = i->status;
+                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
+                    if (isSurlOnDisk(surl)) {
+                        status = SRM_USCORESUCCESS;
+                    }
+                }
                 _response->arrayOfFileStatuses->statusArray[n]->status = storm::soap_calloc<
                         ns1__TReturnStatus>(_soap);
                 _response->arrayOfFileStatuses->statusArray[n]->status->statusCode = i->status;
@@ -211,7 +224,7 @@ void bol_status::__fill_bol_request() {
             s->estimatedWaitTime = -1;
         }
 
-        srmlogit(STORM_LOG_DEBUG, "get_status::__fill_get_request()", "Inserting  sourceSURL %s\n",
+        srmlogit(STORM_LOG_DEBUG, "bol_status::__fill_bol_request()", "Inserting  sourceSURL %s\n",
                 s->source.c_str());
 
         _surls.push_back(*s);
@@ -233,6 +246,22 @@ std::string bol_status::__format_surl_request() {
         query += "(c.sourceSURL = '" + i->source() + "')";
     }
     query += ")";
+}
+
+bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
+    try {
+        HttpPostClient client;
+
+        client.setHostname(_recalltableHost);
+        client.setPort(_recalltablePort);
+        std::string data = "requestToken=" + requestToken + "&surl=" + surl;
+        client.callService(data);
+
+        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response: %d", client.getHttpResponseCode());
+    } catch (exception& e) {
+        srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()",
+                "Curl: cannot create handle for http client.");
+    }
 }
 
 }
