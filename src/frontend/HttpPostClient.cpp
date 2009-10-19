@@ -1,4 +1,3 @@
-
 #include "HttpPostClient.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,25 +6,27 @@
 
 HttpPostClient::HttpPostClient(std::string url) {
 
+    _path = std::string("/storm/checksum.json");
+
     _curl = curl_easy_init();
 
     if (_curl == NULL) {
         throw new std::exception();
     }
 
-    curl_easy_setopt(_curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(_curl, CURLOPT_WRITEDATA, _response);
-    curl_easy_setopt(_curl, CURLOPT_PORT, 9996);
 
 }
 
 HttpPostClient::~HttpPostClient() {
-    curl_easy_cleanup(_curl);
+    curl_easy_cleanup( _curl);
     free(*_response);
 }
 
 int HttpPostClient::callService(std::string data) {
+    curl_easy_setopt(_curl, CURLOPT_URL, _url);
+    curl_easy_setopt(_curl, CURLOPT_PORT, _port);
     curl_easy_setopt(_curl, CURLOPT_POSTFIELDS, data.c_str());
     return curl_easy_perform(_curl);
 }
@@ -37,8 +38,61 @@ std::string HttpPostClient::getResponse() {
 
 long HttpPostClient::getHttpResponseCode() {
     long code;
-    curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE , &code );
+    curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, &code);
     return code;
+}
+
+char* HttpPostClient::getUrl() {
+    if (_url != null) {
+        return _url;
+    }
+
+    std::string url = std::string("http://");
+    url.append(_hostname);
+    url.append(':');
+    url.append(_port);
+    url.append(path);
+
+    _url = (char*) calloc(url.size() + 1, 1);
+    strcpy(_url, url.c_str());
+
+    return _url;
+}
+
+std::string HttpPostClient::getHostname() {
+    return _hostname;
+}
+
+std::string HttpPostClient::getPath() {
+    return _path;
+}
+
+long HttpPostClient::getPort() {
+    return _port;
+}
+
+void HttpPostClient::setHostname(std::string hostname) {
+    if (_url != null) {
+        free( _url);
+        _url = null;
+    }
+    _hostname = hostname;
+}
+
+void HttpPostClient::setPath(std::string path) {
+    if (_url != null) {
+        free( _url);
+        _url = null;
+    }
+    _path = path;
+}
+
+void HttpPostClient::setPort(long port) {
+    if (_url != null) {
+        free( _url);
+        _url = null;
+    }
+    _port = port;
 }
 
 size_t HttpPostClient::write_data(void* buffer, size_t size, size_t nmemb, void* userp) {
