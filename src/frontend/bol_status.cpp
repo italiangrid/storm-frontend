@@ -47,10 +47,10 @@ void bol_status::load(struct srm_dbfd *db, const std::string &requestToken) {
 
     // TEMPORARY SOLUTION! TODO: find another way to manage the case of no SURLs specified in the request.
     if (_surls_req.size() == 0) {
-		file_status_results_t::iterator i = _results.begin();
-		for (; i != _results.end(); ++i)
-			add_requested_surl((*i)["sourceSURL"]);
-	}
+        file_status_results_t::iterator i = _results.begin();
+        for (; i != _results.end(); ++i)
+            add_requested_surl((*i)["sourceSURL"]);
+    }
 
     __fill_bol_request();
 }
@@ -91,9 +91,10 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
                         ns1__TBringOnlineRequestFileStatus>(_soap);
 
                 // Source SURL
-                if (i->source.length() > 0) {
+                std::string surl = i->source;
+                if (surl.length() > 0) {
                     _response->arrayOfFileStatuses->statusArray[n]->sourceSURL = soap_strdup(_soap,
-                            i->source.c_str());
+                            surl.c_str());
                 } else {
                     _response->arrayOfFileStatuses->statusArray[n]->sourceSURL = NULL;
                 }
@@ -135,10 +136,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
         }
 
     } else {
-        srmlogit(
-                STORM_LOG_ERROR,
-                "bol_status::response()",
-                "No SURLs found\n");
+        srmlogit(STORM_LOG_ERROR, "bol_status::response()", "No SURLs found\n");
     }
     return _response;
 }
