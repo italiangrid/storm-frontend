@@ -22,7 +22,7 @@ HttpPostClient::HttpPostClient(std::string url) {
 }
 
 HttpPostClient::~HttpPostClient() {
-    curl_easy_cleanup( _curl);
+    curl_easy_cleanup(_curl);
     free(*_response);
 }
 
@@ -75,7 +75,7 @@ long HttpPostClient::getPort() {
 
 void HttpPostClient::setHostname(std::string hostname) {
     if (_url != NULL) {
-        free( _url);
+        free(_url);
         _url = NULL;
     }
     _hostname = hostname;
@@ -83,7 +83,7 @@ void HttpPostClient::setHostname(std::string hostname) {
 
 void HttpPostClient::setPath(std::string path) {
     if (_url != NULL) {
-        free( _url);
+        free(_url);
         _url = NULL;
     }
     _path = path;
@@ -91,7 +91,7 @@ void HttpPostClient::setPath(std::string path) {
 
 void HttpPostClient::setPort(long port) {
     if (_url != NULL) {
-        free( _url);
+        free(_url);
         _url = NULL;
     }
     _port = port;
