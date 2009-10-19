@@ -15,10 +15,10 @@ public:
 	long getHttpResponseCode();
 	char* getUrl();
     std::string getPath();
-    std::string getPort();
+    long getPort();
     void setHostname(std::string hostname);
     void setPath(std::string path);
-    void setPort(std::string port);
+    void setPort(long port);
 
 
 private:

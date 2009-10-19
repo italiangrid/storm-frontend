@@ -32,6 +32,7 @@
 #include "DBConnectionPool.hpp"
 #include <signal.h>
 #include "frontend_version.h"
+#include <curl/curl.h>
 
 #define NAME "StoRM SRM v2.2"
 
@@ -309,6 +310,9 @@ int main(int argc, char** argv) {
         return SYERR;
     }
 
+    /**** Init libcurl ****/
+    curl_global_init(CURL_GLOBAL_NOTHING);
+
     /**** Start up XML-RPC client library. ****/
     xmlrpc_env env;
     xmlrpc_env_init(&env);
@@ -396,6 +400,8 @@ int main(int argc, char** argv) {
 
     delete mysql_connection_pool;
     delete monitoring;
+
+    curl_global_cleanup();
 
     srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
 

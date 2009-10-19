@@ -53,7 +53,7 @@ char* HttpPostClient::getUrl() {
     url.append(_hostname);
     url.append(":");
     url.append(to_string(_port));
-    url.append(path);
+    url.append(_path);
 
     _url = (char*) calloc(url.size() + 1, 1);
     strcpy(_url, url.c_str());
@@ -74,25 +74,25 @@ long HttpPostClient::getPort() {
 }
 
 void HttpPostClient::setHostname(std::string hostname) {
-    if (_url != null) {
+    if (_url != NULL) {
         free( _url);
-        _url = null;
+        _url = NULL;
     }
     _hostname = hostname;
 }
 
 void HttpPostClient::setPath(std::string path) {
-    if (_url != null) {
+    if (_url != NULL) {
         free( _url);
-        _url = null;
+        _url = NULL;
     }
     _path = path;
 }
 
 void HttpPostClient::setPort(long port) {
-    if (_url != null) {
+    if (_url != NULL) {
         free( _url);
-        _url = null;
+        _url = NULL;
     }
     _port = port;
 }

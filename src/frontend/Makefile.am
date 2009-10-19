@@ -58,6 +58,7 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
     asynch.cpp asynch_status.cpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
+    HttpPostClient.cpp HttpPostClient.h \
     DBConnectionPool.cpp DBConnectionPool.hpp \
     ThreadPool.hpp Monitoring.hpp Monitoring.cpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \

@@ -11,8 +11,8 @@
 #include <sstream>
 
 template<typename type_t>
-bool string2num(type_t& x, const string& s) {
-    istringstream ss(s);
+bool string2num(type_t& x, const std::string& s) {
+    std::istringstream ss(s);
     return (ss >> x).fail();
 }
 
