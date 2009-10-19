@@ -27,7 +27,7 @@ private:
 	CURL* _curl;
 	char** _response;
 
-	char* _url = null;
+	char* _url;
 	std::string _hostname;
 	long _port;
 	std::string _path;
