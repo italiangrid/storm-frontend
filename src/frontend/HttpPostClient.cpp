@@ -17,6 +17,8 @@ HttpPostClient::HttpPostClient() {
         throw new std::exception();
     }
 
+    _response = (char**) calloc(sizeof(char*), 1);
+
     curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(_curl, CURLOPT_WRITEDATA, _response);
     curl_easy_setopt(_curl, CURLOPT_READDATA, &_inputData);
@@ -28,11 +30,18 @@ HttpPostClient::HttpPostClient() {
 HttpPostClient::~HttpPostClient() {
     curl_easy_cleanup(_curl);
     free(*_response);
+    free(_response);
 }
 
 int HttpPostClient::callService(std::string data) {
+
     _inputData.data = data;
     _inputData.endOfTransmission = false;
+
+    if (*_response != NULL) {
+        free(*_response);
+    }
+
     curl_easy_setopt(_curl, CURLOPT_URL, getUrl());
     return curl_easy_perform(_curl);
 }

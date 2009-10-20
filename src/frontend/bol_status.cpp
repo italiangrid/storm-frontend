@@ -261,14 +261,14 @@ bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
         client.callService(data);
 
         long response = client.getHttpResponseCode();
-        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response code: %d", response);
+        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response code: %d\n", response);
 
         if (response == 200) {
-            srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response: %s", client.getResponse().c_str());
+            srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response: %s\n",
+                    client.getResponse().c_str());
         }
     } catch (exception& e) {
-        srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()",
-                "Curl: cannot create handle for http client.");
+        srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()", "Curl: cannot create handle for http client.");
     }
 }
 
