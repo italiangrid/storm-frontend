@@ -157,7 +157,7 @@ public:
     string getProxyDir();
     string getProxyUser();
     string getXMLRPCEndpoint();
-    string getXmlRpmHost();
+    string getXmlRpcHost();
     string getUser();
     string getWSDLFilePath();
     string getAuditFile();

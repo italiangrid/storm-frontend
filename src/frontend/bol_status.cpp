@@ -18,6 +18,7 @@
 #include "bol_status.hpp"
 #include "srmlogit.h"
 #include "FrontendConfiguration.hpp"
+#include "HttpPostClient.h"
 
 using namespace storm;
 
@@ -29,7 +30,7 @@ bol_status::bol_status(struct soap * soap) :
 
     if (_recalltableEnabled) {
         _recalltablePort = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
-        _recalltableHost = FrontendConfiguration::getInstance()->getXmlrpcHost();
+        _recalltableHost = FrontendConfiguration::getInstance()->getXmlRpcHost();
     }
 }
 
@@ -109,8 +110,9 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 
                 // Status of the surl
                 ns1__TStatusCode status = i->status;
-                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
-                    if (isSurlOnDisk(surl)) {
+//                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
+                if (_recalltableEnabled) {
+                    if (isSurlOnDisk(_r_token, surl)) {
                         status = SRM_USCORESUCCESS;
                     }
                 }
