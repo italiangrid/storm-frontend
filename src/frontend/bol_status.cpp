@@ -255,10 +255,15 @@ bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
 
         client.setHostname(_recalltableHost);
         client.setPort(_recalltablePort);
-        std::string data = "requestToken=" + requestToken + "&surl=" + surl;
+        std::string data = "requestToken=" + requestToken + "\nsurl=" + surl;
         client.callService(data);
 
-        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response: %d", client.getHttpResponseCode());
+        long response = client.getHttpResponseCode();
+        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response code: %d", response);
+
+        if (response == 200) {
+            srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response: %s", client.getResponse().c_str());
+        }
     } catch (exception& e) {
         srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()",
                 "Curl: cannot create handle for http client.");

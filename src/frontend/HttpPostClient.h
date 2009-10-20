@@ -22,6 +22,7 @@ public:
 
 private:
     static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
+    static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
 
     CURL* _curl;
     char** _response;
@@ -30,6 +31,12 @@ private:
     std::string _hostname;
     long _port;
     std::string _path;
+
+    class IndaputData {
+    public:
+        std::string data;
+        bool endOfTransmission;
+    } _inputData;
 };
 
 #endif /* HTTPPOSTCLIENT_H_ */

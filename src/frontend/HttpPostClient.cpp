@@ -8,7 +8,7 @@
 
 HttpPostClient::HttpPostClient() {
 
-    _path = std::string("/storm/checksum.json");
+    _path = std::string("/recalltable/task");
     _url = NULL;
 
     _curl = curl_easy_init();
@@ -19,6 +19,9 @@ HttpPostClient::HttpPostClient() {
 
     curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(_curl, CURLOPT_WRITEDATA, _response);
+    curl_easy_setopt(_curl, CURLOPT_READDATA, &_inputData);
+    curl_easy_setopt(_curl, CURLOPT_READFUNCTION, read_callback);
+    curl_easy_setopt(_curl, CURLOPT_UPLOAD, 1L);
 
 }
 
@@ -28,9 +31,9 @@ HttpPostClient::~HttpPostClient() {
 }
 
 int HttpPostClient::callService(std::string data) {
-    curl_easy_setopt(_curl, CURLOPT_URL, _url);
-    curl_easy_setopt(_curl, CURLOPT_PORT, _port);
-    curl_easy_setopt(_curl, CURLOPT_POSTFIELDS, data.c_str());
+    _inputData.data = data;
+    _inputData.endOfTransmission = false;
+    curl_easy_setopt(_curl, CURLOPT_URL, getUrl());
     return curl_easy_perform(_curl);
 }
 
@@ -113,3 +116,18 @@ size_t HttpPostClient::write_data(void* buffer, size_t size, size_t nmemb, void*
 
     return nbytes;
 }
+
+size_t HttpPostClient::read_callback(void *ptr, size_t size, size_t nmemb, void *stream) {
+
+    HttpPostClient::IndaputData* inputData = (HttpPostClient::IndaputData*) stream;
+
+    if (inputData->endOfTransmission) {
+        return 0;
+    }
+
+    strcpy((char *) ptr, inputData->data.c_str());
+    inputData->endOfTransmission = true;
+
+    return inputData->data.size();;
+}
+
