@@ -135,7 +135,7 @@ size_t HttpPostClient::read_callback(void *ptr, size_t size, size_t nmemb, void 
 
     HttpPostClient::IndaputData* inputData = (HttpPostClient::IndaputData*) stream;
 
-    int inputDataSize = inputData->data.c_str();
+    int inputDataSize = inputData->data.size();
 
     if (inputData->endOfTransmission) {
         srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "End of transmission\n");
