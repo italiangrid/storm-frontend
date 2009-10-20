@@ -25,11 +25,12 @@ private:
     static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
 
     CURL* _curl;
-    char** _response;
+    struct curl_slist* _slist;
 
+    char* _response;
     char* _url;
-    std::string _hostname;
     long _port;
+    std::string _hostname;
     std::string _path;
 
     class IndaputData {

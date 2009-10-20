@@ -11,30 +11,30 @@ HttpPostClient::HttpPostClient() {
 
     _path = std::string("/recalltable/task");
     _url = NULL;
-
+    _response = NULL;
     _curl = curl_easy_init();
 
     if (_curl == NULL) {
         throw new std::exception();
     }
 
-    _response = (char**) calloc(sizeof(char*), 1);
-
     curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(_curl, CURLOPT_WRITEDATA, _response);
+    curl_easy_setopt(_curl, CURLOPT_WRITEDATA, &_response);
     curl_easy_setopt(_curl, CURLOPT_READDATA, &_inputData);
     curl_easy_setopt(_curl, CURLOPT_READFUNCTION, read_callback);
     curl_easy_setopt(_curl, CURLOPT_UPLOAD, 1L);
     curl_easy_setopt(_curl, CURLOPT_PUT, 1L);
 
+    _slist = NULL;
+    _slist = curl_slist_append(_slist, "Expect:");
+    _slist = curl_slist_append(_slist, "Content-Type: text/plain");
+    curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, _slist);
+
 }
 
 HttpPostClient::~HttpPostClient() {
+    curl_slist_free_all(_slist);
     curl_easy_cleanup(_curl);
-
-    if (*_response != NULL) {
-        free(*_response);
-    }
     free(_response);
 }
 
@@ -43,9 +43,8 @@ int HttpPostClient::callService(std::string data) {
     _inputData.data = data;
     _inputData.endOfTransmission = false;
 
-    if (*_response != NULL) {
-        free(*_response);
-    }
+    free(_response);
+    _response = NULL;
 
     curl_easy_setopt(_curl, CURLOPT_URL, getUrl());
 
@@ -53,7 +52,7 @@ int HttpPostClient::callService(std::string data) {
 }
 
 std::string HttpPostClient::getResponse() {
-    std::string response(*_response);
+    std::string response(_response);
     return response;
 }
 
@@ -136,16 +135,24 @@ size_t HttpPostClient::read_callback(void *ptr, size_t size, size_t nmemb, void 
 
     HttpPostClient::IndaputData* inputData = (HttpPostClient::IndaputData*) stream;
 
+    int inputDataSize = inputData->data.c_str();
+
     if (inputData->endOfTransmission) {
         srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "End of transmission\n");
         return 0;
     }
 
+    if (inputDataSize > (nmemb * size)) {
+        srmlogit(STORM_LOG_ERROR, "HttpPutClient::read_callback()",
+                "Buffer too small, aborting HTTP PUT request for: %s\n", inputData->data.c_str());
+        return 0;
+    }
+
     srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "data: \"%s\"\n", inputData->data.c_str());
 
-    strcpy((char *) ptr, inputData->data.c_str());
+    strncpy((char *) ptr, inputData->data.c_str(), inputDataSize);
+
     inputData->endOfTransmission = true;
 
-    return inputData->data.size();;
+    return inputDataSize;
 }
-
