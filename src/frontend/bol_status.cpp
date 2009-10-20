@@ -110,7 +110,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 
                 // Status of the surl
                 ns1__TStatusCode status = i->status;
-//                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
+                //                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
                 if (_recalltableEnabled) {
                     if (isSurlOnDisk(_r_token, surl)) {
                         status = SRM_USCORESUCCESS;
@@ -252,7 +252,11 @@ std::string bol_status::__format_surl_request() {
 }
 
 bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
+
+    bool result = false;
+
     try {
+
         HttpPostClient client;
 
         client.setHostname(_recalltableHost);
@@ -260,16 +264,35 @@ bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
         std::string data = "requestToken=" + requestToken + "\nsurl=" + surl;
         client.callService(data);
 
-        long response = client.getHttpResponseCode();
-        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response code: %d\n", response);
+        long responseCode = client.getHttpResponseCode();
+        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response code: %d\n", responseCode);
 
-        if (response == 200) {
-            srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response: %s\n",
-                    client.getResponse().c_str());
+        if (responseCode == 200) {
+
+            std::string response = client.getResponse();
+
+            if (response.compare("true") == 0) {
+
+                result = true;
+
+                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=true for surl=%s\n", surl.c_str());
+
+            } else {
+
+                result = false;
+
+                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=false for surl=%s\n", surl.c_str());
+
+            }
         }
+
     } catch (exception& e) {
-        srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()", "Curl: cannot create handle for http client.");
+        srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()",
+                "Curl: cannot create handle for HTTP client.\n");
+        return false;
     }
+
+    return result;
 }
 
 }
