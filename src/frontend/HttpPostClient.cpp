@@ -25,6 +25,7 @@ HttpPostClient::HttpPostClient() {
     curl_easy_setopt(_curl, CURLOPT_READDATA, &_inputData);
     curl_easy_setopt(_curl, CURLOPT_READFUNCTION, read_callback);
     curl_easy_setopt(_curl, CURLOPT_UPLOAD, 1L);
+    curl_easy_setopt(_curl, CURLOPT_PUT, 1L);
 
 }
 
