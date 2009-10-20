@@ -48,8 +48,6 @@ int HttpPostClient::callService(std::string data) {
 
     curl_easy_setopt(_curl, CURLOPT_URL, getUrl());
 
-    srmlogit(STORM_LOG_DEBUG, "HttpPutClient::callService()", "data: \"%s\"\n", _inputData.data.c_str());
-
     return curl_easy_perform(_curl);
 }
 
@@ -138,8 +136,11 @@ size_t HttpPostClient::read_callback(void *ptr, size_t size, size_t nmemb, void 
     HttpPostClient::IndaputData* inputData = (HttpPostClient::IndaputData*) stream;
 
     if (inputData->endOfTransmission) {
+        srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "End of transmission\n");
         return 0;
     }
+
+    srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "data: \"%s\"\n", _inputData.data.c_str());
 
     strcpy((char *) ptr, inputData->data.c_str());
     inputData->endOfTransmission = true;
