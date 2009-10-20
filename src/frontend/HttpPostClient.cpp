@@ -118,7 +118,7 @@ void HttpPostClient::setPort(long port) {
 size_t HttpPostClient::write_data(void* buffer, size_t size, size_t nmemb, void* userp) {
 
     char** p = (char**) userp;
-    *p = (char*) calloc(nmemb, size);
+    *p = (char*) calloc(nmemb + 1, size);
 
     if (*p == NULL) {
         return 0;
