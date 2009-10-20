@@ -5,6 +5,7 @@
 #include <exception>
 #include "storm_utils.hpp"
 #include "FrontendConfiguration.hpp"
+#include "srmlogit.h"
 
 HttpPostClient::HttpPostClient() {
 
@@ -29,7 +30,10 @@ HttpPostClient::HttpPostClient() {
 
 HttpPostClient::~HttpPostClient() {
     curl_easy_cleanup(_curl);
-    free(*_response);
+
+    if (*_response != NULL) {
+        free(*_response);
+    }
     free(_response);
 }
 
@@ -43,6 +47,9 @@ int HttpPostClient::callService(std::string data) {
     }
 
     curl_easy_setopt(_curl, CURLOPT_URL, getUrl());
+
+    srmlogit(STORM_LOG_DEBUG, "HttpPutClient::callService()", "data: \"%s\"\n", _inputData.data.c_str());
+
     return curl_easy_perform(_curl);
 }
 
