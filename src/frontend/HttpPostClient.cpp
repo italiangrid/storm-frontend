@@ -140,7 +140,7 @@ size_t HttpPostClient::read_callback(void *ptr, size_t size, size_t nmemb, void 
         return 0;
     }
 
-    srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "data: \"%s\"\n", _inputData->data.c_str());
+    srmlogit(STORM_LOG_DEBUG2, "HttpPutClient::read_callback()", "data: \"%s\"\n", inputData->data.c_str());
 
     strcpy((char *) ptr, inputData->data.c_str());
     inputData->endOfTransmission = true;
