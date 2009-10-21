@@ -68,7 +68,9 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 
     _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
 
-    int fileLevelSuccessNum = 0;
+    bool atLeastOneSuccess = false;
+    bool atLeastOneFailure = false;
+
     // Fill status for each surl.
     if (_surls.size() > 0) {
 
@@ -98,13 +100,21 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
                 // Status of the surl
                 ns1__TStatusCode status = i->status;
                 const char* explanation = i->explanation.c_str();
+
                 if (status == SRM_USCOREREQUEST_USCOREINPROGRESS) {
                     if (isSurlOnDisk(_r_token, surl)) {
                         status = SRM_USCORESUCCESS;
                         explanation = "File recalled from tape";
-                        fileLevelSuccessNum++;
+                        atLeastOneSuccess = true;
                     }
+                } else if (status == SRM_USCOREREQUEST_USCOREQUEUED) {
+                    // do nothing
+                } else if ((status == SRM_USCORESUCCESS) || (status == SRM_USCOREFILE_USCOREIN_USCORECACHE) || (SRM_USCORERELEASED)) {
+                    atLeastOneSuccess = true;
+                } else {
+                    atLeastOneFailure = true;
                 }
+
                 _response->arrayOfFileStatuses->statusArray[n]->status = storm::soap_calloc<
                         ns1__TReturnStatus>(_soap);
                 _response->arrayOfFileStatuses->statusArray[n]->status->statusCode = status;
@@ -147,8 +157,12 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
     ns1__TStatusCode globalStatus = _status;
 
     if (_status == SRM_USCOREREQUEST_USCOREINPROGRESS) {
-        if (fileLevelSuccessNum == _surls.size()) {
+        if (atLeastOneFailure && atLeastOneSuccess) {
+            globalStatus = SRM_USCOREPARTIAL_USCORESUCCESS;
+        } else if (!atLeastOneFailure && atLeastOneSuccess) {
             globalStatus = SRM_USCORESUCCESS;
+        } else {
+            globalStatus = SRM_USCOREFAILURE;
         }
     }
 
