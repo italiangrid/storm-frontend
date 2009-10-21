@@ -68,16 +68,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 
     _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
 
-    // Fill global status
-    _response->returnStatus->statusCode = _status;
-    _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
-
-    // Fill, if present, RemainingTotalRequestTime
-    if (-1 != _remainingTime) {
-        _response->remainingTotalRequestTime = storm::soap_calloc<int>(_soap);
-        *_response->remainingTotalRequestTime = _remainingTime;
-    }
-
+    int fileLevelSuccessNum = 0;
     // Fill status for each surl.
     if (_surls.size() > 0) {
 
@@ -111,6 +102,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
                     if (isSurlOnDisk(_r_token, surl)) {
                         status = SRM_USCORESUCCESS;
                         explanation = "File recalled from tape";
+                        fileLevelSuccessNum++;
                     }
                 }
                 _response->arrayOfFileStatuses->statusArray[n]->status = storm::soap_calloc<
@@ -151,6 +143,25 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
     } else {
         srmlogit(STORM_LOG_ERROR, "bol_status::response()", "No SURLs found\n");
     }
+
+    ns1__TStatusCode globalStatus = _status;
+
+    if (_status == SRM_USCOREREQUEST_USCOREINPROGRESS) {
+        if (fileLevelSuccessNum == _surls.size()) {
+            globalStatus = SRM_USCORESUCCESS;
+        }
+    }
+
+    // Fill global status
+    _response->returnStatus->statusCode = globalStatus;
+    _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
+
+    // Fill, if present, RemainingTotalRequestTime
+    if (-1 != _remainingTime) {
+        _response->remainingTotalRequestTime = storm::soap_calloc<int>(_soap);
+        *_response->remainingTotalRequestTime = _remainingTime;
+    }
+
     return _response;
 }
 
