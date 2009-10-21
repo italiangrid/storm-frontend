@@ -6,7 +6,7 @@ void storm::Monitoring::thread_function(Monitoring* m) {
     try {
         for (;;) {
 
-            sleep(m->_sleep_interval);
+            boost::this_thread::sleep(boost::posix_time::seconds(m->_sleep_interval));
 
             if (m->_stop) {
                 break;
@@ -20,4 +20,3 @@ void storm::Monitoring::thread_function(Monitoring* m) {
     } catch (boost::thread_interrupted e) {
     }
 }
-
