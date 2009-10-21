@@ -161,8 +161,10 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
             globalStatus = SRM_USCOREPARTIAL_USCORESUCCESS;
         } else if (!atLeastOneFailure && atLeastOneSuccess) {
             globalStatus = SRM_USCORESUCCESS;
-        } else {
+        } else if (atLeastOneFailure && !atLeastOneSuccess) {
             globalStatus = SRM_USCOREFAILURE;
+        } else {
+            // stays IN_PROGRESS
         }
     }
 
