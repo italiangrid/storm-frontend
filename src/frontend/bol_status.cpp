@@ -109,7 +109,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
                     }
                 } else if (status == SRM_USCOREREQUEST_USCOREQUEUED) {
                     // do nothing
-                } else if ((status == SRM_USCORESUCCESS) || (status == SRM_USCOREFILE_USCOREIN_USCORECACHE) || (SRM_USCORERELEASED)) {
+                } else if ((status == SRM_USCORESUCCESS) || (status == SRM_USCOREFILE_USCOREIN_USCORECACHE) || (status == SRM_USCORERELEASED)) {
                     atLeastOneSuccess = true;
                 } else {
                     atLeastOneFailure = true;
