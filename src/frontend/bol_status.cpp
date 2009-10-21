@@ -110,8 +110,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 
                 // Status of the surl
                 ns1__TStatusCode status = i->status;
-                //                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
-                if (_recalltableEnabled) {
+                if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
                     if (isSurlOnDisk(_r_token, surl)) {
                         status = SRM_USCORESUCCESS;
                     }
@@ -275,13 +274,15 @@ bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
 
                 result = true;
 
-                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=true for surl=%s\n", surl.c_str());
+                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=true for surl=%s\n",
+                        surl.c_str());
 
             } else {
 
                 result = false;
 
-                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=false for surl=%s\n", surl.c_str());
+                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=false for surl=%s\n",
+                        surl.c_str());
 
             }
         }
