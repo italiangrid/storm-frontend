@@ -15,10 +15,11 @@ audit.timeInterval = 60   # default 60 seconds
 #security.disable.mapping = false     # default is "false"
 #security.disable.vomscheck = false   # default is "false"
 
-# Backend XMLRPC server information
-be.xmlrpc.host = locahost
+# Backend information
+be.xmlrpc.host = localhost
 #be.xmlrpc.port = 8080    # default is 8080
 #be.xmlrpc.path = /RPC2   # default is /RPC2
+be.recalltable.port=9998  # default is 9998
 
 proxy.dir = @prefix@/var/proxy
 #proxy.user = storm       # default is storm

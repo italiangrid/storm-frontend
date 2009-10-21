@@ -230,11 +230,8 @@ int main(int argc, char** argv) {
     srmlogit(STORM_LOG_NONE, func, "auditfile=%s\n", audit_file.c_str());
     srmlogit(STORM_LOG_NONE, func, "audit_time_interval=%u\n", audit_time_interval);
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
-    if (configuration->isRecaltableEnabled()) {
-        srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_RECALLTABLE_ENABLED.c_str());
-        srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(),
-                configuration->getRecalltablePort());
-    }
+    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(),
+            configuration->getRecalltablePort());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), debugLevelString.c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), proxy_user.c_str());

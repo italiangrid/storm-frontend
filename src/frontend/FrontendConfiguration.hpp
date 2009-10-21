@@ -98,7 +98,6 @@ static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate usin
 static const string OPTL_XMLRPC_HOST = "be.xmlrpc.host";
 static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
 
-static const string OPTL_RECALLTABLE_ENABLED = "be.recalltable.enabled";
 static const string OPTL_RECALLTABLE_PORT = "be.recalltable.port";
 static const string OPTL_XMLRPC_PORT = "be.xmlrpc.port";
 static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
@@ -150,7 +149,6 @@ public:
     int getGsoapMaxPending();
     int getPort();
     int getRecalltablePort();
-    bool isRecaltableEnabled();
     int getAuditTimeInterval();
     unsigned int getThreadpoolMaxpendingSleepTime();
     string getDebugLevelString();
@@ -202,7 +200,6 @@ private:
     int debugLevel;
     int port;
     int recalltablePort;
-    bool recalltableEnabled;
     int audit_time_interval;
     string audit_file;
     string log_file;

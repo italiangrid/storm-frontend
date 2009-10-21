@@ -146,8 +146,10 @@ case "$1" in
     check_if_running
     if [ $? -eq $TRUE ]; then
         echo "$prog (pid $PID) is running..."
+        RETVAL=0
     else
         echo "$prog is NOT running"
+        RETVAL=1
     fi
     ;;
   *)
@@ -157,4 +159,3 @@ case "$1" in
 esac
 
 exit $RETVAL
-
