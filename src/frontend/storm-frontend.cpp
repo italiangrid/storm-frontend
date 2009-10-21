@@ -408,7 +408,7 @@ int main(int argc, char** argv) {
 
     curl_global_cleanup();
 
-    srmlogit(STORM_LOG_NONE, func, "Frontend successfully stoppped.\n");
+    srmlogit(STORM_LOG_NONE, func, "StoRM Frontend shutdown complete.\n");
 
     return (exit_code);
 }
