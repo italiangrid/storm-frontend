@@ -110,7 +110,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* bol_status::response() {
 
                 // Status of the surl
                 ns1__TStatusCode status = i->status;
-                char* explanation = i->explanation.c_str();
+                const char* explanation = i->explanation.c_str();
                 if ((_recalltableEnabled) && (status == SRM_USCOREREQUEST_USCOREINPROGRESS)) {
                     if (isSurlOnDisk(_r_token, surl)) {
                         status = SRM_USCORESUCCESS;
