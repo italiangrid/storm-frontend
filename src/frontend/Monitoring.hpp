@@ -21,8 +21,6 @@ namespace storm {
 
 class Monitoring;
 
-void thread_function(Monitoring* m);
-
 class Monitoring {
 private:
     static Monitoring* instance;
@@ -33,7 +31,7 @@ private:
     const char* _template_msg;
     bool _enabled;
 
-    friend void thread_function(Monitoring* m);
+    static void thread_function(Monitoring* m);
 
     boost::mutex _ping_mutex;
     volatile int _ping_completed;
