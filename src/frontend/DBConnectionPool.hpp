@@ -9,7 +9,6 @@
 #define DBCONNECTIONPOOL_HPP_
 
 #include "srm_server.h"
-#include <pthread.h>
 #include <boost/thread.hpp>
 
 class DBConnectionPool {
@@ -24,8 +23,6 @@ private:
     int _pool_size;
     int _curr_size;
     pthread_mutex_t mtx;
-
-
 };
 
 #endif /* DBCONNECTIONPOOL_HPP_ */
