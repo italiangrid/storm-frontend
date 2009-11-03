@@ -42,7 +42,7 @@ public:
     string getDN() { return _clientDN; }
     std::vector<sql_string> getFQANsVector() { return _fqans_vector; }
     sql_string getFQANsOneString();
-    bool Credentials::saveProxy(string requestToken);
+    bool saveProxy(string requestToken);
     //void getVOMS();
     
     //void insert(struct srm_dbfd *dbfd);

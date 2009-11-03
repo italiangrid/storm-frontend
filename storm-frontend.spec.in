@@ -17,7 +17,7 @@ Version:        %{version}
 Release:        %{release}
 Vendor:         INFN - CNAF (2009)
 Packager:       Alberto Forti <alberto.forti@cnaf.infn.it> 
-Copyright:      Apache License, Version 2.0.
+License:      Apache License, Version 2.0.
 URL:            http://storm.forge.cnaf.infn.it
 Source:         @PACKAGE@-%{version}.tar.gz
 Group:          Application/Generic

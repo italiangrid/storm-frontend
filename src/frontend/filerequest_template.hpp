@@ -17,12 +17,6 @@
  */
 
 #include <uuid/uuid.h>
-//@todo
-extern "C" {
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <voms_apic.h>
-}
 
 #include "srmlogit.h"
 #include "srm_server.h"
