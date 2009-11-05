@@ -17,7 +17,7 @@ AC_SUBST([STORM_FRONTEND_RELEASE_NUMBER], [rc1.sl4])
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
 AC_CONFIG_AUX_DIR([config])
-AM_INIT_AUTOMAKE()
+AM_INIT_AUTOMAKE([-Wall])
 
 # Installation prefix
 AC_PREFIX_DEFAULT([/opt/storm/frontend])
@@ -27,11 +27,19 @@ if test "x${prefix}" = "xNONE"; then
   ac_configure_args="$ac_configure_args --prefix $prefix"
 fi
 
+AC_ARG_ENABLE([arch64],[  --enable-arch64    Compile using 64 bits (to be used with SL5)], [ arch64="yes" ])
+
+if test "${arch64}" = "yes"; then
+    LIB_DIR_NAME="lib64"
+    FLAVOUR="gcc64dbgpthr"
+else
+    LIB_DIR_NAME="lib"
+    FLAVOUR="gcc32dbgpthr"
+fi
+
 AC_SUBST([PREFIX], [$prefix])
 
 DEFAULT_GSOAP_DIR=/usr/local/install/gsoap
-#DEFAULT_XMLRPC_C_DIR=/home/storm/install
-#DEFAULT_CURL_LOCATION=/home/storm/install
 DEFAULT_XMLRPC_C_DIR=/usr
 DEFAULT_CURL_LOCATION=/usr
 DEFAULT_GLITE_LOCATION=/opt/glite
@@ -49,14 +57,8 @@ AC_CHECK_FUNCS(getenv)
 # ========================================================================
 # Boost
 # ========================================================================
-AC_SUBST([BOOST_INCLUDE_DIR], [/usr/include/boost-1_37])
-AC_SUBST([BOOST_LDADD], ["/usr/lib/libboost_program_options-gcc34-mt-1_37.a /usr/lib/libboost_thread-gcc34-mt-1_37.a"])
-
-# ========================================================================
-# Globus libraries
-# ========================================================================
-AC_SUBST([GLOBUS_FLAVOR], [gcc32dbgpthr])
-AC_SUBST([GLOBUS_PKG_LIBS], [" -L/opt/globus/lib -lglobus_gss_assist_$GLOBUS_FLAVOR "])
+AC_SUBST([BOOST_INCLUDE_DIR], ["/usr/include/boost-1_37"])
+AC_SUBST([BOOST_LDADD], [" /usr/${LIB_DIR_NAME}/libboost_program_options-gcc34-mt-1_37.a /usr/${LIB_DIR_NAME}/libboost_thread-gcc34-mt-1_37.a "])
 
 # ========================================================================
 # GSOAP
@@ -71,15 +73,30 @@ fi
 AC_MSG_RESULT(["$GSOAP_DIR" found])
 
 AC_SUBST([GSOAP_DIR])
-AC_SUBST([GSOAP_LDADD], [$GSOAP_DIR/lib/libgsoap.a])
+AC_SUBST([GSOAP_LDADD], [" $GSOAP_DIR/lib/libgsoap.a "])
 AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated-sources])
+
+# ========================================================================
+# gLite
+# ========================================================================
+AC_MSG_CHECKING([gLite directory])
+if test -z $GLITE_LOCATION; then
+    GLITE_LOCATION=$DEFAULT_GLITE_LOCATION
+fi
+if test ! \( -d $GLITE_LOCATION \); then
+    AC_MSG_ERROR([no such directory "$GLITE_LOCATION"])
+fi
+AC_MSG_RESULT(["$GLITE_LOCATION" found])
+AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION/${LIB_DIR_NAME} "])
 
 # ========================================================================
 # gSOAP GSI plugin
 # ========================================================================
 AC_SUBST([GSOAPGSI_DIR], [])
 AC_SUBST([GSOAPGSI_CFLAGS], [" -DGSI_PLUGINS "])
-AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_gcc32dbgpthr "])
+AC_SUBST([GSOAPGSI_LDFLAGS], [" $GLITE_LDFLAGS "])
+AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_${FLAVOUR} "])
+#AC_SUBST([GSOAPGSI_LDADD], [" -lglite_security_gsoap_plugin_276b_gcc32dbgpthr "])
 
 # ========================================================================
 # MySQL 
@@ -93,22 +110,9 @@ if test ! \( -d $MYSQL_DIR \); then
 fi
 AC_MSG_RESULT(["$MYSQL_DIR" found])
 
-AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR -DUSE_MYSQL" ])
-AC_SUBST([MYSQL_LDFLAGS], [" -L$MYSQL_DIR/lib/mysql" ])
-AC_SUBST([MYSQL_LDADD], [-lmysqlclient_r])
-
-# ========================================================================
-# gLite
-# ========================================================================
-AC_MSG_CHECKING([gLite directory])
-if test -z $GLITE_LOCATION; then
-    GLITE_LOCATION=$DEFAULT_GLITE_LOCATION
-fi
-if test ! \( -d $GLITE_LOCATION \); then
-    AC_MSG_ERROR([no such directory "$GLITE_LOCATION"])
-fi
-AC_MSG_RESULT(["$GLITE_LOCATION" found])
-AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION/lib "])
+AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR -DUSE_MYSQL " ])
+AC_SUBST([MYSQL_LDFLAGS], [" -L$MYSQL_DIR/${LIB_DIR_NAME}/mysql " ])
+AC_SUBST([MYSQL_LDADD], [" -lmysqlclient_r] ")
 
 # ========================================================================
 # XMLRPC-C
@@ -123,9 +127,9 @@ fi
 AC_MSG_RESULT(["$XMLRPC_C_DIR" found])
 
 AC_SUBST([XMLRPC_C_CFLAGS], [" -I$XMLRPC_C_DIR/include "])
-AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/lib"])
-AC_SUBST([XMLRPC_C_LDADD], [" -L$XMLRPC_C_DIR/lib -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok "])
-#AC_SUBST([XMLRPC_C_LDADD], [" /home/storm/install/lib/libxmlrpc_client.a /home/storm/install/lib/libxmlrpc.a /home/storm/install/lib/libxmlrpc_util.a -lxml2 "])
+AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/${LIB_DIR_NAME}"])
+AC_SUBST([XMLRPC_C_LDFLAGS], [" -L$XMLRPC_C_DIR/${LIB_DIR_NAME} "])
+AC_SUBST([XMLRPC_C_LDADD], [" -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok "])
 
 # ========================================================================
 # Curl
@@ -138,9 +142,9 @@ if test ! \( -d $CURL_LOCATION \); then
     AC_MSG_ERROR([no such directory "$CURL_LOCATION"])
 fi
 AC_MSG_RESULT(["$CURL_LOCATION" found])
-AC_SUBST([CURL_LIB_LOCATION], [$CURL_LOCATION/lib])
-#AC_SUBST([CURL_LDADD], [" /home/storm/install/lib/libcurl.a -lrt"])
-AC_SUBST([CURL_LDADD], [" -L$CURL_LOCATION/lib -lcurl "])
+AC_SUBST([CURL_LIB_LOCATION], ["$CURL_LOCATION/${LIB_DIR_NAME}"])
+AC_SUBST([CURL_LDFLAGS], [" -L$CURL_LOCATION/${LIB_DIR_NAME} "])
+AC_SUBST([CURL_LDADD], [" -lcurl "])
 
 # ========================================================================
 # RPM directory

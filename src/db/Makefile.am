@@ -15,13 +15,11 @@ MAINTAINERCLEANFILES = Makefile.in
 
 GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/$(GSOAP_GENERATED_CODE_DIR_NAME)
 
-INCLUDES = -I$(top_builddir)/src/frontend \
-    -I$(top_srcdir)/src/frontend \
-    -I$(GENERATED_GSOAP_INCLUDES) \
-    -I/usr/include/mysql \
-    -I$(BOOST_INCLUDE_DIR)
-
-#noinst_INCLUDES = storm_mysql.h
+AM_CPPFLAGS = -I$(top_builddir)/src/frontend \
+              -I$(top_srcdir)/src/frontend \
+              -I$(GENERATED_GSOAP_INCLUDES) \
+              -I/usr/include/mysql \
+              -I$(BOOST_INCLUDE_DIR)
 
 noinst_LTLIBRARIES = libstormdb.la
 

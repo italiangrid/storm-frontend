@@ -11,44 +11,23 @@ MAINTAINERCLEANFILES = Makefile.in
 
 #EXTRA_DIST = srmv2.man
 
-INCLUDES = -I$(top_srcdir)/src/db \
-    -I$(GENERATED_GSOAP_INCLUDES) \
-    -I$(GSOAPGSI_DIR)/include \
-    -I/opt/glite/include/glite/security/voms \
-    -I/opt/globus/include/gcc32/ \
-    $(XMLRPC_C_CFLAGS) \
-    $(GSOAPGSI_CFLAGS) \
-    -I$(BOOST_INCLUDE_DIR) \
-    -I$(GSOAP_DIR)/include \
-    $(MTCCFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/src/db \
+              -I$(GENERATED_GSOAP_INCLUDES) \
+              -I$(GSOAPGSI_DIR)/include \
+              -I/opt/glite/include/glite/security/voms \
+              -I/opt/globus/include/gcc32/ \
+              $(XMLRPC_C_CFLAGS) \
+              $(GSOAPGSI_CFLAGS) \
+             -I$(BOOST_INCLUDE_DIR) \
+             -I$(GSOAP_DIR)/include \
+              $(MTCCFLAGS)
 
 sbin_PROGRAMS = storm-frontend
+
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
-storm_frontend_SOURCES = storm-frontend.cpp
-storm_frontend_LDFLAGS = -L../db $(MYSQL_LDFLAGS) $(GLITE_LDFLAGS)
-storm_frontend_LDADD = -lstormfrontend -lstormdb \
-    $(GLITE_LDFLAGS) -lvomsc \
-    $(MYSQL_LDADD) \
-    $(XMLRPC_C_LDADD) \
-    $(CURL_LDADD) \
-    $(GSOAPGSI_LDADD) \
-    $(GLOBUS_PKG_LIBS) \
-    $(BOOST_LDADD) \
-    $(GSOAP_LDADD) \
-    -lz -lm -luuid -lidn
-
-noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
-  storm_limits.h storm_util.h srmlogit.h \
-  xmlrpc_decode.h xmlrpc_encode.h \
-  $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \
-  $(GENERATED_GSOAP_INCLUDES)/srmv2H.h \
-  $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
-
-noinst_LTLIBRARIES = libstormfrontend.la
-
-libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
+storm_frontend_SOURCES = Credentials.cpp Credentials.hpp \
     file_request.hpp filerequest_template.hpp \
     status_template.hpp file_status.hpp \
     bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
@@ -69,7 +48,24 @@ libstormfrontend_la_SOURCES =  Credentials.cpp Credentials.hpp \
     storm_util.c storm_utils.hpp \
     $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c \
-    $(noinst_INCLUDES)
+    $(noinst_INCLUDES) \
+    storm-frontend.cpp
 
-storm_frontend_DEPENDENCIES = libstormfrontend.la
+storm_frontend_LDFLAGS = $(GLITE_LDFLAGS) $(MYSQL_LDFLAGS) $(XMLRPC_C_LDFLAGS) $(CURL_LDFLAGS) 
+
+storm_frontend_LDADD =  $(GSOAPGSI_LDADD) \
+    $(MYSQL_LDADD) \
+    $(XMLRPC_C_LDADD) \
+    $(CURL_LDADD) \
+    $(BOOST_LDADD) \
+    $(GSOAP_LDADD) \
+    $(top_builddir)/src/db/libstormdb.la \
+    -lz -lm -luuid -lidn
+
+noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
+  storm_limits.h storm_util.h srmlogit.h \
+  xmlrpc_decode.h xmlrpc_encode.h \
+  $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \
+  $(GENERATED_GSOAP_INCLUDES)/srmv2H.h \
+  $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
 
