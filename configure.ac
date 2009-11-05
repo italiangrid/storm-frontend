@@ -31,9 +31,11 @@ AC_ARG_ENABLE([arch64],[  --enable-arch64    Compile using 64 bits (to be used w
 
 if test "${arch64}" = "yes"; then
     LIB_DIR_NAME="lib64"
+    GCC_VERSION="gcc41"
     FLAVOUR="gcc64dbgpthr"
 else
     LIB_DIR_NAME="lib"
+    GCC_VERSION="gcc34"
     FLAVOUR="gcc32dbgpthr"
 fi
 
@@ -58,7 +60,7 @@ AC_CHECK_FUNCS(getenv)
 # Boost
 # ========================================================================
 AC_SUBST([BOOST_INCLUDE_DIR], ["/usr/include/boost-1_37"])
-AC_SUBST([BOOST_LDADD], [" /usr/${LIB_DIR_NAME}/libboost_program_options-gcc34-mt-1_37.a /usr/${LIB_DIR_NAME}/libboost_thread-gcc34-mt-1_37.a "])
+AC_SUBST([BOOST_LDADD], [" /usr/${LIB_DIR_NAME}/libboost_program_options-${GCC_VERSION=}-mt-1_37.a /usr/${LIB_DIR_NAME}/libboost_thread-${GCC_VERSION=}-mt-1_37.a "])
 
 # ========================================================================
 # GSOAP
