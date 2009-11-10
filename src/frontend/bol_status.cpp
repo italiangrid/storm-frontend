@@ -18,7 +18,6 @@
 #include "bol_status.hpp"
 #include "srmlogit.h"
 #include "FrontendConfiguration.hpp"
-#include "HttpPostClient.h"
 
 using namespace storm;
 
@@ -273,52 +272,6 @@ std::string bol_status::__format_surl_request() {
         query += "(c.sourceSURL = '" + i->source() + "')";
     }
     query += ")";
-}
-
-bool bol_status::isSurlOnDisk(std::string requestToken, std::string surl) {
-
-    bool result = false;
-
-    try {
-
-        HttpPostClient client;
-
-        client.setHostname(_recalltableHost);
-        client.setPort(_recalltablePort);
-        std::string data = "requestToken=" + requestToken + "\nsurl=" + surl;
-        client.callService(data);
-
-        long responseCode = client.getHttpResponseCode();
-        srmlogit(STORM_LOG_DEBUG, "bol_status::isSurlOnDisk()", "Response code: %d\n", responseCode);
-
-        if (responseCode == 200) {
-
-            std::string response = client.getResponse();
-
-            if (response.compare("true") == 0) {
-
-                result = true;
-
-                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=true for surl=%s\n",
-                        surl.c_str());
-
-            } else {
-
-                result = false;
-
-                srmlogit(STORM_LOG_DEBUG2, "bol_status::isSurlOnDisk()", "Response=false for surl=%s\n",
-                        surl.c_str());
-
-            }
-        }
-
-    } catch (exception& e) {
-        srmlogit(STORM_LOG_ERROR, "bol_status::isSurlOnDisk()",
-                "Curl: cannot create handle for HTTP client.\n");
-        return false;
-    }
-
-    return result;
 }
 
 }

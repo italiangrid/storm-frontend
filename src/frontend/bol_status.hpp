@@ -66,7 +66,6 @@ namespace storm{
     private:
         void __fill_bol_request();
         std::string __format_surl_request();
-        bool isSurlOnDisk(std::string requestToken, std::string surl);
         long _recalltablePort;
         std::string _recalltableHost;
 
