@@ -196,9 +196,10 @@ ns1__srmStatusOfGetRequestResponse* get_status::response() {
                     _response->arrayOfFileStatuses->statusArray[n]->transferURL = NULL;
 
                 // Status of the surl
+                ns1__TStatusCode status = i->status;
                 _response->arrayOfFileStatuses->statusArray[n]->status = storm::soap_calloc<
                         ns1__TReturnStatus>(_soap);
-                _response->arrayOfFileStatuses->statusArray[n]->status->statusCode = i->status;
+                _response->arrayOfFileStatuses->statusArray[n]->status->statusCode = status;
                 _response->arrayOfFileStatuses->statusArray[n]->status->explanation = soap_strdup(_soap,
                         i->explanation.c_str());
 
