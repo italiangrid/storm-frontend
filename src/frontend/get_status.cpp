@@ -180,10 +180,11 @@ ns1__srmStatusOfGetRequestResponse* get_status::response() {
                 _response->arrayOfFileStatuses->statusArray[n] = storm::soap_calloc<
                         ns1__TGetRequestFileStatus>(_soap);
 
+                std::string surl = i->source;
                 // Source SURL
-                if (i->source.length() > 0)
+                if (surl.length() > 0)
                     _response->arrayOfFileStatuses->statusArray[n]->sourceSURL = soap_strdup(_soap,
-                            i->source.c_str());
+                            surl.c_str());
                 else
                     _response->arrayOfFileStatuses->statusArray[n]->sourceSURL = NULL;
 
