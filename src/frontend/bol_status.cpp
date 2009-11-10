@@ -24,9 +24,6 @@ using namespace storm;
 namespace storm {
 bol_status::bol_status(struct soap * soap) :
     file_status<ns1__srmStatusOfBringOnlineRequestResponse> (soap) {
-
-    _recalltablePort = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
-    _recalltableHost = FrontendConfiguration::getInstance()->getXmlRpcHost();
 }
 
 void bol_status::load(struct srm_dbfd *db, const std::string &requestToken) {

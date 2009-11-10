@@ -67,6 +67,8 @@ public:
     file_status(struct soap * soap) :
         _soap(soap), _results_filled(false), _credentials(soap) {
         _response = NULL;
+        _recalltablePort = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
+        _recalltableHost = FrontendConfiguration::getInstance()->getXmlRpcHost();
     }
     ;
 
@@ -224,6 +226,9 @@ protected:
     file_status_results_t _results;
     bool _results_filled;
     soap_out_t* _response;
+
+    long _recalltablePort;
+    std::string _recalltableHost;
 };
 
 }
