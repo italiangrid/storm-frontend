@@ -63,6 +63,12 @@ AC_SUBST([BOOST_INCLUDE_DIR], ["/usr/include/boost-1_37"])
 AC_SUBST([BOOST_LDADD], [" /usr/${LIB_DIR_NAME}/libboost_program_options-${GCC_VERSION=}-mt-1_37.a /usr/${LIB_DIR_NAME}/libboost_thread-${GCC_VERSION=}-mt-1_37.a "])
 
 # ========================================================================
+# Globus libraries
+# ========================================================================
+AC_SUBST([GLOBUS_LDFLAGS], [" -L/opt/globus/lib "])
+AC_SUBST([GLOBUS_LDADD], [" -lglobus_gss_assist_$FLAVOUR "])
+
+# ========================================================================
 # GSOAP
 # ========================================================================
 AC_MSG_CHECKING([for gSOAP directory])

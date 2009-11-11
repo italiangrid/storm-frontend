@@ -51,7 +51,7 @@ storm_frontend_SOURCES = Credentials.cpp Credentials.hpp \
     $(noinst_INCLUDES) \
     storm-frontend.cpp
 
-storm_frontend_LDFLAGS = $(GLITE_LDFLAGS) $(MYSQL_LDFLAGS) $(XMLRPC_C_LDFLAGS) $(CURL_LDFLAGS) 
+storm_frontend_LDFLAGS = $(GLITE_LDFLAGS) $(MYSQL_LDFLAGS) $(XMLRPC_C_LDFLAGS) $(CURL_LDFLAGS) $(GLOBUS_LDFLAGS)
 
 storm_frontend_LDADD =  $(GSOAPGSI_LDADD) \
     $(MYSQL_LDADD) \
@@ -59,6 +59,7 @@ storm_frontend_LDADD =  $(GSOAPGSI_LDADD) \
     $(CURL_LDADD) \
     $(BOOST_LDADD) \
     $(GSOAP_LDADD) \
+    $(GLOBUS_LDADD) \
     $(top_builddir)/src/db/libstormdb.la \
     -lz -lm -luuid -lidn
 
