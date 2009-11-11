@@ -32,11 +32,11 @@ AC_ARG_ENABLE([arch64],[  --enable-arch64    Compile using 64 bits (to be used w
 if test "${arch64}" = "yes"; then
     LIB_DIR_NAME="lib64"
     GCC_VERSION="gcc41"
-    FLAVOUR="gcc64dbgpthr"
+    AC_SUBST([FLAVOUR], ["gcc64dbgpthr"])
 else
     LIB_DIR_NAME="lib"
     GCC_VERSION="gcc34"
-    FLAVOUR="gcc32dbgpthr"
+    AC_SUBST([FLAVOUR], ["gcc32dbgpthr"])
 fi
 
 AC_SUBST([PREFIX], [$prefix])
