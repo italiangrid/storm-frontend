@@ -34,7 +34,7 @@ static bool _auditEnabled;
  *               the fopen() fail.
  *
  **/
-int srmlogit_init(const char* logfile, const char* auditfile, bool auditEnabled) {
+int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) {
 
     _auditEnabled = auditEnabled;
 

@@ -199,6 +199,12 @@ int main(int argc, char** argv) {
     db_srvr = strdup(dbHost.c_str());
 
     // Initialize the loging system
+    int doAudit;
+    if (audit_enabled) {
+        doAudit = 1;
+    } else {
+        doAudit = 0;
+    }
     if (debugMode) {
         srmlogit_init(NULL, NULL, audit_enabled); // i.e. log to stderr
         log_file.assign("stderr"); // Just because it's printed in the logs, see below.

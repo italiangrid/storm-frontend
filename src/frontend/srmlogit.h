@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 int srmlogit_set_debuglevel(int level);
-int srmlogit_init(const char* logfile, const char* auditfile, bool auditEnabled);
+int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled);
 int srmlogit(int level,const char *func, const char *msg, ...);
 
 #ifdef __cplusplus
@@ -39,3 +39,4 @@ int srmlogit(int level,const char *func, const char *msg, ...);
 #endif
 
 #endif
+
