@@ -1,4 +1,3 @@
-
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -22,6 +21,7 @@ boost::mutex audit_mutex;
 static FILE *log_fd = NULL;
 static FILE *audit_fd = NULL;
 static int loglevel = STORM_LOG_ERROR;
+static bool _auditEnabled;
 
 /**
  * This function init the log file. At this moment, open the file in
@@ -34,7 +34,9 @@ static int loglevel = STORM_LOG_ERROR;
  *               the fopen() fail.
  *
  **/
-int srmlogit_init(const char* logfile, const char* auditfile) {
+int srmlogit_init(const char* logfile, const char* auditfile, bool auditEnabled) {
+
+    _auditEnabled = auditEnabled;
 
     if (NULL == logfile) {
 
@@ -51,22 +53,26 @@ int srmlogit_init(const char* logfile, const char* auditfile) {
         }
     }
 
-    if (NULL == auditfile) {
+    if (_auditEnabled) {
+        if (NULL == auditfile) {
 
-        audit_fd = stderr;
-        return 0;
+            audit_fd = stderr;
+            return 0;
 
-    } else {
+        } else {
 
-        audit_fd = fopen(auditfile, "a");
+            audit_fd = fopen(auditfile, "a");
 
-        if (audit_fd == NULL) {
-            fprintf(stderr, "Cannot open audit file %s\n", auditfile);
-            if (log_fd != NULL) {
-                fclose(log_fd);
+            if (audit_fd == NULL) {
+                fprintf(stderr, "Cannot open audit file %s\n", auditfile);
+                if (log_fd != NULL) {
+                    fclose(log_fd);
+                }
+                return 1;
             }
-            return 1;
         }
+    } else {
+        audit_fd = NULL;
     }
 
     return 0;
@@ -126,6 +132,9 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     FILE *fd;
 
     if (level == STORM_AUDIT) {
+        if (!_auditEnabled) {
+            return 0;
+        }
         fd = audit_fd;
         lock = boost::mutex::scoped_lock(audit_mutex);
     } else {

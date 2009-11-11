@@ -200,11 +200,11 @@ int main(int argc, char** argv) {
 
     // Initialize the loging system
     if (debugMode) {
-        srmlogit_init(NULL, NULL); // i.e. log to stderr
+        srmlogit_init(NULL, NULL, audit_enabled); // i.e. log to stderr
         log_file.assign("stderr"); // Just because it's printed in the logs, see below.
         audit_file.assign("stderr"); // Just because it's printed in the logs, see below.
     } else {
-        srmlogit_init(log_file.c_str(), audit_file.c_str());
+        srmlogit_init(log_file.c_str(), audit_file.c_str(), audit_enabled);
     }
 
     // WSDL file
