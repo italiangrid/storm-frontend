@@ -70,7 +70,7 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/wsdl/srm.v2.2.wsdl
 %{prefix}/etc/storm-frontend.conf.template
 %defattr(755,root,root)
-%config(noreplace) /etc/init.d/storm-frontend
+%config /etc/init.d/storm-frontend
 
 %preun
 /etc/init.d/storm-frontend stop > /dev/null
