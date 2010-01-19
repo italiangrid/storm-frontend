@@ -2,6 +2,7 @@
 %define version      @VERSION@
 %define release      @STORM_FRONTEND_RELEASE_NUMBER@
 %define flavor       @FLAVOUR@
+%define arch64       @ARCH_64@
 %define builddir     $RPM_BUILD_DIR/%{name}-%{flavor}-%{version}
 #%define globusdir    @GLOBUS_LOCATION@
 #%define stormdir     @STORM_DIR@
@@ -44,7 +45,12 @@ GPFS from IBM and Lustre from SUN.
 
 %build
 #./configure --prefix=%{prefix} --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
-./configure --prefix=%{prefix} 
+if [ %{arch64} = y  ]; then 
+    ./configure --prefix=%{prefix} --enable-arch64
+else
+    ./configure --prefix=%{prefix}
+fi
+
 make
 
 %pre

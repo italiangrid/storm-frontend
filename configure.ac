@@ -33,10 +33,12 @@ if test "${arch64}" = "yes"; then
     LIB_DIR_NAME="lib64"
     GCC_VERSION="gcc41"
     AC_SUBST([FLAVOUR], ["gcc64dbgpthr"])
+    AC_SUBST([ARCH_64], ["y"])
 else
     LIB_DIR_NAME="lib"
     GCC_VERSION="gcc34"
     AC_SUBST([FLAVOUR], ["gcc32dbgpthr"])
+    AC_SUBST([ARCH_64], ["n"])
 fi
 
 AC_SUBST([PREFIX], [$prefix])
