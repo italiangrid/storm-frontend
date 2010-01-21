@@ -70,6 +70,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         thip->db_open_done = 1;
     } else { // ping connection and reconnect if needed
 		if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
+			sleep(1);
 			// check if reconnection succeeded
 			if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
 				*resp = request.error_response(SRM_USCOREINTERNAL_USCOREERROR,
