@@ -36,7 +36,7 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
 
     if (thip == NULL) {
         *resp = status.error_response(SRM_USCOREFATAL_USCOREINTERNAL_USCOREERROR,
-                "Cannot get DB connect from the pool");
+                "Cannot get DB connection from the pool");
         return SOAP_OK;
     }
 
@@ -53,19 +53,25 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
 
     string requestToken(r_token);
 
-    // load data from DB
-    if (!(thip->db_open_done)) {
+    if (!(thip->db_open_done)) { // Get DB connection
         if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-            *resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR, "DB open error");
+            *resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR, "Cannot get a DB connection.");
             return SOAP_OK;
         }
         thip->db_open_done = 1;
+    } else { // ping connection and reconnect if needed
+    	if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
+			*resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR,
+					"Lost connection to the DB.");
+			return SOAP_OK;
+		}
     }
 
     // Try for possible soap_bad_alloc
     try {
 
         try {
+        	// load data from DB
             status.load(&thip->dbfd, requestToken);
         } catch (token_not_found x) {
             srmlogit(STORM_LOG_DEBUG, func, "No request by token %s", requestToken.c_str());

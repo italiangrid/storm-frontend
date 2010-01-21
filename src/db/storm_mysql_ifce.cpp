@@ -58,16 +58,23 @@ extern "C" int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct s
     static const char *func = "storm_opendb";
     int ntries;
 
-    (void) mysql_init(&dbfd->mysql);
+    mysql_init(&dbfd->mysql);
+
+    my_bool valueTrue = 1;
+    mysql_options(&dbfd->mysql, MYSQL_OPT_RECONNECT, (void *) &valueTrue);
+
     ntries = 0;
     while (1) {
-        if (mysql_real_connect(&dbfd->mysql, db_srvr, db_user, db_pwd, "storm_db", 0, NULL, 0)) {
-            srmlogit(STORM_LOG_INFO, func, "Connected to the DB.\n");
+        if (mysql_real_connect(&dbfd->mysql, db_srvr, db_user, db_pwd, "storm_db", 0, NULL, 0) == &dbfd->mysql) {
+            srmlogit(STORM_LOG_DEBUG, func, "Connected to the DB.\n");
             return (0);
-        } else {
-            srmlogit (STORM_LOG_ERROR, func, "CONNECT error: %s\n", mysql_error(&dbfd->mysql));
         }
-        if (ntries++ >= MAXRETRY) break;
+
+        if (ntries++ >= MAXRETRY) {
+        	break;
+        }
+
+        srmlogit(STORM_LOG_ERROR, func, "Failed to get a DB connection, trying again in %d seconds. Error: %s\n", RETRYI, mysql_error(&dbfd->mysql));
         sleep(RETRYI);
     }
     srmlogit (STORM_LOG_ERROR, func, "Cannot connect to the DB.\n");
@@ -77,8 +84,13 @@ extern "C" int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct s
 
 extern "C" void storm_closedb(struct srm_dbfd *dbfd)
 {
-    mysql_close (&dbfd->mysql);
+    mysql_close(&dbfd->mysql);
     return ;
+}
+
+extern "C" int storm_ping_connection(MYSQL *mysql)
+{
+	return mysql_ping(mysql);
 }
 
 
