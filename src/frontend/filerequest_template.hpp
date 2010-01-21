@@ -62,12 +62,18 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
     srmlogit(STORM_LOG_DEBUG, func, "Request token: %s\n", request.r_token().c_str());
 
     // Connect to the DB, if needed.
-    if (!(thip->db_open_done)) {
+    if (!(thip->db_open_done)) { // Get DB connection
         if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-            *resp = request.error_response(SRM_USCOREINTERNAL_USCOREERROR, "DB open error");
+            *resp = request.error_response(SRM_USCOREINTERNAL_USCOREERROR, "Cannot get a DB connection.");
             return SOAP_OK;
         }
         thip->db_open_done = 1;
+    } else { // ping connection and reconnect if needed
+    	if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
+			*resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR,
+					"Lost connection to the DB.");
+			return SOAP_OK;
+		}
     }
 
     // Load data from the soap request struct.
