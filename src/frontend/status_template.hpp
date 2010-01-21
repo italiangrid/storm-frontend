@@ -61,8 +61,11 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
         thip->db_open_done = 1;
     } else { // ping connection and reconnect if needed
     	if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
-			*resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR,
-					"Lost connection to the DB.");
+    		// check if reconnection succeeded
+    		if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
+				*resp = status.error_response(SRM_USCOREINTERNAL_USCOREERROR,
+						"Lost connection to the DB.");
+			}
 			return SOAP_OK;
 		}
     }
