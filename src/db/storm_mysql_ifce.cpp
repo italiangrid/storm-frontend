@@ -60,8 +60,10 @@ extern "C" int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct s
 
     mysql_init(&dbfd->mysql);
 
-    my_bool valueTrue = 1;
-    mysql_options(&dbfd->mysql, MYSQL_OPT_RECONNECT, (void *) &valueTrue);
+//#ifdef _USE_MYSQL5
+//    my_bool valueTrue = 1;
+//    mysql_options(&dbfd->mysql, MYSQL_OPT_RECONNECT, (void *) &valueTrue);
+//#endif
 
     ntries = 0;
     while (1) {
