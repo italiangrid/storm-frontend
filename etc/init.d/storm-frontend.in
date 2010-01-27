@@ -1,4 +1,6 @@
 #!/bin/sh
+# Comments to support chkconfig on RedHat Linux
+# chkconfig: 2345 94 20
 #
 # StoRM Frontend start script
 
@@ -98,7 +100,7 @@ case "$1" in
     fi
 
     # Launch the frontend
-    su -m -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE" $STORM_FE_USER
+    su -m -s "/bin/bash" -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE" $STORM_FE_USER
 
     if [ $? -eq 0 ]; then
         pid=`ps -eo pid,ppid,comm | grep " 1 $prog$" | awk '{print $1}'`
