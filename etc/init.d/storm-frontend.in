@@ -1,7 +1,9 @@
 #!/bin/sh
+
 # Comments to support chkconfig on RedHat Linux
 # chkconfig: 2345 94 20
-#
+# description: StoRM FrontEnd server
+
 # StoRM Frontend start script
 
 prog="storm-frontend"
