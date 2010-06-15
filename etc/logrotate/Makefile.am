@@ -15,9 +15,11 @@
 #    limitations under the License.
 #
 
-SUBDIRS = cron.d logrotate init.d
+EXTRA_DIST = storm-frontend.logrotate.in
 
-stormetcsysconfdir = $(sysconfdir)
-dist_stormetcsysconf_DATA = storm-frontend.conf.template
+logrotatedir = $(sysconfdir)/logrotate
+dist_logrotate_DATA = ./logrotate/storm-frontend.logrotate
+
+CLEANFILES = storm-frontend.logrotate
 
 MAINTAINERCLEANFILES = Makefile.in

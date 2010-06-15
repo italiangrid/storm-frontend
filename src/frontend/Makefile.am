@@ -1,33 +1,62 @@
 # $Id$
 
-MTCCFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
 
-GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/$(GSOAP_GENERATED_CODE_DIR_NAME)
+MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
 
-MAINTAINERCLEANFILES = Makefile.in
-
-#stormmandir = $(mandir)/man8
-#stormman_DATA = srmv2.man
-
-#EXTRA_DIST = srmv2.man
-
-AM_CPPFLAGS = -I$(top_srcdir)/src/db \
-              -I$(GENERATED_GSOAP_INCLUDES) \
-              -I$(GSOAPGSI_DIR)/include \
-              -I/opt/glite/include/glite/security/voms \
-              -I/opt/globus/include/gcc32/ \
-              $(XMLRPC_C_CFLAGS) \
-              $(GSOAPGSI_CFLAGS) \
-             -I$(BOOST_INCLUDE_DIR) \
-             -I$(GSOAP_DIR)/include \
-              $(MTCCFLAGS)
+GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 
 sbin_PROGRAMS = storm-frontend
+
+noinst_LTLIBRARIES = libstormfrontend.la
 
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
-storm_frontend_SOURCES = Credentials.cpp Credentials.hpp \
+
+storm_frontend_SOURCES = storm-frontend.cpp
+storm_frontend_LDFLAGS = -L../db \
+    @GLITE_LDFLAGS@
+storm_frontend_LDADD = -lstormfrontend -lstormdb \
+    @GLITE_LDFLAGS@ \
+    @VOMS_LIBS@ \
+    @MYSQL_LIBS@ \
+    @XMLRPC_C_DEVEL_LIBS@ \
+    @CURL_DEVEL_LIBS@ \
+    @CGSI_VOMS_GSOAP_PTHR_LIBS@ \
+    @GLOBUS_GSS_THR_LIBS@ \
+    @BOOST_PO_STATIC_LIBS@ \
+    @BOOST_THREAD_STATIC_LIBS@ \
+    -lz -lm -luuid -lidn
+storm_frontend_DEPENDENCIES = libstormfrontend.la
+
+noinst_INCLUDES = osdep.h \
+  srm_server.h \
+  storm_constants.h \
+  storm_functions.h \
+  storm_limits.h \
+  storm_util.h \
+  srmlogit.h \
+  xmlrpc_decode.h \
+  xmlrpc_encode.h \
+  $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \
+  $(GENERATED_GSOAP_INCLUDES)/srmv2H.h \
+  $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
+
+libstormfrontend_la_SOURCES = Credentials.cpp Credentials.hpp \
     file_request.hpp filerequest_template.hpp \
     status_template.hpp file_status.hpp \
     bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
@@ -48,25 +77,38 @@ storm_frontend_SOURCES = Credentials.cpp Credentials.hpp \
     storm_util.c storm_utils.hpp \
     $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
     $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c \
-    $(noinst_INCLUDES) \
-    storm-frontend.cpp
+    $(noinst_INCLUDES) 
 
-storm_frontend_LDFLAGS = $(GLITE_LDFLAGS) $(MYSQL_LDFLAGS) $(XMLRPC_C_LDFLAGS) $(CURL_LDFLAGS) $(GLOBUS_LDFLAGS)
+AM_CPPFLAGS = \
+    -I$(top_srcdir)/src/db \
+    -I$(GENERATED_GSOAP_INCLUDES) \
+    @VOMS_CFLAGS@/glite/security/voms \
+    @GLOBUS_THR_CFLAGS@ \
+    @STORM_FRONTEND_CFLAGS@ \
+    @XMLRPC_C_DEVEL_CFLAGS@ \
+    @CGSI_GSOAP_CFLAGS@ \
+    @GSOAP_CFLAGS@ \
+    @MYSQL_CFLAGS@ \
+    @BOOST_CFLAGS@ \
+    @THREADPOOL_CFLAGS@ \
+    $(MTC_CFLAGS)
 
-storm_frontend_LDADD =  $(GSOAPGSI_LDADD) \
-    $(MYSQL_LDADD) \
-    $(XMLRPC_C_LDADD) \
-    $(CURL_LDADD) \
-    $(BOOST_LDADD) \
-    $(GSOAP_LDADD) \
-    $(GLOBUS_LDADD) \
-    $(top_builddir)/src/db/libstormdb.la \
-    -lz -lm -luuid -lidn
+MAINTAINERCLEANFILES = Makefile.in \
+    stdsoap2.c \
+    srmv2C.c \
+    srmv2Server.c
 
-noinst_INCLUDES = osdep.h srm_server.h storm_constants.h storm_functions.h \
-  storm_limits.h storm_util.h srmlogit.h \
-  xmlrpc_decode.h xmlrpc_encode.h \
-  $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \
-  $(GENERATED_GSOAP_INCLUDES)/srmv2H.h \
-  $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
+stdsoap2.c:
+	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_LOCATION@)"
+	/bin/cp @GSOAP_LOCATION@/src/stdsoap2.c .
 
+srmv2C.c:
+	@echo "Copying file \"srmv2C.c\" from $(GENERATED_GSOAP_INCLUDES)"
+	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2C.c .
+
+srmv2Server.c:
+	@echo "Copying file \"srmv2Server.c\" from $(GENERATED_GSOAP_INCLUDES)"
+	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c .
+
+distclean-local:
+	rm -f stdsoap2.c srmv2C.c srmv2Server.c
