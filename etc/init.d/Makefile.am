@@ -19,7 +19,7 @@
 EXTRA_DIST = storm-frontend.in
 
 stormetcsysdir = $(sysconfdir)/init.d
-dist_stormetcsys_SCRIPTS = ./init.d/storm-frontend
+dist_stormetcsys_SCRIPTS = storm-frontend
 
 CLEANFILES =  storm-frontend
 

@@ -18,7 +18,7 @@
 EXTRA_DIST = storm-frontend.logrotate.in
 
 logrotatedir = $(sysconfdir)/logrotate
-dist_logrotate_DATA = ./logrotate/storm-frontend.logrotate
+dist_logrotate_DATA = storm-frontend.logrotate
 
 CLEANFILES = storm-frontend.logrotate
 
