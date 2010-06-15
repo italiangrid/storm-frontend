@@ -64,18 +64,16 @@ AC_CHECK_FUNCS(getenv)
 AC_STORM([])
 AC_STORM_FRONTEND([])
 
-have_curl=no
-have_xmlrpc_c=no
 have_curl_devel=no
 have_xmlrpc_c_devel=no
 
-AC_CURL([], have_curl=yes, have_curl=no)
-AC_XMLRPC_C([], have_xmlrpc_c=yes, have_xmlrpc_c=no)
+AC_CURL([])
+AC_XMLRPC_C([])
 AC_CURL_DEVEL([], have_curl_devel=yes, have_curl_devel=no)
 AC_XMLRPC_C_DEVEL([], have_xmlrpc_c_devel=yes, have_xmlrpc_c_devel=no)
 
-AC_MSG_RESULT(["CURL found $have_curl"])
-AC_MSG_RESULT(["XMLRPC_C found $have_xmlrpc_c"])
+AC_MSG_RESULT(["CURL found"])
+AC_MSG_RESULT(["XMLRPC_C found"])
 AC_MSG_RESULT(["CURL_DEVEL found $have_curl_devel"])
 AC_MSG_RESULT(["XMLRPC_C_DEVEL found $have_xmlrpc_c_devel"])
 
@@ -223,7 +221,7 @@ AM_CONFIG_HEADER([src/autogen/config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([etc/Makefile])
 AC_CONFIG_FILES([etc/storm-frontend.conf.template])
-AC_CONFIG_FILES([etc/logrotate/Makefile])
+AC_CONFIG_FILES([etc/cron.d/Makefile])
 AC_CONFIG_FILES([etc/cron.d/storm-frontend.cron])
 AC_CONFIG_FILES([etc/logrotate/Makefile])
 AC_CONFIG_FILES([etc/logrotate/storm-frontend.logrotate])
