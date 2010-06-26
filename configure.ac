@@ -52,13 +52,18 @@ AC_SUBST(GSOAP_GENERATED_CODE_DIR_NAME)
 
 DEFAULT_RPM_DIR=`pwd`
 
-AC_PROG_CXX
-AM_PROG_CC_C_O
+AC_PROG_CC
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
+AM_PROG_CC_C_O
+AC_PROG_INSTALL
 
 AC_CHECK_LIB([pthread], [main])
+
 AC_C_CONST
 AC_TYPE_SIZE_T
+
 AC_CHECK_FUNCS(getenv)
 
 AC_STORM([])
@@ -77,41 +82,41 @@ AC_MSG_RESULT(["XMLRPC_C found"])
 AC_MSG_RESULT(["CURL_DEVEL found $have_curl_devel"])
 AC_MSG_RESULT(["XMLRPC_C_DEVEL found $have_xmlrpc_c_devel"])
 
-have_boost=no
-
-AC_BOOST([], have_boost=yes, have_boost=no)
-AC_MSG_RESULT(["BOOST found $have_boost"])
-
-AC_THREADPOOL([])
-
 have_globus=no
 
 AC_GLOBUS([], have_globus=yes, have_globus=no)
 AC_MSG_RESULT(["GLOBUS found $have_globus"])
-
-AC_GLITE([])
-AC_VOMS([])
-
-AC_CGSI_GSOAP([2.7])
-
-AC_GSOAP([])
 
 have_mysql=no
 
 AC_MYSQL([4.0.12], [5.0.80], have_mysql=yes, have_mysql=no)
 AC_MSG_RESULT(["MYSQL found $have_mysql"])
 
-# ========================================================================
-# Boost
-# ========================================================================
-#AC_SUBST([BOOST_INCLUDE_DIR], ["/usr/include/boost-1_37"])
-#AC_SUBST([BOOST_LDADD], [" /usr/${LIB_DIR_NAME}/libboost_program_options-${GCC_VERSION=}-mt-1_37.a /usr/${LIB_DIR_NAME}/libboost_thread-${GCC_VERSION=}-mt-1_37.a "])
+have_boost=no
+
+AC_BOOST([1.37], have_boost=yes, have_boost=no)
+AC_MSG_RESULT(["BOOST found $have_boost"])
+AC_THREADPOOL([])
+
+AC_GLITE([])
 
 # ========================================================================
-# Globus libraries
+# gLite
 # ========================================================================
-#AC_SUBST([GLOBUS_LDFLAGS], [" -L/opt/globus/lib "])
-#AC_SUBST([GLOBUS_LDADD], [" -lglobus_gss_assist_$FLAVOUR "])
+#AC_MSG_CHECKING([gLite directory])
+#if test -z $GLITE_LOCATION; then
+#    GLITE_LOCATION=$DEFAULT_GLITE_LOCATION
+#fi
+#if test ! \( -d $GLITE_LOCATION \); then
+#    AC_MSG_ERROR([no such directory "$GLITE_LOCATION"])
+#fi
+#AC_MSG_RESULT(["$GLITE_LOCATION" found])
+#AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION/${LIB_DIR_NAME} "])
+
+AC_VOMS([])
+
+AC_CGSI_GSOAP([2.7])
+AC_GSOAP([])
 
 # ========================================================================
 # GSOAP
@@ -130,19 +135,6 @@ AC_MSG_RESULT(["MYSQL found $have_mysql"])
 #AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated-sources])
 
 # ========================================================================
-# gLite
-# ========================================================================
-#AC_MSG_CHECKING([gLite directory])
-#if test -z $GLITE_LOCATION; then
-#    GLITE_LOCATION=$DEFAULT_GLITE_LOCATION
-#fi
-#if test ! \( -d $GLITE_LOCATION \); then
-#    AC_MSG_ERROR([no such directory "$GLITE_LOCATION"])
-#fi
-#AC_MSG_RESULT(["$GLITE_LOCATION" found])
-#AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION/${LIB_DIR_NAME} "])
-
-# ========================================================================
 # gSOAP GSI plugin
 # ========================================================================
 #AC_SUBST([GSOAPGSI_DIR], [])
@@ -150,54 +142,6 @@ AC_MSG_RESULT(["MYSQL found $have_mysql"])
 #AC_SUBST([GSOAPGSI_LDFLAGS], [" $GLITE_LDFLAGS "])
 #AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_${FLAVOUR} "])
 ##AC_SUBST([GSOAPGSI_LDADD], [" -lglite_security_gsoap_plugin_276b_gcc32dbgpthr "])
-
-# ========================================================================
-# MySQL 
-# ========================================================================
-#AC_MSG_CHECKING([for MySQL directory])
-#if test -z $MYSQL_DIR; then
-#    MYSQL_DIR=$DEFAULT_MYSQL_DIR
-#fi
-#if test ! \( -d $MYSQL_DIR \); then
-#    AC_MSG_ERROR([no such directory "$MYSQL_DIR"])
-#fi
-#AC_MSG_RESULT(["$MYSQL_DIR" found])
-
-#AC_SUBST([MYSQL_CFLAGS], [" -I$MYSQL_DIR -DUSE_MYSQL " ])
-#AC_SUBST([MYSQL_LDFLAGS], [" -L$MYSQL_DIR/${LIB_DIR_NAME}/mysql " ])
-#AC_SUBST([MYSQL_LDADD], [" -lmysqlclient_r] ")
-
-# ========================================================================
-# XMLRPC-C
-# ========================================================================
-#AC_MSG_CHECKING([for XMLRPC-C directory])
-#if test -z $XMLRPC_C_DIR; then
-#    XMLRPC_C_DIR=$DEFAULT_XMLRPC_C_DIR
-#fi
-#if test ! \( -d $XMLRPC_C_DIR \); then
-#    AC_MSG_ERROR([no such directory "$XMLRPC_C_DIR"])
-#fi
-#AC_MSG_RESULT(["$XMLRPC_C_DIR" found])
-
-#AC_SUBST([XMLRPC_C_CFLAGS], [" -I$XMLRPC_C_DIR/include "])
-#AC_SUBST([XMLRPC_C_LIB_LOCATION], ["$XMLRPC_C_DIR/${LIB_DIR_NAME}"])
-#AC_SUBST([XMLRPC_C_LDFLAGS], [" -L$XMLRPC_C_DIR/${LIB_DIR_NAME} "])
-#AC_SUBST([XMLRPC_C_LDADD], [" -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok "])
-
-# ========================================================================
-# Curl
-# ========================================================================
-#AC_MSG_CHECKING([for Curl directory])
-#if test -z $CURL_LOCATION; then
-#    CURL_LOCATION=$DEFAULT_CURL_LOCATION
-#fi
-#if test ! \( -d $CURL_LOCATION \); then
-#    AC_MSG_ERROR([no such directory "$CURL_LOCATION"])
-#fi
-#AC_MSG_RESULT(["$CURL_LOCATION" found])
-#AC_SUBST([CURL_LIB_LOCATION], ["$CURL_LOCATION/${LIB_DIR_NAME}"])
-#AC_SUBST([CURL_LDFLAGS], [" -L$CURL_LOCATION/${LIB_DIR_NAME} "])
-#AC_SUBST([CURL_LDADD], [" -lcurl "])
 
 # ========================================================================
 # RPM directory
