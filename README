@@ -145,7 +145,16 @@ Building StoRM FE
 To build the code, execute the following instructions:
 1. cd storm/frontend
 2. source frontend-setup.sh (if you have bash) or source frontend-setup.csh (if you have tcsh)
-3. ./autogen.sh
+3. ./bootstrap
+4. ./configure --prefix=<installation_dir> \
+               --with-curl-prefix=/usr --with-curl-devel-prefix=/usr \
+               --with-xmlrpc-c-prefix=/usr --with-xmlrpc-c-devel-prefix=/usr \
+               --with-globus-prefix=/home/joda/gliteOnETICS/repository/vdt/globus/4.0.7-VDT-1.10.1/sl5_x86_64_gcc412 --with-globus-nothr-flavor=gcc64dbg --with-globus-thr-flavor=gcc64dbgpthr \
+               --with-mysql-prefix=/usr --with-mysql-devel-prefix=/usr \
+               --with-boost-prefix=/opt/boost-1.37.0 --with-boost-include=/opt/boost-1.37.0/include/boost-1_37 --enable-boost-mt \
+               --with-threadpool-incldue=/opt/threadpool-0_2_5-src/threadpool \
+               
+
 4. ./configure --prefix=<installation_dir> --disable-gsoapgsi \
                --with-rpm-dir=<rpm_dir>
    or if you want to create a secure version of the server execute:

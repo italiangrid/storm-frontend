@@ -75,14 +75,15 @@ libstormfrontend_la_SOURCES = Credentials.cpp Credentials.hpp \
     synch.cpp \
     xmlrpc_decode.c xmlrpc_encode.c \
     storm_util.c storm_utils.hpp \
-    $(GENERATED_GSOAP_INCLUDES)/srmv2C.c \
-    $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c \
+    srmv2C.c \
+    srmv2Server.c \
+    stdsoap2.c \
     $(noinst_INCLUDES) 
 
-AM_CPPFLAGS = \
+INCLUDES = \
     -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
-    @VOMS_CFLAGS@/glite/security/voms \
+    @GLITE_CFLAGS@/glite/security/voms \
     @GLOBUS_THR_CFLAGS@ \
     @STORM_FRONTEND_CFLAGS@ \
     @XMLRPC_C_DEVEL_CFLAGS@ \
@@ -100,7 +101,7 @@ MAINTAINERCLEANFILES = Makefile.in \
 
 stdsoap2.c:
 	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_LOCATION@)"
-	/bin/cp @GSOAP_LOCATION@/src/stdsoap2.c .
+	/bin/cp @GSOAP_LOCATION@/../src/gSOAP-2.7.6b/soapcpp2/stdsoap2.c .
 
 srmv2C.c:
 	@echo "Copying file \"srmv2C.c\" from $(GENERATED_GSOAP_INCLUDES)"

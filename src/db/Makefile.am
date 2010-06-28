@@ -25,10 +25,6 @@
 #* Date: 01 March 2005
 #*
 
-MAINTAINERCLEANFILES = Makefile.in
-
-GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
-
 noinst_LTLIBRARIES = libstormdb.la
 
 libstormdb_la_SOURCES = \
@@ -36,10 +32,17 @@ libstormdb_la_SOURCES = \
     mysql_query.cpp \
     mysql_query.hpp \
     storm_mysql.h
-
-AM_CPPFLAGS = \
-    -I$(top_srcdir)/src/frontend \
+libstormdb_la_CPPFLAGS = \
     @GSOAP_CFLAGS@ \
-    -I$(GENERATED_GSOAP_INCLUDES) \
     @BOOST_CFLAGS@ \
-    @MYSQL_CFLAGS@
+    @MYSQL_CFLAGS@ \
+    $(API_INCLUDES)
+
+GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
+
+API_INCLUDES = \
+    -I$(top_srcdir)/src/frontend \
+    -I$(GENERATED_GSOAP_INCLUDES) 
+
+MAINTAINERCLEANFILES = Makefile.in
+
