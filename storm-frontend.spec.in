@@ -1,34 +1,43 @@
-%define name         storm-frontend-server
+%define name         @PACAKGE@
 %define version      @VERSION@
 %define release      @STORM_FRONTEND_RELEASE_NUMBER@
-%define flavor       @FLAVOUR@
-%define arch64       @ARCH_64@
-%define builddir     $RPM_BUILD_DIR/%{name}-%{flavor}-%{version}
-#%define globusdir    @GLOBUS_LOCATION@
-#%define stormdir     @STORM_DIR@
-#%define glitedir     @GLITE_LOCATION@
-#%define gsoapdir     @GSOAP_DIR@
-#%define gsoapgsidir  @GSOAPGSI_DIR@
-#%define mysqldir     @MYSQL_DIR@
-#%define xmlrpccdir   @XMLRPC_C_DIR@
-%define prefix       @PREFIX@
+%define builddir     $RPM_BUILD_DIR/build-%{name}-%{version}
 
-Name:           %{name}-%{flavor}
+%define globusdir    @GLOBUS_LOCATION@
+%define flavorthr    @GLOBUS_THR_FLAVOR@
+%define flavornothr  @GLOBUS_NOTHR_FLAVOR@
+
+#%define stormdir     @STORM_DIR@
+%define glitedir     @GLITE_LOCATION@
+
+%define gsoapdir       @GSOAP_LOCATION@
+%define gsoapwsdl2hdir @GSOAP_WSDL2H_LOCATION@
+%define cgsigsoapdir   @CGSI_GSOAP_LOCATION@
+
+%define boostdir             @BOOST_INSTALL_PATH@
+%define boostincludedir      @BOOST_CFLAGS@
+%define threadpoolincludedir @THREADPOOL_CFLAGS@
+
+%define mysqldir @MYSQL_INSTALL_PATH@
+
+%define xmlrpccdir    @XMLRPC_C_LOCATION@
+%define xmlrpccdevdir @XMLRPC_C_DEVEL_LOCATION@
+
+%define curldir    @CURL_LOCATION@
+%define curldevdir @CURL_DEVEL_LOCATION@
+
+Name:           %{name}
 Version:        %{version}
 Release:        %{release}
 Vendor:         INFN - CNAF (2009)
-Packager:       Alberto Forti <alberto.forti@cnaf.infn.it> 
-License:      Apache License, Version 2.0.
+Packager:       Elisabetta Ronchieri <elisabetta.ronchieri@cnaf.infn.it> 
+License:        Apache License, Version 2.0.
 URL:            http://storm.forge.cnaf.infn.it
 Source:         @PACKAGE@-%{version}.tar.gz
 Group:          Application/Generic
 AutoReqProv:    no
-Requires:       curl >= 7.15.3
-Requires:       xmlrpc-c >= 1.04
-Requires:       CGSI_gSOAP_2.7-voms >= 1.2.1-2
-Obsoletes:      srmv2-storm-server-gcc32dbgpthr
-BuildRoot:      /var/tmp/%{name}-%{version}
-Prefix:         %{prefix}
+BuildRoot:      %{builddir}/var/tmp/%{name}-%{version}
+Prefix:         /opt/storm/frontend
 Summary:        The StoRM FrontEnd component. 
 
 %description
@@ -39,46 +48,61 @@ filesystem with direct file access ("file:" transport protocol), but
 can take advantage of special features of high performance parallel and cluster file systems, as 
 GPFS from IBM and Lustre from SUN.
 
+%package %{flavorthr}
+Summary: The StoRM frontend component for %{flavor}
+Group: Application/generic
+Requires: curl >= 7.15.3
+Requires: xmlrpc-c >= 1.04
+Requires: CGSI_gSOAP_2.7-voms >= 1.2.1-2
+
+%description %{flavorthr}
+This is the installation bundle for the StoRM FrontEnd server.
+
+StoRM provides an SRM interface to any POSIX
+filesystem with direct file access ("file:" transport protocol), but
+can take advantage of special features of high performance parallel and cluster file systems, as
+GPFS from IBM and Lustre from SUN.
 
 %prep
 %setup -n @PACKAGE@-%{version}
 
 %build
-#./configure --prefix=%{prefix} --with-globus-location=%{globusdir} --with-globus-flavor=%{flavor} --with-glite-location=%{glitedir} --with-gsoap-dir=%{gsoapdir} --with-storm-dir=%{stormdir} --with-mysql-dir=%{mysqldir} --with-xmlrpc-c-dir=%{xmlrpccdir}
-if [ %{arch64} = y  ]; then 
-    ./configure --prefix=%{prefix} --enable-arch64
-else
-    ./configure --prefix=%{prefix}
-fi
-
+./bootstrap
+./configure --prefix=%{prefix} --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-xmlrpc-c-prefix=%{xmlrpccdir} --with-xmlrpc-c-devel-prefix=%{xmlrpccdevdir} --with-globus-prefix=%{globusdir} --with-globus-nothr-flavor=%{flavornothr} --with-globus-thr-flavor=%{flavorthr} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldir} --with-boost-prefix=%{boostdir} --with-boost-include=%{boostincludedir} --enable-boost-mt --with-threadpool-include=%{threadpoolincludedir}   --with-glite-location=%{glitedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=2.7.6b --with-gsoap-wsdl2h-version=2.7.6b --with-cgsi-gsoap-location=%{cgsigsoapdir}
 make
 
-%pre
+#%pre
 # Stop the old frontend if any.
-if [ -f /opt/srmv2storm/etc/init.d/srmv2storm ]; then
-    /opt/srmv2storm/etc/init.d/srmv2storm stop > /dev/null
-    exit 0
-fi
+#if [ -f /opt/srmv2storm/etc/init.d/srmv2storm ]; then
+#    /opt/srmv2storm/etc/init.d/srmv2storm stop > /dev/null
+#    exit 0
+#fi
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/etc/init.d $RPM_BUILD_ROOT/etc/cron.d
+mv -f $RPM_BUILD_ROOT/%{prefix}/etc/init.d/storm-frontend $RPM_BUILD_ROOT/etc/init.d
+rm -f $RPM_BUILD_ROOT/%{prefix}/%{libtype}/libglobus-gridftp-server-StoRM-%{flavor}.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%files %{flavorthr}
 %defattr(-,root,root)
-/etc/cron.d/storm-frontend.cron
+%{prefix}/etc/cron.d/storm-frontend.cron
 %{prefix}/etc/logrotate/storm-frontend.logrotate
 %{prefix}/sbin/storm-frontend
 %{prefix}/wsdl/srm.v2.2.wsdl
 %{prefix}/etc/storm-frontend.conf.template
 %defattr(755,root,root)
-%config /etc/init.d/storm-frontend
+%config %{prefix}/etc/init.d/storm-frontend
 
 %preun
 /etc/init.d/storm-frontend stop > /dev/null
 echo "Frontend stopped"
 
+%changelog
+* Mon Jun 28 2010 Elisabetta Ronchieri
+- Updated the usage of autotool

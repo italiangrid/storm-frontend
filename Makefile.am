@@ -24,7 +24,8 @@
 EXTRA_DIST = \
     bootstrap \
     LICENSE \
-    storm-frontend.spec.in
+    storm-frontend.spec.in \
+    project
 
 docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
 doc_DATA = LICENSE
