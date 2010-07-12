@@ -96,7 +96,6 @@ have_boost=no
 
 AC_BOOST([], have_boost=yes, have_boost=no)
 AC_MSG_RESULT(["BOOST found $have_boost"])
-AC_THREADPOOL([])
 
 AC_GLITE([])
 
