@@ -15,7 +15,6 @@
 
 %define boostdir             @BOOST_INSTALL_PATH@
 %define boostincludedir      @BOOST_INCLUDE_PATH@
-%define threadpoolincludedir @THREADPOOL_CFLAGS@
 
 %define mysqldir @MYSQL_INSTALL_PATH@
 
@@ -67,7 +66,7 @@ GPFS from IBM and Lustre from SUN.
 
 %build
 ./bootstrap
-./configure --prefix=%{prefix} --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-xmlrpc-c-prefix=%{xmlrpccdir} --with-xmlrpc-c-devel-prefix=%{xmlrpccdevdir} --with-globus-prefix=%{globusdir} --with-globus-nothr-flavor=%{flavornothr} --with-globus-thr-flavor=%{flavorthr} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldir} --with-boost-prefix=%{boostdir} --with-boost-include=%{boostincludedir} --enable-boost-mt --with-threadpool-include=%{threadpoolincludedir}   --with-glite-location=%{glitedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=2.7.6b --with-gsoap-wsdl2h-version=2.7.6b --with-cgsi-gsoap-location=%{cgsigsoapdir}
+./configure --prefix=%{prefix} --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-xmlrpc-c-prefix=%{xmlrpccdir} --with-xmlrpc-c-devel-prefix=%{xmlrpccdevdir} --with-globus-prefix=%{globusdir} --with-globus-nothr-flavor=%{flavornothr} --with-globus-thr-flavor=%{flavorthr} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldir} --with-boost-prefix=%{boostdir} --with-boost-include=%{boostincludedir} --enable-boost-mt --with-glite-location=%{glitedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=2.7.6b --with-gsoap-wsdl2h-version=2.7.6b --with-cgsi-gsoap-location=%{cgsigsoapdir}
 make
 
 #%pre
