@@ -21,27 +21,27 @@ GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 
 sbin_PROGRAMS = storm-frontend
 
-noinst_LTLIBRARIES = libstormfrontend.la
+#noinst_LTLIBRARIES = libstormfrontend.la
 
 # The prefix for SOURCES is the name of the program or library (in this case
 # storm-frontend), including extension, where any dash ("-") and any period
 # (".") is replaced by an underscore ("_").
 
-storm_frontend_SOURCES = storm-frontend.cpp
-storm_frontend_LDFLAGS = -L../db \
+storm_frontend_SOURCES = $(stormfrontend_others) storm-frontend.cpp
+storm_frontend_LDFLAGS = \
     @GLITE_LDFLAGS@ 
-storm_frontend_LDADD = -lstormfrontend -lstormdb \
-    @GLITE_LDFLAGS@ \
+storm_frontend_LDADD = \
     @VOMS_LIBS@ \
     @MYSQL_LIBS@ \
     @XMLRPC_C_DEVEL_LIBS@ \
     @CURL_DEVEL_LIBS@ \
     @GLOBUS_GSS_THR_LIBS@ \
-    @CGSI_VOMS_GSOAP_PTHR_LIBS@ \
+    @CGSI_VOMS_GSOAP_PTHR_STATIC_LIBS@ \
     @BOOST_PO_STATIC_LIBS@ \
     @BOOST_THREAD_STATIC_LIBS@ \
+    $(top_builddir)/src/db/libstormdb.la \
     -lz -lm -luuid -lidn
-storm_frontend_DEPENDENCIES = libstormfrontend.la
+#storm_frontend_DEPENDENCIES = libstormfrontend.la
 
 noinst_INCLUDES = osdep.h \
   srm_server.h \
@@ -56,7 +56,7 @@ noinst_INCLUDES = osdep.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2H.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
 
-libstormfrontend_la_SOURCES = Credentials.cpp Credentials.hpp \
+stormfrontend_others = Credentials.cpp Credentials.hpp \
     file_request.hpp filerequest_template.hpp \
     status_template.hpp file_status.hpp \
     bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
