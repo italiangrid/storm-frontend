@@ -29,15 +29,15 @@ noinst_LTLIBRARIES = libstormfrontend.la
 
 storm_frontend_SOURCES = storm-frontend.cpp
 storm_frontend_LDFLAGS = -L../db \
-    @GLITE_LDFLAGS@
+    @GLITE_LDFLAGS@ 
 storm_frontend_LDADD = -lstormfrontend -lstormdb \
     @GLITE_LDFLAGS@ \
     @VOMS_LIBS@ \
     @MYSQL_LIBS@ \
     @XMLRPC_C_DEVEL_LIBS@ \
     @CURL_DEVEL_LIBS@ \
-    @CGSI_VOMS_GSOAP_PTHR_LIBS@ \
     @GLOBUS_GSS_THR_LIBS@ \
+    @CGSI_VOMS_GSOAP_PTHR_LIBS@ \
     @BOOST_PO_STATIC_LIBS@ \
     @BOOST_THREAD_STATIC_LIBS@ \
     -lz -lm -luuid -lidn
