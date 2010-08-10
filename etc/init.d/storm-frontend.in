@@ -11,28 +11,8 @@ PIDDIR=/var/run
 SUBSYSDIR=/var/lock/subsys
 PIDFILE=$PIDDIR/$prog.pid
 
-# try to find the installation directory
-if test -z "$STORM_FE_HOME"; then
-    for dir in \
-        "`dirname $0`/../.." \
-        /opt/storm/frontend \
-        /usr/local/storm \
-        /home/storm \
-        ;
-      do
-      if test -e "$dir"/sbin/storm-frontend; then
-          STORM_FE_HOME="$dir"
-          break
-      fi
-    done
-    if test -z "$STORM_FE_HOME"; then
-        die 5 "Cannot find StoRM frontend installation directory - please set environment variable STORM_FE_HOME and run '$0 $@' again."
-    fi
-fi
-export STORM_FE_HOME="`normalize_dirpath "$STORM_FE_HOME"`"
-
-FRONTEND_DAEMON=$STORM_FE_HOME/sbin/$prog
-CONFIGURATION_FILE=$STORM_FE_HOME/etc/storm-frontend.conf
+FRONTEND_DAEMON=/opt/storm/frontend/sbin/$prog
+CONFIGURATION_FILE=/opt/storm/frontend/etc/storm-frontend.conf
 
 if [ -z $STORM_FE_USER ]; then
     STORM_FE_USER=storm
@@ -106,8 +86,8 @@ case "$1" in
     # Make sure the FE can write the logfile and save the proxies
     # and set environment variable
     if [ "root" != $STORM_FE_USER ]; then
-        mkdir -p $STORM_FE_HOME/var
-        chown ${STORM_FE_USER}:${STORM_FE_USER} $STORM_FE_HOME/var
+        mkdir -p /opt/storm/frontend/var
+        chown ${STORM_FE_USER}:${STORM_FE_USER} /opt/storm/frontend/var
         STORM_USER_CERT_DIR=/etc/grid-security/$STORM_FE_USER
         if [ -d $STORM_USER_CERT_DIR ]; then
             export X509_USER_CERT=$STORM_USER_CERT_DIR/hostcert.pem
