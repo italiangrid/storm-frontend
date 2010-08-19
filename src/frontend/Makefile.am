@@ -37,6 +37,7 @@ storm_frontend_LDADD = \
     @CURL_DEVEL_LIBS@ \
     @GLOBUS_GSS_THR_LIBS@ \
     @CGSI_VOMS_GSOAP_PTHR_LIBS@ \
+    @GSOAP_STATIC_LIBS@ \
     @BOOST_PO_STATIC_LIBS@ \
     @BOOST_THREAD_STATIC_LIBS@ \
     $(top_builddir)/src/db/libstormdb.la \
