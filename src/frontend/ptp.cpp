@@ -48,9 +48,13 @@ void ptp::load(ns1__srmPrepareToPutRequest *req) {
 
     // Fill surl
     for (int i = 0; i < req->arrayOfFileRequests->__sizerequestArray; ++i) {
-        if (NULL != req->arrayOfFileRequests->requestArray[i]->expectedFileSize)
+        if (NULL != req->arrayOfFileRequests->requestArray[i]->expectedFileSize) {
             _surls.push_back(surl_t(req->arrayOfFileRequests->requestArray[i]->targetSURL,
                     *req->arrayOfFileRequests->requestArray[i]->expectedFileSize));
+            srmlogit(STORM_LOG_DEBUG, "ptp::load()",
+                                "Debug: expectedFileSize!=NULL, value= %s\n",
+                                req->arrayOfFileRequests->requestArray[i]->expectedFileSize);
+        }
         else
             _surls.push_back(surl_t(req->arrayOfFileRequests->requestArray[i]->targetSURL));
     }
