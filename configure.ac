@@ -64,7 +64,7 @@ AC_CHECK_LIB([pthread], [main])
 AC_C_CONST
 AC_TYPE_SIZE_T
 
-AC_CHECK_FUNCS(getenv)
+AC_CHECK_FUNCS([random gettimeofday ftime localtime_r timegm gmtime gmtime_r memset select socket strchr strerror strrchr strstr strtol strtoul strtoll strtoull strtold strtod strtof strtold_l strtod_l strtof_l sscanf sscanf_l sprintf_l wctomb mbtowc getenv])
 
 AC_STORM([])
 AC_STORM_FRONTEND([])
