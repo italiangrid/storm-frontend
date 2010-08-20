@@ -78,8 +78,9 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     storm_util.c storm_utils.hpp \
     srmv2C.c \
     srmv2Server.c \
-    stdsoap2.c \
-    $(noinst_INCLUDES) 
+    $(noinst_INCLUDES)
+
+#    stdsoap2.c  
 
 INCLUDES = \
     -I$(top_srcdir)/src/db \
