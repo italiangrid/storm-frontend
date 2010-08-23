@@ -29,7 +29,7 @@ AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
 
 # Release number
 AC_SUBST([STORM_FRONTEND_SO], [sl5])
-AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [3])
+AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [4])
 
 # Notices.
 AC_COPYRIGHT([See LICENCE file for details])
