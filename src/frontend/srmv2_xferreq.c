@@ -1259,17 +1259,16 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     // Get the version of the BE and set the information to be returned.
     if (repp->otherInfo != NULL) {
         if (repp->otherInfo->extraInfoArray != NULL) {
+            //Introduced BE version check 
             for (i=0; i< repp->otherInfo->__sizeextraInfoArray; i++) {
                 srmlogit(STORM_LOG_DEBUG, "set_version_info", "index %d key %s value %s\n", i, repp->otherInfo->extraInfoArray[i]->key, repp->otherInfo->extraInfoArray[i]->value);
                 if (strcmp(repp->otherInfo->extraInfoArray[i]->key,be_key)==0 && repp->otherInfo->extraInfoArray[i]->value != NULL) {
                    srmlogit(STORM_LOG_DEBUG, "set_version_info", "key  %s\n", repp->otherInfo->extraInfoArray[i]->key);
-//                   if (repp->otherInfo->extraInfoArray[i]->value != NULL) {
                    be_version = repp->otherInfo->extraInfoArray[i]->value;
                    srmlogit(STORM_LOG_DEBUG, "set_version_info", "be_version  %s\n", be_version);
-//                   }
-
                 }
             }
+            //Obsoleted
             //if (repp->otherInfo->extraInfoArray[0]->value != NULL) {
             //    be_version = repp->otherInfo->extraInfoArray[0]->value;
             //}
