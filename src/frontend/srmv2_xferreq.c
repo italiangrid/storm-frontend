@@ -1251,15 +1251,28 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
 int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     struct ns1__TExtraInfo** extraInfoArray;
     char *be_version = "ERROR";
+    char *be_key = "BE-Version";
     char *version_temp = "<FE:%s><BE:%s>";
     char version[50];
+    int i;
 
     // Get the version of the BE and set the information to be returned.
     if (repp->otherInfo != NULL) {
         if (repp->otherInfo->extraInfoArray != NULL) {
-            if (repp->otherInfo->extraInfoArray[0]->value != NULL) {
-                be_version = repp->otherInfo->extraInfoArray[0]->value;
+            for (i=0; i< repp->otherInfo->__sizeextraInfoArray; i++) {
+                srmlogit(STORM_LOG_DEBUG, "set_version_info", "index %d key %s value %s\n", i, repp->otherInfo->extraInfoArray[i]->key, repp->otherInfo->extraInfoArray[i]->value);
+                if (strcmp(repp->otherInfo->extraInfoArray[i]->key,be_key)==0 && repp->otherInfo->extraInfoArray[i]->value != NULL) {
+                   srmlogit(STORM_LOG_DEBUG, "set_version_info", "key  %s\n", repp->otherInfo->extraInfoArray[i]->key);
+//                   if (repp->otherInfo->extraInfoArray[i]->value != NULL) {
+                   be_version = repp->otherInfo->extraInfoArray[i]->value;
+                   srmlogit(STORM_LOG_DEBUG, "set_version_info", "be_version  %s\n", be_version);
+//                   }
+
+                }
             }
+            //if (repp->otherInfo->extraInfoArray[0]->value != NULL) {
+            //    be_version = repp->otherInfo->extraInfoArray[0]->value;
+            //}
         }
     }
     repp->versionInfo = "v2.2";
@@ -1276,6 +1289,8 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     repp->otherInfo->__sizeextraInfoArray = 2;
 
     extraInfoArray = repp->otherInfo->extraInfoArray;
+
+    
 
     // Set backend type
     extraInfoArray[0] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
