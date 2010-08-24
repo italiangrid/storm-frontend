@@ -102,7 +102,7 @@ MAINTAINERCLEANFILES = Makefile.in \
 
 stdsoap2.c:
 	@echo "Copying file \"stdsoap2.c\" from $(@GSOAP_LOCATION@)"
-	/bin/cp @GSOAP_LOCATION@/../src/gSOAP-2.7.6b/soapcpp2/stdsoap2.c .
+	/bin/cp @GSOAP_STDSOAP2_LOCATION@/stdsoap2.c .
 
 srmv2C.c:
 	@echo "Copying file \"srmv2C.c\" from $(GENERATED_GSOAP_INCLUDES)"
