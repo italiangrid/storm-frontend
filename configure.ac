@@ -78,6 +78,20 @@ AC_XMLRPC_C([])
 AC_CURL_DEVEL([], have_curl_devel=yes, have_curl_devel=no)
 AC_XMLRPC_C_DEVEL([], have_xmlrpc_c_devel=yes, have_xmlrpc_c_devel=no)
 
+if test "x$host_cpu" == "xx86_64"; then
+  CURL_VERSION="7.15.5-9.el5"
+  XMLRPC_C_VERSION="1.16.6-2.sl5"
+  CGSIGSOAP_VERSION="1.3.3-1.sl5"
+else
+  CURL_VERSION="7.15.5-2.sl4"
+  XMLRPC_C_VERSION="1.04-1"
+  CGSIGSOAP_VERSION="1.3.3-1.slc4"
+fi
+
+AC_SUBST(CURL_VERSION)
+AC_SUBST(XMLRPC_C_VERSION)
+AC_SUBST(CGSIGSOAP_VERSION)
+
 AC_MSG_RESULT(["CURL found"])
 AC_MSG_RESULT(["XMLRPC_C found"])
 AC_MSG_RESULT(["CURL_DEVEL found $have_curl_devel"])

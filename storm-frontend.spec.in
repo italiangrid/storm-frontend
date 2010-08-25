@@ -31,6 +31,10 @@
 
 %define stormfrontenddir @STORM_FRONTEND_LOCATION@
 
+%define curlversion @CURL_VERSION@
+%define xmlrpccversion @XMLRPC_C_VERSION@
+%define cgsigsoapversion @CGSIGSOAP_VERSION@
+
 Name:           %{name}
 Version:        %{version}
 Release:        %{release}
@@ -56,9 +60,9 @@ GPFS from IBM and Lustre from SUN.
 %package %{flavorthr}
 Summary: The StoRM frontend component for %{flavor}
 Group: Application/generic
-Requires: curl >= 7.15.5
-Requires: xmlrpc-c >= 1.16.6
-Requires: CGSI_gSOAP_2.7-voms >= 1.3.3
+Requires: curl >= %{curlversion}
+Requires: xmlrpc-c >= %{xmlrpccversion}
+Requires: CGSI_gSOAP_2.7-voms >= %{cgsigsoapversion}
 
 %description %{flavorthr}
 This is the installation bundle for the StoRM FrontEnd server.
