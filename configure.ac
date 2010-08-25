@@ -44,11 +44,6 @@ AC_SUBST(WORKDIR)
 GSOAP_GENERATED_CODE_DIR_NAME=gsoap-generated
 AC_SUBST(GSOAP_GENERATED_CODE_DIR_NAME)
 
-#if test "x${prefix}" = "xNONE"; then
-#  prefix=$ac_default_prefix
-#  ac_configure_args="$ac_configure_args --prefix $prefix"
-#fi
-
 DEFAULT_RPM_DIR=`pwd`
 
 AC_PROG_CC
