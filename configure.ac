@@ -43,9 +43,6 @@ AC_SUBST(WORKDIR)
 GSOAP_GENERATED_CODE_DIR_NAME=gsoap-generated
 AC_SUBST(GSOAP_GENERATED_CODE_DIR_NAME)
 
-# Installation prefix
-#AC_PREFIX_DEFAULT([/opt/storm/frontend])
-
 #if test "x${prefix}" = "xNONE"; then
 #  prefix=$ac_default_prefix
 #  ac_configure_args="$ac_configure_args --prefix $prefix"
@@ -113,49 +110,10 @@ AC_BOOST([], have_boost=yes, have_boost=no)
 AC_MSG_RESULT(["BOOST found $have_boost"])
 
 AC_GLITE([])
-
-# ========================================================================
-# gLite
-# ========================================================================
-#AC_MSG_CHECKING([gLite directory])
-#if test -z $GLITE_LOCATION; then
-#    GLITE_LOCATION=$DEFAULT_GLITE_LOCATION
-#fi
-#if test ! \( -d $GLITE_LOCATION \); then
-#    AC_MSG_ERROR([no such directory "$GLITE_LOCATION"])
-#fi
-#AC_MSG_RESULT(["$GLITE_LOCATION" found])
-#AC_SUBST([GLITE_LDFLAGS], [" -L$GLITE_LOCATION/${LIB_DIR_NAME} "])
-
 AC_VOMS([])
 
 AC_CGSI_GSOAP([2.7])
 AC_GSOAP([])
-
-# ========================================================================
-# GSOAP
-# ========================================================================
-#AC_MSG_CHECKING([for gSOAP directory])
-#if test -z $GSOAP_DIR; then
-#    GSOAP_DIR=$DEFAULT_GSOAP_DIR
-#fi
-#if test ! \( -d $GSOAP_DIR \); then
-#    AC_MSG_ERROR([no such directory "$GSOAP_DIR"])
-#fi
-#AC_MSG_RESULT(["$GSOAP_DIR" found])
-
-#AC_SUBST([GSOAP_DIR])
-#AC_SUBST([GSOAP_LDADD], [" $GSOAP_DIR/lib/libgsoap.a "])
-#AC_SUBST([GSOAP_GENERATED_CODE_DIR_NAME], [gsoap-generated-sources])
-
-# ========================================================================
-# gSOAP GSI plugin
-# ========================================================================
-#AC_SUBST([GSOAPGSI_DIR], [])
-#AC_SUBST([GSOAPGSI_CFLAGS], [" -DGSI_PLUGINS "])
-#AC_SUBST([GSOAPGSI_LDFLAGS], [" $GLITE_LDFLAGS "])
-#AC_SUBST([GSOAPGSI_LDADD], [" -lcgsi_plugin_voms_gsoap_2.7_${FLAVOUR} "])
-##AC_SUBST([GSOAPGSI_LDADD], [" -lglite_security_gsoap_plugin_276b_gcc32dbgpthr "])
 
 # ========================================================================
 # RPM directory

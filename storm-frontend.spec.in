@@ -60,8 +60,8 @@ GPFS from IBM and Lustre from SUN.
 %package %{flavorthr}
 Summary: The StoRM frontend component for %{flavor}
 Group: Application/generic
-Requires: curl >= %{curlversion}
-Requires: xmlrpc-c >= %{xmlrpccversion}
+Requires: curl = %{curlversion}
+Requires: xmlrpc-c = %{xmlrpccversion}
 Requires: CGSI_gSOAP_2.7-voms >= %{cgsigsoapversion}
 
 %description %{flavorthr}
