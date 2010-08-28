@@ -44,10 +44,12 @@ License:        Apache License, Version 2.0.
 URL:            http://storm.forge.cnaf.infn.it
 Source:         @PACKAGE@-%{version}.tar.gz
 Group:          Application/Generic
-AutoReqProv:    no
+AutoReqProv: no
 BuildRoot:      %{builddir}/var/tmp/%{name}-%{version}
 Prefix:         /opt/storm/frontend
 Summary:        The StoRM FrontEnd component. 
+
+%define debug_package %{nil}
 
 %description
 This is the installation bundle for the StoRM FrontEnd server.
@@ -60,6 +62,7 @@ GPFS from IBM and Lustre from SUN.
 %package %{flavorthr}
 Summary: The StoRM frontend component for %{flavor}
 Group: Application/generic
+AutoReqProv: no
 Requires: curl = %{curlversion}
 Requires: xmlrpc-c = %{xmlrpccversion}
 Requires: CGSI_gSOAP_2.7-voms >= %{cgsigsoapversion}
