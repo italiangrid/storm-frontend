@@ -1,0 +1,2 @@
+#ns1__TFileType = enum ns1__TFileType {FILETYPE_FILE, FILETYPE_DIRECTORY, FILETYPE_LINK}; | enum ns1__TFileType
+xsd__dateTime = | char * | char *

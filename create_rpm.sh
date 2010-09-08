@@ -1,5 +1,3 @@
-source frontend-setup.sh
-./autogen.sh
+autoreconf --install --force
 ./configure
-make clean
 make rpm

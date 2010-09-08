@@ -1,56 +1,114 @@
-# $Id$
-#*********************************************************************
-#*
-#* Authors: Flavia Donno <Flavia.Donno@cern.ch>
-#*
-#* Copyright 2004 INFN FIRB Project
-#*           http://grid-it.cnaf.infn.it/
-#*
-#*
-#* Date: 01 March 2005
-#*
-#*********************************************************************
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
 
-EXTRA_DIST = srmv2-storm-server.spec.in frontend-setup.sh frontend-setup.csh \
-             clean.sh.in  autogen.sh LICENSE README VERSION
+#
+# Authors: Elisabetta Ronchieri <elisabetta.ronchieri@cnaf.infn.it>
+# Version info: $Id$
+# Release: $Name:  $
+#                                                                            # Revision history:
+# $Log:  $
+#
 
-MAINTAINERCLEANFILES = Makefile.in aclocal.m4 \
-                       configure config.h.in \
-                       stamp-h.in stamp-h1
+EXTRA_DIST = \
+    bootstrap \
+    LICENSE \
+    storm-frontend.spec.in \
+    project
 
-FESERV_SPEC = srmv2-storm-server.spec
+docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
+doc_DATA = LICENSE
 
-SUBDIRS = db srmv2
+## Subdirectories list
+SUBDIRS = etc wsdl src
 
-STORM_SPEC = $(FESERV_SPEC)
+## Default flags to run aclocal
+ACLOCAL_AMFLAGS = -I project -I config
 
-RPM_SPEC_PATH=@RPM_DIR@/SPECS
+CLEANFILES = storm-frontend.spec
 
-rpm: $(STORM_SPEC)
-	gmake -i dist; \
-	/bin/mkdir -p @RPM_DIR@/SOURCES \
-                      @RPM_DIR@/SPECS   \
-                      @RPM_DIR@/BUILD   \
-                      @RPM_DIR@/RPMS    \
-                      @RPM_DIR@/SRPMS; \
-	/bin/cp -u @PACKAGE@-@VERSION@.tar.gz \
-                      @RPM_DIR@/SOURCES; \
-	for file in  $(STORM_SPEC) ; do \
-	  /bin/cp $$file $(RPM_SPEC_PATH); \
-	done; \
-	cd $(RPM_SPEC_PATH); \
-	for file in $(STORM_SPEC) ; do \
-	   /usr/bin/rpmbuild  --define "_topdir @RPM_DIR@" -ba $$file; \
-	done
+MAINTAINERCLEANFILES = Makefile.in
 
-dist-hook:
-	cd $(distdir)
-	for file in $(MAINTAINERCLEANFILES); do \
-	  /bin/rm -f $(distdir)/$$file; \
-	done
+SPEC_FILE = storm-frontend.spec
 
+RPM_MAIN_DIR = @RPM_DIR@/rpm
+RPM_TMP_DIR = $(RPM_MAIN_DIR)/tmp
+RPM_SOURCE = $(RPM_MAIN_DIR)/SOURCES
+RPM_SPEC = $(RPM_MAIN_DIR)/SPECS
+RPM_BUILD = $(RPM_MAIN_DIR)/BUILD
+RPM_RPM = $(RPM_MAIN_DIR)/RPMS
+RPM_SRPM = $(RPM_MAIN_DIR)/SRPMS
+RPM_DIRS = $(RPM_MAIN_DIR) $(RPM_SOURCE) $(RPM_SPEC) $(RPM_BUILD) $(RPM_RPM) $(RPM_SRPM)
 
-clean-tree:
-	chmod a+rx ./clean.sh
-	./clean.sh
+rpm: dist
+	/bin/mkdir -p $(RPM_DIRS)
+	/bin/cp -u @PACKAGE@-@VERSION@.tar.gz $(RPM_SOURCE)
+	/bin/cp $(SPEC_FILE) $(RPM_SPEC)
+	cd $(RPM_SPEC); \
+	/usr/bin/rpmbuild  --define "_topdir $(RPM_MAIN_DIR)" -ba $(RPM_SPEC)/$(SPEC_FILE)
+
+stage:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+        dot_seen=no; \
+        target="install"; \
+        prefix_arg="@prefix@"; \
+        list='$(SUBDIRS)'; for subdir in $$list; do \
+          echo "Making $$target $$prefix_arg in $$subdir"; \
+          if test "$$subdir" = "."; then \
+            dot_seen=yes; \
+            local_target="$$target-am"; \
+          else \
+            local_target="$$target"; \
+          fi; \
+          (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target $$prefix_arg) \
+           || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+        done; \
+        if test "$$dot_seen" = "no"; then \
+          $(MAKE) $(AM_MAKEFLAGS) "$$target-am" $$prefix_arg || exit 1; \
+        fi; test -z "$$fail"
+
+distsrc: dist
+	mv $(distdir).tar.gz $(DISTTAR)/$(distdir)_src.tar.gz
+
+distbin:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+        dot_seen=no; \
+        target="install"; \
+        tmpdistbin="$(WORKDIR)/dist_bin"; \
+        prefix_arg="prefix=$$tmpdistbin"; \
+        list='$(SUBDIRS)'; for subdir in $$list; do \
+          echo "Making $$target $$prefix_arg in $$subdir"; \
+          if test "$$subdir" = "."; then \
+            dot_seen=yes; \
+            local_target="$$target-am"; \
+          else \
+            local_target="$$target"; \
+          fi; \
+          (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target $$prefix_arg) \
+           || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+        done; \
+        if test "$$dot_seen" = "no"; then \
+          $(MAKE) $(AM_MAKEFLAGS) "$$target-am" $$prefix_arg || exit 1; \
+        fi; test -z "$$fail"; \
+        pushd $$tmpdistbin; \
+        $(AMTAR) -zcf $(DISTTAR)/$(distdir)_bin.tar.gz .; \
+        popd; \
+        rm -rf $$tmpdistbin
+
+clean-local:
+	rm -f @PACKAGE@-@VERSION@.tar.gz
+
+distclean-local:
+	rm -rf $(RPM_DIRS) project
 

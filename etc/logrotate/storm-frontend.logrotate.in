@@ -1,0 +1,14 @@
+missingok
+rotate 26
+compress
+copytruncate
+notifempty
+create 644 storm storm
+
+@prefix@/var/log/storm-frontend.log {
+    size=50M
+    lastaction
+        DATE=`date +%Y-%m-%d`; mv @prefix@/var/log/storm-frontend.log.1.gz @prefix@/var/log/storm-frontend.log.$DATE.gz
+    endscript
+}
+

@@ -1,0 +1,30 @@
+##### StoRM frontend configuration file #####
+fe.port = 8444
+fe.threadpool.threads.number = 50
+#fe.gsoap.maxpending = 1000                      # default is 1000
+
+# Log options
+log.filename = @prefix@/var/log/storm-frontend.log
+log.debuglevel = INFO      # Allowed values: ERROR, WARN, INFO, DEBUG, DEBUG2.
+
+# Security settings
+#security.disable.mapping = false     # default is "false"
+#security.disable.vomscheck = false   # default is "false"
+
+# Backend information
+be.xmlrpc.host = localhost
+#be.xmlrpc.port = 8080    # default is 8080
+#be.xmlrpc.path = /RPC2   # default is /RPC2
+be.recalltable.port=9998  # default is 9998
+
+proxy.dir = @prefix@/var/proxy
+#proxy.user = storm       # default is storm
+
+# Database
+db.host = localhost
+db.user = storm
+db.passwd = password
+
+# WSDL to be returned to a GET request
+wsdl.file = @prefix@/wsdl/srm.v2.2.wsdl
+
