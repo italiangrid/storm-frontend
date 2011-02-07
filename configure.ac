@@ -1,28 +1,19 @@
+# Copyright (c) Istituto Nazionale di Fisica Nucleare (INFN). 2006-2010.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#        http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-#
-
-#*
-#* Authors: Alberto Forti <alberto.forti@cnaf.infn.it>
-#*
-#* Copyright 2004 INFN
-#*
-#* Date: 20 November 2008
-#*
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 AC_PREREQ([2.59])
-AC_INIT([storm frontend server], [1.5.0])
+AC_INIT([storm frontend server], [1.6.0])
 AC_CONFIG_AUX_DIR([./project])
 AM_INIT_AUTOMAKE([1.6.3 subdir-objects])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
@@ -30,12 +21,11 @@ AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
 # Release number
 osdist=`cat /etc/redhat-release | awk 'BEGIN {FS="release "} {print $2}'| awk 'BEGIN {FS="."} {print $1}'`
 AC_SUBST([STORM_FRONTEND_SO], [sl$osdist])
-AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [4])
+AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [1])
 
 # Notices.
 AC_COPYRIGHT([See LICENCE file for details])
 AC_REVISION([$Revision: $])
-
 
 #Environment.
 WORKDIR=`pwd`

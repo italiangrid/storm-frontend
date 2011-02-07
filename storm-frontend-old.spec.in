@@ -4,7 +4,11 @@
 
 %define builddir     @RPM_BUILD_DIR@/build-%{name}-%{version}
 
-%define emidir       @EMI_LOCATION@
+%define globusdir    @GLOBUS_LOCATION@
+%define flavorthr    @GLOBUS_THR_FLAVOR@
+%define flavornothr  @GLOBUS_NOTHR_FLAVOR@
+
+%define glitedir     @GLITE_LOCATION@
 %define vomsdir      @VOMS_INSTALL_PATH@
 %define vomsincludedir @VOMS_INCLUDE_PATH@
 
@@ -44,9 +48,6 @@ AutoReqProv: no
 BuildRoot:      %{builddir}/var/tmp/%{name}-%{version}
 Prefix:         /opt/storm/frontend
 Summary:        The StoRM FrontEnd component. 
-Requires: curl = %{curlversion}
-Requires: xmlrpc-c = %{xmlrpccversion}
-Requires: CGSI_gSOAP_2.7-voms >= %{cgsigsoapversion}
 
 %define debug_package %{nil}
 
@@ -58,18 +59,44 @@ filesystem with direct file access ("file:" transport protocol), but
 can take advantage of special features of high performance parallel and cluster file systems, as 
 GPFS from IBM and Lustre from SUN.
 
+%package %{flavorthr}
+Summary: The StoRM frontend component for %{flavor}
+Group: Application/generic
+AutoReqProv: no
+Requires: curl = %{curlversion}
+Requires: xmlrpc-c = %{xmlrpccversion}
+Requires: CGSI_gSOAP_2.7-voms >= %{cgsigsoapversion}
+
+%description %{flavorthr}
+This is the installation bundle for the StoRM FrontEnd server.
+
+StoRM provides an SRM interface to any POSIX
+filesystem with direct file access ("file:" transport protocol), but
+can take advantage of special features of high performance parallel and cluster file systems, as
+GPFS from IBM and Lustre from SUN.
+
 %prep
 %setup -n @PACKAGE@-%{version}
 
 %build
-./bootstrap storm.common
-./configure --prefix=%{prefix} --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-xmlrpc-c-prefix=%{xmlrpccdir} --with-xmlrpc-c-devel-prefix=%{xmlrpccdevdir} --with-cgsi-gsoap-location=%{cgsigsoapdir} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldevdir} --with-boost-prefix=%{boostdir} --with-boost-include=%{boostincludedir} --with-boost-devel-prefix=%{boostdevdir} --enable-boost-mt --with-emi-location=%{emidir} --with-voms-prefix=%{vomsdir} --with-voms-include=%{vomsincludedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=2.7.13 --with-gsoap-wsdl2h-version=2.7.13 --with-storm-frontend-location=%{stormfrontenddir} --enable-gsoapgsi
+./bootstrap
+./configure --prefix=%{prefix} --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-xmlrpc-c-prefix=%{xmlrpccdir} --with-xmlrpc-c-devel-prefix=%{xmlrpccdevdir} --with-globus-prefix=%{globusdir} --with-globus-nothr-flavor=%{flavornothr} --with-globus-thr-flavor=%{flavorthr} --with-cgsi-gsoap-location=%{cgsigsoapdir} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldevdir} --with-boost-prefix=%{boostdir} --with-boost-include=%{boostincludedir} --with-boost-devel-prefix=%{boostdevdir} --enable-boost-mt --with-glite-location=%{glitedir} --with-voms-prefix=%{vomsdir} --with-voms-include=%{vomsincludedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=2.7.6b --with-gsoap-wsdl2h-version=2.7.6b --with-storm-frontend-location=%{stormfrontenddir} --enable-gsoapgsi
 make
+
+#%pre
+# Stop the old frontend if any.
+#if [ -f /opt/srmv2storm/etc/init.d/srmv2storm ]; then
+#    /opt/srmv2storm/etc/init.d/srmv2storm stop > /dev/null
+#    exit 0
+#fi
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
+#mkdir -p $RPM_BUILD_ROOT/etc/init.d $RPM_BUILD_ROOT/etc/cron.d
+#mv -f $RPM_BUILD_ROOT/%{prefix}/etc/init.d/storm-frontend $RPM_BUILD_ROOT/etc/init.d
+#rm -f $RPM_BUILD_ROOT/%{prefix}/%{libtype}/libglobus-gridftp-server-StoRM-%{flavor}.la
 
 %post
 #during an install, the value of the argument passed in is 1
@@ -144,7 +171,7 @@ rm -f /etc/cron.d/storm-frontend.cron
 fi
 fi;
 
-%files
+%files %{flavorthr}
 %defattr(-,root,root)
 %attr(755,root,root) %{prefix}/etc/cron.d/storm-frontend.cron
 %attr(755,root,root) %{prefix}/etc/init.d/storm-frontend
@@ -162,10 +189,6 @@ fi;
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
-* Wed Dec 22 2010 Elisabetta Ronchieri> <elisabetta.ronchieri@cnaf.infn.it>
-- removed globus settings
-- renamed glite with emi
-
 * Wed Aug 8 2010 Elisabetta Ronchieri> <elisabetta.ronchieri@cnaf.infn.it>
 - version %{version}-%{release}
 - changed the handling of init script and cron file

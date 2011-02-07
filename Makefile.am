@@ -1,34 +1,31 @@
+# Copyright (c) Istituto Nazionale di Fisica Nucleare (INFN). 2006-2010.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#        http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-#
-
-#
-# Authors: Elisabetta Ronchieri <elisabetta.ronchieri@cnaf.infn.it>
-# Version info: $Id$
-# Release: $Name:  $
-#                                                                            # Revision history:
-# $Log:  $
-#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 EXTRA_DIST = \
     bootstrap \
+    CREDITS \
+    ChangeLog \
+    README \
     LICENSE \
     storm-frontend.spec.in \
     project
 
 docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
-doc_DATA = LICENSE
+doc_DATA = LICENSE \
+        CREDITS \
+        ChangeLog \
+        README
 
 ## Subdirectories list
 SUBDIRS = etc wsdl src
@@ -57,6 +54,7 @@ rpm: dist
 	/bin/cp $(SPEC_FILE) $(RPM_SPEC)
 	cd $(RPM_SPEC); \
 	/usr/bin/rpmbuild  --define "_topdir $(RPM_MAIN_DIR)" -ba $(RPM_SPEC)/$(SPEC_FILE)
+	mkdir -p @DISTSOURCE@ @DISTBIN@
 
 stage:
 	@set fnord $(MAKEFLAGS); amf=$$2; \
@@ -78,10 +76,13 @@ stage:
           $(MAKE) $(AM_MAKEFLAGS) "$$target-am" $$prefix_arg || exit 1; \
         fi; test -z "$$fail"
 
-distsrc: dist
-	mv $(distdir).tar.gz $(DISTTAR)/$(distdir)_src.tar.gz
+distsrc:
+	mkdir -p @DISTSOURCE@
+	cp $(distdir).tar.gz $(DISTSOURCE)/$(distdir).tar.gz
+	cp $(RPM_SRPM)/*.rpm @DISTSOURCE@
 
 distbin:
+	mkdir -p @DISTBIN@
 	@set fnord $(MAKEFLAGS); amf=$$2; \
         dot_seen=no; \
         target="install"; \
@@ -102,9 +103,10 @@ distbin:
           $(MAKE) $(AM_MAKEFLAGS) "$$target-am" $$prefix_arg || exit 1; \
         fi; test -z "$$fail"; \
         pushd $$tmpdistbin; \
-        $(AMTAR) -zcf $(DISTTAR)/$(distdir)_bin.tar.gz .; \
+        $(AMTAR) -zcf $(DISTBIN)/$(distdir).tar.gz .; \
         popd; \
         rm -rf $$tmpdistbin
+	cp $(RPM_RPM)/*/*.rpm @DISTBIN@
 
 clean-local:
 	rm -f @PACKAGE@-@VERSION@.tar.gz
