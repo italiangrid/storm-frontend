@@ -19,6 +19,7 @@
 #include "storm_util.h"
 #include "storm_functions.h"
 #include <string.h>
+#include <stdlib.h>
 #include "srmlogit.h"
 
 int get_supported_protocols(char ***sup_proto) {

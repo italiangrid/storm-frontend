@@ -19,13 +19,18 @@
  */
 
 #include "srmSoapBinding.nsmap"
+
+extern "C"{
 #include "cgsi_plugin.h"
+}
+
 #include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_functions.h"
 #include "storm_limits.h"
 #include "storm_util.h"
 #include "srmlogit.h"
+
 #include <signal.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -39,11 +44,12 @@
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
 #include "Monitoring.hpp"
-#include <boost/bind.hpp>
+#include "boost/bind.hpp"
 #include "DBConnectionPool.hpp"
 #include <signal.h>
 #include "frontend_version.h"
 #include <curl/curl.h>
+#include "ProtocolChecker.hpp"
 
 #define NAME "StoRM SRM v2.2"
 
@@ -79,6 +85,7 @@ static int http_get(struct soap *soap) {
     srmlogit(STORM_LOG_DEBUG, "http_get", "Receives GET request\n");
     soap_response(soap, SOAP_HTML); // HTTP response header with text/html
     if (-1 == fd) {
+        srmlogit(STORM_LOG_DEBUG2, "http_get", "Error opening file %s. (%s)\n", wsdl_file, strerror(errno));
         srmlogit(STORM_LOG_ERROR, "http_get", "Error opening file %s. (%s)\n", wsdl_file, strerror(errno));
         soap_send(soap, "<html><body>Error in GET method</body><html>\n");
     } else {
@@ -122,19 +129,37 @@ int setProxyUserGlobalVariables(string& proxy_user) {
 
 /*************************** Function: process_request() *********************/
 void *
-process_request(struct soap* soap) {
+process_request(struct soap* tsoap) {
 
-    soap->user = mysql_connection_pool->getConnection(boost::this_thread::get_id());
+	srmlogit(STORM_LOG_DEBUG, "process_request", "-- START process_request\n");
+    srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection(boost::this_thread::get_id());
+    tsoap->user = thread_info;
 
-    soap->recv_timeout = SOAP_RECV_TIMEOUT;
-    soap->send_timeout = SOAP_SEND_TIMEOUT;
+    tsoap->recv_timeout = SOAP_RECV_TIMEOUT;
+    tsoap->send_timeout = SOAP_SEND_TIMEOUT;
 
-    soap_serve(soap);
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "-- Start soap_serve\n");
 
-    soap_end(soap);
-    soap_done(soap);
-    free(soap);
+    if (soap_serve((struct soap*)tsoap) && (tsoap->error != SOAP_EOF || (tsoap->errnum != 0 && !(tsoap->omode & SOAP_IO_KEEPALIVE))))
+    {
+//      srmlogit(STORM_LOG_ERROR, "process_request", "Thread %d completed with failure %d\n", (int)tsoap->user, tsoap->error);
+      soap_print_fault(tsoap, stderr);
+    }
+    srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_serve\n");
 
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_destroy\n");
+    soap_destroy((struct soap*)tsoap); // cleanup class instances (C++)
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_destroy\n");
+
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_end\n");
+    soap_end((struct soap*)tsoap); // dealloc data and clean up
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_end\n");
+
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_free\n");
+	soap_free((struct soap*)tsoap); // detach and free thread's copy of soap environment
+	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_free\n");
+
+	srmlogit(STORM_LOG_DEBUG, "process_request", "-- END process_request\n");
     return NULL;
 }
 
@@ -187,8 +212,8 @@ int main(int argc, char** argv) {
     bool debugMode = configuration->requestedDebug();
     int debuglevel = configuration->getDebugLevel();
     string debugLevelString = configuration->getDebugLevelString();
-    bool disableMapping = configuration->mappingDisabled();
-    bool disableVOMSCheck = configuration->vomsCheckDisabled();
+    bool enableMapping = configuration->mappingEnabled();
+    bool enableVOMSCheck = configuration->vomsCheckEnabled();
 
     // Proxy User
     if (setProxyUserGlobalVariables(proxy_user) != 0) {
@@ -209,7 +234,7 @@ int main(int argc, char** argv) {
     db_pwd = strdup(dbUserPasswd.c_str());
     db_srvr = strdup(dbHost.c_str());
 
-    // Initialize the loging system
+    // Initialize the logging system
     int doAudit;
     if (audit_enabled) {
         doAudit = 1;
@@ -256,15 +281,18 @@ int main(int argc, char** argv) {
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), db_user);
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), wsdl_file);
 
-    if (disableMapping) {
-        srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_DISABLE_MAPPING.c_str());
+    // Renamed disable with enable and changed checks accordingly
+
+    if (enableMapping) {
+        srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_ENABLE_MAPPING.c_str());
     } else {
-        srmlogit(STORM_LOG_NONE, func, "%s=false\n", OPTL_DISABLE_MAPPING.c_str());
+        srmlogit(STORM_LOG_NONE, func, "%s=false\n", OPTL_ENABLE_MAPPING.c_str());
     }
-    if (disableVOMSCheck) {
-        srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_DISABLE_VOMSCHECK.c_str());
+
+    if (enableVOMSCheck) {
+        srmlogit(STORM_LOG_NONE, func, "%s=true\n", OPTL_ENABLE_VOMSCHECK.c_str());
     } else {
-        srmlogit(STORM_LOG_NONE, func, "%s=false\n", OPTL_DISABLE_VOMSCHECK.c_str());
+        srmlogit(STORM_LOG_NONE, func, "%s=false\n", OPTL_ENABLE_VOMSCHECK.c_str());
     }
     srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
 
@@ -293,6 +321,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    srmlogit(STORM_LOG_DEBUG, func, "Initializing the ProtocolChecker instance\n");
+    ProtocolChecker::getInstance()->ProtocolChecker::init(&supported_protocols, nb_supported_protocols);
+    srmlogit(STORM_LOG_DEBUG, func, "ProtocolChecker initialization completed\n");
+    ProtocolChecker::getInstance()->ProtocolChecker::printProtocols();
+
     if (!debugMode) { // fork and leave the daemon in background
         int pid = fork();
         if (pid > 0) {
@@ -311,18 +344,24 @@ int main(int argc, char** argv) {
     //    soap_data->bind_flags |= SO_REUSEADDR;
 
     int flags = CGSI_OPT_DELEG_FLAG;
-    if (disableMapping) {
+    // Renamed disable with enable and changed checks accordingly
+
+    if (!enableMapping) {
         flags |= CGSI_OPT_DISABLE_MAPPING;
         srmlogit(STORM_LOG_NONE, func, "Mapping disabled\n");
     }
-    if (disableVOMSCheck) {
+
+    if (!enableVOMSCheck) {
         flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
         srmlogit(STORM_LOG_NONE, func, "VOMS check disabled\n");
     }
 
     soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
 
-    if (!soap_valid_socket(soap_bind(soap_data, NULL, port, gsoap_max_pending))) {
+    int m;
+    m = soap_bind(soap_data, NULL, port, gsoap_max_pending);
+
+    if (!soap_valid_socket(m)) {
         soap_print_fault(soap_data, stderr);
         soap_done(soap_data);
         free(soap_data);
@@ -365,15 +404,24 @@ int main(int argc, char** argv) {
     /******************************* main loop ******************************/
     struct soap *tsoap;
     int exit_code = 0;
-    SOAP_SOCKET s;
+    SOAP_SOCKET sock;
 
     while (stay_running) {
+        m = soap_accept(soap_data); 
+    	while (!soap_valid_socket(m)) {
 
-        while (!soap_valid_socket(soap_accept(soap_data))) {
-            if (!stay_running) {
-                // received a SIGINT
-                break;
-            }
+    	     if (!stay_running) {
+                 // received a SIGINT
+                 break;
+             }
+
+    	     if (soap_data->errnum) {
+                 srmlogit(STORM_LOG_INFO, func, "Error in soap_socket %ld\n", soap_data->errnum);
+                 soap_print_fault(soap_data, stderr);
+             }
+
+             m = soap_accept(soap_data);
+
         }
 
         if (!stay_running) {
@@ -385,20 +433,23 @@ int main(int argc, char** argv) {
             srmlogit(STORM_LOG_ERROR, func,
                     "Error in soap_copy(), probably system busy retry in 3 seconds. Error message: %s\n",
                     strerror(ENOMEM));
-            srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp->get_active());
-            srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp->get_pending());
+            srmlogit(STORM_LOG_INFO, func, "AUDIT - CP - Active tasks: %ld\n", tp->get_active());
+            srmlogit(STORM_LOG_INFO, func, "AUDIT - CP - Pending tasks: %ld\n", tp->get_pending());
 
             // A memory allocation error here is probably due to system busy so... going to sleep for a while.
             sleep(3);
         }
 
         try {
-
+            srmlogit(STORM_LOG_DEBUG2, func, "Going to bind to a thread\n");
             tp->schedule(boost::bind(process_request, tsoap));
+            srmlogit(STORM_LOG_DEBUG2, func, "Bound request to a thread\n");
 
         } catch (exception& e) {
             srmlogit(STORM_LOG_ERROR, func, "Cannot schedule task, request is lost: %s\n", e.what());
-            soap_done(tsoap);
+
+            soap_destroy(tsoap);
+            soap_end(tsoap);
             soap_free(tsoap);
         }
 
@@ -413,6 +464,7 @@ int main(int argc, char** argv) {
 
     delete tp;
 
+    soap_destroy(soap_data);
     soap_end(soap_data);
     soap_done(soap_data);
     free(soap_data);

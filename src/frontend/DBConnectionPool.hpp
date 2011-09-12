@@ -24,7 +24,7 @@
 #define DBCONNECTIONPOOL_HPP_
 
 #include "srm_server.h"
-#include <boost/thread.hpp>
+#include "boost/thread.hpp"
 
 class DBConnectionPool {
 public:

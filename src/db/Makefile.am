@@ -20,15 +20,16 @@ libstormdb_la_SOURCES = \
     mysql_query.cpp \
     mysql_query.hpp \
     storm_mysql.h
-libstormdb_la_CPPFLAGS = \
-    @GSOAP_CFLAGS@ \
-    @BOOST_CFLAGS@ \
-    @MYSQL_CFLAGS@ \
-    $(API_INCLUDES)
+#libstormdb_la_CXXFLAGS = 
+#    @GSOAP_SSL_PP_CFLAGS@ 
+#    @MYSQL_CFLAGS@ 
+#libstormdb_la_CFLAGS = 
+#    @GSOAP_SSL_PP_CFLAGS@ 
+#    @MYSQL_CFLAGS@
 
 GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 
-API_INCLUDES = \
+INCLUDES = \
     -I$(top_srcdir)/src/frontend \
     -I$(GENERATED_GSOAP_INCLUDES) 
 

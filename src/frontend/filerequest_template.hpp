@@ -30,6 +30,13 @@
 #include "storm_mysql.h"
 #include "sql_string.hpp"
 
+#include "get_socket_info.hpp"
+
+#include <vector>
+#include <sstream>
+#include "storm_util.h"
+#include "ProtocolChecker.hpp"
+
 using namespace std;
 
 template<typename soap_in_t, typename soap_out_t>
@@ -47,8 +54,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
     }
 
     srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, request.getClientDN().c_str());
-    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,
-                                                              (soap->ip>>8)  & 0xFF, (soap->ip) & 0xFF);
+    srmlogit(STORM_LOG_INFO, func, "Client IP=%s\n", get_ip(soap).c_str());
 
     // Generete the request token (unique identifier)
     uuid_t uuid;
@@ -93,7 +99,35 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 
             return SOAP_OK;
         }
+        ProtocolChecker::getInstance()->ProtocolChecker::printProtocols();
+        if(request.supportsProtocolSpecification())
+        {
+			srmlogit(STORM_LOG_DEBUG, func, "Checking provided protocols\n");
+			if(ProtocolChecker::getInstance()->ProtocolChecker::checkProtocols(request.getRequestedProtocols()) != 0)
+			{
+				srmlogit(STORM_LOG_INFO, func, "Protocol check failed, received some unsupported protocols\n");
+				std::vector<sql_string> newProtocolVector = ProtocolChecker::getInstance()->ProtocolChecker::removeUnsupportedProtocols(request.getRequestedProtocols());
+				int size = request.getRequestedProtocols()->size();
+				int newSize = newProtocolVector.size();
+				int removedCount = size - newSize;
 
+				srmlogit(STORM_LOG_INFO, func, "Received - %d - protocols, %d are supported, %d are not supported\n" , size, newSize, removedCount);
+				if(newProtocolVector.empty())
+				{
+					srmlogit(STORM_LOG_INFO, func, "None of the requested protocols is supported. Request failed\n");
+					request.setGenericFailureSurls();
+					*resp = request.error_response(SRM_USCORENOT_USCORESUPPORTED,
+											"No supported protocols provided.");
+					return SOAP_OK;
+				}
+				else
+				{
+					srmlogit(STORM_LOG_INFO, func, "Some of the provided protocols are supported, proceeding\n");
+					request.setProtocolVector(&newProtocolVector);
+				}
+			}
+			srmlogit(STORM_LOG_DEBUG, func, "Valid protocols available\n");
+        }
         try {
 
             request.insert(&thip->dbfd);

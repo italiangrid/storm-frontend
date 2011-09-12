@@ -23,13 +23,16 @@
 #ifndef FRONTENDOPTIONS_HPP_
 #define FRONTENDOPTIONS_HPP_
 
-#include <boost/program_options.hpp>
+#include "boost/program_options.hpp"
 namespace po = boost::program_options;
 
 #include <iostream>
 #include <fstream>
 #include <iterator>
 #include <string>
+
+//#include "xmlrpc_encode.h"
+
 using namespace std;
 
 // Costants
@@ -50,6 +53,7 @@ static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
 static const int DEFAULT_AUDIT_TIME_INTERVAL = 60;
+static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 
 static const char* EMPTY_DESCRIPTION = "";
 
@@ -73,11 +77,16 @@ static const string OPT_DEBUG = "d";
 static const string OPTL_DEBUG = "debug-mode";
 static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
 
-static const string OPTL_DISABLE_MAPPING = "security.disable.mapping";
-static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
+// Renamed disable with enable and changed checks accordingly
+//static const string OPTL_DISABLE_MAPPING = "security.disable.mapping";
+//static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
+static const string OPTL_ENABLE_MAPPING = "security.enable.mapping";
+static const char* OPT_ENABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
 
-static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
-static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
+//static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
+//static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
+static const string OPTL_ENABLE_VOMSCHECK = "security.enable.vomscheck";
+static const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
 static const string OPTL_AUDIT_ENABLED = "audit.enabled";
 
@@ -132,6 +141,9 @@ static const char* OPT_DB_USER_DESCRIPTION = "Database user";
 static const string OPTL_DB_USER_PASSWORD = "db.passwd";
 static const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
 
+static const string OPTL_XMLRPC_CHECK_ASCII = "be.xmlrpc.check.ascii";
+static const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not strings to be sent via xmlrpc to the BE";
+
 // A helper function to simplify printing options stuff
 template<class T>
 ostream& operator<<(ostream& os, const vector<T>& v)
@@ -139,6 +151,7 @@ ostream& operator<<(ostream& os, const vector<T>& v)
     copy(v.begin(), v.end(), ostream_iterator<T>(cout, " "));
     return os;
 }
+
 
 // This class is a singleton. The creation is not thread-safe because it is
 // instantiated from main().
@@ -155,9 +168,11 @@ public:
     bool requestedVersion();
     bool requestedDebug();
     bool foundConfigurationFile();
-    bool mappingDisabled();
+    //bool mappingDisabled();
+    bool mappingEnabled();
     bool getAuditEnabled();
-    bool vomsCheckDisabled();
+    //bool vomsCheckDisabled();
+    bool vomsCheckEnabled();
     int getDebugLevel();
     int getNumThreads();
     int getThreadpoolMaxPending();
@@ -182,6 +197,7 @@ public:
     string getGridmapfile();
     string getHostCertFile();
     string getHostKeyFile();
+    bool getXMLRPCCheckAscii();
 
 private:
     FrontendConfiguration();
@@ -205,8 +221,10 @@ private:
     bool versionRequested;
     bool debugMode;
     bool configurationFileFound;
-    bool disableMapping;
-    bool disableVOMSCheck;
+    //bool disableMapping;
+    //bool disableVOMSCheck;
+    bool enableMapping;
+    bool enableVOMSCheck;
     bool auditEnabled;
     int numberOfThreads;
     int threadpool_max_pending;
@@ -233,7 +251,10 @@ private:
     string gridmapfile;
     string hostcertfile;
     string hostkeyfile;
+    bool xmlrpc_check_ascii;
 
 };
+
+int getInstanceXMLRPCCheckAscii();
 
 #endif /* FRONTENDOPTIONS_HPP_ */

@@ -23,9 +23,9 @@
 #ifndef MONITORING_HPP_
 #define MONITORING_HPP_
 
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/bind.hpp>
+#include "boost/thread/thread.hpp"
+#include "boost/thread/mutex.hpp"
+#include "boost/bind.hpp"
 
 #include <string>
 #include <iostream>

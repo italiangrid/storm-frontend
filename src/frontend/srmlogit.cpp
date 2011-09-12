@@ -23,7 +23,7 @@
 #include <string.h>
 //#include <boost/thread/mutex.hpp>
 
-#include <boost/thread.hpp>
+#include "boost/thread.hpp"
 #include <sstream>
 #include "srmlogit.h"
 
@@ -104,8 +104,8 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     int save_errno;
     int Tid = 0;
     int prefix_msg_len;
-    int max_char_to_write;
-    int desired_buf_len;
+    signed int max_char_to_write;
+    int desired_buf_len = 0;
     struct tm *tm;
 #if defined(_REENTRANT) || defined(_THREAD_SAFE)
     struct tm tmstruc;
@@ -128,14 +128,24 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
 
     std::ostringstream oss;
 
-    oss << boost::this_thread::get_id();
-    const char* tid = (oss.str()).c_str();
 
-    prefix_msg_len = sprintf(prtbuf, "%02d/%02d %02d:%02d:%02d %s %s: ", tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec, tid, func);
+    oss << boost::this_thread::get_id();
+
+    std::string tid = oss.str();
+    prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s %s: ", tm->tm_mon + 1, tm->tm_mday,
+            tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), func);
 
     max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
-    desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
+    if(max_char_to_write > 0)
+    {
+    	desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
+    }
+    else
+    {
+    	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+    }
+
+    prtbuf[LOGBUFSZ-1] = '\0';
     va_end(args);
 
     // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf

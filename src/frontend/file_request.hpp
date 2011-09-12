@@ -281,6 +281,14 @@ public:
     ;
 
     virtual void load(soap_in_t *req) = 0;
+    virtual bool supportsProtocolSpecification() = 0;
+    virtual vector<sql_string>* getRequestedProtocols() = 0;
+    virtual void setProtocolVector(vector<sql_string>* protocolVector) = 0;
+
+    /*
+     * Set the status code at SURL level to SRM_FAILURE to all requested SURLs
+     */
+    virtual void setGenericFailureSurls() = 0;
     virtual void insert(struct srm_dbfd *dbfd) = 0;
     virtual soap_out_t *response() = 0;
     soap_out_t *error_response(ns1__TStatusCode s, const char * const expl) {

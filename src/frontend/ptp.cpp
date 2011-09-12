@@ -26,6 +26,29 @@
 
 using namespace storm;
 
+bool ptp::supportsProtocolSpecification()
+{
+	return true;
+}
+
+vector<sql_string>* ptp::getRequestedProtocols()
+{
+	return &(this->_protocols);
+}
+
+void ptp::setProtocolVector(vector<sql_string>* protocolVector)
+{
+	this->_protocols = *protocolVector;
+}
+
+void ptp::setGenericFailureSurls()
+{
+    srmlogit(STORM_LOG_DEBUG, "ptp::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
+    for (int i = 0; i < _surls.size(); i++) {
+        _surls.at(i).status = SRM_USCOREFAILURE;
+    }
+}
+
 void ptp::load(ns1__srmPrepareToPutRequest *req) {
     if (NULL == req)
         throw invalid_request("Request is NULL");

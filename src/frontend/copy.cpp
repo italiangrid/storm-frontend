@@ -24,6 +24,30 @@
 #include "storm_mysql.h"
 
 using namespace storm;
+
+bool copy::supportsProtocolSpecification()
+{
+	return false;
+}
+
+vector<sql_string>* copy::getRequestedProtocols()
+{
+	return NULL;
+}
+
+void copy::setProtocolVector(vector<sql_string>* protocolVector)
+{
+	//nothing to do form Copy, no protocol list in the request
+}
+
+void copy::setGenericFailureSurls()
+{
+	srmlogit(STORM_LOG_DEBUG, "copy::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
+    for (int i = 0; i < _surls.size(); i++) {
+        _surls.at(i).status = SRM_USCOREFAILURE;
+    }
+}
+
 void
 copy::load(struct ns1__srmCopyRequest *req)
 {

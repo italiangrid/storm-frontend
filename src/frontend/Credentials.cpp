@@ -32,8 +32,9 @@ Credentials::Credentials(struct soap *soap)
     // retrieving client DN
     _clientDN = string();
 #if defined(GSI_PLUGINS)
-
+    srmlogit(STORM_LOG_INFO, funcName, "Pre get client dn\n");
     get_client_dn(_soap, clientdn, sizeof(clientdn));
+    srmlogit(STORM_LOG_INFO, funcName, "After get client dn\n");
     _clientDN = string(clientdn);
 #endif
 

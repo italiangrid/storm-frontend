@@ -21,6 +21,7 @@
 #include "srm_server.h"
 #include "file_status.hpp"
 #include "storm_mysql.h"
+#include "get_socket_info.hpp"
 #include <cgsi_plugin.h>
 
 using namespace std;
@@ -43,8 +44,7 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
     string clientDN = status.getClientDN();
 
     srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, clientDN.c_str());
-    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
-             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
+    srmlogit(STORM_LOG_INFO, func, "Client IP=%s\n", get_ip(soap).c_str());
 
     if (NULL == r_token) {
         *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST, "Empty request token");

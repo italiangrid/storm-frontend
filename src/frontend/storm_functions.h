@@ -50,6 +50,13 @@
 #define STORM_ACL_OTHER           6
 #define STORM_ACL_DEFAULT         0x20
 
+/*
+ * 1 means that call does not fail in case of not well-formed authorizationId
+ * 0 means that call does fail in case of not well-formed authorizationId
+ *
+ */
+#define DONT_FAIL_FOR_AUTHORIZATION_ID 1
+
 
 /* storm_req File Type */
 #define DB_FILE_TYPE_VOLATILE  'V'

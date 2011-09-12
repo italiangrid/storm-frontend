@@ -75,10 +75,9 @@ extern "C" int storm_opendb(char *db_srvr, char *db_user, char *db_pwd, struct s
 
     mysql_init(&dbfd->mysql);
 
-//#ifdef _USE_MYSQL5
-//    my_bool valueTrue = 1;
-//    mysql_options(&dbfd->mysql, MYSQL_OPT_RECONNECT, (void *) &valueTrue);
-//#endif
+    // Set auto-reconnect option to TRUE
+    my_bool reconnect = 1;
+    mysql_options(&dbfd->mysql, MYSQL_OPT_RECONNECT, &reconnect);
 
     ntries = 0;
     while (1) {
@@ -779,7 +778,7 @@ extern "C" int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
         "INSERT INTO status_Get"
         "(statusCode,  request_GetID) values"
         "(%d,  %lu)";
-    char filesize_str[21];
+    //char filesize_str[21];
     char sql_stmt[2880];
     int ret;
 
@@ -909,7 +908,7 @@ static int _fill_getreq_array_from_dbres(MYSQL_RES *res,
     static const char * const func="_fill_getreq_array_from_dbres";
     MYSQL_ROW row;
     struct storm_get_filereq **gfr_array;
-    int size, nr_request;
+    int size; // nr_request;
     int ret;
     int i;
     /* Check... */
@@ -1029,7 +1028,7 @@ extern "C" int storm_get_gfr_status(struct srm_dbfd *dbfd,
     int ret;
     int num_rows;
     MYSQL_RES *res;
-    MYSQL_ROW row;
+    //MYSQL_ROW row;
 
     if(NULL == filerequest_array
        || NULL == request
@@ -1088,14 +1087,14 @@ extern "C" storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
         "(client_dn, u_token, config_FilestorageTypeID, "
         "r_token, config_RequestTypeID, config_OverwriteID, "
         "pinLifetime, nbreqfiles, timeStamp, status) VALUES "
-        "('%s', %s, %s, "
+        "(\"%s\", %s, %s, "
         "'%s', '%s', %s, "
         "%s, %d, current_timestamp(), %d)";
     char sql_stmt[2888];
     int sql_size=2888;
     int ret;
 
-    char retrytime_str[sizeof(storm_req->retrytime)*2+3];
+    //char retrytime_str[sizeof(storm_req->retrytime)*2+3];
     char pinlifetime_str[sizeof(storm_req->lifetime)*2+3];
     char ftype_str[4];
     char overwrite_str[4];
@@ -1246,7 +1245,7 @@ extern "C" int storm_insert_xferreq_entry(struct srm_dbfd *dbfd, struct storm_re
                 "INSERT INTO storm_req (R_ORDINAL, R_TOKEN, R_UID, R_GID, CLIENT_DN, CLIENTHOST, "
                 "R_TYPE, PROTOCOL, U_TOKEN, FLAGS, RETRYTIME, NBREQFILES, CTIME, STIME, ETIME, "
                 "STATUS, ERRSTRING) "
-                "VALUES (%d, '%s', %d, %d, '%s', '%s', '%c', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s')";
+                "VALUES (%d, '%s', %d, %d, \"%s\", '%s', '%c', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s')";
     char sql_stmt[1224];
     int ret;
 

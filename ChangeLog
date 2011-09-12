@@ -1,3 +1,14 @@
+2011-05-02 Elisabetta Roncheiri <elisabetta.ronchieri@cnaf.infn.it>
+
+    * Added BuildRequires in spec file
+    * Added src in the src tar file
+    * Cleaned configuration file
+
+2010-02-18 Elisabetta Ronchieri> <elisabetta.ronchieri@cnaf.infn.it>
+
+    * removed boost as external dependency
+    * changed prefix path
+
 2010-09-20  Elisabetta Ronchieri  <elisabetta.ronchieri@cnaf.infn.it>
 
     * included Copyright in all files

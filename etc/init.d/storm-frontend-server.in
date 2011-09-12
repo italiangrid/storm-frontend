@@ -21,13 +21,15 @@
 
 # StoRM Frontend start script
 
-prog="storm-frontend"
+prog=@PACKAGE@
+prog_short=`echo $prog | cut -c1-15`
 PIDDIR=/var/run
 SUBSYSDIR=/var/lock/subsys
 PIDFILE=$PIDDIR/$prog.pid
+RUNDIR=/var/log/@PACKAGE_PREFIX_NAME@
 
-FRONTEND_DAEMON=/opt/storm/frontend/sbin/$prog
-CONFIGURATION_FILE=/opt/storm/frontend/etc/storm-frontend.conf
+FRONTEND_DAEMON=@sbindir@/$prog
+CONFIGURATION_FILE=@sysconfdir@/@PACKAGE_PREFIX_NAME@/@PACKAGE_SHORT_NAME@/@PACKAGE@.conf
 
 if [ -z $STORM_FE_USER ]; then
     STORM_FE_USER=storm
@@ -76,6 +78,7 @@ RETVAL=0
 
 case "$1" in
   start)
+    ulimit -c unlimited
     # Script must be launched as root
     if [ ! `whoami` = "root" ]; then
         echo "Error: you must be root to run this script."
@@ -101,8 +104,8 @@ case "$1" in
     # Make sure the FE can write the logfile and save the proxies
     # and set environment variable
     if [ "root" != $STORM_FE_USER ]; then
-        mkdir -p /opt/storm/frontend/var
-        chown ${STORM_FE_USER}:${STORM_FE_USER} /opt/storm/frontend/var
+        mkdir -p @localstatedir@/log/@PACKAGE_PREFIX_NAME@
+        chown ${STORM_FE_USER}:${STORM_FE_USER} @localstatedir@/log/@PACKAGE_PREFIX_NAME@
         STORM_USER_CERT_DIR=/etc/grid-security/$STORM_FE_USER
         if [ -d $STORM_USER_CERT_DIR ]; then
             export X509_USER_CERT=$STORM_USER_CERT_DIR/hostcert.pem
@@ -115,12 +118,14 @@ case "$1" in
             exit 1
         fi
     fi
-
+	
+	#cd to a folder where the process user $STORM_FE_USER has write permission for core dump generation
+	cd $RUNDIR
     # Launch the frontend
     su -m -s "/bin/bash" -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE" $STORM_FE_USER
 
     if [ $? -eq 0 ]; then
-        pid=`ps -eo pid,ppid,comm | grep " 1 $prog$" | awk '{print $1}'`
+        pid=`ps -eo pid,ppid,comm | grep " 1 $prog_short$" | awk '{print $1}'`
         echo $pid > $PIDFILE
         RETVAL=0
         echo "ok."

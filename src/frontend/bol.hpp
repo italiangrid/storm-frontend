@@ -57,6 +57,25 @@ public:
     ;
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmBringOnlineRequest *req);
+/*
+     * Returns true if the bol command supports the option for specify the preferred transfer protocol
+     * */
+    bool supportsProtocolSpecification();
+    
+    /*
+     * Returns the array of requested preferred transfer protocols
+     * */
+    vector<sql_string>* getRequestedProtocols();
+    
+    /*
+     * Sets the array of requested preferred transfer protocols to the provided one
+     * */
+	void setProtocolVector(vector<sql_string>* protocolVector);
+
+	/*
+	 * Set the status code at SURL level to SRM_FAILURE to all requested SURLs
+	 */
+	void setGenericFailureSurls();
     ns1__srmBringOnlineResponse * response();
 
 private:

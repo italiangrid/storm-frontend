@@ -13,6 +13,7 @@
  * limitations under the License.
 */
 
+#include "storm_functions.h"
 #include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_util.h"
@@ -148,7 +149,7 @@ int ns1__srmReleaseFiles (struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -353,7 +354,7 @@ int ns1__srmPutDone(struct soap *soap, struct ns1__srmPutDoneRequest *req, struc
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -529,7 +530,7 @@ int ns1__srmAbortRequest(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -709,7 +710,7 @@ int ns1__srmAbortFiles(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -905,7 +906,7 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -1150,9 +1151,9 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
 */
 int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct ns1__srmPingResponse_ *rep)
 {
-	static const char *func = "Ping";
-	static const char *commandPrefix = "CMD:";
-	static const char *methodName = "synchcall.ping";
+    static const char *func = "Ping";
+    static const char *commandPrefix = "CMD:";
+    static const char *methodName = "synchcall.ping";
     struct ns1__srmPingResponse *repp;
     struct RPC_ResponseHandlerInput_Ping PingResponseHandlerInput;
     int error;
@@ -1163,7 +1164,9 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
 
 #if defined(GSI_PLUGINS)
     clientdn[0] = 0;
+    srmlogit(STORM_LOG_INFO, func, "Pre get client dn\n");
     get_client_dn(soap, clientdn, sizeof(clientdn));
+    srmlogit(STORM_LOG_INFO, func, "After get client dn\n");
     srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", clientdn);
 #else
     if (req->authorizationID != NULL) {
@@ -1176,7 +1179,7 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
     if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse)))) {
         return (SOAP_EOM);
     }
-	repp->versionInfo = NULL;
+    repp->versionInfo = NULL;
     repp->otherInfo = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
@@ -1212,7 +1215,7 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->versionInfo= "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
             xmlrpc_env_clean(&env);

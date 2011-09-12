@@ -13,11 +13,11 @@
 # limitations under the License.
 
 
-EXTRA_DIST = storm-frontend.logrotate.in
+EXTRA_DIST = storm-frontend-server.in
 
 logrotatedir = $(sysconfdir)/logrotate.d
-dist_logrotate_DATA = storm-frontend.logrotate
+dist_logrotate_DATA = storm-frontend-server
 
-CLEANFILES = storm-frontend.logrotate
+CLEANFILES = storm-frontend-server
 
 MAINTAINERCLEANFILES = Makefile.in

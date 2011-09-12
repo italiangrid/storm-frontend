@@ -33,13 +33,15 @@ SUBDIRS = etc wsdl src
 ## Default flags to run aclocal
 ACLOCAL_AMFLAGS = -I project -I config
 
-CLEANFILES = storm-frontend.spec
+CLEANFILES = \
+    storm-frontend.spec
 
 MAINTAINERCLEANFILES = Makefile.in
 
-SPEC_FILE = storm-frontend.spec
+SPEC_FILE = \ 
+    storm-frontend.spec
 
-RPM_MAIN_DIR = @RPM_DIR@/rpm
+RPM_MAIN_DIR = $(PWD)/rpm
 RPM_TMP_DIR = $(RPM_MAIN_DIR)/tmp
 RPM_SOURCE = $(RPM_MAIN_DIR)/SOURCES
 RPM_SPEC = $(RPM_MAIN_DIR)/SPECS
@@ -53,7 +55,7 @@ rpm: dist
 	/bin/cp -u @PACKAGE@-@VERSION@.tar.gz $(RPM_SOURCE)
 	/bin/cp $(SPEC_FILE) $(RPM_SPEC)
 	cd $(RPM_SPEC); \
-	/usr/bin/rpmbuild  --define "_topdir $(RPM_MAIN_DIR)" -ba $(RPM_SPEC)/$(SPEC_FILE)
+	/usr/bin/rpmbuild  --define "_topdir $(RPM_MAIN_DIR)" --nodeps -ba $(RPM_SPEC)/storm-frontend.spec 
 	mkdir -p @DISTSOURCE@ @DISTBIN@
 
 stage:
@@ -78,7 +80,8 @@ stage:
 
 distsrc:
 	mkdir -p @DISTSOURCE@
-	cp $(distdir).tar.gz $(DISTSOURCE)/$(distdir).tar.gz
+	mv $(distdir).tar.gz $(distdir).src.tar.gz
+	cp $(distdir).src.tar.gz $(DISTSOURCE)/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.@STORM_FRONTEND_ARCH@.src.tar.gz
 	cp $(RPM_SRPM)/*.rpm @DISTSOURCE@
 
 distbin:
@@ -103,7 +106,7 @@ distbin:
           $(MAKE) $(AM_MAKEFLAGS) "$$target-am" $$prefix_arg || exit 1; \
         fi; test -z "$$fail"; \
         pushd $$tmpdistbin; \
-        $(AMTAR) -zcf $(DISTBIN)/$(distdir).tar.gz .; \
+        $(AMTAR) -zcf $(DISTBIN)/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.@STORM_FRONTEND_ARCH@.tar.gz .; \
         popd; \
         rm -rf $$tmpdistbin
 	cp $(RPM_RPM)/*/*.rpm @DISTBIN@

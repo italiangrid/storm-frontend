@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+EXTRA_DIST = storm-frontend-server.conf.template.in
+
 SUBDIRS = cron.d logrotate init.d
 
-stormetcsysconfdir = $(sysconfdir)
-dist_stormetcsysconf_DATA = storm-frontend.conf.template
+stormetcsysconfdir = $(sysconfdir)/@PACKAGE_PREFIX_NAME@/@PACKAGE_SHORT_NAME@
+dist_stormetcsysconf_DATA = storm-frontend-server.conf.template
+
+CLEANFILES = storm-frontend-server.conf.template
 
 MAINTAINERCLEANFILES = Makefile.in

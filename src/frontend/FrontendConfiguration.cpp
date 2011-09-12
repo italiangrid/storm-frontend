@@ -143,12 +143,21 @@ bool FrontendConfiguration::foundConfigurationFile() {
     return configurationFileFound;
 }
 
-bool FrontendConfiguration::mappingDisabled() {
-    return disableMapping;
+// Renamed disable with enable and changed checks accordingly
+//bool FrontendConfiguration::mappingDisabled() {
+//    return disableMapping;
+//}
+
+bool FrontendConfiguration::mappingEnabled() {
+    return enableMapping;
 }
 
-bool FrontendConfiguration::vomsCheckDisabled() {
-    return disableVOMSCheck;
+//bool FrontendConfiguration::vomsCheckDisabled() {
+//    return disableVOMSCheck;
+//}
+
+bool FrontendConfiguration::vomsCheckEnabled() {
+    return enableVOMSCheck;
 }
 
 int FrontendConfiguration::getDebugLevel() {
@@ -251,6 +260,10 @@ string FrontendConfiguration::getHostKeyFile() {
     return hostkeyfile;
 }
 
+bool FrontendConfiguration::getXMLRPCCheckAscii() {
+    return xmlrpc_check_ascii;
+}
+
 /******************************** Private methods ****************************/
 
 po::options_description FrontendConfiguration::defineConfigFileOptions() {
@@ -271,6 +284,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
             (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
             (OPTL_XMLRPC_PATH.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
+            (OPTL_XMLRPC_CHECK_ASCII.c_str(), po::value<bool>()->default_value(DEFAULT_XMLRPC_CHECK_ASCII), OPT_XMLRPC_CHECK_ASCII_DESCRIPTION)
             (OPTL_RECALLTABLE_PORT.c_str(), po::value<int>()->default_value(9998), EMPTY_DESCRIPTION)
             (OPTL_PROXY_USER.c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
             (OPTL_WSDL_FILE.c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
@@ -278,8 +292,10 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_DB_HOST.c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
             (OPTL_DB_USER.c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
             (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
-            (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
-            (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
+            (OPTL_ENABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_ENABLE_MAPPING_DESCRIPTION)
+            (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION);
+//            (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
+//            (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
 
     return configurationFileOptions;
 }
@@ -343,6 +359,9 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_XMLRPC_PATH))
         xmlrpc_path = vm[OPTL_XMLRPC_PATH].as<string> ();
 
+    if (vm.count(OPTL_XMLRPC_CHECK_ASCII))
+            xmlrpc_check_ascii = vm[OPTL_XMLRPC_CHECK_ASCII].as<bool> ();
+
     if (vm.count(OPTL_PROXY_USER))
         proxy_user = vm[OPTL_PROXY_USER].as<string> ();
 
@@ -361,8 +380,11 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
     audit_file = vm[OPTL_AUDIT_FILE_NAME].as<string> ();
     auditEnabled = vm[OPTL_AUDIT_ENABLED].as<bool> ();
-    disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
-    disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
+    // Renamed disable with enable and changed checks accordingly
+    //    disableMapping = vm[OPTL_DISABLE_MAPPING].as<bool> ();
+    //    disableVOMSCheck = vm[OPTL_DISABLE_VOMSCHECK].as<bool> ();
+    enableMapping = vm[OPTL_ENABLE_MAPPING].as<bool> ();
+    enableVOMSCheck = vm[OPTL_ENABLE_VOMSCHECK].as<bool> ();
     audit_time_interval = vm[OPTL_AUDIT_TIME_INTERVAL].as<int> ();
     recalltablePort = vm[OPTL_RECALLTABLE_PORT].as<int> ();
 
@@ -463,4 +485,44 @@ string FrontendConfiguration::getParentPath(string path) {
 
     return parentPath;
 
+}
+
+
+extern "C" {
+	#include "xmlrpc_encode.h"
+	}
+
+/*extern "C" int call_FrontendConfiguration_getXMLRPCCheckAscii(FrontendConfiguration* wrapping) {
+	//if(wrapping->getInstance()->getXMLRPCCheckAscii())
+	if(wrapping->getXMLRPCCheckAscii())
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}*/
+
+extern "C" int call_FrontendConfiguration_getXMLRPCCheckAscii() {
+	if(getInstanceXMLRPCCheckAscii() > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int getInstanceXMLRPCCheckAscii()
+{
+	if(FrontendConfiguration::getInstance()->getXMLRPCCheckAscii())
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }

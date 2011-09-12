@@ -271,7 +271,7 @@ int ns1__srmReserveSpace(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -561,7 +561,7 @@ int ns1__srmReleaseSpace(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {  // This is an optional parameter
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {  // This is an optional parameter
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authID parameter";
             xmlrpc_DECREF(inputParam);
@@ -827,7 +827,7 @@ int ns1__srmGetSpaceMetaData(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);
@@ -1004,7 +1004,7 @@ int ns1__srmGetSpaceTokens(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
+        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
             repp->returnStatus->explanation = "Error encoding authorizationID";
             xmlrpc_DECREF(inputParam);

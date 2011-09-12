@@ -1,1 +1,0 @@
-00 00 * * * root /usr/sbin/logrotate -s @prefix@/etc/logrotate/logrotate.status @prefix@/etc/logrotate/storm-frontend.logrotate

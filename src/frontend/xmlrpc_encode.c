@@ -21,6 +21,8 @@
  */
 
 #include "xmlrpc_encode.h"
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <stdio.h>
 #include <cgsi_plugin.h>
 
@@ -96,6 +98,12 @@ int encode_arrayOfString(const char *callerName,
             srmlogit(STORM_LOG_DEBUG, callerName, "string[%d] is NULL\n", i);
         } else {
             srmlogit(STORM_LOG_DEBUG, callerName, "string[%d]=\"%s\"\n", i, stringArray[i]);
+            if(getXMLRPCCheckAscii() && !isASCII(stringArray[i]))
+			{
+				srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", stringArray[i]);
+				xmlrpc_DECREF(xml_arrayOfString);
+				return(ENCODE_ERR_ENCODING_ERROR);
+			}
             xml_string = xmlrpc_string_new(env_addr, stringArray[i]);
             xmlrpc_array_append_item(env_addr, xml_arrayOfString, xml_string);
             xmlrpc_DECREF(xml_string);
@@ -280,7 +288,11 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
     xmlrpc_value *xml_spaceToken;
 
     if (spaceToken == NULL) return(ENCODE_ERR_MISSING_PARAM);
-
+	if(getXMLRPCCheckAscii() && !isASCII(spaceToken))
+	{
+		srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", spaceToken);
+		return(ENCODE_ERR_ENCODING_ERROR);
+	}
     xml_spaceToken = xmlrpc_string_new(env_addr, spaceToken);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userSpaceTokenDescription", xml_spaceToken);
     xmlrpc_DECREF(xml_spaceToken);
@@ -302,7 +314,21 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     int i, nbfqans, error;
     xmlrpc_value *userDN, *fqansArray, *fqansItem;
 
+    //struct sockaddr *client = (struct sockaddr *) &(soap->peer);
+    //const char *res;
+    //char bi4[INET_ADDRSTRLEN];
+    //char bi6[INET6_ADDRSTRLEN];
+    int result=0;
+    char *nameip;
+    char ip[256];
+    ip[0]=0;
+
     clientdn[0] = 0;    // Initialized to empty string
+    //bi4[0] = 0;
+    //bi6[0] = 0;
+
+    srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);
+
 
     /* Get DN and FQAN from the CGSI plugin and the CGSI_VOMS plugin */
     get_client_dn(soap, clientdn, sizeof(clientdn));
@@ -322,8 +348,29 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     userDN = xmlrpc_string_new(env_addr, clientdn);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
     srmlogit(STORM_LOG_INFO, callerName, "UserDN=%s\n", clientdn);
-    srmlogit(STORM_LOG_INFO, callerName, "Client IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,
-                                                       (soap->ip>>8)  & 0xFF, (soap->ip) & 0xFF);
+   
+    getnameinfo((struct sockaddr *) &(soap->peer), sizeof(struct sockaddr_storage), ip, sizeof(ip), NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV);
+    srmlogit(STORM_LOG_INFO, callerName, "Client IP=%s\n", ip);
+
+    //switch(client->sa_family) {
+    //    case AF_INET6:
+    //        res = inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)client)->sin6_addr), bi6, sizeof(bi6));
+    //        srmlogit(STORM_LOG_INFO, callerName, "IPV6\n");
+    //        if (res != 0) {
+    //            srmlogit(STORM_LOG_INFO, callerName, "Client IP:%s\n", bi6);
+    //        }
+    //    case AF_INET:
+    //        res = inet_ntop(AF_INET, &(((struct sockaddr_in *)client)->sin_addr), bi4, sizeof(bi4));
+    //        srmlogit(STORM_LOG_INFO, callerName, "IPV4\n");
+    //        if (res != 0) {
+    //            srmlogit(STORM_LOG_INFO, callerName, "Client IP:%s\n", bi4);
+    //       }
+    //    default:
+    //       srmlogit(STORM_LOG_INFO, callerName, "Unknown address family:\n");
+    //}
+
+    //srmlogit(STORM_LOG_INFO, callerName, "Client IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,
+    //                                                   (soap->ip>>8)  & 0xFF, (soap->ip) & 0xFF);
     xmlrpc_DECREF(userDN);
 
     srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);
@@ -381,7 +428,12 @@ int encode_ArrayOfAnyURI(const char *callerName,
             continue;
         }
         srmlogit(STORM_LOG_DEBUG, callerName, "SURL[%d]: %s\n", i, urlArray[i]);
-
+    	if(getXMLRPCCheckAscii() && !isASCII(urlArray[i]))
+    	{
+    		srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", urlArray[i]);
+    		xmlrpc_DECREF(xml_urlArray);
+    		return(ENCODE_ERR_ENCODING_ERROR);
+    	}
         xml_SURL = xmlrpc_string_new(env_addr, urlArray[i]);
         xmlrpc_array_append_item(env_addr, xml_urlArray, xml_SURL);
         xmlrpc_DECREF(xml_SURL);
@@ -438,11 +490,26 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
             srmlogit(STORM_LOG_DEBUG, callerName, "StorageSystemInfo[%d] is NULL\n", i);
             continue;
         }
+    	if(getXMLRPCCheckAscii() && !isASCII(extraInfoArray[i]->key))
+    	{
+    		srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", extraInfoArray[i]->key);
+    		xmlrpc_DECREF(infoElement);
+    		xmlrpc_DECREF(infoArray);
+    		return(ENCODE_ERR_ENCODING_ERROR);
+    	}
         xmlrpc_struct_set_value(env_addr, infoElement, "key", xmlrpc_string_new(env_addr, extraInfoArray[i]->key));
 
         if (extraInfoArray[i]->value != NULL)
+        {
+        	if(getXMLRPCCheckAscii() && !isASCII(extraInfoArray[i]->value))
+        	{
+        		srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", extraInfoArray[i]->value);
+        		xmlrpc_DECREF(infoElement);
+				xmlrpc_DECREF(infoArray);
+        		return(ENCODE_ERR_ENCODING_ERROR);
+        	}
             xmlrpc_struct_set_value(env_addr, infoElement, "value", xmlrpc_string_new(env_addr, extraInfoArray[i]->value));
-
+        }
         xmlrpc_array_append_item(env_addr, infoArray, infoElement);
         xmlrpc_DECREF(infoElement);
     }
@@ -471,6 +538,12 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
         return(ENCODE_ERR_MISSING_PARAM);
     }
 
+    //if(FrontendConfiguration::getInstance()->FrontendConfiguration::getXMLRPCCheckAscii() && !isASCII(value))
+    if(getXMLRPCCheckAscii() && !isASCII(value))
+    {
+    	srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", value);
+    	return(ENCODE_ERR_ENCODING_ERROR);
+    }
     xml_val = xmlrpc_string_new(env_addr, value);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_val);
     xmlrpc_DECREF(xml_val);
@@ -482,6 +555,29 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
     srmlogit(STORM_LOG_DEBUG, callerName, "%s=%s\n", fieldName, value);
     return(0);
 }
+
+int getXMLRPCCheckAscii() /* now you can call M::foo */
+    {
+	return call_FrontendConfiguration_getXMLRPCCheckAscii(); }
+
+
+/*
+ * Returns 1 if the string contains only ASCII characters, 0 otherwise
+ *
+ */
+int isASCII(const char *data)
+{
+    const unsigned char *str = (const unsigned char*)data;
+    int i;
+    for (i = 0; str[i] != '\0'; i++) {
+        if (str[i] & 0x80)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 
 /**
  * The encode_transferParameters() function encodes a struct ns1__TTransferParameters * into a xml structure

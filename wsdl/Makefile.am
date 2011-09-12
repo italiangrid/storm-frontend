@@ -15,7 +15,7 @@
 
 EXTRA_DIST = srm.v2.2.wsdl typemap.dat
 
-instdir = ${prefix}/wsdl
+instdir = $(datadir)/wsdl
 inst_DATA = srm.v2.2.wsdl
 noinst_DATA = typemap.dat
 
@@ -31,10 +31,8 @@ skeletons: $(FLAG_FILE)
 $(FLAG_FILE):
 	touch $(FLAG_FILE)
 	mkdir -p $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
-	@WSDL2H@ -z -e -y -c -t $(top_srcdir)/wsdl/typemap.dat $(top_srcdir)/wsdl/srm.v2.2.wsdl -o $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@/srm.v2.2.h
-	cd $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@; @SOAPCPP2@ -S -x -w -c -p srmv2 srm.v2.2.h; cd ..
-
-# Note: if with an upgraded version of gSOAP doesn't compile, try to add option -z in "wsdl2h"
+	@WSDL2H@ -v -z -w -t $(top_srcdir)/wsdl/typemap.dat $(top_srcdir)/wsdl/srm.v2.2.wsdl -c -e -y -o $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@/srm.v2.2.h
+	cd $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@; @SOAPCPP2@ -S -I/usr/include -c -p srmv2 srm.v2.2.h; mv srmv2C.c srmv2C.cc; mv srmv2Server.c srmv2Server.cc; cd ..
 
 clean-local:
 	rm -rf $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@

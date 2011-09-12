@@ -26,6 +26,29 @@
 
 using namespace storm;
 
+bool ptg::supportsProtocolSpecification()
+{
+	return true;
+}
+
+vector<sql_string>* ptg::getRequestedProtocols()
+{
+	return &(this->_protocols);
+}
+
+void ptg::setProtocolVector(vector<sql_string>* protocolVector)
+{
+	this->_protocols = *protocolVector;
+}
+
+void ptg::setGenericFailureSurls()
+{
+	srmlogit(STORM_LOG_DEBUG, "ptg::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
+    for (int i = 0; i < _surls.size(); i++) {
+        _surls.at(i).status = SRM_USCOREFAILURE;
+    }
+}
+
 void ptg::load(ns1__srmPrepareToGetRequest *req)
 {
     if (NULL == req) {
@@ -258,7 +281,7 @@ void ptg::insert(struct srm_dbfd *db) {
         request_id = storm_db::ID_exec_query(_db, query_s.str());
     } catch (storm_db::mysql_exception e) {
         storm_abort_tr(_db);
-        throw e.what();
+        throw e;
     }
     
     

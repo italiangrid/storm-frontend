@@ -24,6 +24,30 @@
 #include "storm_mysql.h"
 
 using namespace storm;
+
+bool bol::supportsProtocolSpecification()
+{
+	return true;
+}
+
+vector<sql_string>* bol::getRequestedProtocols()
+{
+	return &(this->_protocols);
+}
+
+void bol::setProtocolVector(vector<sql_string>* protocolVector)
+{
+	this->_protocols = *protocolVector;
+}
+
+void bol::setGenericFailureSurls()
+{
+	srmlogit(STORM_LOG_DEBUG, "bol::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
+    for (int i = 0; i < _surls.size(); i++) {
+        _surls.at(i).status = SRM_USCOREFAILURE;
+    }
+}
+
 void bol::load(struct ns1__srmBringOnlineRequest *req) {
     if (NULL == req) {
         throw invalid_request("Request is NULL");
@@ -251,7 +275,7 @@ void bol::insert(struct srm_dbfd *db) {
         request_id = storm_db::ID_exec_query(_db, query_s.str());
     } catch (storm_db::mysql_exception e) {
         storm_abort_tr( _db);
-        throw e.what();
+        throw e;
     }
 
     // Insert into request_Bol using the requestID

@@ -44,6 +44,26 @@ public:
     ;
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmPrepareToGetRequest *req);
+    
+    /*
+     * Returns true if the ptg command supports the option for specify the preferred transfer protocol
+     * */
+    bool supportsProtocolSpecification();
+    
+    /*
+     * Returns the array of requested preferred transfer protocols
+     * */
+    vector<sql_string>* getRequestedProtocols();
+    
+    /*
+     * Sets the array of requested preferred transfer protocols to the provided one
+     * */
+	void setProtocolVector(vector<sql_string>* protocolVector);
+
+	/*
+	 * Set the status code at SURL level to SRM_FAILURE to all requested SURLs
+	 */
+	void setGenericFailureSurls();
     struct ns1__srmPrepareToGetResponse* response();
 
 private:

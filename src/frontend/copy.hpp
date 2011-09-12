@@ -37,6 +37,25 @@ public:
     copy(struct soap *soap) : file_request<ns1__srmCopyRequest, ns1__srmCopyResponse>(soap){_response=NULL;};
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmCopyRequest *req);
+/*
+     * Returns true if the copy command supports the option for specify the preferred transfer protocol
+     * */
+    bool supportsProtocolSpecification();
+    
+    /*
+     * Returns the array of requested preferred transfer protocols
+     * */
+    vector<sql_string>* getRequestedProtocols();
+    
+    /*
+     * Sets the array of requested preferred transfer protocols to the provided one
+     * */
+	void setProtocolVector(vector<sql_string>* protocolVector);
+
+	/*
+	* Set the status code at SURL level to SRM_FAILURE to all requested SURLs
+	*/
+	void setGenericFailureSurls();
     ns1__srmCopyResponse * response();
 
 private:

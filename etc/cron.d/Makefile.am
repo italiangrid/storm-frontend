@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-EXTRA_DIST = storm-frontend.cron.in
+EXTRA_DIST = storm-frontend-server.cron.in
 
 crondir =  $(sysconfdir)/cron.d
-dist_cron_SCRIPTS = storm-frontend.cron
+dist_cron_SCRIPTS = storm-frontend-server.cron
 
-CLEANFILES =  storm-frontend.cron 
+CLEANFILES =  storm-frontend-server.cron 
 
 MAINTAINERCLEANFILES = Makefile.in 

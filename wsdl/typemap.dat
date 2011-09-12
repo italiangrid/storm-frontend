@@ -1,2 +1,3 @@
 #ns1__TFileType = enum ns1__TFileType {FILETYPE_FILE, FILETYPE_DIRECTORY, FILETYPE_LINK}; | enum ns1__TFileType
+#srm2 = http://srm.lbl.gov/StorageResourceManager
 xsd__dateTime = | char * | char *
