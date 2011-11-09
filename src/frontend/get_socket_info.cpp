@@ -13,7 +13,6 @@ std::string get_address_ipv4(sockaddr_in * peer)
 {
     char buf[INET_ADDRSTRLEN]; 
     const char * res = inet_ntop(AF_INET, (const void *)&peer->sin_addr, buf, INET_ADDRSTRLEN);
-    srmlogit(STORM_LOG_INFO, "get_address", "IPV4\n");
     if (0 == res) {
         std::string ret;
         return ret; 
@@ -34,7 +33,7 @@ std::string get_address(struct soap * soap, sockaddr_storage * peer)
         sockaddr_in6 *sockaddr6 = (sockaddr_in6 *) peer;
         char buf[INET6_ADDRSTRLEN];
         const char * res = inet_ntop(AF_INET6, (const void *)&sockaddr6->sin6_addr, buf, INET6_ADDRSTRLEN);
-        srmlogit(STORM_LOG_INFO, "get_address", "IPV6\n");
+        srmlogit(STORM_LOG_DEBUG, "get_address", "retrieved IPV6 address\n");
         if (0 == res) {
             std::string ret;
             return ret;
@@ -45,7 +44,7 @@ std::string get_address(struct soap * soap, sockaddr_storage * peer)
     } else if (AF_INET == peer->ss_family){ // IPV4
         sockaddr_in * sockaddr = (sockaddr_in *) peer;
         if (sockaddr) {
-          srmlogit(STORM_LOG_INFO, "get_address", "IPV4 from IPV6\n");
+          srmlogit(STORM_LOG_DEBUG, "get_address", "retrieved IPV4 address\n");
           return get_address_ipv4(sockaddr);
         } else {
           std::stringstream ss;
@@ -60,6 +59,7 @@ std::string get_address(struct soap * soap, sockaddr_storage * peer)
           }
           ss << " host: " << soap->host;
           ss << " ip: " << soap->ip;
+          //TODO this message needs to be more accurate
           srmlogit(STORM_LOG_INFO, "get_address", "? from IPV6\n");
           return ss.str();
         }
@@ -76,6 +76,7 @@ std::string get_address(struct soap * soap, sockaddr_storage * peer)
         }
         ss << " host: " << soap->host;
         ss << " ip: " << soap->ip;
+        //TODO this message needs to be more accurate
         srmlogit(STORM_LOG_INFO, "get_address", "?? from IPV6\n");
         return ss.str();
     }
@@ -94,3 +95,12 @@ std::string get_ip(struct soap *soap)
     return get_address(soap,&(soap->peer));
 }
 
+extern "C" {
+
+char *getip(struct soap *soap, char *buffer) 
+{
+  strcpy(buffer, get_ip(soap).c_str());
+  return buffer;
+}
+
+}

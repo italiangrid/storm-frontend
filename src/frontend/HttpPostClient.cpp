@@ -51,6 +51,7 @@ HttpPostClient::~HttpPostClient() {
     curl_slist_free_all(_slist);
     curl_easy_cleanup(_curl);
     free(_response);
+    free(_url);
 }
 
 int HttpPostClient::callService(std::string data) {

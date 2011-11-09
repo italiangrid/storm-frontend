@@ -25,7 +25,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <cgsi_plugin.h>
-
+#include "get_socket_info.h"
 
 /***************************************************************************************************************/
 /***************************************************************************************************************/
@@ -313,22 +313,11 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     char clientdn[256], **fqans;
     int i, nbfqans, error;
     xmlrpc_value *userDN, *fqansArray, *fqansItem;
-
-    //struct sockaddr *client = (struct sockaddr *) &(soap->peer);
-    //const char *res;
-    //char bi4[INET_ADDRSTRLEN];
-    //char bi6[INET6_ADDRSTRLEN];
-    int result=0;
-    char *nameip;
     char ip[256];
+
+    /* Initialized to empty string */
     ip[0]=0;
-
-    clientdn[0] = 0;    // Initialized to empty string
-    //bi4[0] = 0;
-    //bi6[0] = 0;
-
-    srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);
-
+    clientdn[0] = 0;
 
     /* Get DN and FQAN from the CGSI plugin and the CGSI_VOMS plugin */
     get_client_dn(soap, clientdn, sizeof(clientdn));
@@ -347,30 +336,10 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     /* Encode the userDN field */
     userDN = xmlrpc_string_new(env_addr, clientdn);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
+
     srmlogit(STORM_LOG_INFO, callerName, "UserDN=%s\n", clientdn);
-   
-    getnameinfo((struct sockaddr *) &(soap->peer), sizeof(struct sockaddr_storage), ip, sizeof(ip), NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV);
-    srmlogit(STORM_LOG_INFO, callerName, "Client IP=%s\n", ip);
+    srmlogit(STORM_LOG_INFO, callerName, "Client IP=%s\n", getip(soap, ip));
 
-    //switch(client->sa_family) {
-    //    case AF_INET6:
-    //        res = inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)client)->sin6_addr), bi6, sizeof(bi6));
-    //        srmlogit(STORM_LOG_INFO, callerName, "IPV6\n");
-    //        if (res != 0) {
-    //            srmlogit(STORM_LOG_INFO, callerName, "Client IP:%s\n", bi6);
-    //        }
-    //    case AF_INET:
-    //        res = inet_ntop(AF_INET, &(((struct sockaddr_in *)client)->sin_addr), bi4, sizeof(bi4));
-    //        srmlogit(STORM_LOG_INFO, callerName, "IPV4\n");
-    //        if (res != 0) {
-    //            srmlogit(STORM_LOG_INFO, callerName, "Client IP:%s\n", bi4);
-    //       }
-    //    default:
-    //       srmlogit(STORM_LOG_INFO, callerName, "Unknown address family:\n");
-    //}
-
-    //srmlogit(STORM_LOG_INFO, callerName, "Client IP=%d.%d.%d.%d\n", (soap->ip>>24) & 0xFF, (soap->ip>>16) & 0xFF,
-    //                                                   (soap->ip>>8)  & 0xFF, (soap->ip) & 0xFF);
     xmlrpc_DECREF(userDN);
 
     srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);

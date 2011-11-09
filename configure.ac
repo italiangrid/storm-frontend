@@ -13,7 +13,7 @@
 # limitations under the License.
 
 AC_PREREQ([2.59])
-AC_INIT([storm frontend server], [1.7.1])
+AC_INIT([storm frontend server], [1.7.2])
 AC_CONFIG_AUX_DIR([./project])
 AM_INIT_AUTOMAKE([1.9 tar-pax])
 #AM_INIT_AUTOMAKE([1.6.3 subdir-objects])
@@ -22,7 +22,7 @@ AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
 # Release number
 osdist=`cat /etc/redhat-release | awk 'BEGIN {FS="release "} {print $2}'| awk 'BEGIN {FS="."} {print $1}'`
 AC_SUBST([STORM_FRONTEND_SO], [sl$osdist])
-AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [7])
+AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [2])
 
 AC_SUBST([PACKAGE_PREFIX_NAME], [storm])
 AC_SUBST([PACKAGE_LONG_NAME], [storm-frontend-server])

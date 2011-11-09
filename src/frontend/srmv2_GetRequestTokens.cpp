@@ -47,9 +47,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         std::string client_dn;
     #if defined(GSI_PLUGINS)
         char clientdn[256];
-        srmlogit(STORM_LOG_INFO, func, "Pre get client dn\n");
         get_client_dn(soap, clientdn, sizeof(clientdn));
-        srmlogit(STORM_LOG_INFO, func, "After get client dn\n");
         client_dn = std::string(clientdn);
      #endif
         if (client_dn.empty()) {

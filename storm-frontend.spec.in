@@ -66,7 +66,8 @@ Requires(postun): initscripts
 Requires: curl
 Requires: globus-gssapi-gsi
 Requires: mysql
-Requires: xmlrpc-c
+Requires: storm-xmlrpc-c
+Requires: storm-xmlrpc-c-client
 Requires: voms
 Requires: CGSI_gSOAP_2.7-voms
 Requires: boost141-program-options

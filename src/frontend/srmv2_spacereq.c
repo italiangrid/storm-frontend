@@ -361,18 +361,21 @@ int ns1__srmReserveSpace(struct soap *soap,
     }
     
     /** OPTIONAL ***** (8) Encode storageSystemInfo (struct ns1__ArrayOfTExtraInfo *) ***************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, "storageSystemInfo", inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding storageSystemInfo";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-        xmlrpc_env_clean(&env);
-        xmlrpc_env_init(&env);
-    }
+    if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	{
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, "storageSystemInfo", inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding storageSystemInfo";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+			xmlrpc_env_clean(&env);
+			xmlrpc_env_init(&env);
+		}
+	}
     
     /** OPTIONAL ***** (9) Encode transferParameters (struct ns1__TTransferParameters *) ***************/
     error = encode_TTransferParameters(func, &env, req->transferParameters, SRM_PARAM_transferParameters, inputParam);
@@ -587,16 +590,19 @@ int ns1__srmReleaseSpace(struct soap *soap,
     }
     
     /** OPTIONAL ************ (3) Encode storageSystemInfo (struct ns1__ArrayOfTExtraInfo *) ************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo , SRM_PARAM_storageSystemInfo, inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding authID parameter";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-    }
+    if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	{
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo , SRM_PARAM_storageSystemInfo, inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding authID parameter";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+		}
+	}
     
     /** OPTIONAL ************ (4) Encode forceFileRelease (enum xsd__boolean *) ************/
     error = encode_bool(func, &env, req->forceFileRelease , "forceFileRelease", inputParam);

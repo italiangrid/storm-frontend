@@ -183,17 +183,21 @@ int ns1__srmMkdir(struct soap *soap, struct ns1__srmMkdirRequest *req,
     }
     
     /** OPTIONAL ************* (3) Encode storageSystemInfo **************************************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding storageSystemInfo";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-        xmlrpc_env_clean(&env);
-        xmlrpc_env_init(&env);
+
+    if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+    {
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding storageSystemInfo";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+			xmlrpc_env_clean(&env);
+			xmlrpc_env_init(&env);
+		}
     }
     
     srmlogit(STORM_LOG_DEBUG, func, "RPC input param setted!\n");
@@ -361,18 +365,21 @@ int ns1__srmRmdir(struct soap *soap, struct ns1__srmRmdirRequest *req,
     
     
     /** OPTIONAL ************* (3) Encode storageSystemInfo **************************************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding storageSystemInfo";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-        xmlrpc_env_clean(&env);
-        xmlrpc_env_init(&env);
-    }
+    if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	{
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding storageSystemInfo";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+			xmlrpc_env_clean(&env);
+			xmlrpc_env_init(&env);
+		}
+	}
     
     /** OPTIONAL ************* (4) Encode recurisve **************************************/
     error = encode_bool(func, &env, req->recursive, "recursive", inputParam);
@@ -565,18 +572,21 @@ int ns1__srmRm(struct soap *soap, struct ns1__srmRmRequest *req,
     }
     
     /** OPTIONAL ************* (3) Encode storageSystemInfo **************************************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding storageSystemInfo";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-        xmlrpc_env_clean(&env);
-        xmlrpc_env_init(&env);
-    }
+    if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	{
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding storageSystemInfo";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+			xmlrpc_env_clean(&env);
+			xmlrpc_env_init(&env);
+		}
+	}
    
     
     /* Clean up xmlrpc error-handling environment. */
@@ -787,18 +797,21 @@ int ns1__srmLs (struct soap *soap, struct ns1__srmLsRequest *req,
     }
   
     /** OPTINAL ************** (3) Encode storageSystemInfo **************************************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding storageSystemInfo";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-        xmlrpc_env_clean(&env);
-        xmlrpc_env_init(&env);
-    }
+    if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	{
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding storageSystemInfo";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+			xmlrpc_env_clean(&env);
+			xmlrpc_env_init(&env);
+		}
+	}
 
     /** OPTINAL ************** (4) Encode fileStorageType **************************************/   
     error = encode_int(func, &env, (int*)req->fileStorageType, SRM_PARAM_fileStorageType, inputParam);
@@ -1106,19 +1119,22 @@ int ns1__srmMv (struct soap *soap, struct ns1__srmMvRequest *req, struct ns1__sr
     }
     
     
-    /** OPTIONAL ************* (4) Encode storageSystemInfo **************************************/
-    error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
-    if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = "Error encoding storageSystemInfo";
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
-        xmlrpc_env_clean(&env);
-        xmlrpc_env_init(&env);
-    }
+    /** OPTIONAL ************* (4) Encode storageSystemInfo **************************************/if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
+	{
+		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
+		if (error) {
+			if (error != ENCODE_ERR_MISSING_PARAM) {
+				repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+				repp->returnStatus->explanation = "Error encoding storageSystemInfo";
+				xmlrpc_DECREF(inputParam);
+				xmlrpc_env_clean(&env);
+				return(SOAP_OK);
+			}
+			xmlrpc_env_clean(&env);
+			xmlrpc_env_init(&env);
+		}
+	}
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);

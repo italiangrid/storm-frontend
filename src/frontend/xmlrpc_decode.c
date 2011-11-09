@@ -627,7 +627,7 @@ int decode_TRetentionPolicyInfo(const char *callerName,
     
     xmlrpc_struct_find_value(env_addr, xmlStruct, fieldName, &retentionPolInfo);
     if ((env_addr->fault_occurred) || (retentionPolInfo == NULL)) {
-        srmlogit(STORM_LOG_WARNING, callerName, "%s not specified by BE.\n", fieldName);
+        srmlogit(STORM_LOG_DEBUG, callerName, "%s not specified by BE.\n", fieldName);
         return(DECODE_ERR_NOT_FOUND);
     }
     
@@ -739,7 +739,7 @@ int decode_TUserPermission(const char *callerName,
     //Get TUserPermission
     xmlrpc_struct_find_value(env_addr, xmlStruct, fieldName, &xml_userPermission);
     if ((env_addr->fault_occurred) || (NULL == xml_userPermission)) {
-        srmlogit(STORM_LOG_WARNING, callerName, "userPermission not specified by BE.\n");
+        srmlogit(STORM_LOG_DEBUG, callerName, "userPermission not specified by BE.\n");
         return(DECODE_ERR_NOT_FOUND);
     }
     
@@ -798,7 +798,7 @@ int decode_TGroupPermission(const char *callerName,
     //Get TGroupPermission
     xmlrpc_struct_find_value(env_addr, xmlStruct, fieldName, &xml_groupPermission);
     if ((env_addr->fault_occurred) || (NULL == xml_groupPermission)) {
-        srmlogit(STORM_LOG_WARNING, callerName, "userPermission not specified by BE.\n");
+        srmlogit(STORM_LOG_DEBUG, callerName, "userPermission not specified by BE.\n");
         return(DECODE_ERR_NOT_FOUND);
     }
     
@@ -890,7 +890,7 @@ int decode_ArrayOfString(const char *callerName,
     
     xmlrpc_struct_find_value(env_addr, xmlStruct, fieldName, &xml_arrayOfString);
     if ((env_addr->fault_occurred)||(xml_arrayOfString == NULL)) {
-        srmlogit(STORM_LOG_ERROR, callerName, "Array of string not found.\n");
+        srmlogit(STORM_LOG_DEBUG, callerName, "Array of string not found.\n");
         return(DECODE_ERR_NOT_FOUND);
     }
     
@@ -989,7 +989,7 @@ int decode_int(const char *callerName,
     
     xmlrpc_decompose_value(env_addr, xmlStruct, "{s:i,*}", fieldName, &i);
     if (env_addr->fault_occurred) {
-        srmlogit(STORM_LOG_WARNING, callerName, "%s not specified by BE\n", fieldName);
+        srmlogit(STORM_LOG_DEBUG, callerName, "%s not specified by BE\n", fieldName);
         return(DECODE_ERR_NOT_FOUND);
     }
     
@@ -1117,7 +1117,7 @@ int decode_ArrayOfTMetaDataPathDetail(const char *callerName,
     
     xmlrpc_decompose_value(env_addr, xmlStruct, "{s:A,*}", fieldName, &xml_arrayOfTMetaData);
     if ((env_addr->fault_occurred) || (xml_arrayOfTMetaData == NULL)) {
-        srmlogit(STORM_LOG_ERROR, callerName, "Array of details not found.\n");
+        srmlogit(STORM_LOG_DEBUG, callerName, "Array of details not found.\n");
         return(DECODE_ERR_NOT_FOUND);
     }
 

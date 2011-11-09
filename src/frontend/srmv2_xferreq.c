@@ -1164,9 +1164,7 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
 
 #if defined(GSI_PLUGINS)
     clientdn[0] = 0;
-    srmlogit(STORM_LOG_INFO, func, "Pre get client dn\n");
     get_client_dn(soap, clientdn, sizeof(clientdn));
-    srmlogit(STORM_LOG_INFO, func, "After get client dn\n");
     srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", clientdn);
 #else
     if (req->authorizationID != NULL) {
