@@ -162,7 +162,17 @@ AC_VOMS([])
 AC_CGSI_GSOAP([2.7])
 AC_GSOAP([])
 
-AC_BOOST([])
+AC_BOOST([sl$osdist])
+
+if test "xsl$osdist" = "xsl6"; then
+   BOOST_SUFFIX=""
+elif test "xsl$osdist" = "xsl5"; then
+   BOOST_SUFFIX="141"
+else
+   BOOST_SUFFIX=""
+fi
+AC_MSG_RESULT(["BOOST on sl$osdist"])
+AC_SUBST(BOOST_SUFFIX)
 
 # Installation prefix
 #AC_PREFIX_DEFAULT([/usr])
