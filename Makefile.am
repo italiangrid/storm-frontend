@@ -19,7 +19,8 @@ EXTRA_DIST = \
     README \
     LICENSE \
     storm-frontend.spec.in \
-    project
+    project \
+    m4
 
 docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
 doc_DATA = LICENSE \
@@ -31,14 +32,14 @@ doc_DATA = LICENSE \
 SUBDIRS = etc wsdl src
 
 ## Default flags to run aclocal
-ACLOCAL_AMFLAGS = -I project -I config
+ACLOCAL_AMFLAGS = -I m4
 
 CLEANFILES = \
     storm-frontend.spec
 
 MAINTAINERCLEANFILES = Makefile.in
 
-SPEC_FILE = \ 
+SPEC_FILE = \
     storm-frontend.spec
 
 RPM_MAIN_DIR = $(PWD)/rpm

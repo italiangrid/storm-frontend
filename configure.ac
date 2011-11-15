@@ -15,9 +15,10 @@
 AC_PREREQ([2.59])
 AC_INIT([storm frontend server], [1.7.2])
 AC_CONFIG_AUX_DIR([./project])
-AM_INIT_AUTOMAKE([1.9 tar-pax])
 #AM_INIT_AUTOMAKE([1.6.3 subdir-objects])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
+AM_INIT_AUTOMAKE
+AC_CONFIG_MACRO_DIR([m4])
 
 # Release number
 osdist=`cat /etc/redhat-release | awk 'BEGIN {FS="release "} {print $2}'| awk 'BEGIN {FS="."} {print $1}'`
@@ -41,6 +42,7 @@ AC_SUBST(GSOAP_GENERATED_CODE_DIR_NAME)
 
 DEFAULT_RPM_DIR=`pwd`
 
+AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -154,7 +156,7 @@ AC_MSG_RESULT(["GLOBUS found $have_globus"])
 
 have_mysql=no
 
-AC_MYSQL([4.0.12], [5.0.80], have_mysql=yes, have_mysql=no)
+AC_MYSQL([4.0.12], [5.1.52], have_mysql=yes, have_mysql=no)
 AC_MSG_RESULT(["MYSQL found $have_mysql"])
 
 AC_VOMS([])
