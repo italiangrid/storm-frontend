@@ -35,7 +35,7 @@ storm_frontend_server_LDADD = \
     @BOOST_PO_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     $(top_builddir)/src/db/libstormdb.la \
-    -lz -lm -luuid -lidn
+    -lz -lm -luuid -lidn -largus-pep
 
 noinst_INCLUDES = osdep.h \
   srm_server.h \
@@ -60,6 +60,8 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     ptp.cpp ptp.hpp put_status.cpp put_status.hpp \
     ptg.cpp ptg.hpp get_status.cpp get_status.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
+    Authorization.cpp Authorization.hpp \
+    AuthorizationException.hpp \
     copy.cpp copy.hpp copy_status.cpp copy_status.hpp \
     asynch.cpp asynch_status.cpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \

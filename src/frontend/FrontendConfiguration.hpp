@@ -54,12 +54,17 @@ static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
 static const int DEFAULT_AUDIT_TIME_INTERVAL = 60;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
+static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
+static const string DEFAULT_ARGUS_PEP_AUTH_PORT = "8154";
+static const string DEFAULT_CA_CERTIFICATES_FOLDER = "/etc/grid-security/certificates";
+
 
 static const char* EMPTY_DESCRIPTION = "";
 
 static const char* ENVVAR_GRIDMAP = "GRIDMAP";
 static const char* ENVVAR_X509_USER_CERT = "X509_USER_CERT";
 static const char* ENVVAR_X509_USER_KEY = "X509_USER_KEY";
+static const char* ENVVAR_X509_CERT_DIR = "X509_CERT_DIR";
 
 static const string OPT_HELP = "h";
 static const string OPTL_HELP = "help";
@@ -144,6 +149,15 @@ static const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
 static const string OPTL_XMLRPC_CHECK_ASCII = "be.xmlrpc.check.ascii";
 static const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not strings to be sent via xmlrpc to the BE";
 
+static const string OPTL_USER_CHECK_BLACKLIST = "check.user.blacklisting";
+static const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
+
+static const string OPTL_ARGUS_PEP_HOSTNAME = "argus-pep.hostname";
+static const char* OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION = "Full hostname of the Argus PEP host";
+
+static const string OPTL_ARGUS_PEP_AUTH_PORT = "argus-pep.port";
+static const char* OPT_ARGUS_PEP_AUTH_POR_DESCRIPTIONT = "Port of the Argus PEP authorization service";
+
 // A helper function to simplify printing options stuff
 template<class T>
 ostream& operator<<(ostream& os, const vector<T>& v)
@@ -198,6 +212,10 @@ public:
     string getHostCertFile();
     string getHostKeyFile();
     bool getXMLRPCCheckAscii();
+    bool getUserCheckBlacklist();
+    string getArgusPepHostname();
+    string getArgusPepAuthzPort();
+    string getCaCertificatesFolder();
 
 private:
     FrontendConfiguration();
@@ -252,6 +270,10 @@ private:
     string hostcertfile;
     string hostkeyfile;
     bool xmlrpc_check_ascii;
+    bool user_check_blacklist;
+    string argus_pep_hostname;
+    string argus_pep_authz_port;
+    string ca_certificates_folder;
 
 };
 

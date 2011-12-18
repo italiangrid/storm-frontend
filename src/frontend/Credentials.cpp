@@ -103,6 +103,19 @@ sql_string Credentials::getFQANsOneString()
 //    return returnString;
 //}
 
+/* uncomment to have a method that checks if a proxy can be dumped
+bool Credentials::canBeSaved()
+{
+	if (has_delegated_credentials(_soap)) {
+		return true;
+
+	} else {
+		return false;
+	}
+
+}
+*/
+
 /**
  * Saves the proxy to the default directory only if the user has delegated
  * credentials. Returns "true" if the proxy is successfully saved or "false"
@@ -145,6 +158,23 @@ bool Credentials::saveProxy(string requestToken)
 
     return result;
 }
+
+/*
+char* Credentials::getProxy()
+{
+
+	char *token;
+    size_t token_length;
+    if (has_delegated_credentials(_soap))
+    {
+		if (get_delegated_credentials(_soap, (void **)&token, &token_length) < 0)
+		{
+			//error
+		}
+	}
+	return token;
+}
+*/
 
 //void getProxy() {
 //
@@ -358,3 +388,14 @@ bool Credentials::saveProxy(string requestToken)
 
 //getVomsEnd
 
+
+/* uncomment this to try using this cpp code from c code
+
+extern "C" int call_create_credentials(struct soap *soap,  Credentials* cred) {
+	char* func = "call_create_credentials";
+	Credentials tempCred(soap);
+	cred = (Credentials*)&tempCred;
+	return 0;
+
+}
+*/

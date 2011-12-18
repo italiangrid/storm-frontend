@@ -42,6 +42,9 @@ public:
     std::vector<sql_string> getFQANsVector() { return _fqans_vector; }
     sql_string getFQANsOneString();
     bool saveProxy(string requestToken);
+    //bool canBeSaved();
+    //char* getProxy();
+    //char* getCertChain();
     //void getVOMS();
     
     //void insert(struct srm_dbfd *dbfd);

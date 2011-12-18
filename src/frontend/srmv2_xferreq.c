@@ -1146,6 +1146,15 @@ void rpcResponseHandler_Ping(const char          *serverUrl,
     return;
 }
 
+/*
+int get_ns1__srmPingResponse(struct soap* soap, struct ns1__srmPingResponse *repp)
+{
+	if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse)))) {
+	        return (SOAP_EOM);
+	}
+	return (SOAP_OK);
+}
+*/
 /**
  * This functin is used to check the state of the SRM. It works as an "are you alive" type of call.
 */
@@ -1366,3 +1375,42 @@ int ns1__srmResumeRequest(struct soap *soap,
 
     return(SOAP_OK);
 }
+
+/* uncomment this to try using this cpp code from c code
+struct Credentials;
+struct Authorization;
+int isBlacklisted(struct soap *soap)
+{
+	struct Credentials* c;
+	struct Authorization* a;
+	int* blacklisted;
+	char *func = "isBlacklisted";
+	srmlogit(STORM_LOG_ERROR, func, "calling call_create_credentials\n");
+	if(call_create_credentials(soap, c) == 0)
+	{
+		srmlogit(STORM_LOG_ERROR, func, "calling call_create_authorization\n");
+		int lalla = call_create_authorization(c, a);
+		if(lalla == 0)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "calling call_isBlacklisted\n");
+			if (call_isBlacklisted(a, blacklisted) == 0)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "fine is black\n");
+				return *blacklisted;
+			} else
+			{
+				srmlogit(STORM_LOG_ERROR, func, "fine is NOT black\n");
+				return 0;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		return 0;
+	}
+}
+*/

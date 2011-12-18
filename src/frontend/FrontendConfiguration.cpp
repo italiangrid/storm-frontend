@@ -264,6 +264,23 @@ bool FrontendConfiguration::getXMLRPCCheckAscii() {
     return xmlrpc_check_ascii;
 }
 
+bool FrontendConfiguration::getUserCheckBlacklist() {
+    return user_check_blacklist;
+}
+
+
+string FrontendConfiguration::getArgusPepHostname() {
+    return argus_pep_hostname;
+}
+
+string FrontendConfiguration::getArgusPepAuthzPort() {
+    return argus_pep_authz_port;
+}
+
+string FrontendConfiguration::getCaCertificatesFolder() {
+    return ca_certificates_folder;
+}
+
 /******************************** Private methods ****************************/
 
 po::options_description FrontendConfiguration::defineConfigFileOptions() {
@@ -293,7 +310,10 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_DB_USER.c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
             (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
             (OPTL_ENABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_ENABLE_MAPPING_DESCRIPTION)
-            (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION);
+            (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION)
+            (OPTL_USER_CHECK_BLACKLIST.c_str(), po::value<bool>()->default_value(DEFAULT_USER_CHECK_BLACKLIST), OPT_USER_CHECK_BLACKLIST_DESCRIPTION)
+            (OPTL_ARGUS_PEP_HOSTNAME.c_str(), po::value<string>(), OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION)
+            (OPTL_ARGUS_PEP_AUTH_PORT.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_PORT), OPT_ARGUS_PEP_AUTH_POR_DESCRIPTIONT);
 //            (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
 //            (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
 
@@ -377,6 +397,15 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
 
+    if (vm.count(OPTL_USER_CHECK_BLACKLIST))
+    	user_check_blacklist = vm[OPTL_USER_CHECK_BLACKLIST].as<bool> ();
+
+    if (vm.count(OPTL_ARGUS_PEP_HOSTNAME))
+    	argus_pep_hostname = vm[OPTL_ARGUS_PEP_HOSTNAME].as<string> ();
+
+    if (vm.count(OPTL_ARGUS_PEP_AUTH_PORT))
+    	argus_pep_authz_port = vm[OPTL_ARGUS_PEP_AUTH_PORT].as<string> ();
+
     log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
     audit_file = vm[OPTL_AUDIT_FILE_NAME].as<string> ();
     auditEnabled = vm[OPTL_AUDIT_ENABLED].as<bool> ();
@@ -391,6 +420,7 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     gridmapfile = getFromEnvironment(ENVVAR_GRIDMAP, DEFAULT_GRIDMAPFILE);
     hostcertfile = getFromEnvironment(ENVVAR_X509_USER_CERT, DEFAULT_HOST_CERT_FILE);
     hostkeyfile = getFromEnvironment(ENVVAR_X509_USER_KEY, DEFAULT_HOST_KEY_FILE);
+    ca_certificates_folder = getFromEnvironment(ENVVAR_X509_CERT_DIR, DEFAULT_CA_CERTIFICATES_FOLDER);
 }
 
 int FrontendConfiguration::decodeDebugLevelOption(string& debugLevelString) {
