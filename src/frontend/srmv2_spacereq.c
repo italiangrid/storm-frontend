@@ -219,8 +219,7 @@ void rpcResponseHandler_ReserveSpace(const char         *serverUrl,
 }
 
 
-
-int ns1__srmReserveSpace(struct soap *soap,
+int ns1__srmReserveSpace_impl(struct soap *soap,
                          struct ns1__srmReserveSpaceRequest *req,
                          struct ns1__srmReserveSpaceResponse_ *rep)
 {
@@ -423,7 +422,8 @@ int ns1__srmReserveSpace(struct soap *soap,
 /***************************************************************************************/
 /************************ SRM v2.2   StatusOfReserveSpaceRequest ***********************/
 /***************************************************************************************/
-int ns1__srmStatusOfReserveSpaceRequest(struct soap *soap,
+
+int ns1__srmStatusOfReserveSpaceRequest_impl(struct soap *soap,
                                         struct ns1__srmStatusOfReserveSpaceRequestRequest *req,
                                         struct ns1__srmStatusOfReserveSpaceRequestResponse_ *rep)
 {
@@ -517,7 +517,8 @@ void rpcResponseHandler_ReleaseSpace(const char          *serverUrl,
     return;
 }
 
-int ns1__srmReleaseSpace(struct soap *soap,
+
+int ns1__srmReleaseSpace_impl(struct soap *soap,
                          struct ns1__srmReleaseSpaceRequest *req,
                          struct ns1__srmReleaseSpaceResponse_ *rep)
 {
@@ -649,7 +650,8 @@ int ns1__srmReleaseSpace(struct soap *soap,
 /***************************************************************************************/
 /*************************         SRM v2.2   UpdateSpace      *************************/
 /***************************************************************************************/
-int ns1__srmUpdateSpace (struct soap *soap,
+
+int ns1__srmUpdateSpace_impl(struct soap *soap,
                          struct ns1__srmUpdateSpaceRequest *req,
                          struct ns1__srmUpdateSpaceResponse_ *rep)
 {
@@ -680,7 +682,8 @@ int ns1__srmUpdateSpace (struct soap *soap,
 /***************************************************************************************/
 /************************* SRM v2.2   StatusOfUpdateSpaceRequest ***********************/
 /***************************************************************************************/
-int ns1__srmStatusOfUpdateSpaceRequest(struct soap *soap,
+
+int ns1__srmStatusOfUpdateSpaceRequest_impl(struct soap *soap,
                                        struct ns1__srmStatusOfUpdateSpaceRequestRequest *req,
                                        struct ns1__srmStatusOfUpdateSpaceRequestResponse_ *rep)
 {
@@ -785,9 +788,7 @@ void rpcResponseHandler_GetSpaceMetaData(const char         *serverUrl,
     return;
 }  
     
-
-
-int ns1__srmGetSpaceMetaData(struct soap *soap,
+int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
                              struct ns1__srmGetSpaceMetaDataRequest *req,
                              struct ns1__srmGetSpaceMetaDataResponse_ *rep)
 {
@@ -964,7 +965,8 @@ void rpcResponseHandler_GetSpaceTokens(const char         *serverUrl,
     return;
 }
 
-int ns1__srmGetSpaceTokens(struct soap *soap,
+
+int ns1__srmGetSpaceTokens_impl(struct soap *soap,
                            struct ns1__srmGetSpaceTokensRequest *req,
                            struct ns1__srmGetSpaceTokensResponse_ *rep)
 {
@@ -1069,7 +1071,8 @@ int ns1__srmGetSpaceTokens(struct soap *soap,
 /***************************************************************************************/
 /*************************    SRM v2.2   ChangeSpaceForFiles   *************************/
 /***************************************************************************************/
-int ns1__srmChangeSpaceForFiles(struct soap *soap,
+
+int ns1__srmChangeSpaceForFiles_impl(struct soap *soap,
                                 struct ns1__srmChangeSpaceForFilesRequest *req,
                                 struct ns1__srmChangeSpaceForFilesResponse_ *rep)
 {
@@ -1099,7 +1102,8 @@ int ns1__srmChangeSpaceForFiles(struct soap *soap,
 /***************************************************************************************/
 /******************** SRM v2.2   StatusOfChangeSpaceForFilesRequest ********************/
 /***************************************************************************************/
-int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap *soap,
+
+int ns1__srmStatusOfChangeSpaceForFilesRequest_impl(struct soap *soap,
                                                struct ns1__srmStatusOfChangeSpaceForFilesRequestRequest *req,
                                                struct ns1__srmStatusOfChangeSpaceForFilesRequestResponse_ *rep)
 {
@@ -1128,7 +1132,8 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap *soap,
 /***************************************************************************************/
 /************************** SRM v2.2   ExtendFileLifeTimeInSpace ***********************/
 /***************************************************************************************/
-int ns1__srmExtendFileLifeTimeInSpace(struct soap *soap,
+
+int ns1__srmExtendFileLifeTimeInSpace_impl(struct soap *soap,
                                       struct ns1__srmExtendFileLifeTimeInSpaceRequest *req,
                                       struct ns1__srmExtendFileLifeTimeInSpaceResponse_ *rep)
 {
@@ -1156,7 +1161,8 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap *soap,
 /***************************************************************************************/
 /**************************       SRM v2.2   PurgeFromSpace      ***********************/
 /***************************************************************************************/
-int ns1__srmPurgeFromSpace(struct soap *soap,
+
+int ns1__srmPurgeFromSpace_impl(struct soap *soap,
                            struct ns1__srmPurgeFromSpaceRequest *req,
                            struct ns1__srmPurgeFromSpaceResponse_ *rep)
 {

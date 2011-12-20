@@ -102,7 +102,8 @@ void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
     return;
 }
 
-int ns1__srmReleaseFiles (struct soap *soap,
+
+int ns1__srmReleaseFiles_impl (struct soap *soap,
                           struct ns1__srmReleaseFilesRequest *req,
                           struct ns1__srmReleaseFilesResponse_ *rep)
 {
@@ -309,7 +310,8 @@ void rpcResponseHandler_PutDone(const char          *serverUrl,
     return;
 }
 
-int ns1__srmPutDone(struct soap *soap, struct ns1__srmPutDoneRequest *req, struct ns1__srmPutDoneResponse_ *rep)
+
+int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, struct ns1__srmPutDoneResponse_ *rep)
 {
     static const char *func = "PutDone";
     static const char *methodName = "synchcall.putDone";
@@ -484,7 +486,8 @@ void rpcResponseHandler_AbortRequest(const char          *serverUrl,
     return;
 }
 
-int ns1__srmAbortRequest(struct soap *soap,
+
+int ns1__srmAbortRequest_impl(struct soap *soap,
                          struct ns1__srmAbortRequestRequest *req,
                          struct ns1__srmAbortRequestResponse_ *rep)
 {
@@ -663,7 +666,8 @@ void rpcResponseHandler_AbortFiles(const char          *serverUrl,
     return;
 }
 
-int ns1__srmAbortFiles(struct soap *soap,
+
+int ns1__srmAbortFiles_impl(struct soap *soap,
                        struct ns1__srmAbortFilesRequest *req,
                        struct ns1__srmAbortFilesResponse_ *rep)
 {
@@ -859,7 +863,7 @@ void rpcResponseHandler_ExtendFileLifeTime(const char          *serverUrl,
 }
 
 
-int ns1__srmExtendFileLifeTime(struct soap *soap,
+int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
                                struct ns1__srmExtendFileLifeTimeRequest *req,
                                struct ns1__srmExtendFileLifeTimeResponse_ *rep)
 {
@@ -1007,7 +1011,7 @@ int ns1__srmExtendFileLifeTime(struct soap *soap,
 /**
  * This function is to discover what transfer protocols are supported.
  */
-int ns1__srmGetTransferProtocols(struct soap* soap,
+int ns1__srmGetTransferProtocols_impl(struct soap* soap,
                                  struct ns1__srmGetTransferProtocolsRequest *req,
                                  struct ns1__srmGetTransferProtocolsResponse_ *rep)
 {
@@ -1334,7 +1338,8 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     return SOAP_OK;
 }
 
-int ns1__srmSuspendRequest(struct soap *soap,
+
+int ns1__srmSuspendRequest_impl(struct soap *soap,
                            struct ns1__srmSuspendRequestRequest *req,
                            struct ns1__srmSuspendRequestResponse_ *rep)
 {
@@ -1355,7 +1360,8 @@ int ns1__srmSuspendRequest(struct soap *soap,
     return(SOAP_OK);
 }
 
-int ns1__srmResumeRequest(struct soap *soap,
+
+int ns1__srmResumeRequest_impl(struct soap *soap,
                           struct ns1__srmResumeRequestRequest *req,
                           struct ns1__srmResumeRequestResponse_ *rep)
 {

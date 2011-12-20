@@ -108,8 +108,9 @@ void rpcResponseHandler_Mkdir(const char         *serverUrl,
  * @param soap the soap var
  * @param req input request structure
  * @param rep output response structure
- */                       
-int ns1__srmMkdir(struct soap *soap, struct ns1__srmMkdirRequest *req, 
+ */
+
+int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
                   struct ns1__srmMkdirResponse_ *rep)
 {
     static const char *func = "Mkdir";
@@ -292,7 +293,7 @@ void rpcResponseHandler_Rmdir(const char          *serverUrl,
     return;
 }
 
-int ns1__srmRmdir(struct soap *soap, struct ns1__srmRmdirRequest *req,
+int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
                   struct ns1__srmRmdirResponse_ *rep)
 {
     static const char *methodName_rmdir = "synchcall.rmdir";
@@ -496,9 +497,7 @@ void rpcResponseHandler_Rm(const char          *serverUrl,
     return;
 }
 
-
-
-int ns1__srmRm(struct soap *soap, struct ns1__srmRmRequest *req,
+int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
                struct ns1__srmRmResponse_ *rep)
 {
     static const char *func = "Rm";
@@ -717,7 +716,7 @@ void rpcResponseHandler_Ls(const char          *serverUrl,
     return;
 }
 
-int ns1__srmLs (struct soap *soap, struct ns1__srmLsRequest *req,
+int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
                 struct ns1__srmLsResponse_ *rep)
 {
     static const char *func = "Ls";
@@ -937,7 +936,8 @@ int ns1__srmLs (struct soap *soap, struct ns1__srmLsRequest *req,
 /**
  *@TODO New function introduced in srm v2.2 
  */
-int ns1__srmStatusOfLsRequest(struct soap *soap,
+
+int ns1__srmStatusOfLsRequest_impl(struct soap *soap,
                               struct ns1__srmStatusOfLsRequestRequest *req,
                               struct ns1__srmStatusOfLsRequestResponse_ *rep)
 {
@@ -1030,8 +1030,8 @@ void rpcResponseHandler_Mv (const char          *serverUrl,
     return;
 }
 
-
-int ns1__srmMv (struct soap *soap, struct ns1__srmMvRequest *req, struct ns1__srmMvResponse_ *rep)
+int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
+		struct ns1__srmMvResponse_ *rep)
 {
     static const char *methodName_mv = "synchcall.mv";
     char *func = "Mv";

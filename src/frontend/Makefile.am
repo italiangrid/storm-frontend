@@ -72,7 +72,7 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
-    synch.cpp \
+    synch.cpp synch.hpp\
     xmlrpc_decode.c xmlrpc_encode.c \
     storm_util.c storm_utils.hpp \
     srmv2C.cc \

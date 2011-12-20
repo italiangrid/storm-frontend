@@ -41,8 +41,7 @@ public:
 		if(blacklistRequested)
 		{
 			// dump library version
-			fprintf(stdout, "using %s\n", pep_version());
-
+			srmlogit(STORM_LOG_DEBUG, funcName, "using %s\n", pep_version());
 			// create the PEP client handle
 			pep = pep_initialize();
 			if (pep == NULL) {
@@ -117,6 +116,12 @@ public:
 		pep_destroy(pep);
 	}
 
+	static bool checkBlacklist(struct soap *soap)
+	 {
+	    storm::Credentials cred(soap);
+		storm::Authorization auth((storm::Credentials*)&cred);
+		return auth.isBlacklisted();
+	 }
 
     bool isAuthorized(std::string resource, std::string action) throw (storm::AuthorizationException) ;
     bool isBlacklisted() throw (storm::AuthorizationException) ;

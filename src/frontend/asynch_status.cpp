@@ -28,6 +28,9 @@
 #include "copy_status.hpp"
 #include "bol_status.hpp"
 
+#include "Credentials.hpp"
+#include "Authorization.hpp"
+
 extern "C"
 int ns1__srmStatusOfPutRequest(struct soap *soap,
         struct ns1__srmStatusOfPutRequestRequest *req,
@@ -36,6 +39,17 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
     static const char* funcName = "srmStatusOfPutRequest";
 
     storm::put_status status(soap);
+
+    if(Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		rep->srmStatusOfPutRequestResponse = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
 
     // If the request contains some surl, then fill the put_status object
     if (NULL != req->arrayOfTargetSURLs ) {
@@ -59,6 +73,16 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 
     storm::get_status status(soap);
 
+    if(Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		rep->srmStatusOfGetRequestResponse = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
     // If the request contains some surl, then fill the get_status object
     if (NULL != req->arrayOfSourceSURLs ) {
         for (int i=0; i<req->arrayOfSourceSURLs->__sizeurlArray; ++i) {
@@ -82,6 +106,16 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 
     storm::bol_status status(soap);
 
+    if(Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		rep->srmStatusOfBringOnlineRequestResponse = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
     // If the request contains some surl, then fill the get_status object
     if (NULL != req->arrayOfSourceSURLs ) {
         for (int i=0; i<req->arrayOfSourceSURLs->__sizeurlArray; ++i) {
@@ -103,7 +137,16 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
     static const char* funcName = "srmStatusOfCopyRequest";
 
     storm::copy_status status(soap);
-
+    if(Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		rep->srmStatusOfCopyRequestResponse = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
     // If the request contains some surl, then fill the copy_status object
     if ((NULL != req->arrayOfSourceSURLs) && (NULL != req->arrayOfTargetSURLs)) {
         if (req->arrayOfSourceSURLs->__sizeurlArray == req->arrayOfTargetSURLs->__sizeurlArray) {

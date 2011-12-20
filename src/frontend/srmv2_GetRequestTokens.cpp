@@ -24,6 +24,8 @@
 #include "mysql_query.hpp"
 #include "storm_mysql.h"
 
+#include "Authorization.hpp"
+
 #include <cgsi_plugin.h>
 
 using namespace std;
@@ -57,6 +59,18 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             return SOAP_OK;
         }
         
+        if(storm::Authorization::checkBlacklist(soap))
+		{
+			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
+			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+			repp->returnStatus->explanation = "User not authorized";
+			return SOAP_OK;
+		}
+		else
+		{
+			srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
+		}
+
         // Connect to the DB, if needed.
         if (!(thip->db_open_done)) {
             if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {

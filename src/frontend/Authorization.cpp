@@ -125,9 +125,12 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException)
 			srmlogit(STORM_LOG_INFO, funcName, "User blacklisted\n");
 			blacklisted = true;
 		}
-		if(decision != XACML_DECISION_PERMIT && decision != XACML_DECISION_NOT_APPLICABLE)
+		else
 		{
-			srmlogit(STORM_LOG_WARNING, funcName, "Received error decision from Argus: %s\n Considering the user as not blacklisted" ,  Authorization::decision_tostring(decision));
+			if(decision != XACML_DECISION_PERMIT && decision != XACML_DECISION_NOT_APPLICABLE)
+			{
+				srmlogit(STORM_LOG_WARNING, funcName, "Received error decision from Argus: %s\n Considering the user as not blacklisted" ,  Authorization::decision_tostring(decision));
+			}
 		}
 		// delete resquest and response objs
 		xacml_request_delete(request);

@@ -16,7 +16,7 @@
 #include "srmv2H.h"
 #include "srmlogit.h"
 
-int ns1__srmSetPermission(struct soap *soap,
+int ns1__srmSetPermission_impl(struct soap *soap,
                           struct ns1__srmSetPermissionRequest *req,
                           struct ns1__srmSetPermissionResponse_ *rep)
 {
@@ -37,7 +37,7 @@ int ns1__srmSetPermission(struct soap *soap,
     return (SOAP_OK);
 }
 
-int ns1__srmCheckPermission(struct soap *soap,
+int ns1__srmCheckPermission_impl(struct soap *soap,
                             struct ns1__srmCheckPermissionRequest *req,
                             struct ns1__srmCheckPermissionResponse_ *rep)
 {
@@ -59,7 +59,7 @@ int ns1__srmCheckPermission(struct soap *soap,
     return (SOAP_OK);
 }
 
-int ns1__srmGetPermission(struct soap *soap,
+int ns1__srmGetPermission_impl(struct soap *soap,
                           struct ns1__srmGetPermissionRequest *req,
                           struct ns1__srmGetPermissionResponse_ *rep)
 {

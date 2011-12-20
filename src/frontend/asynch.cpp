@@ -27,7 +27,6 @@
 #include "ptg.hpp"
 #include "copy.hpp"
 #include "bol.hpp"
-#include "srmlogit.h"
 
 #include "Credentials.hpp"
 #include "Authorization.hpp"
@@ -37,10 +36,7 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 
     static const char* funcName = "srmPrepareToPut";
     storm::ptp request(soap);
-    storm::Credentials cred(soap);
-	storm::Authorization auth((storm::Credentials*)&cred);
-	bool black = auth.isBlacklisted();
-	if(black)
+    if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request.r_token("");
@@ -49,9 +45,8 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 	}
 	else
 	{
-		srmlogit(STORM_LOG_DEBUG, funcName, "The user is NOT blacklisted\n");
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
 	}
-
 
     int soap_status = __process_file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse> (
             soap, request, funcName, req, &rep->srmPrepareToPutResponse);
@@ -66,6 +61,18 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 
     storm::ptg request(soap);
 
+    if(storm::Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		request.r_token("");
+		rep->srmPrepareToGetResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
+
     int soap_status = __process_file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> (
             soap, request, funcName, req, &rep->srmPrepareToGetResponse);
 
@@ -79,6 +86,18 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 
     storm::copy request(soap);
 
+    if(storm::Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		request.r_token("");
+		rep->srmCopyResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
+
     int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse> (soap, request,
             funcName, req, &rep->srmCopyResponse);
 
@@ -91,6 +110,17 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     static const char* funcName = "srmBringOnline";
 
     storm::bol request(soap);
+    if(storm::Authorization::checkBlacklist(soap))
+	{
+		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		request.r_token("");
+		rep->srmBringOnlineResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		return(SOAP_OK);
+	}
+	else
+	{
+		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
+	}
 
     int soap_status = __process_file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> (
             soap, request, funcName, req, &rep->srmBringOnlineResponse);
