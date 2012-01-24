@@ -45,8 +45,10 @@ AutoReqProv:    yes
 BuildRoot:      %{_builddir}/var/tmp/%{name}-%{version}
 Summary:        The StoRM FrontEnd component 
 
+BuildRequires: automake
+BuildRequires: autoconf
+BuildRequires: libtool
 BuildRequires: curl-devel
-BuildRequires: storm-common
 BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
 BuildRequires: globus-gss-assist-devel

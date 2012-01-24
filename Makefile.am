@@ -81,35 +81,12 @@ stage:
 
 distsrc:
 	mkdir -p @DISTSOURCE@
-	mv $(distdir).tar.gz $(distdir).src.tar.gz
-	cp $(distdir).src.tar.gz $(DISTSOURCE)/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.@STORM_FRONTEND_ARCH@.src.tar.gz
+	cp $(distdir).tar.gz $(DISTSOURCE)/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.@STORM_FRONTEND_ARCH@.src.tar.gz
 	cp $(RPM_SRPM)/*.rpm @DISTSOURCE@
 
 distbin:
 	mkdir -p @DISTBIN@
-	@set fnord $(MAKEFLAGS); amf=$$2; \
-        dot_seen=no; \
-        target="install"; \
-        tmpdistbin="$(WORKDIR)/dist_bin"; \
-        prefix_arg="prefix=$$tmpdistbin"; \
-        list='$(SUBDIRS)'; for subdir in $$list; do \
-          echo "Making $$target $$prefix_arg in $$subdir"; \
-          if test "$$subdir" = "."; then \
-            dot_seen=yes; \
-            local_target="$$target-am"; \
-          else \
-            local_target="$$target"; \
-          fi; \
-          (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target $$prefix_arg) \
-           || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
-        done; \
-        if test "$$dot_seen" = "no"; then \
-          $(MAKE) $(AM_MAKEFLAGS) "$$target-am" $$prefix_arg || exit 1; \
-        fi; test -z "$$fail"; \
-        pushd $$tmpdistbin; \
-        $(AMTAR) -zcf $(DISTBIN)/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.@STORM_FRONTEND_ARCH@.tar.gz .; \
-        popd; \
-        rm -rf $$tmpdistbin
+	cd etics-tmp; tar -zcf $(distdir).noarch.tar.gz etc usr var; cp $(distdir).noarch.tar.gz @DISTBIN@/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.noarch.tar.gz; cd ..; \
 	cp $(RPM_RPM)/*/*.rpm @DISTBIN@
 
 clean-local:
