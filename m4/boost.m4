@@ -107,21 +107,6 @@ AC_DEFUN([AC_BOOST],
     ac_boost_version_file="$ac_boost_include/boost/version.hpp"
   fi
 
-  dnl Temporary checks
-dnl  if test "x$host_cpu" = "xi686" ; then
-dnl    a=`echo $ac_boost_include | awk -F 'include' '{print $NF}'`;
-dnl    if test "x$a"  != "x" ; then
-dnl      ac_boost_include="$ac_boost_include/include"
-dnl    fi
-dnl  else
-dnl    a=`echo $ac_boost_include | awk -F 'usr/' '{print $NF}'`
-dnl    if test "$a"  != "include" ; then
-dnl      ac_boost_include="$ac_boost_include/usr/include"
-dnl    fi
-dnl  fi
-
-dnl  ac_boost_include="$ac_boost_include/include"
-
   AC_MSG_RESULT([boost path version: $ac_boost_include])
   AC_MSG_RESULT([boost version: $ac_boost_version_file])
 
@@ -136,92 +121,92 @@ dnl  ac_boost_include="$ac_boost_include/include"
 
   AC_MSG_CHECKING([for boost installation])
 
-    dnl see http://www.boost.org/more/getting_started.html#Results
-    dnl for an explanation on how the library name is built
+  if test "x$host_cpu" = "xia64" ; then
+    libdir_local="lib64"
+  elif test "x$host_cpu" = "xx86_64" ; then
+    libdir_local="lib64"
+  else
+    libdir_local="lib"
+  fi
 
+  runtime=
+  if test $ac_boost_debug = yes; then
+    runtime="d"
+  fi
+  threading=
+  mt_cflags=
+  if test x$ac_boost_mt = xyes; then
+    threading="mt"
     if test "x$host_cpu" = "xia64" ; then
-        libdir_local="lib64"
+      mt_cflags="-pthread -D_REENTRANT"
     elif test "x$host_cpu" = "xx86_64" ; then
-        libdir_local="lib64"
+      mt_cflags="-pthread -D_REENTRANT"
     else
-        libdir_local="lib"
+      mt_cflags="-pthread"
     fi
+  fi
 
-    runtime=
-    if test $ac_boost_debug = yes; then
-      runtime="d"
-    fi
-    threading=
-    mt_cflags=
-    if test x$ac_boost_mt = xyes; then
-      threading="mt"
-      if test "x$host_cpu" = "xia64" ; then
-        mt_cflags="-pthread -D_REENTRANT"
-      elif test "x$host_cpu" = "xx86_64" ; then
-        mt_cflags="-pthread -D_REENTRANT"
-      else
-        mt_cflags="-pthread"
-      fi
-    fi
-    dnl Temporary checks
-    if test "x$host_cpu" = "xi686" ; then
-      toolset="-gcc34"
-    else
-      toolset=""
-    fi
-    if test x${threading} != x ; then
-      threading="-${threading}"
-    fi
-    if test x${runtime} != x ; then
-      runtime="-${runtime}"
-    fi
-    ext="${toolset}${threading}${runtime}"
+  dnl Temporary checks
+  if test "x$host_cpu" = "xi686" ; then
+    toolset="-gcc34"
+  else
+    toolset=""
+  fi
+  if test x${threading} != x ; then
+    threading="-${threading}"
+  fi
+  if test x${runtime} != x ; then
+    runtime="-${runtime}"
+  fi
+  ext="${toolset}${threading}${runtime}"
 
-    dnl Test for existance of Boost-style library tags.
-    if test ! -r $ac_boost_devel_prefix/$libdir_local/boost141/libboost_regex$ext.so  -a \
-              -r $ac_boost_devel_prefix/$libdir_local/boost141/libboost_regex.so ; then
-      AC_MSG_WARN([*** Cannot find Boost libraries tagged with $ext. Building with no library tag.])
-      ext=
-      static_ext=
-    fi
+  dnl Test for existance of Boost-style library tags.
+  if test ! -r $ac_boost_devel_prefix/$libdir_local/boost141/libboost_regex$ext.so  -a \
+            -r $ac_boost_devel_prefix/$libdir_local/boost141/libboost_regex.so ; then
+    AC_MSG_WARN([*** Cannot find Boost libraries tagged with $ext. Building with no library tag.])
+    ext=
+    static_ext=
+    ac_have_boost=no
+  else
+    ac_have_boost=yes
+  fi
  
-    unset runtime static_runtime threading toolset
+  unset runtime static_runtime threading toolset
 
-    BOOST_CFLAGS="$mt_cflags -I$ac_boost_include"
+  BOOST_CFLAGS="$mt_cflags -I$ac_boost_include"
 
-    BOOST_THREAD_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_thread$ext -lpthread"
-    BOOST_PO_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_program_options$ext"
+  BOOST_THREAD_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_thread$ext -lpthread"
+  BOOST_PO_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_program_options$ext"
 
-    BOOST_INSTALL_PATH=$ac_boost_prefix
-    BOOST_INCLUDE_PATH=$ac_boost_include
-    BOOST_DEVEL_INSTALL_PATH=$ac_boost_devel_prefix
+  BOOST_INSTALL_PATH=$ac_boost_prefix
+  BOOST_INCLUDE_PATH=$ac_boost_include
+  BOOST_DEVEL_INSTALL_PATH=$ac_boost_devel_prefix
 
-    unset mt_cflags ext 
+  unset mt_cflags ext 
 
-    AC_LANG_SAVE
-    dnl AC_LANG_CPLUSPLUS
-    ac_save_cppflags=$CPPFLAGS
-    ac_save_libs=$LIBS
-    CPPFLAGS="$BOOST_CFLAGS $CPPFLAGS"
-    LIBS="$BOOST_LIBS $LIBS"
-    AC_TRY_LINK([ #include <boost/thread/mutex.hpp> ],
-                [ boost::mutex   mut; ],
-                [ ac_have_boost=yes ], [ ac_have_boost=no ])
-    AC_MSG_RESULT([$ac_have_boost])
-    CPPFLAGS=$ac_save_cppflags
-    LIBS=$ac_save_libs
-    AC_LANG_RESTORE
+  dnl AC_LANG_SAVE
+  dnl dnl AC_LANG_CPLUSPLUS
+  dnl ac_save_cppflags=$CPPFLAGS
+  dnl ac_save_libs=$LIBS
+  dnl CPPFLAGS="$BOOST_CFLAGS $CPPFLAGS"
+  dnl LIBS="$BOOST_THREAD_LIBS $BOOST_PO_LIBS $LIBS"
+  dnl AC_MSG_WARN([$LIBS $CPPFLAGS])
+  dnl AC_TRY_LINK([#include <boost/thread/mutex.hpp>],
+  dnl             [ ],
+  dnl             [ac_have_boost=yes ], [ ac_have_boost=no])
+  dnl AC_MSG_RESULT([$ac_have_boost])
+  dnl CPPFLAGS=$ac_save_cppflags
+  dnl LIBS=$ac_save_libs
+  dnl AC_LANG_RESTORE
 
-    dnl assume sstream available
-    AC_DEFINE([HAVE_STRINGSTREAM], 1, [Define when we are sure to have the right strstream header])
+  dnl assume sstream available
+  AC_DEFINE([HAVE_STRINGSTREAM], 1, [Define when we are sure to have the right strstream header])
 
-    if test x$ac_have_boost = xyes ; then
-        ifelse([$2], , :, [$2])
-    else    
-        ifelse([$3], , :, [$3])
-    fi
-
-  
+  if test x$ac_have_boost = xyes ; then
+      ifelse([$2], , :, [$2])
+  else    
+      ifelse([$3], , :, [$3])
+  fi
 
   AC_SUBST(BOOST_INSTALL_PATH)
   AC_SUBST(BOOST_INCLUDE_PATH)
