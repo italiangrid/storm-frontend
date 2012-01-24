@@ -86,7 +86,7 @@ distsrc:
 
 distbin:
 	mkdir -p @DISTBIN@
-	cd etics-tmp; tar -zcf $(distdir).noarch.tar.gz etc usr var; cp $(distdir).noarch.tar.gz @DISTBIN@/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.noarch.tar.gz; cd ..; \
+	cd etics-tmp; tar -zcf $(distdir).@STORM_FRONTEND_ARCH@.tar.gz etc usr var; cp $(distdir).@STORM_FRONTEND_ARCH@.tar.gz @DISTBIN@/$(distdir)-@STORM_FRONTEND_AGE_NUMBER@.@STORM_FRONTEND_SO@.@STORM_FRONTEND_ARCH@.tar.gz; cd ..; \
 	cp $(RPM_RPM)/*/*.rpm @DISTBIN@
 
 clean-local:
