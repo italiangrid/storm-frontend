@@ -1,14 +1,10 @@
-missingok
-rotate 26
-compress
-copytruncate
-notifempty
-create 644 storm storm
-
 @localstatedir@/log/@PACKAGE_PREFIX_NAME@/@PACKAGE@.log {
-    size=50M
-    lastaction
-        DATE=`date +%Y-%m-%d`; mv @localstatedir@/log/@PACKAGE_PREFIX_NAME@/@PACKAGE@.log.1.gz @localstatedir@/log/@PACKAGE_PREFIX_NAME@/@PACKAGE@.log.$DATE.gz
-    endscript
+    missingok
+    notifempty
+	rotate 26
+	size=50M
+	copytruncate
+	compress
+    dateext
 }
 
