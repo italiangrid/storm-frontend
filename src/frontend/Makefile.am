@@ -30,7 +30,7 @@ storm_frontend_server_LDADD = \
     @XMLRPC_C_DEVEL_LIBS@ \
     @CURL_DEVEL_LIBS@ \
     -L/usr/lib64 -lglobus_gssapi_gsi -lglobus_gss_assist \
-    @CGSI_VOMS_GSOAP_CPP_PTHR_LIBS@ \
+    @CGSI_GSOAP_VOMS_CPP_PTHR_LIBS@ \
     @GSOAP_SSL_PP_LIBS@ \
     @BOOST_PO_LIBS@ \
     @BOOST_THREAD_LIBS@ \
@@ -68,7 +68,7 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     HttpPostClient.cpp HttpPostClient.h \
     DBConnectionPool.cpp DBConnectionPool.hpp \
-    ThreadPool.hpp Monitoring.hpp Monitoring.cpp \
+    ThreadPool.hpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
@@ -77,6 +77,10 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     storm_util.c storm_utils.hpp \
     srmv2C.cc \
     srmv2Server.cc \
+    Monitor.hpp InstrumentedMonitor.hpp \
+    InstrumentedMonitorBuilder.hpp \
+    Monitoring.hpp Monitoring.cpp \
+    MonitorNotEnabledException.hpp \
     $(noinst_INCLUDES)
 
 INCLUDES = \

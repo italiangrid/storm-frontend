@@ -14,6 +14,8 @@
 */
 
 #include "Monitoring.hpp"
+#include "srmlogit.h"
+#include <boost/thread/exceptions.hpp>
 
 storm::Monitoring* storm::Monitoring::instance = NULL;
 
@@ -23,15 +25,15 @@ void storm::Monitoring::thread_function(Monitoring* m) {
 
             boost::this_thread::sleep(boost::posix_time::seconds(m->_sleep_interval));
 
-            if (m->_stop) {
+            if (!m->_running) {
                 break;
             }
 
-            if (m->_enabled) {
-                m->pingSummary();
-                m->resetData();
-            }
+			m->printSummary();
+			m->resetMonitors();
         }
-    } catch (boost::thread_interrupted e) {
+    } catch (boost::thread_interrupted &e) {
+    	srmlogit(STORM_LOG_ERROR, m->_funcName, "Received thread_interrupted exception\n");
     }
 }
+

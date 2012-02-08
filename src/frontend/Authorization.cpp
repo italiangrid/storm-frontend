@@ -90,9 +90,9 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException)
 {
 	// create the XACML request
 	char* funcName = "isBlacklisted";
+	bool blacklisted = false;
 	if(Authorization::blacklistRequested)
 	{
-		bool blacklisted = false;
 		xacml_request_t * request;
 		xacml_response_t * response;
 
@@ -137,10 +137,7 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException)
 		xacml_response_delete(response);
 		return blacklisted;
 	}
-	else
-	{
-		return false;
-	}
+	return blacklisted;
 }
 
 /*

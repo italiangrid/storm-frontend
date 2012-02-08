@@ -53,8 +53,7 @@ BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
 BuildRequires: globus-gss-assist-devel
 BuildRequires: gsoap-devel
-BuildRequires: CGSI_gSOAP_2.7-voms
-BuildRequires: CGSI_gSOAP_2.7-devel
+BuildRequires: CGSI-gSOAP-devel
 BuildRequires: voms
 BuildRequires: boost141-devel
 BuildRequires: mysql-devel
@@ -70,7 +69,7 @@ Requires: globus-gssapi-gsi
 Requires: mysql
 Requires: xmlrpc-c
 Requires: voms
-Requires: CGSI_gSOAP_2.7-voms
+Requires: CGSI-gSOAP
 Requires: boost141-program-options
 Requires: boost141-thread
 Requires: gsoap

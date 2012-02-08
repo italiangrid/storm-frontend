@@ -161,7 +161,7 @@ AC_MSG_RESULT(["MYSQL found $have_mysql"])
 
 AC_VOMS([])
 
-AC_CGSI_GSOAP([2.7])
+AC_CGSI_GSOAP([])
 AC_GSOAP([])
 
 AC_BOOST([sl$osdist])

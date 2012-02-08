@@ -25,6 +25,8 @@
 #include "storm_mysql.h"
 
 #include "Authorization.hpp"
+#include "Monitoring.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 #include <cgsi_plugin.h>
 
@@ -35,6 +37,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
                                         struct ns1__srmGetRequestTokensResponse_ *rep)
 {
     static const char *func = "GetRequestTokens";
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     struct ns1__srmGetRequestTokensResponse* repp;
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *>(soap->user);
     
@@ -56,6 +59,16 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             srmlogit(STORM_LOG_ERROR, func, "Client DN not found!\n");
             repp->returnStatus->statusCode = SRM_USCOREAUTHENTICATION_USCOREFAILURE;
             repp->returnStatus->explanation = "Unable to retrieve client DN";
+        	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+        	boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(
+						storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
             return SOAP_OK;
         }
         
@@ -64,6 +77,16 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
 			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
 			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
 			repp->returnStatus->explanation = "User not authorized";
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(
+						storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_OK;
 		}
 		else
@@ -77,6 +100,16 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
                 srmlogit(STORM_LOG_ERROR, func, "DB open error!\n");
                 repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
                 repp->returnStatus->explanation = "DB open error";
+            	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+            	boost::posix_time::time_duration et = (end_time - start_time);
+    			try
+    			{
+    				storm::Monitoring::getInstance()->getMonitor(
+    						storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
+    			}catch(storm::MonitorNotEnabledException *exc)
+    			{
+    				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+    			}
                 return SOAP_OK;
             }
             thip->db_open_done = 1;
@@ -113,6 +146,16 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
                 repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
                 repp->returnStatus->explanation = "'userRequestDescription' does not refer to any existing known requests";
             }
+        	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+        	boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(
+						storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
             return SOAP_OK;
         } 
         
@@ -131,15 +174,45 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
     }
     catch (soap_bad_alloc) {
         srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
+    	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+    	boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
         return SOAP_EOM;
     }
     catch (std::invalid_argument) {
         srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
+    	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+    	boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
         return SOAP_NULL;
     }
     
     srmlogit(STORM_LOG_ERROR, func, "Return status: SRM_SUCCESS\n");
     repp->returnStatus->statusCode = SRM_USCORESUCCESS;
     repp->returnStatus->explanation = "Request successfully completed";
+	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::time_duration et = (end_time - start_time);
+	try
+	{
+		storm::Monitoring::getInstance()->getMonitor(
+				storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME)->registerSuccess(et.total_milliseconds());
+	}catch(storm::MonitorNotEnabledException *exc)
+	{
+		srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+	}
     return(SOAP_OK);
 }

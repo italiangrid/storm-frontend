@@ -52,8 +52,7 @@ BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
 BuildRequires: globus-gss-assist-devel
 BuildRequires: gsoap-devel
-BuildRequires: CGSI_gSOAP_2.7-voms
-BuildRequires: CGSI_gSOAP_2.7-devel
+BuildRequires: CGSI-gSOAP-devel
 BuildRequires: voms
 BuildRequires: boost@BOOST_SUFFIX@-devel
 BuildRequires: mysql-devel
@@ -70,7 +69,7 @@ Requires: mysql
 Requires: storm-xmlrpc-c
 Requires: storm-xmlrpc-c-client
 Requires: voms
-Requires: CGSI_gSOAP_2.7-voms
+Requires: CGSI-gSOAP
 Requires: boost@BOOST_SUFFIX@-program-options
 Requires: boost@BOOST_SUFFIX@-thread
 Requires: gsoap

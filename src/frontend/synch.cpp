@@ -14,6 +14,8 @@
 */
 
 #include "Monitoring.hpp"
+#include "InstrumentedMonitor.hpp"
+#include "MonitorNotEnabledException.hpp"
 #include "srmv2H.h"
 
 /* commented out. not available in first Argus integration prototype
@@ -49,15 +51,43 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 						"User not authorized";
 				rep->srmMkdirResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_MKDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_MKDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_MKDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -69,14 +99,32 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 	int ret_val = ns1__srmMkdir_impl(soap, req, rep);
 
 	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+		boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_MKDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_MKDIR_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmMkdirResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -101,15 +149,43 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 						"User not authorized";
 				rep->srmRmdirResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_RMDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RMDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RMDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -124,11 +200,28 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RMDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_RMDIR_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmRmdirResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -153,15 +246,43 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 						"User not authorized";
 				rep->srmRmResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_RM_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RM_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RM_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -176,11 +297,28 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RM_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_RM_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmRmResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -201,19 +339,47 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 			rep->srmLsResponse->returnStatus = storm::soap_calloc<struct ns1__TReturnStatus>(soap);
 			if (rep->srmLsResponse->returnStatus != NULL)
 			{
-				rep->srmLsResponse->returnStatus->explanation =
-						"User not authorized";
-				rep->srmLsResponse->returnStatus->statusCode =
-						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				rep->srmLsResponse->returnStatus->explanation = "User not authorized";
+				rep->srmLsResponse->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_LS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
-			} else {
+			}
+			else
+			{
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_LS_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_LS_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -225,16 +391,32 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 	int ret_val = ns1__srmLs_impl(soap, req, rep);
 
 	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
-	}
 
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_LS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_LS_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmLsResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
 	return ret_val;
 }
 
@@ -257,15 +439,43 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 						"User not authorized";
 				rep->srmStatusOfLsRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -280,11 +490,28 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmStatusOfLsRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -309,15 +536,43 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 						"User not authorized";
 				rep->srmMvResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_MV_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_MV_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_MV_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -332,11 +587,28 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_MV_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_MV_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmMvResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -363,15 +635,43 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 						"User not authorized";
 				rep->srmSetPermissionResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -386,11 +686,28 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_SET_PERMISSION_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmSetPermissionResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -415,15 +732,43 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 						"User not authorized";
 				rep->srmCheckPermissionResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -438,11 +783,28 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_CHECK_PERMISSION_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmCheckPermissionResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -467,15 +829,43 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 						"User not authorized";
 				rep->srmGetPermissionResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -490,11 +880,28 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_GET_PERMISSION_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmGetPermissionResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -521,15 +928,43 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 						"User not authorized";
 				rep->srmReserveSpaceResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -544,11 +979,28 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_RESERVE_SPACE_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmReserveSpaceResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -573,15 +1025,43 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 						"User not authorized";
 				rep->srmStatusOfReserveSpaceRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -596,11 +1076,28 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmStatusOfReserveSpaceRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -625,15 +1122,43 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 						"User not authorized";
 				rep->srmReleaseSpaceResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -648,11 +1173,28 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_RELEASE_SPACE_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmReleaseSpaceResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -677,15 +1219,43 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 						"User not authorized";
 				rep->srmUpdateSpaceResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -700,11 +1270,28 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_UPDATE_SPACE_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmUpdateSpaceResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -729,15 +1316,43 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 						"User not authorized";
 				rep->srmStatusOfUpdateSpaceRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -752,11 +1367,28 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmStatusOfUpdateSpaceRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -781,15 +1413,43 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 						"User not authorized";
 				rep->srmGetSpaceMetaDataResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -804,11 +1464,28 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmGetSpaceMetaDataResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -833,15 +1510,43 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 						"User not authorized";
 				rep->srmGetSpaceTokensResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -856,11 +1561,28 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmGetSpaceTokensResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -885,15 +1607,43 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 						"User not authorized";
 				rep->srmChangeSpaceForFilesResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -908,11 +1658,28 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmChangeSpaceForFilesResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -937,15 +1704,43 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 						"User not authorized";
 				rep->srmStatusOfChangeSpaceForFilesRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -960,11 +1755,28 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmStatusOfChangeSpaceForFilesRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -989,15 +1801,43 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 						"User not authorized";
 				rep->srmExtendFileLifeTimeInSpaceResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1012,11 +1852,28 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmExtendFileLifeTimeInSpaceResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1041,15 +1898,43 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 						"User not authorized";
 				rep->srmPurgeFromSpaceResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1064,11 +1949,28 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmPurgeFromSpaceResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1095,15 +1997,43 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 						"User not authorized";
 				rep->srmReleaseFilesResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1118,11 +2048,28 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_RELEASE_FILES_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmReleaseFilesResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1147,15 +2094,43 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 						"User not authorized";
 				rep->srmPutDoneResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_PUT_DONE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_PUT_DONE_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_PUT_DONE_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1170,13 +2145,29 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PUT_DONE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
-
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PUT_DONE_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmPutDoneResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
 	return ret_val;
 }
 
@@ -1199,15 +2190,43 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 						"User not authorized";
 				rep->srmAbortRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1222,11 +2241,28 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_ABORT_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmAbortRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1251,15 +2287,43 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 						"User not authorized";
 				rep->srmAbortFilesResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_ABORT_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1274,11 +2338,28 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_ABORT_FILES_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmAbortFilesResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1303,15 +2384,43 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 						"User not authorized";
 				rep->srmSuspendRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1326,11 +2435,28 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_SUSPEND_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmSuspendRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1355,15 +2481,43 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 						"User not authorized";
 				rep->srmResumeRequestResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1378,11 +2532,28 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_RESUME_REQUEST_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmResumeRequestResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1407,15 +2578,43 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 						"User not authorized";
 				rep->srmExtendFileLifeTimeResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1430,11 +2629,28 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmExtendFileLifeTimeResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1459,15 +2675,43 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 						"User not authorized";
 				rep->srmGetTransferProtocolsResponse->returnStatus->statusCode =
 						SRM_USCOREAUTHORIZATION_USCOREFAILURE;
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(
+							storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return (SOAP_OK);
 			} else {
 				srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+				boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+				boost::posix_time::time_duration et = (end_time - start_time);
+				try
+				{
+					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerError(et.total_milliseconds());
+				}catch(storm::MonitorNotEnabledException *exc)
+				{
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				}
 				return SOAP_EOM;
 			}
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1482,11 +2726,28 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		//storm::Monitoring::getInstance()->notifyPingCompleted(
-			//	et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmGetTransferProtocolsResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;
@@ -1505,11 +2766,30 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 		{
 			rep->srmPingResponse->versionInfo =
 					"User not authorized";
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(
+						storm::SRM_PING_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return (SOAP_OK);
 		}
 		else
 		{
 			srmlogit(STORM_LOG_ERROR, func, "Error in response allocation\n");
+			boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::time_duration et = (end_time - start_time);
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_PING_MONITOR_NAME)->registerError(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
 			return SOAP_EOM;
 		}
 	}
@@ -1560,11 +2840,28 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 
 	boost::posix_time::time_duration et = (end_time - start_time);
 
-	if (ret_val != SOAP_OK) {
-		storm::Monitoring::getInstance()->notifyPingCompleted(-1, false);
-	} else {
-		storm::Monitoring::getInstance()->notifyPingCompleted(
-				et.total_milliseconds(), true);
+	if (ret_val != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PING_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PING_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					SRM_USCORESUCCESS);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 	}
 
 	return ret_val;

@@ -30,17 +30,32 @@
 
 #include "Credentials.hpp"
 #include "Authorization.hpp"
+#include "Monitoring.hpp"
+#include "InstrumentedMonitor.hpp"
+
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep) {
 
     static const char* funcName = "srmPrepareToPut";
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::ptp request(soap);
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request.r_token("");
 		rep->srmPrepareToPutResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+		boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 		return(SOAP_OK);
 	}
 	else
@@ -51,6 +66,32 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
     int soap_status = __process_file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse> (
             soap, request, funcName, req, &rep->srmPrepareToPutResponse);
 
+    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::time_duration et = (end_time - start_time);
+
+	if (soap_status != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PREPARE_TO_PUT_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmPrepareToPutResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
     return soap_status;
 }
 
@@ -58,7 +99,7 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
         struct ns1__srmPrepareToGetResponse_ *rep) {
 
     static const char* funcName = "srmPrepareToGet";
-
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::ptg request(soap);
 
     if(storm::Authorization::checkBlacklist(soap))
@@ -66,6 +107,16 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request.r_token("");
 		rep->srmPrepareToGetResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+		boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PREPARE_TO_GET_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 		return(SOAP_OK);
 	}
 	else
@@ -75,7 +126,32 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 
     int soap_status = __process_file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> (
             soap, request, funcName, req, &rep->srmPrepareToGetResponse);
+    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::time_duration et = (end_time - start_time);
 
+	if (soap_status != SOAP_OK)
+	{
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PREPARE_TO_GET_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
+	else
+	{
+		try
+		{
+			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_PREPARE_TO_GET_MONITOR_NAME))->registerCompleted(
+					et.total_milliseconds(),
+					rep->srmPrepareToGetResponse->returnStatus->statusCode);
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
+	}
     return soap_status;
 }
 
@@ -83,7 +159,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
         struct ns1__srmCopyResponse_ *rep) {
 
     static const char* funcName = "srmCopy";
-
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::copy request(soap);
 
     if(storm::Authorization::checkBlacklist(soap))
@@ -91,6 +167,16 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request.r_token("");
 		rep->srmCopyResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+		boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_COPY_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 		return(SOAP_OK);
 	}
 	else
@@ -100,7 +186,32 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 
     int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse> (soap, request,
             funcName, req, &rep->srmCopyResponse);
+    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::time_duration et = (end_time - start_time);
 
+	if (soap_status != SOAP_OK)
+		{
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_COPY_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
+		}
+		else
+		{
+			try
+			{
+				((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+						storm::SRM_COPY_MONITOR_NAME))->registerCompleted(
+						et.total_milliseconds(),
+						rep->srmCopyResponse->returnStatus->statusCode);
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
+		}
     return soap_status;
 }
 
@@ -108,13 +219,23 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
         struct ns1__srmBringOnlineResponse_ *rep) {
 
     static const char* funcName = "srmBringOnline";
-
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::bol request(soap);
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request.r_token("");
 		rep->srmBringOnlineResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+		boost::posix_time::time_duration et = (end_time - start_time);
+		try
+		{
+			storm::Monitoring::getInstance()->getMonitor(
+					storm::SRM_BRING_ONLINE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+		}catch(storm::MonitorNotEnabledException *exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+		}
 		return(SOAP_OK);
 	}
 	else
@@ -124,7 +245,32 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 
     int soap_status = __process_file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> (
             soap, request, funcName, req, &rep->srmBringOnlineResponse);
+    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::time_duration et = (end_time - start_time);
 
+	if (soap_status != SOAP_OK)
+		{
+			try
+			{
+				storm::Monitoring::getInstance()->getMonitor(storm::SRM_BRING_ONLINE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
+		}
+		else
+		{
+			try
+			{
+				((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
+						storm::SRM_BRING_ONLINE_MONITOR_NAME))->registerCompleted(
+						et.total_milliseconds(),
+						rep->srmBringOnlineResponse->returnStatus->statusCode);
+			}catch(storm::MonitorNotEnabledException *exc)
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			}
+		}
     return soap_status;
 
     //    static const char* funcName = "srmBringOnline";

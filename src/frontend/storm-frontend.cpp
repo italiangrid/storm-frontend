@@ -43,13 +43,15 @@ extern "C"{
 #include <exception>
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
-#include "Monitoring.hpp"
 #include "boost/bind.hpp"
 #include "DBConnectionPool.hpp"
 #include <signal.h>
 #include "frontend_version.h"
 #include <curl/curl.h>
 #include "ProtocolChecker.hpp"
+
+#include "Monitoring.hpp"
+#include "InstrumentedMonitorBuilder.hpp"
 
 #define NAME "StoRM SRM v2.2"
 
@@ -386,11 +388,53 @@ int main(int argc, char** argv) {
         return SYERR;
     }
 
-    // Init monitoring
     storm::Monitoring* monitoring = storm::Monitoring::getInstance();
-    monitoring->setTimeInterval(audit_time_interval);
-    monitoring->setEnabled(audit_enabled);
+    if(audit_enabled)
+    {
+        // Init monitoring
 
+        monitoring->setTimeInterval(audit_time_interval);
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildAbortFiles());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildAbortRequest());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildBringOnline());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildChangeSpaceForFiles());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildCheckPermission());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildCopy());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildExtendFileLifeTimeInSpace());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildExtendFileLifeTime());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildGetPermission());
+        monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildGetRequestSummary());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildGetRequestTokens());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildGetSpaceMetaData());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildGetSpaceTokens());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildGetTransferProtocols());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildLs());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildMkdir());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildMv());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildPing());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildPrepareToGet());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildPrepareToPut());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildPurgeFromSpace());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildPutDone());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildReleaseFiles());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildReleaseSpace());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildReserveSpace());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildResumeRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildRmdir());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildRm());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildSetPermission());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfBringOnlineRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfChangeSpaceForFilesRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfCopyRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfGetRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfLsRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfPutRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfReserveSpaceRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfUpdateSpaceRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildSuspendRequest());
+		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildUpdateSpace());
+		monitoring->start();
+    }
     // SIGINT (kill -2) to stop the frontend
     signal(SIGINT, sigint_handler);
 
