@@ -55,7 +55,9 @@ static const int DEFAULT_PORT = 8444;
 static const int DEFAULT_AUDIT_TIME_INTERVAL = 60;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
+static const string DEFAULT_ARGUS_PEP_AUTH_PROTOCOL = "https";
 static const string DEFAULT_ARGUS_PEP_AUTH_PORT = "8154";
+static const string DEFAULT_ARGUS_PEP_AUTH_SERVICE = "authz";
 static const string DEFAULT_CA_CERTIFICATES_FOLDER = "/etc/grid-security/certificates";
 
 
@@ -152,11 +154,17 @@ static const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not st
 static const string OPTL_USER_CHECK_BLACKLIST = "check.user.blacklisting";
 static const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
 
+static const string OPTL_ARGUS_PEP_AUTH_PROTOCOL = "argus-pep.protocol";
+static const char* OPT_ARGUS_PEP_AUTH_PROTOCOL_DESCRIPTION = "The protocol to contact Argus PEP service";
+
 static const string OPTL_ARGUS_PEP_HOSTNAME = "argus-pep.hostname";
 static const char* OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION = "Full hostname of the Argus PEP host";
 
 static const string OPTL_ARGUS_PEP_AUTH_PORT = "argus-pep.port";
-static const char* OPT_ARGUS_PEP_AUTH_POR_DESCRIPTIONT = "Port of the Argus PEP authorization service";
+static const char* OPT_ARGUS_PEP_AUTH_PORT_DESCRIPTION = "Port of the Argus PEP authorization service";
+
+static const string OPTL_ARGUS_PEP_AUTH_SERVICE = "argus-pep.service";
+static const char* OPT_ARGUS_PEP_AUTH_SERVICE_DESCRIPTION = "The service endpoint serving Argus PEP service";
 
 // A helper function to simplify printing options stuff
 template<class T>
@@ -213,8 +221,10 @@ public:
     string getHostKeyFile();
     bool getXMLRPCCheckAscii();
     bool getUserCheckBlacklist();
+    string getArgusPepProtocol();
     string getArgusPepHostname();
     string getArgusPepAuthzPort();
+    string getArgusPepAuthzService();
     string getCaCertificatesFolder();
 
 private:
@@ -271,9 +281,11 @@ private:
     string hostkeyfile;
     bool xmlrpc_check_ascii;
     bool user_check_blacklist;
+    string argus_pep_authz_protocol;
     string argus_pep_hostname;
     string argus_pep_authz_port;
     string ca_certificates_folder;
+    string argus_pep_authz_service;
 
 };
 

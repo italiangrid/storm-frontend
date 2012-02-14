@@ -61,7 +61,7 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     ptg.cpp ptg.hpp get_status.cpp get_status.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
-    AuthorizationException.hpp \
+    AuthorizationException.hpp cgsi_plugin_int.h gssapi_openssl.h\
     copy.cpp copy.hpp copy_status.cpp copy_status.hpp \
     asynch.cpp asynch_status.cpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \

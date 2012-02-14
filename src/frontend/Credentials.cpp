@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include <cgsi_plugin.h>
 #include "FrontendConfiguration.hpp"
+#include "string.h"
+#include "stdlib.h"
+#include "cgsi_plugin_int.h"
 
 using namespace storm;
 
@@ -61,9 +64,154 @@ Credentials::Credentials(struct soap *soap)
             _fqans_vector.push_back(fqans[i]);
         }
     }
+    struct cgsi_plugin_data *data;
+	data = (struct cgsi_plugin_data*)soap_lookup_plugin(soap, "CGSI_PLUGIN_SERVER_1.0");
+	if (data == NULL) {
+		srmlogit(STORM_LOG_ERROR, funcName, "Credentials: could not get data structure\n");
+		return;
+	}
+	gss_ctx_id_t gss_context = (gss_ctx_id_desc *) data->context_handle;
+	gss_cred_id_t cred = Credentials::get_gss_cred_id(gss_context);
+	X509 * x509= NULL;
+	if ((error= Credentials::gss_cred_extract_cert(cred, &x509)) != 0) {
+		srmlogit(STORM_LOG_ERROR, funcName, "Credentials: gss_cred_extract_cert failure\n");
+		return ;
 
+	}
+	STACK_OF(X509) * chain= NULL;
+	if ((error= Credentials::gss_cred_extract_cert_chain(cred, &chain)) != 0) {
+		srmlogit(STORM_LOG_ERROR, funcName, "Credentials: gss_cred_extract_cert_chain failure\n");
+		return;
+	}
+
+	if ((error= Credentials::x509_convert_to_PEM(x509,chain,&cert_chain)) != 0) {
+		srmlogit(STORM_LOG_ERROR, funcName, "Credentials: x509_convert_to_PEM failure\n");
+		return;
+	}
 #endif
 }
+
+int Credentials::gss_cred_extract_cert(const gss_cred_id_t gss_cred, X509 ** out_cert)
+{
+    // function name for error macros
+    static char * funcName = "gss_cred_extract_cert";
+    int result = 0;
+    /* Internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc */
+    gss_cred_id_desc * cred_desc= NULL;
+    globus_gsi_cred_handle_t gsi_cred;
+
+
+    /* cast to gss_cred_id_desc */
+    if (gss_cred != GSS_C_NO_CREDENTIAL) {
+        cred_desc = (gss_cred_id_desc *) gss_cred;
+        gsi_cred = cred_desc->cred_handle;
+        if ((result= globus_gsi_cred_get_cert(gsi_cred, out_cert)) != 0) {
+        	srmlogit(STORM_LOG_ERROR, funcName, "Can not extract cert from GSI credential");
+        	return result;
+        }
+    }
+    else {
+    	srmlogit(STORM_LOG_ERROR, funcName, "No GSS credential available");
+    	return 1;
+    }
+    return result;
+}
+
+/**
+ * Returns the gss_cred_id handle from the GSS context.
+ */
+gss_cred_id_t Credentials::get_gss_cred_id(const gss_ctx_id_t gss_context)
+{
+	static char * funcName = "get_gss_cred_id";
+    if (gss_context==NULL) {
+    	srmlogit(STORM_LOG_ERROR, funcName, "Credentials: null parameter\n");
+        return NULL;
+    }
+    else {
+        return (gss_cred_id_t)gss_context->peer_cred_handle;
+    }
+}
+
+int Credentials::gss_cred_extract_cert_chain(const gss_cred_id_t gss_cred,STACK_OF(X509) **out_chain)
+{
+    // function name for error macros
+    static char * funcName = "gss_cred_extract_cert_chain";
+    int result= 0;
+
+    // internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc
+    gss_cred_id_desc * cred_desc= NULL;
+    globus_gsi_cred_handle_t gsi_cred;
+
+    /* cast to gss_cred_id_desc */
+    if (gss_cred != GSS_C_NO_CREDENTIAL) {
+		cred_desc = (gss_cred_id_desc *) gss_cred;
+		gsi_cred = cred_desc->cred_handle;
+		if ((result = globus_gsi_cred_get_cert_chain(gsi_cred, out_chain))
+				!= GLOBUS_SUCCESS) {
+			srmlogit(STORM_LOG_ERROR, funcName,
+					"Credentials: globus_gsi_cred_get_cert_chain failure\n");
+		} else {
+			srmlogit(STORM_LOG_INFO, funcName,
+					"Credentials: cert chain obtained\n");
+		}
+	} else {
+		srmlogit(STORM_LOG_ERROR, funcName,
+				"Credentials: no credentials available: GSS_C_NO_CREDENTIAL\n");
+	}
+    return result;
+}
+
+int Credentials::x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain, char ** out_pem)
+{
+    // function name for error macros
+    static char * funcName = "x509_convert_to_PEM";
+    globus_result_t result= GLOBUS_SUCCESS;
+    int i, rc= 0;
+
+    BIO * bio = BIO_new(BIO_s_mem());
+    if (bio==NULL) {
+		srmlogit(STORM_LOG_ERROR, funcName,
+				"Credentials: unable to create the BIO\n");
+        return result;
+    }
+    if ((rc= PEM_write_bio_X509(bio, (X509 *)x509)) != 1) {
+		srmlogit(STORM_LOG_ERROR, funcName,
+				"Credentials: unable to write the PEM on the BIO\n");
+        BIO_free(bio);
+        return result;
+    }
+
+    int chain_l= sk_X509_num(chain);
+    for(i= 0; i<chain_l; i++) {
+        X509 * x509elt= sk_X509_value(chain,i);
+        if (x509elt == NULL) break;
+        if ((rc= PEM_write_bio_X509(bio, x509elt)) != 1) {
+    		srmlogit(STORM_LOG_ERROR, funcName,
+    				"Credentials: unable to write x509 element on the BIO\n");
+            BIO_free(bio);
+            return result;
+        }
+    }
+    // bug fix: BIO_get_mem_data returns effective buffer length!!!!
+    char *buffer= NULL;
+    long buffer_l= 0;
+    if ((buffer_l= BIO_get_mem_data(bio,&buffer)) <= 0) {
+		srmlogit(STORM_LOG_ERROR, funcName,
+				"Credentials: unable to put BIO content in a buffer\n");
+        BIO_free(bio);
+        return result;
+    }
+
+    // bug fix: BIO_get_mem_data returns effective buffer length!!!!
+    *out_pem= strndup(buffer,buffer_l);
+    if (*out_pem==NULL) {
+		srmlogit(STORM_LOG_ERROR, funcName,
+				"Credentials: unable to duplicate the PEM buffer string\n");
+    }
+    BIO_free(bio);
+    return result;
+}
+
 
 sql_string Credentials::getFQANsOneString()
 {
@@ -83,6 +231,7 @@ sql_string Credentials::getFQANsOneString()
 
     return sql_string(returnString);
 };
+
 
 //string Credentials::getFQANsOneString()
 //{
@@ -121,7 +270,7 @@ bool Credentials::canBeSaved()
  * credentials. Returns "true" if the proxy is successfully saved or "false"
  * otherwise.
  **/
-bool Credentials::saveProxy(string requestToken)
+bool Credentials::saveProxy(std::string requestToken)
 {
     static const char* const funcName = "Credentials::saveProxy()";
     bool result = false;

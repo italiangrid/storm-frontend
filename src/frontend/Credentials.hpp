@@ -30,6 +30,14 @@
 // parent
 #include "sql_string.hpp"
 
+#include <globus_common.h>
+#include <gssapi.h>
+#include <globus_gsi_credential.h>
+#include <globus_gss_assist.h>
+#include <globus_gridmap_callout_error.h>
+
+#include "gssapi_openssl.h"
+
 using namespace std;
 
 namespace storm {
@@ -41,6 +49,7 @@ public:
     string getDN() { return _clientDN; }
     std::vector<sql_string> getFQANsVector() { return _fqans_vector; }
     sql_string getFQANsOneString();
+    char* getCertChanin() { return cert_chain; }
     bool saveProxy(string requestToken);
     //bool canBeSaved();
     //char* getProxy();
@@ -53,7 +62,11 @@ private:
     struct soap *_soap;
     string _clientDN;
     std::vector<sql_string> _fqans_vector;
-    
+    char* cert_chain;
+    static int gss_cred_extract_cert_chain(const gss_cred_id_t gss_cred,STACK_OF(X509) **out_chain);
+    static int x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain, char ** out_pem);
+    static gss_cred_id_t get_gss_cred_id(const gss_ctx_id_t gss_context);
+    static int gss_cred_extract_cert(const gss_cred_id_t gss_cred, X509 ** out_cert);
 };
 
 }

@@ -268,6 +268,10 @@ bool FrontendConfiguration::getUserCheckBlacklist() {
     return user_check_blacklist;
 }
 
+string FrontendConfiguration::getArgusPepProtocol()
+{
+   return argus_pep_authz_protocol;
+}
 
 string FrontendConfiguration::getArgusPepHostname() {
     return argus_pep_hostname;
@@ -275,6 +279,11 @@ string FrontendConfiguration::getArgusPepHostname() {
 
 string FrontendConfiguration::getArgusPepAuthzPort() {
     return argus_pep_authz_port;
+}
+
+string FrontendConfiguration::getArgusPepAuthzService()
+{
+   return argus_pep_authz_service;
 }
 
 string FrontendConfiguration::getCaCertificatesFolder() {
@@ -312,8 +321,10 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_ENABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_ENABLE_MAPPING_DESCRIPTION)
             (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION)
             (OPTL_USER_CHECK_BLACKLIST.c_str(), po::value<bool>()->default_value(DEFAULT_USER_CHECK_BLACKLIST), OPT_USER_CHECK_BLACKLIST_DESCRIPTION)
+            (OPTL_ARGUS_PEP_AUTH_PROTOCOL.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_PROTOCOL), OPT_ARGUS_PEP_AUTH_PROTOCOL_DESCRIPTION)
             (OPTL_ARGUS_PEP_HOSTNAME.c_str(), po::value<string>(), OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION)
-            (OPTL_ARGUS_PEP_AUTH_PORT.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_PORT), OPT_ARGUS_PEP_AUTH_POR_DESCRIPTIONT);
+            (OPTL_ARGUS_PEP_AUTH_PORT.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_PORT), OPT_ARGUS_PEP_AUTH_PORT_DESCRIPTION)
+            (OPTL_ARGUS_PEP_AUTH_SERVICE.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_SERVICE), OPT_ARGUS_PEP_AUTH_SERVICE_DESCRIPTION);
 //            (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
 //            (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
 
@@ -400,11 +411,17 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     if (vm.count(OPTL_USER_CHECK_BLACKLIST))
     	user_check_blacklist = vm[OPTL_USER_CHECK_BLACKLIST].as<bool> ();
 
+    if (vm.count(OPTL_ARGUS_PEP_AUTH_PROTOCOL))
+    	argus_pep_authz_protocol = vm[OPTL_ARGUS_PEP_AUTH_PROTOCOL].as<string> ();
+
     if (vm.count(OPTL_ARGUS_PEP_HOSTNAME))
     	argus_pep_hostname = vm[OPTL_ARGUS_PEP_HOSTNAME].as<string> ();
 
     if (vm.count(OPTL_ARGUS_PEP_AUTH_PORT))
     	argus_pep_authz_port = vm[OPTL_ARGUS_PEP_AUTH_PORT].as<string> ();
+
+    if (vm.count(OPTL_ARGUS_PEP_AUTH_SERVICE))
+    	argus_pep_authz_service = vm[OPTL_ARGUS_PEP_AUTH_SERVICE].as<string> ();
 
     log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
     audit_file = vm[OPTL_AUDIT_FILE_NAME].as<string> ();

@@ -21,8 +21,6 @@
 
 // STL includes
 #include <string>
-#include <iostream>
-#include <sstream>
 
 #include "Credentials.hpp"
 #include "AuthorizationException.hpp"
@@ -30,7 +28,9 @@
 #include "srmlogit.h"
 
 namespace storm {
-    
+const std::string DEFAULT_AUTHORIZATION_RESOURCE("StoRM");
+const std::string DEFAULT_AUTHORIZATION_ACTION("access");
+const std::string DEFAULT_AUTHORIZATION_PROFILE("http://glite.org/xacml/profile/grid-wn/1.0");
 class Authorization {
 public:
 	Authorization(Credentials *cred) throw (storm::AuthorizationException) {
@@ -51,11 +51,14 @@ public:
 				throw exc;
 			}
 
-			// debugging options
-			pep_setoption(pep, PEP_OPTION_LOG_STDERR, stderr);
-			pep_setoption(pep, PEP_OPTION_LOG_LEVEL, PEP_LOGLEVEL_INFO);
-
-			std::string pep_url = "https://";
+			std::string argusPepProtocol = FrontendConfiguration::getInstance()->getArgusPepProtocol();
+			if(argusPepProtocol.empty())
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "No protocol for Argus PEP server available in configuration! Unable to build PEP client\n");
+				std::string  errMessage("No protocol for Argus PEP server available in configuration\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
 			std::string argusPepHostname = FrontendConfiguration::getInstance()->getArgusPepHostname();
 			if(argusPepHostname.empty())
 			{
@@ -72,7 +75,16 @@ public:
 				storm::AuthorizationException exc(errMessage);
 				throw exc;
 			}
-			pep_url += argusPepHostname + ":" + argusPepAuthzPort + "/authz";
+			std::string argusPepAuthzService = FrontendConfiguration::getInstance()->getArgusPepAuthzService();
+			if(argusPepAuthzService.empty())
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "No service endpoint for Argus PEP service available in configuration! Unable to build PEP client\n");
+				std::string  errMessage("No service endpoint for Argus PEP service available in configuration\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
+			std::string pep_url = argusPepProtocol + "://" + argusPepHostname + ":" + argusPepAuthzPort + "/" + argusPepAuthzService;
+
 			// configure PEP client: PEP Server endpoint url
 			pep_error_t pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_URL, pep_url.c_str());
 			if (pep_rc != PEP_OK) {
@@ -84,6 +96,13 @@ public:
 			// configure PEP client: private key and certificate required to access the PEP Server
 			// endpoint (HTTPS with client authentication)
 			std::string hostKey = FrontendConfiguration::getInstance()->getHostKeyFile();
+			if(hostKey.empty())
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "No hostkey file path available in configuration! Unable to build PEP client\n");
+				std::string  errMessage("No hostkey file path available in configuration\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
 			pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_CLIENT_KEY, hostKey.c_str());
 			if (pep_rc != PEP_OK) {
 				srmlogit(STORM_LOG_ERROR, funcName, "Failed to set client key: %s: %s\n", hostKey.c_str(), pep_strerror(pep_rc));
@@ -92,6 +111,13 @@ public:
 				throw exc;
 			}
 			std::string hostCert = FrontendConfiguration::getInstance()->getHostCertFile();
+			if(hostCert.empty())
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "No hostcert file path available in configuration! Unable to build PEP client\n");
+				std::string  errMessage("No hostcert file path available in configuration\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
 			pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_CLIENT_CERT, hostCert.c_str());
 			if (pep_rc != PEP_OK) {
 				srmlogit(STORM_LOG_ERROR, funcName, "Failed to set client cert: %s: %s\n", hostCert.c_str(), pep_strerror(pep_rc));
@@ -100,11 +126,35 @@ public:
 				throw exc;
 			}
 			std::string caCertFolder = FrontendConfiguration::getInstance()->getCaCertificatesFolder();
+			if(caCertFolder.empty())
+			{
+				srmlogit(STORM_LOG_ERROR, funcName, "No CA folder path available in configuration! Unable to build PEP client\n");
+				std::string  errMessage("No CA folder path available in configuration\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
 			// server certificate CA path for validation
 			pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_SERVER_CAPATH, caCertFolder.c_str());
 			if (pep_rc != PEP_OK) {
 				srmlogit(STORM_LOG_ERROR, funcName, "Failed to set server CA path: %s: %s\n", caCertFolder.c_str(), pep_strerror(pep_rc));
 				std::string  errMessage("Failed to set server CA path\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
+			// debugging options
+			pep_rc = pep_setoption(pep, PEP_OPTION_LOG_STDERR, stderr);
+			if (pep_rc != PEP_OK) {
+				srmlogit(STORM_LOG_ERROR, funcName,
+						"Failed to set log file: %s\n", pep_strerror(pep_rc));
+				std::string errMessage("Failed to set log file\n");
+				storm::AuthorizationException exc(errMessage);
+				throw exc;
+			}
+			pep_rc = pep_setoption(pep, PEP_OPTION_LOG_LEVEL, PEP_LOGLEVEL_WARN);
+			if (pep_rc != PEP_OK) {
+				srmlogit(STORM_LOG_ERROR, funcName,
+						"Failed to set log level: %s\n", pep_strerror(pep_rc));
+				std::string errMessage("Failed to set log level\n");
 				storm::AuthorizationException exc(errMessage);
 				throw exc;
 			}
@@ -135,14 +185,19 @@ private:
     Credentials * credentials;
     PEP * pep;
     bool blacklistRequested;
-    int create_xacml_request(xacml_request_t ** request,const char * subjectid, const char * resourceid, const char * actionid);
+
+    xacml_request_t* create_xacml_request(const char * subjectid, const char * resourceid, const char * actionid) throw (storm::AuthorizationException);
+    xacml_subject_t * create_xacml_subject(const char * subject_id) throw (storm::AuthorizationException);
+    xacml_resource_t* create_xacml_resource(const char * resourceid) throw (storm::AuthorizationException);
+    xacml_action_t * create_xacml_action(const char * actionid) throw (storm::AuthorizationException);
+    xacml_environment_t* create_xacml_environment_profile(const char * profileid) throw (storm::AuthorizationException);
+    xacml_request_t * assemble_xacml_request(xacml_subject_t * subject, xacml_resource_t * resource, xacml_action_t * action, xacml_environment_t * environment) throw (storm::AuthorizationException);
     xacml_decision_t process_xacml_response(const xacml_response_t * response) throw (storm::AuthorizationException);
+    bool evaluateResponse(xacml_decision_t* decision);
     char * fulfillon_tostring(xacml_fulfillon_t fulfillon) ;
     const char * decision_tostring(xacml_decision_t decision) ;
     void printXamlObligation(xacml_obligation_t * obligation);
     void printXamlResult(xacml_result_t * result);
-    static const std::string DEFAULT_RESOURCE;
-    static const std::string DEFAULT_ACTION;
 };
 
 }

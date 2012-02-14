@@ -25,6 +25,13 @@ db.host = localhost
 db.user = storm
 db.passwd = password
 
+# Argus Blacklisting
+#check.user.blacklisting = false # default is false
+#argus-pep.protocol = https # default is https
+#argus-pep.hostname =
+#argus-pep.port = 8154 # default is 8154
+#argus-pep.service = authz # default is authz
+
 # WSDL to be returned to a GET request
 wsdl.file = @datadir@/wsdl/srm.v2.2.wsdl
 

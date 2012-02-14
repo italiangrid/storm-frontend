@@ -9,17 +9,23 @@ namespace storm {
 class AuthorizationException: public std::exception
 {
 public:
-	AuthorizationException(std::string text) {
+	AuthorizationException(std::string* text) {
 		message = text;
 	};
 
-	~AuthorizationException() throw () {};
+	AuthorizationException(std::string text) {
+		message = &text;
+	};
+
+	~AuthorizationException() throw () {
+		delete message;
+	};
 
 	const char* what() const throw () {
-		return message.c_str();
+		return (*message).c_str();
 	}
 private:
-	std::string message;
+	std::string* message;
 };
 
 }

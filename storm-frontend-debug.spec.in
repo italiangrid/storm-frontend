@@ -52,6 +52,12 @@ BuildRequires: curl-devel
 BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
 BuildRequires: globus-gss-assist-devel
+BuildRequires: globus-common-devel
+BuildRequires: globus-gridmap-callout-error-devel
+BuildRequires: globus-gsi-credential-devel
+BuildRequires: globus-gssapi-gsi-devel
+BuildRequires: globus-gss-assist-devel
+BuildRequires: krb5-devel
 BuildRequires: gsoap-devel
 BuildRequires: CGSI-gSOAP-devel
 BuildRequires: voms
