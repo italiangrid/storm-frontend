@@ -282,8 +282,8 @@ public:
 
     virtual void load(soap_in_t *req) = 0;
     virtual bool supportsProtocolSpecification() = 0;
-    virtual vector<sql_string>* getRequestedProtocols() = 0;
-    virtual void setProtocolVector(vector<sql_string>* protocolVector) = 0;
+    virtual std::vector<sql_string>* getRequestedProtocols() = 0;
+    virtual void setProtocolVector(std::vector<sql_string>* protocolVector) = 0;
 
     /*
      * Set the status code at SURL level to SRM_FAILURE to all requested SURLs

@@ -30,12 +30,12 @@ bool bol::supportsProtocolSpecification()
 	return true;
 }
 
-vector<sql_string>* bol::getRequestedProtocols()
+std::vector<sql_string>* bol::getRequestedProtocols()
 {
 	return &(this->_protocols);
 }
 
-void bol::setProtocolVector(vector<sql_string>* protocolVector)
+void bol::setProtocolVector(std::vector<sql_string>* protocolVector)
 {
 	this->_protocols = *protocolVector;
 }

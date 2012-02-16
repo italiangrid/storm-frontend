@@ -30,12 +30,12 @@ bool copy::supportsProtocolSpecification()
 	return false;
 }
 
-vector<sql_string>* copy::getRequestedProtocols()
+std::vector<sql_string>* copy::getRequestedProtocols()
 {
 	return NULL;
 }
 
-void copy::setProtocolVector(vector<sql_string>* protocolVector)
+void copy::setProtocolVector(std::vector<sql_string>* protocolVector)
 {
 	//nothing to do form Copy, no protocol list in the request
 }

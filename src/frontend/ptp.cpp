@@ -31,12 +31,12 @@ bool ptp::supportsProtocolSpecification()
 	return true;
 }
 
-vector<sql_string>* ptp::getRequestedProtocols()
+std::vector<sql_string>* ptp::getRequestedProtocols()
 {
 	return &(this->_protocols);
 }
 
-void ptp::setProtocolVector(vector<sql_string>* protocolVector)
+void ptp::setProtocolVector(std::vector<sql_string>* protocolVector)
 {
 	this->_protocols = *protocolVector;
 }

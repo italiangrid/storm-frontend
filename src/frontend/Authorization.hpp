@@ -33,7 +33,7 @@ const std::string DEFAULT_AUTHORIZATION_ACTION("access");
 const std::string DEFAULT_AUTHORIZATION_PROFILE("http://glite.org/xacml/profile/grid-wn/1.0");
 class Authorization {
 public:
-	Authorization(Credentials *cred) throw (storm::AuthorizationException) {
+	Authorization(Credentials *cred) throw (AuthorizationException) {
 		char* funcName = "Authorization";
 		credentials = cred;
 

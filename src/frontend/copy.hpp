@@ -45,12 +45,12 @@ public:
     /*
      * Returns the array of requested preferred transfer protocols
      * */
-    vector<sql_string>* getRequestedProtocols();
+    std::vector<sql_string>* getRequestedProtocols();
     
     /*
      * Sets the array of requested preferred transfer protocols to the provided one
      * */
-	void setProtocolVector(vector<sql_string>* protocolVector);
+	void setProtocolVector(std::vector<sql_string>* protocolVector);
 
 	/*
 	* Set the status code at SURL level to SRM_FAILURE to all requested SURLs
