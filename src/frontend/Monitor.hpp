@@ -22,6 +22,8 @@
 
 #include "srmlogit.h"
 
+#include <math.h>
+
 namespace storm {
 
 const std::string SRM_ABORT_FILES_MONITOR_NAME("srm_abort_files_monitor");
@@ -66,98 +68,407 @@ const std::string SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME("srm_status_of
 
 class Monitor {
 	public:
-		Monitor(std::string name) : name(name)
+		enum OperationType
 		{
-			this->reset();
+			Synchronous = 0,
+			Asynchronous = 1
+		};
+
+		static std::string nameOfOperationType(OperationType type)
+		{
+			std::string name;
+			switch (type)
+			{
+				case Synchronous:
+					name = std::string("S");
+					break;
+				case Asynchronous:
+					name = std::string("A");
+					break;
+				default:
+					name = std::string("Unknown");
+					break;
+			}
+			return name;
+		}
+
+		Monitor(std::string name, OperationType type) : name(name) , type(type)
+		{
+			this->current_status.reset();
+			this->aggregated_status.reset();
 		};
 
 		~Monitor() {};
 
-		std::string getName()
+		const std::string getName()
 		{
 			return this->name;
 		}
 
+		const OperationType getType()
+		{
+			return this->type;
+		}
+
 		int getCompleted()
 		{
-			return this->completed;
+			return this->aggregated_status.completed;
 		}
 
 		int getFailed()
 		{
-			return this->failures;
+			return this->aggregated_status.failures;
 		}
 
 		int getErrors()
 		{
-			return this->errors;
+			return this->aggregated_status.errors;
 		}
 
-		float getAverageExecTime()
+		float getMaxTime()
 		{
-			return this->average_exec_time;
+			return this->aggregated_status.max_exec_time;
 		}
 
-		void reset()
+		float getMinTime()
 		{
-			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->completed = 0;
-			this->failures = 0;
-			this->errors = 0;
-			this->average_exec_time = -1;
+			return this->aggregated_status.min_exec_time;
+		}
+
+		int getCompletedRound()
+		{
+			return this->current_status.completed;
+		}
+
+		int getFailedRound()
+		{
+			return this->current_status.failures;
+		}
+
+		int getErrorsRound()
+		{
+			return this->current_status.errors;
+		}
+
+		float getMaxTimeRound()
+		{
+			return this->current_status.max_exec_time;
+		}
+
+		float getMinTimeRound()
+		{
+			return this->current_status.min_exec_time;
 		}
 
 		void registerSuccess(long executionTimeInMills)
 		{
 			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->average_exec_time = this->computeAverageExecTime(executionTimeInMills);
-			this->completed++;
+			this->updateTotalTime((float) executionTimeInMills / 1000);
+			this->updateTimeLimits((float) executionTimeInMills / 1000);
+			this->current_status.completed++;
 		}
 
 		void registerFailure(long executionTimeInMills)
 		{
 			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->average_exec_time = this->computeAverageExecTime(executionTimeInMills);
-			this->completed++;
-			this->failures++;
+			this->updateTotalTime((float) executionTimeInMills / 1000);
+			this->updateTimeLimits((float) executionTimeInMills / 1000);
+			this->current_status.completed++;
+			this->current_status.failures++;
 		}
 
 		void registerError(long executionTimeInMills)
 		{
 			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->average_exec_time = this->computeAverageExecTime(executionTimeInMills);
-			this->completed++;
-			this->errors++;
-		}
-
-		float computeAverageExecTime(long executionTimeInMills)
-		{
-			if(! this->isClean()){
-				float totalAccountedTimeInSeconds = this->getAverageExecTime() * this->completed;
-				float totalUpdatedTimeInSeconds = totalAccountedTimeInSeconds + ((float) executionTimeInMills / 1000.0);
-				return (totalUpdatedTimeInSeconds / (this->completed + 1));
-			} else {
-				return ((float) executionTimeInMills / 1000.0);
-			}
+			this->updateTotalTime((float) executionTimeInMills / 1000);
+			this->updateTimeLimits((float) executionTimeInMills / 1000);
+			this->current_status.completed++;
+			this->current_status.errors++;
 		}
 
 		bool isEmpty()
 		{
-			return (completed == 0);
+			return this->current_status.isClean() && this->aggregated_status.isClean();
+		}
+
+		bool isUpdated()
+		{
+			return !this->current_status.isClean();
+		}
+
+		float computeExecTimeStandardDeviation()
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			return computeStandardDeviation(this->aggregated_status.completed , this->aggregated_status.total_exec_time, this->aggregated_status.total_square_exec_time);
+		}
+
+		float computeExecTimeStandardDeviationRound()
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			return computeStandardDeviation(this->current_status.completed , this->current_status.total_exec_time, this->current_status.total_square_exec_time);
+		}
+
+		float computeAverageExecTime()
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			return computeAverage(this->aggregated_status.completed, this->aggregated_status.total_exec_time);
+		}
+
+		float computeAverageExecTimeRound()
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			return computeAverage(this->current_status.completed, this->current_status.total_exec_time);
+		}
+
+		void digestRound()
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			this->print();
+			this->aggregated_status.mergeIn(this->current_status);
+			this->current_status.reset();
+			this->print();
+		}
+
+		void print()
+		{
+			char* _funcName = "print";
+			srmlogit(
+				STORM_LOG_DEBUG,
+				_funcName,
+				"Name %s | Type %s | Current Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f | Aggregated Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f\n",
+				this->name.c_str(), nameOfOperationType(this->type).c_str(),
+				this->current_status.completed, this->current_status.failures,
+				this->current_status.errors,
+				this->current_status.total_exec_time,
+				this->current_status.total_square_exec_time,
+				this->current_status.min_exec_time,
+				this->current_status.max_exec_time,
+				this->aggregated_status.completed, this->aggregated_status.failures,
+				this->aggregated_status.errors,
+				this->aggregated_status.total_exec_time,
+				this->aggregated_status.total_square_exec_time,
+				this->aggregated_status.min_exec_time,
+				this->aggregated_status.max_exec_time);
 		}
 
 	private:
-		std::string name;
+		const std::string name;
+		const OperationType type;
 		boost::recursive_mutex mutex;
+
+		class Status{
+		public:
+
+			boost::recursive_mutex mutex;
+			volatile int completed;
+			volatile int failures;
+			volatile int errors;
+			volatile float total_exec_time;
+			volatile float total_square_exec_time;
+			volatile float min_exec_time;
+			volatile float max_exec_time;
+
+			void reset()
+			{
+				boost::lock_guard<boost::recursive_mutex> lock(this->mutex);
+				this->completed = 0;
+				this->failures = 0;
+				this->errors = 0;
+				this->total_exec_time = 0;
+				this->total_square_exec_time = 0;
+				this->max_exec_time = 0;
+				this->min_exec_time = 0;
+			}
+
+			bool isClean()
+			{
+				return(this->completed == 0);
+			}
+
+			void mergeIn(Status &other)
+			{
+				boost::lock_guard<boost::recursive_mutex> lock(this->mutex);
+				this->checkUpdateMinTime(other.min_exec_time);
+				this->checkUpdateMaxTime(other.max_exec_time);
+				this->completed += other.completed;
+				this->failures += other.failures;
+				this->errors += other.errors;
+				this->total_exec_time += other.total_exec_time;
+				this->total_square_exec_time += other.total_square_exec_time;
+			}
+
+			void checkUpdateMinTime(float min_exec_time_candidate)
+			{
+				boost::lock_guard<boost::recursive_mutex> lock(this->mutex);
+				if(this->isClean() || min_exec_time_candidate < this->min_exec_time)
+				{
+					this->min_exec_time = min_exec_time_candidate;
+				}
+			}
+
+			void checkUpdateMaxTime(float max_exec_time_candidate)
+			{
+				boost::lock_guard<boost::recursive_mutex> lock(this->mutex);
+				if(this->isClean() || max_exec_time_candidate > this->max_exec_time)
+				{
+					this->max_exec_time = max_exec_time_candidate;
+				}
+			}
+
+			void updateTotalExecTime(float timeInSecs)
+			{
+				boost::lock_guard<boost::recursive_mutex> lock(this->mutex);
+				this->total_exec_time+=timeInSecs;
+			}
+
+			void updateTotalSquareExecTime(float timeInSecs)
+			{
+				boost::lock_guard<boost::recursive_mutex> lock(this->mutex);
+				this->total_square_exec_time+=pow(timeInSecs, 2);
+			}
+
+		};
+
+		Status current_status;
+		Status aggregated_status;
+		/*
 		volatile int completed;
 		volatile int failures;
 		volatile int errors;
-		volatile float average_exec_time;
+		volatile float total_exec_time;
+		volatile float total_square_exec_time;
+		volatile float max_exec_time;
+		volatile float min_exec_time;
 
-		bool isClean()
+
+		volatile int completed_round;
+		volatile int failures_round;
+		volatile int errors_round;
+		volatile float total_exec_time_round;
+		volatile float total_square_exec_time_round;
+		volatile float max_exec_time_round;
+		volatile float min_exec_time_round;
+*/
+	/*	void reset()
 		{
-			return(average_exec_time < 0);
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			this->completed_round = 0;
+			this->failures_round = 0;
+			this->errors_round = 0;
+			this->total_exec_time_round = 0;
+			this->total_square_exec_time_round = 0;
+			this->max_exec_time_round = 0;
+			this->min_exec_time_round = 0;
 		}
+*/
+		void updateTotalTime(float timeInSecs)
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			this->current_status.updateTotalExecTime(timeInSecs); //total_exec_time = this->computeTotalExecTime(timeInSecs);
+			this->current_status.updateTotalSquareExecTime(timeInSecs); //this->total_square_exec_time_round = this->computeTotalSquareExecTime(executionTimeInMills);
+		}
+
+		void updateTimeLimits(float timeInSec)
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			this->current_status.checkUpdateMaxTime(timeInSec);
+			this->current_status.checkUpdateMinTime(timeInSec);
+			/*if(! this->isClean()){
+				if(executionTimeInSec > this->max_exec_time_round)
+				{
+					this->max_exec_time_round = executionTimeInSec;
+				}
+				else
+				{
+					if(executionTimeInSec < this->min_exec_time_round)
+					{
+						this->min_exec_time_round = executionTimeInSec;
+					}
+				}
+			} else {
+				this->max_exec_time_round = executionTimeInSec;
+				this->min_exec_time_round = executionTimeInSec;
+			}*/
+		}
+
+		/*void digestRoundTimeLimits(long min_exec_time_candidate, long max_exec_time_candidate)
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			if(! this->isEmpty()){
+				if(max_exec_time_candidate > this->max_exec_time_round)
+				{
+					this->max_exec_time_round = max_exec_time_candidate;
+				}
+				else
+				{
+					if(min_exec_time_candidate < this->min_exec_time_round)
+					{
+						this->min_exec_time_round = min_exec_time_candidate;
+					}
+				}
+			} else {
+				this->max_exec_time = max_exec_time_candidate;
+				this->min_exec_time = min_exec_time_candidate;
+			}
+		}*/
+
+		/*
+		float computeTotalExecTime(long timeInSecs)
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			if(! this->isClean()){
+				return (this->total_exec_time_round + ((float) executionTimeInMills / 1000.0));
+			} else {
+				return ((float) timeInSecs);
+			}
+		}*/
+
+		/*float computeTotalSquareExecTime(long executionTimeInMills)
+		{
+			boost::lock_guard<boost::recursive_mutex> lock(mutex);
+			if(! this->isClean()){
+				return (this->total_square_exec_time_round + pow(((float) executionTimeInMills / 1000.0) , 2));
+			} else {
+				return pow(((float) executionTimeInMills / 1000.0) , 2);
+			}
+		}*/
+
+		static float computeStandardDeviation(int count, float total, float total_square)
+		{
+			char* _funcName = "computeStandardDeviation";
+			srmlogit(STORM_LOG_DEBUG, _funcName,
+				"Computing standard deviation. completed operations = %u, total time = %f total squares time = %f\n",
+				count, total, total_square);
+			if(count == 0 || count == 1)
+			{
+				return 0;
+			}
+			float reverseCount = ((float)1) / count;
+			float countTimesSquareSum = (float) (count * total_square);
+			float sumSquare = (float) pow(total ,2);
+			if(countTimesSquareSum - sumSquare <= 0)
+			{
+				return 0;
+			}
+			float sqrtSquareSumsDiff = (float) sqrt(countTimesSquareSum - sumSquare);
+			return reverseCount * sqrtSquareSumsDiff;
+		}
+
+		static float computeAverage(int count, float total)
+		{
+			char* _funcName = "computeAverage";
+			if(count == 0)
+			{
+				return 0;
+			}
+			return total / count;
+		}
+
+
+		/*bool isClean()
+		{
+			return(total_exec_time_round == 0);
+		}*/
 	};
 }
 #endif /* MONITOR_HPP_ */

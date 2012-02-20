@@ -53,6 +53,7 @@ static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
 static const int DEFAULT_AUDIT_TIME_INTERVAL = 60;
+static const bool DEFAULT_AUDIT_DETAILED = false;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
 static const string DEFAULT_ARGUS_PEP_AUTH_PROTOCOL = "https";
@@ -96,6 +97,9 @@ static const string OPTL_ENABLE_VOMSCHECK = "security.enable.vomscheck";
 static const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
 static const string OPTL_AUDIT_ENABLED = "audit.enabled";
+
+static const string OPTL_AUDIT_DETAILED = "audit.detailed";
+static const char* OPT_AUDIT_DETAILED_DESCRIPTION = "Enable detailed audit for each operation";
 
 static const string OPTL_AUDIT_FILE_NAME = "audit.filename";
 static const char* OPT_AUDIT_FILE_NAME_DESCRIPTION = "Use <arg> as audit file";
@@ -193,6 +197,7 @@ public:
     //bool mappingDisabled();
     bool mappingEnabled();
     bool getAuditEnabled();
+    bool getAuditDetailed();
     //bool vomsCheckDisabled();
     bool vomsCheckEnabled();
     int getDebugLevel();
@@ -254,6 +259,7 @@ private:
     bool enableMapping;
     bool enableVOMSCheck;
     bool auditEnabled;
+    bool auditDetailed;
     int numberOfThreads;
     int threadpool_max_pending;
     unsigned int threadpool_max_pending_sleeptime;

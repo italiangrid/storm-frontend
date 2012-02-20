@@ -202,6 +202,7 @@ int main(int argc, char** argv) {
     int port = configuration->getPort();
     int audit_time_interval = configuration->getAuditTimeInterval();
     bool audit_enabled = configuration->getAuditEnabled();
+    bool audit_detailed = configuration->getAuditDetailed();
     string log_file = configuration->getLogFile();
     string audit_file = configuration->getAuditFile();
     string wsdl_file_path = configuration->getWSDLFilePath();
@@ -433,6 +434,7 @@ int main(int argc, char** argv) {
 		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfUpdateSpaceRequest());
 		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildSuspendRequest());
 		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildUpdateSpace());
+		monitoring->setDetailed(audit_detailed);
 		monitoring->start();
     }
     // SIGINT (kill -2) to stop the frontend

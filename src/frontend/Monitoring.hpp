@@ -19,6 +19,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/bind.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 #include <string>
 #include <iostream>
@@ -39,45 +40,189 @@ private:
     static Monitoring* instance;
     const char* _funcName;
     volatile int _sleep_interval;
+    volatile int _round;
     volatile bool _running;
+    volatile bool detailed;
     boost::thread _monitoring_thread;
-    const char* _template_msg;
+    const char* _details_template_msg;
+    const char* _summary_header_template_msg;
+    const char* _summary_template_msg;
+    boost::posix_time::ptime start_time;
 
     std::vector<Monitor*> monitor_vector;
     boost::recursive_mutex _mutex;
 
+    class Summary{
+    public:
+    	std::string name;
+		int completed;
+		int failed;
+		int errors;
+		float maxTime;
+		float minTime;
+
+		void reset()
+		{
+			this->completed = 0;
+			this->failed = 0;
+			this->errors = 0;
+			this->maxTime = 0;
+			this->minTime = 0;
+		}
+
+		int getSuccess()
+		{
+			return (this->completed - (this->failed + this->errors));
+		}
+    };
+
     static void thread_function(Monitoring* m);
 
     Monitoring(int sleep_interval) : _sleep_interval(sleep_interval){
-
+    	start_time = boost::posix_time::microsec_clock::local_time();
+    	_round = 0;
     	_running = false;
+    	detailed = false;
     	_funcName = "Monitoring";
-    	_template_msg = "%s: completed=%u failed=%u errors=%u average dur.=%f\n";
+    	_details_template_msg = "[%s] [OK:%6u F:%6u E:%6u,Avg:%6.3f,Std Dev:%6.3f,M:%6.3f m:%6.3f]\n";
+    	_summary_template_msg = "[#%6u lifetime=%6.3f] %s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f] %s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f] Last:(%s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f] %s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f])\n";
     }
 
     void printSummary() {
-    	boost::lock_guard<boost::recursive_mutex> _lock(_mutex);
-		for (std::vector<Monitor *>::iterator it = this->monitor_vector.begin(); it
-						!= this->monitor_vector.end(); ++it)
+		boost::lock_guard<boost::recursive_mutex> _lock(_mutex);
+		Summary round_synch_summary = buildRoundSummary(Monitor::Synchronous);
+		Summary round_asynch_summary = buildRoundSummary(Monitor::Asynchronous);
+		this->endRound();
+		Summary synch_summary = buildSummary(Monitor::Synchronous);
+		Summary asynch_summary = buildSummary(Monitor::Asynchronous);
+		srmAudit(this->_summary_template_msg, this->_round,this->computeUpTime(),
+				synch_summary.name.c_str(), synch_summary.getSuccess(), synch_summary.failed, synch_summary.errors, synch_summary.maxTime, synch_summary.minTime,
+				asynch_summary.name.c_str(), asynch_summary.getSuccess(), asynch_summary.failed, asynch_summary.errors, asynch_summary.maxTime, asynch_summary.minTime,
+				round_synch_summary.name.c_str(), round_synch_summary.getSuccess(), round_synch_summary.failed, round_synch_summary.errors, round_synch_summary.maxTime, round_synch_summary.minTime,
+				round_asynch_summary.name.c_str(), round_asynch_summary.getSuccess(), round_asynch_summary.failed, round_asynch_summary.errors, round_asynch_summary.maxTime, round_asynch_summary.minTime);
+    	}
+
+    Summary buildRoundSummary(Monitor::OperationType type)
+    {
+    	Summary new_summary;
+    	new_summary.reset();
+    	new_summary.name = Monitor::nameOfOperationType(type);
+    	for (std::vector<Monitor *>::iterator it = this->monitor_vector.begin(); it
+    	    						!= this->monitor_vector.end(); ++it)
 		{
-			if(! ((Monitor*)*it)->isEmpty())
+			if(((Monitor*)*it)->isUpdated() && ((Monitor*)*it)->getType() == type)
 			{
-				srmlogit(STORM_AUDIT, _funcName, _template_msg,
-						((Monitor*)*it)->getName().c_str(), ((Monitor*)*it)->getCompleted(),
-						((Monitor*)*it)->getFailed(), ((Monitor*)*it)->getErrors(),
-						((Monitor*)*it)->getAverageExecTime());
+				new_summary.completed += ((Monitor*)*it)->getCompletedRound();
+				new_summary.failed += ((Monitor*)*it)->getFailedRound();
+				new_summary.errors += ((Monitor*)*it)->getErrorsRound();
+				if(new_summary.minTime == 0 || ((Monitor*)*it)->getMinTimeRound() < new_summary.minTime)
+				{
+					new_summary.minTime = ((Monitor*)*it)->getMinTimeRound();
+				}
+				if(new_summary.maxTime == 0 || ((Monitor*)*it)->getMaxTimeRound() > new_summary.maxTime)
+				{
+					new_summary.maxTime = ((Monitor*)*it)->getMaxTimeRound();
+				}
+			}
+		}
+    	return new_summary;
+    }
+
+    Summary buildSummary(Monitor::OperationType type)
+    {
+    	Summary new_summary;
+    	new_summary.reset();
+    	new_summary.name = Monitor::nameOfOperationType(type);
+    	for (std::vector<Monitor *>::iterator it = this->monitor_vector.begin(); it
+    	    						!= this->monitor_vector.end(); ++it)
+		{
+			if(!((Monitor*)*it)->isEmpty() && ((Monitor*)*it)->getType() == type)
+			{
+				new_summary.completed += ((Monitor*)*it)->getCompleted();
+				new_summary.failed += ((Monitor*)*it)->getFailed();
+				new_summary.errors += ((Monitor*)*it)->getErrors();
+				if(new_summary.minTime == 0 || ((Monitor*)*it)->getMinTime() < new_summary.minTime)
+				{
+					new_summary.minTime = ((Monitor*)*it)->getMinTime();
+				}
+				if(new_summary.maxTime == 0 || ((Monitor*)*it)->getMaxTime() > new_summary.maxTime)
+				{
+					new_summary.maxTime = ((Monitor*)*it)->getMaxTime();
+				}
+			}
+		}
+    	return new_summary;
+    }
+
+    void printDetails() {
+		boost::lock_guard<boost::recursive_mutex> _lock(_mutex);
+		bool first = true;
+		for (std::vector<Monitor *>::iterator it = this->monitor_vector.begin();
+				it != this->monitor_vector.end(); ++it)
+		{
+			if (!((Monitor*) *it)->isEmpty())
+			{
+				if(first)
+				{
+					srmAudit("Details:\n");
+					first = false;
+				}
+				srmAudit(this->_details_template_msg,
+						((Monitor*) *it)->getName().c_str(),
+						((Monitor*) *it)->getCompleted(),
+						((Monitor*) *it)->getFailed(),
+						((Monitor*) *it)->getErrors(),
+						((Monitor*) *it)->computeAverageExecTime(),
+						((Monitor*) *it)->computeExecTimeStandardDeviation(),
+						((Monitor*) *it)->getMaxTime(),
+						((Monitor*) *it)->getMinTime());
 			}
 		}
 	}
 
-    void resetMonitors() {
-    	boost::lock_guard<boost::recursive_mutex> _lock(_mutex);
+    void printRoundDetails() {
+   		boost::lock_guard<boost::recursive_mutex> _lock(_mutex);
+   		bool first = true;
+   		for (std::vector<Monitor *>::iterator it = this->monitor_vector.begin();
+   				it != this->monitor_vector.end(); ++it)
+   		{
+   			if (((Monitor*) *it)->isUpdated())
+   			{
+   				if(first)
+				{
+   					srmAudit("Last round details:\n");
+					first = false;
+				}
+   				srmAudit(this->_details_template_msg,
+   						((Monitor*) *it)->getName().c_str(),
+   						((Monitor*) *it)->getCompletedRound(),
+   						((Monitor*) *it)->getFailedRound(),
+   						((Monitor*) *it)->getErrorsRound(),
+   						((Monitor*) *it)->computeAverageExecTimeRound(),
+   						((Monitor*) *it)->computeExecTimeStandardDeviationRound(),
+						((Monitor*) *it)->getMaxTimeRound(),
+						((Monitor*) *it)->getMinTimeRound());
+   			}
+   		}
+   	}
+
+    void endRound()
+    {
     	for (std::vector<Monitor *>::iterator it = this->monitor_vector.begin(); it
-						!= this->monitor_vector.end(); ++it)
+    	   						!= this->monitor_vector.end(); ++it)
 		{
-				((Monitor*)*it)->reset();
+			if(((Monitor*)*it)->isUpdated())
+			{
+				((Monitor*)*it)->digestRound();
+			}
 		}
-	}
+    }
+
+    float computeUpTime()
+    {
+		boost::posix_time::time_duration upTime = (boost::posix_time::microsec_clock::local_time() - this->start_time);
+    	return ((float) upTime.total_milliseconds() / 1000);
+    }
 
 public:
     ~Monitoring() {
@@ -102,6 +247,10 @@ public:
 		_sleep_interval = timeInterval;
 	}
 
+    void setDetailed(bool detailed) {
+		this->detailed = detailed;
+	}
+
     void start()
     {
     	boost::lock_guard<boost::recursive_mutex> _lock(_mutex);
@@ -112,6 +261,10 @@ public:
     	}
     }
 
+    void newRound()
+    {
+    	_round++;
+    }
     void addMonitor(Monitor* monitor)
     {
     	boost::lock_guard<boost::recursive_mutex> _lock(_mutex);

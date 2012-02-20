@@ -13,30 +13,12 @@
  * limitations under the License.
 */
 
-#ifndef SRMLOGIT_H
-#define SRMLOGIT_H
+#ifndef MONITOR_HELPER_CPP_
+#define MONITOR_HELPER_CPP_
 
-#define STORM_LOG_NONE  0
-#define STORM_LOG_ERROR 1
-#define STORM_LOG_WARNING 2
-#define STORM_LOG_INFO 3
-#define STORM_LOG_DEBUG 4
-#define STORM_LOG_DEBUG2 5
+#include "MonitorHelper.hpp"
 
-#define STORM_AUDIT -1
+std::map< std::string, std::map < int , bool > * > storm::MonitorHelper::status_code_map;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int srmlogit_set_debuglevel(int level);
-int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled);
-int srmlogit(int level,const char *func, const char *msg, ...);
-int srmAudit(const char *msg, ...) ;
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif /* MONITOR_HELPER_CPP_ */
 

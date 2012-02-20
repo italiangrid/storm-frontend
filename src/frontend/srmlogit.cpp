@@ -176,3 +176,60 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     return 0;
 }
 
+int srmAudit(const char *msg, ...) {
+    va_list args;
+    char prtbuf[LOGBUFSZ];
+    int save_errno;
+    int prefix_msg_len;
+    signed int max_char_to_write;
+    int desired_buf_len = 0;
+    struct tm *tm;
+#if defined(_REENTRANT) || defined(_THREAD_SAFE)
+    struct tm tmstruc;
+#endif
+	if (!_auditEnabled) {
+		return 0;
+	}
+    time_t current_time;
+
+    save_errno = errno;
+    va_start(args, msg);
+    (void) time(&current_time); /* Get current time */
+#if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
+    (void) localtime_r(&current_time, &tmstruc);
+    tm = &tmstruc;
+#else
+    tm = localtime(&current_time);
+#endif
+
+    prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d : ", tm->tm_mon + 1, tm->tm_mday,
+            tm->tm_hour, tm->tm_min, tm->tm_sec);
+
+    max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
+    if(max_char_to_write > 0)
+    {
+    	desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
+    }
+    else
+    {
+    	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+    }
+
+    prtbuf[LOGBUFSZ-1] = '\0';
+    va_end(args);
+
+    // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
+    if (desired_buf_len >= max_char_to_write) {
+        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+    }
+
+    boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(audit_mutex);
+
+    fwrite(prtbuf, sizeof(char), strlen(prtbuf), audit_fd);
+    fflush(audit_fd);
+
+    lock.unlock();
+
+    errno = save_errno;
+    return 0;
+}

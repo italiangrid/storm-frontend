@@ -22,15 +22,25 @@ storm::Monitoring* storm::Monitoring::instance = NULL;
 void storm::Monitoring::thread_function(Monitoring* m) {
     try {
         for (;;) {
-
+        	m->newRound();
             boost::this_thread::sleep(boost::posix_time::seconds(m->_sleep_interval));
 
             if (!m->_running) {
                 break;
             }
 
+            //print by round
+            if (m->detailed) {
+            	m->printRoundDetails();
+            }
+
+
+			//print all history
 			m->printSummary();
-			m->resetMonitors();
+			if (m->detailed) {
+				m->printDetails();
+			}
+
         }
     } catch (boost::thread_interrupted &e) {
     	srmlogit(STORM_LOG_ERROR, m->_funcName, "Received thread_interrupted exception\n");

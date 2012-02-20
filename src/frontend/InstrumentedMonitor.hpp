@@ -17,21 +17,17 @@
 #define INSTRUMENTED_MONITOR_HPP_
 
 #include <string.h>
-#include <vector>
-#include <algorithm>
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/locks.hpp>
 #include "Monitor.hpp"
-#include "srmlogit.h"
+#include "MonitorHelper.hpp"
 
 namespace storm {
 
 class InstrumentedMonitor : public Monitor {
 	public:
 
-		InstrumentedMonitor(std::string name , std::vector<int> success) : Monitor(name)
+
+		InstrumentedMonitor(std::string name , OperationType type) : Monitor(name,type)
 		{
-			this->_successCode = success;
 		};
 
 		~InstrumentedMonitor() {};
@@ -39,7 +35,7 @@ class InstrumentedMonitor : public Monitor {
 
 		void registerCompleted(long executionTimeInMills, int returnCode)
 		{
-			if(std::find(this->_successCode.begin(), this->_successCode.end(), returnCode) != this->_successCode.end())
+			if(MonitorHelper::isSuccessfull(this->getName() , returnCode))
 			{
 				registerSuccess(executionTimeInMills);
 			}
@@ -49,8 +45,6 @@ class InstrumentedMonitor : public Monitor {
 			}
 		}
 
-	private:
-		std::vector<int> _successCode;
 	};
 }
 #endif /* INSTRUMENTED_MONITOR_HPP_ */
