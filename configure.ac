@@ -173,11 +173,8 @@ elif test "xsl$osdist" = "xsl5"; then
 else
    BOOST_SUFFIX=""
 fi
-AC_MSG_RESULT(["BOOST on sl$osdist"])
+AC_MSG_RESULT(["BOOST on sl$osdist $BOOST_SUFFIX"])
 AC_SUBST(BOOST_SUFFIX)
-
-# Installation prefix
-#AC_PREFIX_DEFAULT([/usr])
 
 # Configuration items
 AM_CONFIG_HEADER([src/autogen/config.h])
