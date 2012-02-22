@@ -200,11 +200,11 @@ int main(int argc, char** argv) {
     unsigned int sleep_max_pending = configuration->getThreadpoolMaxpendingSleepTime();
     int gsoap_max_pending = configuration->getGsoapMaxPending();
     int port = configuration->getPort();
-    int audit_time_interval = configuration->getAuditTimeInterval();
-    bool audit_enabled = configuration->getAuditEnabled();
-    bool audit_detailed = configuration->getAuditDetailed();
+    int monitoring_time_interval = configuration->getMonitoringTimeInterval();
+    bool monitoring_enabled = configuration->getMonitoringEnabled();
+    bool monitoring_detailed = configuration->getMonitoringDetailed();
     string log_file = configuration->getLogFile();
-    string audit_file = configuration->getAuditFile();
+    string monitoring_file = configuration->getMonitoringFile();
     string wsdl_file_path = configuration->getWSDLFilePath();
     string proxy_dir = configuration->getProxyDir();
     string proxy_user = configuration->getProxyUser();
@@ -217,6 +217,13 @@ int main(int argc, char** argv) {
     string debugLevelString = configuration->getDebugLevelString();
     bool enableMapping = configuration->mappingEnabled();
     bool enableVOMSCheck = configuration->vomsCheckEnabled();
+
+    //only for logging at boot
+    string argusPepProtocol = configuration->getArgusPepProtocol();
+    string argusArgusPepHostname = configuration->getArgusPepHostname();
+    string argusPepAuthzPort = configuration->getArgusPepAuthzPort();
+	string argusPepAuthzService = configuration->getArgusPepAuthzService();
+    //
 
     // Proxy User
     if (setProxyUserGlobalVariables(proxy_user) != 0) {
@@ -240,11 +247,11 @@ int main(int argc, char** argv) {
     // Initialize the logging system
 
     if (debugMode) {
-        srmlogit_init(NULL, NULL, audit_enabled); // i.e. log to stderr
+        srmlogit_init(NULL, NULL, monitoring_enabled); // i.e. log to stderr
         log_file.assign("stderr"); // Just because it's printed in the logs, see below.
-        audit_file.assign("stderr"); // Just because it's printed in the logs, see below.
+        monitoring_file.assign("stderr"); // Just because it's printed in the logs, see below.
     } else {
-        srmlogit_init(log_file.c_str(), audit_file.c_str(), audit_enabled);
+        srmlogit_init(log_file.c_str(), monitoring_file.c_str(), monitoring_enabled);
     }
 
     // WSDL file
@@ -267,8 +274,14 @@ int main(int argc, char** argv) {
     srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), sleep_max_pending);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_GSOAP_PENDING.c_str(), gsoap_max_pending);
     srmlogit(STORM_LOG_NONE, func, "logfile=%s\n", log_file.c_str());
-    srmlogit(STORM_LOG_NONE, func, "auditfile=%s\n", audit_file.c_str());
-    srmlogit(STORM_LOG_NONE, func, "audit_time_interval=%u\n", audit_time_interval);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_ENABLED.c_str(), (monitoring_enabled ? "true" : "false"));
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_FILE_NAME.c_str(), monitoring_file.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_DETAILED.c_str(), (monitoring_detailed ? "true" : "false"));
+    srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_MONITORING_TIME_INTERVAL.c_str(), monitoring_time_interval);
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_AUTH_PROTOCOL.c_str(), argusPepProtocol.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_HOSTNAME.c_str(), argusArgusPepHostname.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_AUTH_PORT.c_str(), argusPepAuthzPort.c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_AUTH_SERVICE.c_str(), argusPepAuthzService.c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", xmlrpc_endpoint);
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(),
             configuration->getRecalltablePort());
@@ -390,11 +403,11 @@ int main(int argc, char** argv) {
     }
 
     storm::Monitoring* monitoring = storm::Monitoring::getInstance();
-    if(audit_enabled)
+    if(monitoring_enabled)
     {
         // Init monitoring
 
-        monitoring->setTimeInterval(audit_time_interval);
+        monitoring->setTimeInterval(monitoring_time_interval);
         monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildAbortFiles());
         monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildAbortRequest());
         monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildBringOnline());
@@ -434,7 +447,7 @@ int main(int argc, char** argv) {
 		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildStatusOfUpdateSpaceRequest());
 		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildSuspendRequest());
 		monitoring->addMonitor(storm::InstrumentedMonitorBuilder::buildUpdateSpace());
-		monitoring->setDetailed(audit_detailed);
+		monitoring->setDetailed(monitoring_detailed);
 		monitoring->start();
     }
     // SIGINT (kill -2) to stop the frontend

@@ -8,3 +8,13 @@
     dateext
 }
 
+
+@localstatedir@/log/@PACKAGE_PREFIX_NAME@/monitoring.log {
+    daily
+    missingok
+    notifempty
+    rotate 26
+    copytruncate
+    compress
+    dateext
+}

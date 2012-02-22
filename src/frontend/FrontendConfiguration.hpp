@@ -41,7 +41,7 @@ static const string DEFAULT_GRIDMAPFILE = "/etc/grid-security/grid-mapfile";
 static const string DEFAULT_HOST_CERT_FILE = "/etc/grid-security/hostcert.pem";
 static const string DEFAULT_HOST_KEY_FILE = "/etc/grid-security/hostkey.pem";
 static const string DEFAULT_LOG_FILE_NAME = "storm-frontend.log";
-static const string DEFAULT_AUDIT_FILE_NAME = "audit.log";
+static const string DEFAULT_MONITORING_FILE_NAME = "monitoring.log";
 static const string DEFAULT_WSDL_FILE = "";
 static const string DEFAULT_XMLRPC_HOST = "localhost";
 static const string DEFAULT_XMLRPC_PORT = "8080";
@@ -52,8 +52,8 @@ static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
-static const int DEFAULT_AUDIT_TIME_INTERVAL = 60;
-static const bool DEFAULT_AUDIT_DETAILED = false;
+static const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
+static const bool DEFAULT_MONITORING_DETAILED = false;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
 static const string DEFAULT_ARGUS_PEP_AUTH_PROTOCOL = "https";
@@ -96,16 +96,16 @@ static const char* OPT_ENABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via 
 static const string OPTL_ENABLE_VOMSCHECK = "security.enable.vomscheck";
 static const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
-static const string OPTL_AUDIT_ENABLED = "audit.enabled";
+static const string OPTL_MONITORING_ENABLED = "monitoring.enabled";
 
-static const string OPTL_AUDIT_DETAILED = "audit.detailed";
-static const char* OPT_AUDIT_DETAILED_DESCRIPTION = "Enable detailed audit for each operation";
+static const string OPTL_MONITORING_FILE_NAME = "monitoring.filename";
+static const char* OPT_MONITORING_FILE_NAME_DESCRIPTION = "Use <arg> as monitoring file";
 
-static const string OPTL_AUDIT_FILE_NAME = "audit.filename";
-static const char* OPT_AUDIT_FILE_NAME_DESCRIPTION = "Use <arg> as audit file";
+static const string OPTL_MONITORING_DETAILED = "monitoring.detailed";
+static const char* OPT_MONITORING_DETAILED_DESCRIPTION = "Enable detailed monitoring for each operation";
 
-static const string OPTL_AUDIT_TIME_INTERVAL = "audit.timeInterval";
-static const char* OPT_AUDIT_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print audit information.";
+static const string OPTL_MONITORING_TIME_INTERVAL = "monitoring.timeInterval";
+static const char* OPT_MONITORING_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print monitoring information.";
 
 static const string OPTL_LOG_FILE_NAME = "log.filename";
 static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
@@ -196,8 +196,8 @@ public:
     bool foundConfigurationFile();
     //bool mappingDisabled();
     bool mappingEnabled();
-    bool getAuditEnabled();
-    bool getAuditDetailed();
+    bool getMonitoringEnabled();
+    bool getMonitoringDetailed();
     //bool vomsCheckDisabled();
     bool vomsCheckEnabled();
     int getDebugLevel();
@@ -206,7 +206,7 @@ public:
     int getGsoapMaxPending();
     int getPort();
     int getRecalltablePort();
-    int getAuditTimeInterval();
+    int getMonitoringTimeInterval();
     unsigned int getThreadpoolMaxpendingSleepTime();
     string getDebugLevelString();
     string getProxyDir();
@@ -215,7 +215,7 @@ public:
     string getXmlRpcHost();
     string getUser();
     string getWSDLFilePath();
-    string getAuditFile();
+    string getMonitoringFile();
     string getLogFile();
     string getDBHost();
     string getDBUser();
@@ -258,8 +258,8 @@ private:
     //bool disableVOMSCheck;
     bool enableMapping;
     bool enableVOMSCheck;
-    bool auditEnabled;
-    bool auditDetailed;
+    bool monitoringEnabled;
+    bool monitoringDetailed;
     int numberOfThreads;
     int threadpool_max_pending;
     unsigned int threadpool_max_pending_sleeptime;
@@ -267,8 +267,8 @@ private:
     int debugLevel;
     int port;
     int recalltablePort;
-    int audit_time_interval;
-    string audit_file;
+    int monitoring_time_interval;
+    string monitoring_file;
     string log_file;
     string proxy_dir;
     string proxy_user;

@@ -33,7 +33,7 @@ class MonitorHelper{
 		static void addSuccessStatusCodeMapping(std::string monitorName, int successReturnStatus)
 		{
 			std::string funcName("addSuccessStatusCodeMapping");
-			srmlogit(STORM_LOG_WARNING, funcName.c_str(), "Adding code %u for monitor %s\n" , successReturnStatus , monitorName.c_str());
+			srmlogit(STORM_LOG_DEBUG2, funcName.c_str(), "Adding code %u for monitor %s\n" , successReturnStatus , monitorName.c_str());
 			std::map < int , bool > * monitor_map = getMonitorMap(monitorName);
 			if(monitor_map != NULL)
 			{
@@ -67,10 +67,10 @@ class MonitorHelper{
 			std::map < int , bool >::iterator innerIte;
 			for(ite=status_code_map.begin();ite!=status_code_map.end(); ite++)
 			{
-				srmlogit(STORM_LOG_WARNING, funcName.c_str(), "Printing mappings for monitor %s :\n" , ite->first.c_str());
+				srmlogit(STORM_LOG_DEBUG, funcName.c_str(), "Printing mappings for monitor %s :\n" , ite->first.c_str());
 				for(innerIte=ite->second->begin();innerIte!=ite->second->end();innerIte++)
 				{
-					srmlogit(STORM_LOG_WARNING, funcName.c_str(), "Code %d\n" , innerIte->first);
+					srmlogit(STORM_LOG_DEBUG, funcName.c_str(), "Code %d\n" , innerIte->first);
 				}
 			}
 		}
