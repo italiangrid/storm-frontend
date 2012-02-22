@@ -49,16 +49,14 @@ AC_DEFUN([AC_VOMS],
 
   AC_MSG_CHECKING([for VOMS installation at ${with_voms_prefix}])
 
-  ac_save_CFLAGS=$CFLAGS
   ac_save_CPPFLAGS=$CPPFLAGS
   ac_save_LIBS=$LIBS
-  if test -n "$with_voms_include" ; then
+  if test -n "$ac_voms_include" ; then
      VOMS_CFLAGS="-I$ac_voms_include"
-     VOMS_PATH_LIBS="-L$with_voms_prefix/$library_path"
+     VOMS_PATH_LIBS="-L$ac_voms_prefix/$library_path"
   else
      VOMS_CFLAGS=""
      VOMS_PATH_LIBS=""
-     VOMS_LIBS=""
   fi
 
   VOMS_LIBS="$VOMS_PATH_LIBS -lvomsapi"
