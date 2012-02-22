@@ -65,12 +65,15 @@ BuildRequires: voms
 BuildRequires: boost@BOOST_SUFFIX@-devel
 BuildRequires: mysql-devel
 BuildRequires: xmlrpc-c-devel
+BuildRequires: argus-pep-api-c
+BuildRequires: argus-pep-api-c-devel
 
 Requires(post):   chkconfig
 Requires(preun):  chkconfig
 Requires(preun):  initscripts
 Requires(postun): initscripts 
 
+Requires: argus-pep-api-c
 Requires: curl
 Requires: globus-gssapi-gsi
 Requires: mysql
