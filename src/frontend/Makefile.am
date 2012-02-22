@@ -35,7 +35,8 @@ storm_frontend_server_LDADD = \
     @BOOST_PO_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     $(top_builddir)/src/db/libstormdb.la \
-    -lz -lm -luuid -lidn -largus-pep
+    @ARGUS_LIBS@
+    -lz -lm -luuid -lidn
 
 noinst_INCLUDES = osdep.h \
   srm_server.h \
@@ -98,6 +99,7 @@ INCLUDES = \
     @GSOAP_SSL_PP_CFLAGS@  \
     @CGSI_GSOAP_CFLAGS@ \
     @MYSQL_CFLAGS@ \
+    @ARGUS_CFLAGS@
     $(MTC_CFLAGS)
 
 #GSOAP_SSL_CFLAGS 

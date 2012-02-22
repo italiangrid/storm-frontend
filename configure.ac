@@ -160,7 +160,7 @@ AC_MYSQL([4.0.12], [5.1.52], have_mysql=yes, have_mysql=no)
 AC_MSG_RESULT(["MYSQL found $have_mysql"])
 
 AC_VOMS([])
-
+AC_ARGUS([])
 AC_CGSI_GSOAP([])
 AC_GSOAP([])
 
