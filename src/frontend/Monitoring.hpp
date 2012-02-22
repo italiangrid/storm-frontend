@@ -23,6 +23,7 @@
 
 #include <string>
 #include <iostream>
+#include <math.h>
 
 #include "srmlogit.h"
 
@@ -60,6 +61,7 @@ private:
 		int errors;
 		float maxTime;
 		float minTime;
+		float totalTime;
 
 		void reset()
 		{
@@ -68,12 +70,23 @@ private:
 			this->errors = 0;
 			this->maxTime = 0;
 			this->minTime = 0;
+			this->totalTime = 0;
 		}
 
 		int getSuccess()
 		{
 			return (this->completed - (this->failed + this->errors));
 		}
+
+		float getAverageTime()
+		{
+			if(this->completed == 0)
+			{
+				return 0;
+			}
+			return (this->totalTime/(float)this->completed);
+		}
+
     };
 
     static void thread_function(Monitoring* m);
@@ -84,8 +97,8 @@ private:
     	_running = false;
     	detailed = false;
     	_funcName = "Monitoring";
-    	_details_template_msg = "[%s] [OK:%6u F:%6u E:%6u,Avg:%6.3f,Std Dev:%6.3f,M:%6.3f m:%6.3f]\n";
-    	_summary_template_msg = "[#%6u lifetime=%6.3f] %s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f] %s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f] Last:(%s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f] %s [OK:%6u F:%6u E:%6u,M:%6.3f m:%6.3f])\n";
+    	_details_template_msg = "[%s] [OK:%u F:%u E:%u,Avg:%.3f,Std Dev:%.3f,m:%.3f M:%.3f]\n";
+    	_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u F:%u E:%u,m:%.3f M:%.3f,Avg:%.3f ] %s [OK:%u F:%u E:%u,m:%.3f M:%.3f,Avg:%.3f] Last:(%s [OK:%u F:%u E:%u,m:%.3f M:%.3f] %s [OK:%u F:%u E:%u,m:%.3f M:%.3f])\n";
     }
 
     void printSummary() {
@@ -95,11 +108,24 @@ private:
 		this->endRound();
 		Summary synch_summary = buildSummary(Monitor::Synchronous);
 		Summary asynch_summary = buildSummary(Monitor::Asynchronous);
-		srmAudit(this->_summary_template_msg, this->_round,this->computeUpTime(),
-				synch_summary.name.c_str(), synch_summary.getSuccess(), synch_summary.failed, synch_summary.errors, synch_summary.maxTime, synch_summary.minTime,
-				asynch_summary.name.c_str(), asynch_summary.getSuccess(), asynch_summary.failed, asynch_summary.errors, asynch_summary.maxTime, asynch_summary.minTime,
-				round_synch_summary.name.c_str(), round_synch_summary.getSuccess(), round_synch_summary.failed, round_synch_summary.errors, round_synch_summary.maxTime, round_synch_summary.minTime,
-				round_asynch_summary.name.c_str(), round_asynch_summary.getSuccess(), round_asynch_summary.failed, round_asynch_summary.errors, round_asynch_summary.maxTime, round_asynch_summary.minTime);
+		srmAudit(this->_summary_template_msg, this->_round,
+				this->computeUpTimeHours(),
+				this->computeUpTimeMins(),
+				this->computeUpTimeSecs(), synch_summary.name.c_str(),
+				synch_summary.getSuccess(), synch_summary.failed,
+				synch_summary.errors, synch_summary.minTime,
+				synch_summary.maxTime, synch_summary.getAverageTime(),
+				asynch_summary.name.c_str(), asynch_summary.getSuccess(),
+				asynch_summary.failed, asynch_summary.errors,
+				asynch_summary.minTime, asynch_summary.maxTime,
+				asynch_summary.getAverageTime(),
+				round_synch_summary.name.c_str(),
+				round_synch_summary.getSuccess(), round_synch_summary.failed,
+				round_synch_summary.errors, round_synch_summary.minTime,
+				round_synch_summary.maxTime, round_asynch_summary.name.c_str(),
+				round_asynch_summary.getSuccess(), round_asynch_summary.failed,
+				round_asynch_summary.errors, round_asynch_summary.minTime,
+				round_asynch_summary.maxTime);
     	}
 
     Summary buildRoundSummary(Monitor::OperationType type)
@@ -123,6 +149,7 @@ private:
 				{
 					new_summary.maxTime = ((Monitor*)*it)->getMaxTimeRound();
 				}
+				new_summary.totalTime+= ((Monitor*)*it)->getTotalTimeRound();
 			}
 		}
     	return new_summary;
@@ -149,6 +176,7 @@ private:
 				{
 					new_summary.maxTime = ((Monitor*)*it)->getMaxTime();
 				}
+				new_summary.totalTime+= ((Monitor*)*it)->getTotalTime();
 			}
 		}
     	return new_summary;
@@ -168,14 +196,14 @@ private:
 					first = false;
 				}
 				srmAudit(this->_details_template_msg,
-						((Monitor*) *it)->getName().c_str(),
+						((Monitor*) *it)->getFriendlyName().c_str(),
 						((Monitor*) *it)->getCompleted(),
 						((Monitor*) *it)->getFailed(),
 						((Monitor*) *it)->getErrors(),
 						((Monitor*) *it)->computeAverageExecTime(),
 						((Monitor*) *it)->computeExecTimeStandardDeviation(),
-						((Monitor*) *it)->getMaxTime(),
-						((Monitor*) *it)->getMinTime());
+						((Monitor*) *it)->getMinTime(),
+						((Monitor*) *it)->getMaxTime());
 			}
 		}
 	}
@@ -194,14 +222,14 @@ private:
 					first = false;
 				}
    				srmAudit(this->_details_template_msg,
-   						((Monitor*) *it)->getName().c_str(),
+   						((Monitor*) *it)->getFriendlyName().c_str(),
    						((Monitor*) *it)->getCompletedRound(),
    						((Monitor*) *it)->getFailedRound(),
    						((Monitor*) *it)->getErrorsRound(),
    						((Monitor*) *it)->computeAverageExecTimeRound(),
    						((Monitor*) *it)->computeExecTimeStandardDeviationRound(),
-						((Monitor*) *it)->getMaxTimeRound(),
-						((Monitor*) *it)->getMinTimeRound());
+   						((Monitor*) *it)->getMinTimeRound(),
+						((Monitor*) *it)->getMaxTimeRound());
    			}
    		}
    	}
@@ -218,11 +246,23 @@ private:
 		}
     }
 
-    float computeUpTime()
+    int computeUpTimeHours()
     {
 		boost::posix_time::time_duration upTime = (boost::posix_time::microsec_clock::local_time() - this->start_time);
-    	return ((float) upTime.total_milliseconds() / 1000);
+    	return (int) (upTime.total_milliseconds() / 1000 / 60 / 60);
     }
+
+    int computeUpTimeMins()
+	{
+		boost::posix_time::time_duration upTime = (boost::posix_time::microsec_clock::local_time() - this->start_time);
+		return (int) (fmod (((float)upTime.total_milliseconds() / 1000 / 60),(float) 60));
+	}
+
+    int computeUpTimeSecs()
+	{
+		boost::posix_time::time_duration upTime = (boost::posix_time::microsec_clock::local_time() - this->start_time);
+		return (int) (fmod ((float)upTime.total_milliseconds() / 1000,(float) 60));
+	}
 
 public:
     ~Monitoring() {

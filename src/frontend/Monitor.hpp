@@ -92,7 +92,7 @@ class Monitor {
 			return name;
 		}
 
-		Monitor(std::string name, OperationType type) : name(name) , type(type)
+		Monitor(std::string name, std::string friendlyName, OperationType type) : name(name) , friendlyName(friendlyName), type(type)
 		{
 			this->current_status.reset();
 			this->aggregated_status.reset();
@@ -103,6 +103,11 @@ class Monitor {
 		const std::string getName()
 		{
 			return this->name;
+		}
+
+		const std::string getFriendlyName()
+		{
+			return this->friendlyName;
 		}
 
 		const OperationType getType()
@@ -135,6 +140,11 @@ class Monitor {
 			return this->aggregated_status.min_exec_time;
 		}
 
+		float getTotalTime()
+		{
+			return this->aggregated_status.total_exec_time;
+		}
+
 		int getCompletedRound()
 		{
 			return this->current_status.completed;
@@ -158,6 +168,11 @@ class Monitor {
 		float getMinTimeRound()
 		{
 			return this->current_status.min_exec_time;
+		}
+
+		float getTotalTimeRound()
+		{
+			return this->current_status.total_exec_time;
 		}
 
 		void registerSuccess(long executionTimeInMills)
@@ -223,10 +238,8 @@ class Monitor {
 		void digestRound()
 		{
 			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->print();
 			this->aggregated_status.mergeIn(this->current_status);
 			this->current_status.reset();
-			this->print();
 		}
 
 		void print()
@@ -235,8 +248,9 @@ class Monitor {
 			srmlogit(
 				STORM_LOG_DEBUG,
 				_funcName,
-				"Name %s | Type %s | Current Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f | Aggregated Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f\n",
-				this->name.c_str(), nameOfOperationType(this->type).c_str(),
+				"Name %s Friendly Name %s | Type %s | Current Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f | Aggregated Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f\n",
+				this->name.c_str(), this->friendlyName.c_str(),
+				nameOfOperationType(this->type).c_str(),
 				this->current_status.completed, this->current_status.failures,
 				this->current_status.errors,
 				this->current_status.total_exec_time,
@@ -253,6 +267,7 @@ class Monitor {
 
 	private:
 		const std::string name;
+		const std::string friendlyName;
 		const OperationType type;
 		boost::recursive_mutex mutex;
 
@@ -331,41 +346,12 @@ class Monitor {
 
 		Status current_status;
 		Status aggregated_status;
-		/*
-		volatile int completed;
-		volatile int failures;
-		volatile int errors;
-		volatile float total_exec_time;
-		volatile float total_square_exec_time;
-		volatile float max_exec_time;
-		volatile float min_exec_time;
 
-
-		volatile int completed_round;
-		volatile int failures_round;
-		volatile int errors_round;
-		volatile float total_exec_time_round;
-		volatile float total_square_exec_time_round;
-		volatile float max_exec_time_round;
-		volatile float min_exec_time_round;
-*/
-	/*	void reset()
-		{
-			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->completed_round = 0;
-			this->failures_round = 0;
-			this->errors_round = 0;
-			this->total_exec_time_round = 0;
-			this->total_square_exec_time_round = 0;
-			this->max_exec_time_round = 0;
-			this->min_exec_time_round = 0;
-		}
-*/
 		void updateTotalTime(float timeInSecs)
 		{
 			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			this->current_status.updateTotalExecTime(timeInSecs); //total_exec_time = this->computeTotalExecTime(timeInSecs);
-			this->current_status.updateTotalSquareExecTime(timeInSecs); //this->total_square_exec_time_round = this->computeTotalSquareExecTime(executionTimeInMills);
+			this->current_status.updateTotalExecTime(timeInSecs);
+			this->current_status.updateTotalSquareExecTime(timeInSecs);
 		}
 
 		void updateTimeLimits(float timeInSec)
@@ -373,65 +359,7 @@ class Monitor {
 			boost::lock_guard<boost::recursive_mutex> lock(mutex);
 			this->current_status.checkUpdateMaxTime(timeInSec);
 			this->current_status.checkUpdateMinTime(timeInSec);
-			/*if(! this->isClean()){
-				if(executionTimeInSec > this->max_exec_time_round)
-				{
-					this->max_exec_time_round = executionTimeInSec;
-				}
-				else
-				{
-					if(executionTimeInSec < this->min_exec_time_round)
-					{
-						this->min_exec_time_round = executionTimeInSec;
-					}
-				}
-			} else {
-				this->max_exec_time_round = executionTimeInSec;
-				this->min_exec_time_round = executionTimeInSec;
-			}*/
 		}
-
-		/*void digestRoundTimeLimits(long min_exec_time_candidate, long max_exec_time_candidate)
-		{
-			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			if(! this->isEmpty()){
-				if(max_exec_time_candidate > this->max_exec_time_round)
-				{
-					this->max_exec_time_round = max_exec_time_candidate;
-				}
-				else
-				{
-					if(min_exec_time_candidate < this->min_exec_time_round)
-					{
-						this->min_exec_time_round = min_exec_time_candidate;
-					}
-				}
-			} else {
-				this->max_exec_time = max_exec_time_candidate;
-				this->min_exec_time = min_exec_time_candidate;
-			}
-		}*/
-
-		/*
-		float computeTotalExecTime(long timeInSecs)
-		{
-			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			if(! this->isClean()){
-				return (this->total_exec_time_round + ((float) executionTimeInMills / 1000.0));
-			} else {
-				return ((float) timeInSecs);
-			}
-		}*/
-
-		/*float computeTotalSquareExecTime(long executionTimeInMills)
-		{
-			boost::lock_guard<boost::recursive_mutex> lock(mutex);
-			if(! this->isClean()){
-				return (this->total_square_exec_time_round + pow(((float) executionTimeInMills / 1000.0) , 2));
-			} else {
-				return pow(((float) executionTimeInMills / 1000.0) , 2);
-			}
-		}*/
 
 		static float computeStandardDeviation(int count, float total, float total_square)
 		{
@@ -463,12 +391,6 @@ class Monitor {
 			}
 			return total / count;
 		}
-
-
-		/*bool isClean()
-		{
-			return(total_exec_time_round == 0);
-		}*/
 	};
 }
 #endif /* MONITOR_HPP_ */

@@ -26,7 +26,7 @@ class InstrumentedMonitor : public Monitor {
 	public:
 
 
-		InstrumentedMonitor(std::string name , OperationType type) : Monitor(name,type)
+		InstrumentedMonitor(std::string name , std::string friendlyName, OperationType type) : Monitor(name,friendlyName,type)
 		{
 		};
 
