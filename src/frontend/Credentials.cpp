@@ -106,6 +106,8 @@ Credentials::Credentials(struct soap *soap)
 			return;
 		}
 		cert_chain = Credentials::x509_convert_to_PEM(x509,chain);
+		free(chain);
+		free(x509);
 	}
 	catch(CredentialException &e)
 	{

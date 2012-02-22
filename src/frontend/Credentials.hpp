@@ -43,6 +43,10 @@ class Credentials {
 public:
 	Credentials(struct soap *soap) ;
 
+	~Credentials(){
+		free(this->cert_chain);
+	}
+
 	void setDN(std::string dn) {
 		_clientDN = dn;
 	}
