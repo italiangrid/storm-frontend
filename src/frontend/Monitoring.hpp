@@ -97,8 +97,8 @@ private:
     	_running = false;
     	detailed = false;
     	_funcName = "Monitoring";
-    	_details_template_msg = "[%s] [OK:%u F:%u E:%u,Avg:%.3f,Std Dev:%.3f,m:%.3f M:%.3f]\n";
-    	_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u F:%u E:%u,m:%.3f M:%.3f,Avg:%.3f ] %s [OK:%u F:%u E:%u,m:%.3f M:%.3f,Avg:%.3f] Last:(%s [OK:%u F:%u E:%u,m:%.3f M:%.3f] %s [OK:%u F:%u E:%u,m:%.3f M:%.3f])\n";
+    	_details_template_msg = "[%s] [OK:%u,F:%u,E:%u,Avg:%.3f,Std Dev:%.3f,m:%.3f,M:%.3f]\n";
+    	_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] Last:(%s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f])\n";
     }
 
     void printSummary() {
