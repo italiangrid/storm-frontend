@@ -28,6 +28,8 @@
 #include "Authorization.hpp"
 #include "Monitoring.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
+#include "Credentials.hpp"
+#include "get_socket_info.hpp"
 
 #include <cgsi_plugin.h>
 
@@ -85,6 +87,8 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
                                          struct ns1__srmGetRequestSummaryResponse_ *rep)
 {
     static const char *func = "GetRequestSummary";
+    storm::Credentials credentials(soap);
+    srmLogRequest("Get request summary",get_ip(soap).c_str(),credentials.getDN().c_str());
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     struct ns1__srmGetRequestSummaryResponse* repp;
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *>(soap->user);
@@ -97,15 +101,8 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         repp->returnStatus = storm::soap_calloc<struct ns1__TReturnStatus>(soap);
         // Assign the repp response structure to the output parameter rep.
         rep->srmGetRequestSummaryResponse = repp;
-        
-        // Get client DN
-        std::string client_dn;
-    #if defined(GSI_PLUGINS)
-        char clientdn[256];
-        get_client_dn(soap, clientdn, sizeof(clientdn));
-        client_dn = std::string(clientdn);
-     #endif
-        if (client_dn.empty()) {
+              
+        if (credentials.getDN().empty()) {
             srmlogit(STORM_LOG_ERROR, func, "Client DN not found!\n");
             repp->returnStatus->statusCode = SRM_USCOREAUTHENTICATION_USCOREFAILURE;
             repp->returnStatus->explanation = "Unable to retrieve client DN";
@@ -121,7 +118,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 			}
             return SOAP_OK;
         }
-        srmlogit(STORM_LOG_INFO, func, "UserDN=%s\n", client_dn.c_str());
+        srmlogit(STORM_LOG_INFO, func, "UserDN=%s\n", credentials.getDN().c_str());
 
         if(storm::Authorization::checkBlacklist(soap))
 		{
@@ -197,7 +194,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         // Create the DB query
         std::string query_sql = std::string("SELECT ID, r_token, config_RequestTypeID, status, errstring, nbreqfiles "
                                             "FROM request_queue "
-                                            "WHERE client_dn='" + client_dn + "' AND (");
+                                            "WHERE client_dn='" + credentials.getDN() + "' AND (");
         for (i=0; i<numOfRequestTokens; i++) {
             if (req->arrayOfRequestTokens->stringArray[i] == NULL)
                 continue;
@@ -351,6 +348,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
                                     break;
                                 default:
                                     numOfFailed++;
+                                    break;
                             }
                         }
                         // numOfCompletedFiles

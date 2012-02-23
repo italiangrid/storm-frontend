@@ -54,6 +54,7 @@ noinst_INCLUDES = osdep.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
 
 stormfrontend_others = Credentials.cpp Credentials.hpp \
+    FullCredentials.cpp FullCredentials.hpp \
     CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
     file_request.hpp filerequest_template.hpp \

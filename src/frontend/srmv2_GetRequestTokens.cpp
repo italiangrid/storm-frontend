@@ -28,6 +28,9 @@
 #include "Monitoring.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
 
+#include "Credentials.hpp"
+#include "get_socket_info.hpp"
+
 #include <cgsi_plugin.h>
 
 using namespace std;
@@ -37,6 +40,8 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
                                         struct ns1__srmGetRequestTokensResponse_ *rep)
 {
     static const char *func = "GetRequestTokens";
+    storm::Credentials credentials(soap);
+    srmLogRequest("Get request tokens",get_ip(soap).c_str(),credentials.getDN().c_str());
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     struct ns1__srmGetRequestTokensResponse* repp;
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *>(soap->user);
@@ -48,14 +53,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         // Assign the repp response structure to the output parameter rep.
         rep->srmGetRequestTokensResponse = repp;
         
-        // Get client DN
-        std::string client_dn;
-    #if defined(GSI_PLUGINS)
-        char clientdn[256];
-        get_client_dn(soap, clientdn, sizeof(clientdn));
-        client_dn = std::string(clientdn);
-     #endif
-        if (client_dn.empty()) {
+        if (credentials.getDN().empty()) {
             srmlogit(STORM_LOG_ERROR, func, "Client DN not found!\n");
             repp->returnStatus->statusCode = SRM_USCOREAUTHENTICATION_USCOREFAILURE;
             repp->returnStatus->explanation = "Unable to retrieve client DN";
@@ -122,7 +120,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             
         // Create the DB query
         std::string query_sql("SELECT r_token, DATE_FORMAT(timeStamp, '%Y-%m-%dT%H:%i:%S') FROM request_queue WHERE "
-                      "client_dn='" + client_dn + "'");
+                      "client_dn='" + credentials.getDN() + "'");
         if (!u_token.empty())
             query_sql += " AND u_token='" + u_token + "'";
         srmlogit(STORM_LOG_DEBUG, func, "Query: %s\n", query_sql.c_str());

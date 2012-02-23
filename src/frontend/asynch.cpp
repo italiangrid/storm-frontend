@@ -33,6 +33,8 @@
 #include "Monitoring.hpp"
 #include "InstrumentedMonitor.hpp"
 
+#include "get_socket_info.hpp"
+
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *req,
@@ -41,6 +43,7 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
     static const char* funcName = "srmPrepareToPut";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::ptp request(soap);
+    srmLogRequest("PTP",get_ip(soap).c_str(),request.getClientDN().c_str());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -101,7 +104,7 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
     static const char* funcName = "srmPrepareToGet";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::ptg request(soap);
-
+    srmLogRequest("PTG",get_ip(soap).c_str(),request.getClientDN().c_str());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -161,7 +164,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     static const char* funcName = "srmCopy";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::copy request(soap);
-
+    srmLogRequest("Cp",get_ip(soap).c_str(),request.getClientDN().c_str());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -221,6 +224,7 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     static const char* funcName = "srmBringOnline";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     storm::bol request(soap);
+    srmLogRequest("BOL",get_ip(soap).c_str(),request.getClientDN().c_str());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");

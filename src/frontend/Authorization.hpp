@@ -22,7 +22,7 @@
 // STL includes
 #include <string>
 
-#include "Credentials.hpp"
+#include "FullCredentials.hpp"
 #include "AuthorizationException.hpp"
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
@@ -33,7 +33,7 @@ const std::string DEFAULT_AUTHORIZATION_ACTION("access");
 const std::string DEFAULT_AUTHORIZATION_PROFILE("http://glite.org/xacml/profile/grid-wn/1.0");
 class Authorization {
 public:
-	Authorization(Credentials *cred) throw (AuthorizationException) {
+	Authorization(FullCredentials *cred) throw (AuthorizationException) {
 		char* funcName = "Authorization";
 		credentials = cred;
 
@@ -171,8 +171,8 @@ public:
 		bool response = false;
 		if(FrontendConfiguration::getInstance()->getUserCheckBlacklist())
 		{
-			storm::Credentials cred(soap);
-			storm::Authorization auth((storm::Credentials*)&cred);
+			storm::FullCredentials cred(soap);
+			storm::Authorization auth((storm::FullCredentials*)&cred);
 			response = auth.isBlacklisted();
 		}
 		return response;
@@ -182,7 +182,7 @@ public:
     bool isBlacklisted() throw (storm::AuthorizationException) ;
 
 private:
-    Credentials * credentials;
+    FullCredentials * credentials;
     PEP * pep;
     bool blacklistRequested;
 

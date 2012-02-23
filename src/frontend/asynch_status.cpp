@@ -31,6 +31,8 @@
 #include "Credentials.hpp"
 #include "Authorization.hpp"
 
+#include "get_socket_info.hpp"
+
 extern "C"
 int ns1__srmStatusOfPutRequest(struct soap *soap,
         struct ns1__srmStatusOfPutRequestRequest *req,
@@ -39,7 +41,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
     static const char* funcName = "srmStatusOfPutRequest";
 
     storm::put_status status(soap);
-
+    srmLogRequest("PTP status",get_ip(soap).c_str(),status.getClientDN().c_str());
     if(Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -72,7 +74,7 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
     static const char* funcName = "srmStatusOfGetRequest";
 
     storm::get_status status(soap);
-
+    srmLogRequest("PTG status",get_ip(soap).c_str(),status.getClientDN().c_str());
     if(Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -105,7 +107,7 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
     static const char* funcName = "srmStatusOfBringOnLineRequest";
 
     storm::bol_status status(soap);
-
+    srmLogRequest("BOL status",get_ip(soap).c_str(),status.getClientDN().c_str());
     if(Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -137,6 +139,7 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
     static const char* funcName = "srmStatusOfCopyRequest";
 
     storm::copy_status status(soap);
+    srmLogRequest("Cp status",get_ip(soap).c_str(),status.getClientDN().c_str());
     if(Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");

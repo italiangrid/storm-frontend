@@ -23,6 +23,8 @@
 #define STORM_LOG_DEBUG 4
 #define STORM_LOG_DEBUG2 5
 
+#include <string.h>
+
 #define STORM_AUDIT -1
 
 #ifdef __cplusplus
@@ -33,6 +35,7 @@ int srmlogit_set_debuglevel(int level);
 int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled);
 int srmlogit(int level,const char *func, const char *msg, ...);
 int srmAudit(const char *msg, ...) ;
+int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN);
 
 #ifdef __cplusplus
 }

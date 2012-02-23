@@ -25,6 +25,7 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 #include "srmlogit.h"
+#include "get_socket_info.hpp"
 #include "Authorization.hpp"
 #include <stdsoap2.h>
 #include "soap_util.hpp"
@@ -36,6 +37,7 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 		struct ns1__srmMkdirResponse_ *rep) {
 
 	char *func = "ns1__srmMkdir()";
+	srmLogRequest("Mkdir",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -134,6 +136,7 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 		struct ns1__srmRmdirResponse_ *rep) {
 
 	char *func = "ns1__srmRmdir()";
+	srmLogRequest("Rmdir",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -231,6 +234,7 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 		struct ns1__srmRmResponse_ *rep) {
 
 	char *func = "ns1__srmRm()";
+	srmLogRequest("Rm",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -328,6 +332,7 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 		struct ns1__srmLsResponse_ *rep) {
 
 	char *func = "ns1__srmLs()";
+	srmLogRequest("Ls",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -424,6 +429,7 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 		struct ns1__srmStatusOfLsRequestResponse_ *rep) {
 
 	char *func = "ns1__srmStatusOfLsRequest()";
+	srmLogRequest("Ls status",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -521,6 +527,7 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 		struct ns1__srmMvResponse_ *rep) {
 
 	char *func = "ns1__srmMv()";
+	srmLogRequest("Mv",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -620,6 +627,7 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 		struct ns1__srmSetPermissionResponse_ *rep) {
 
 	char *func = "ns1__srmSetPermission()";
+	srmLogRequest("Set permission",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -717,6 +725,7 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 		struct ns1__srmCheckPermissionResponse_ *rep) {
 
 	char *func = "ns1__srmCheckPermission()";
+	srmLogRequest("Check permission",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -814,6 +823,7 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 		struct ns1__srmGetPermissionResponse_ *rep) {
 
 	char *func = "ns1__srmGetPermission()";
+	srmLogRequest("Get permission",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -913,6 +923,7 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 		struct ns1__srmReserveSpaceResponse_ *rep) {
 
 	char *func = "ns1__srmReserveSpace()";
+	srmLogRequest("Reserve space",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1010,6 +1021,7 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 		struct ns1__srmStatusOfReserveSpaceRequestResponse_ *rep) {
 
 	char *func = "ns1__srmStatusOfReserveSpaceRequest()";
+	srmLogRequest("Reserve space status",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1107,6 +1119,7 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 		struct ns1__srmReleaseSpaceResponse_ *rep) {
 
 	char *func = "ns1__srmReleaseSpace()";
+	srmLogRequest("Release space",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1204,6 +1217,7 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 		struct ns1__srmUpdateSpaceResponse_ *rep) {
 
 	char *func = "ns1__srmUpdateSpace()";
+	srmLogRequest("Update space",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1301,6 +1315,7 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 		struct ns1__srmStatusOfUpdateSpaceRequestResponse_ *rep) {
 
 	char *func = "ns1__srmStatusOfUpdateSpaceRequest()";
+	srmLogRequest("Update space status",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1398,6 +1413,7 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 		struct ns1__srmGetSpaceMetaDataResponse_ *rep) {
 
 	char *func = "ns1__srmGetSpaceMetaData()";
+	srmLogRequest("Get space metadata",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1495,6 +1511,7 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 		struct ns1__srmGetSpaceTokensResponse_ *rep) {
 
 	char *func = "ns1__srmGetSpaceTokens()";
+	srmLogRequest("Get space tokens",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1592,6 +1609,7 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 		struct ns1__srmChangeSpaceForFilesResponse_ *rep) {
 
 	char *func = "ns1__srmChangeSpaceForFiles()";
+	srmLogRequest("Change space for files",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1689,6 +1707,7 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 		struct ns1__srmStatusOfChangeSpaceForFilesRequestResponse_ *rep) {
 
 	char *func = "ns1__srmStatusOfChangeSpaceForFilesRequest()";
+	srmLogRequest("Change space for files status",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1786,6 +1805,7 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 		struct ns1__srmExtendFileLifeTimeInSpaceResponse_ *rep) {
 
 	char *func = "ns1__srmExtendFileLifeTimeInSpace()";
+	srmLogRequest("Extend file life time in space",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1883,6 +1903,7 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 		struct ns1__srmPurgeFromSpaceResponse_ *rep) {
 
 	char *func = "ns1__srmPurgeFromSpace()";
+	srmLogRequest("Purge from space",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -1982,6 +2003,7 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 		struct ns1__srmReleaseFilesResponse_ *rep) {
 
 	char *func = "ns1__srmReleaseFiles()";
+	srmLogRequest("Release files",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2079,6 +2101,7 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 		struct ns1__srmPutDoneResponse_ *rep) {
 
 	char *func = "ns1__srmPutDone()";
+	srmLogRequest("Put done",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2175,6 +2198,7 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 		struct ns1__srmAbortRequestResponse_ *rep) {
 
 	char *func = "ns1__srmAbortRequest()";
+	srmLogRequest("Abort request",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2272,6 +2296,7 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 		struct ns1__srmAbortFilesResponse_ *rep) {
 
 	char *func = "ns1__srmAbortFiles()";
+	srmLogRequest("Abort files",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2369,6 +2394,7 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 		struct ns1__srmSuspendRequestResponse_ *rep) {
 
 	char *func = "ns1__srmSuspendRequest()";
+	srmLogRequest("Suspend request",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2466,6 +2492,7 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 		struct ns1__srmResumeRequestResponse_ *rep) {
 
 	char *func = "ns1__srmResumeRequest()";
+	srmLogRequest("Resume request",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2563,6 +2590,7 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 		struct ns1__srmExtendFileLifeTimeResponse_ *rep) {
 
 	char *func = "ns1__srmExtendFileLifeTime()";
+	srmLogRequest("Extend file life time",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2660,6 +2688,7 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 		struct ns1__srmGetTransferProtocolsResponse_ *rep) {
 
 	char *func = "ns1__srmGetTransferProtocols()";
+	srmLogRequest("Get transfer protocols",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 
 	if(storm::Authorization::checkBlacklist(soap))
@@ -2757,6 +2786,7 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 		struct ns1__srmPingResponse_ *rep) {
 
 	char *func = "ns1__srmPing()";
+	srmLogRequest("Ping",get_ip(soap).c_str(),storm::Credentials(soap).getDN().c_str());
 	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
 	if(storm::Authorization::checkBlacklist(soap))
 	{
