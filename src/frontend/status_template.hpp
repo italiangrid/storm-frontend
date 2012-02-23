@@ -43,8 +43,8 @@ int __process_request_status(struct soap * soap, const char * const r_token, con
 
     string clientDN = status.getClientDN();
 
-    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", funcName, clientDN.c_str());
-    srmlogit(STORM_LOG_INFO, func, "Client IP=%s\n", get_ip(soap).c_str());
+    srmlogit(STORM_LOG_DEBUG, func, "%s request from: %s\n", funcName, clientDN.c_str());
+    srmlogit(STORM_LOG_DEBUG, func, "Client IP=%s\n", get_ip(soap).c_str());
 
     if (NULL == r_token) {
         *resp = status.error_response(SRM_USCOREINVALID_USCOREREQUEST, "Empty request token");

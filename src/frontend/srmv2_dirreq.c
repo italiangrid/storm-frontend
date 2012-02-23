@@ -915,7 +915,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_ls, (void *) rpcResponseHandler_Ls,
                               &LsResponseHandlerInput, "(S)", inputParam);
 
-    srmlogit(STORM_LOG_INFO, func, "Asynchronous RPC started.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
 
     while (LsResponseHandlerInput.RPCTerminated == 0) 
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);

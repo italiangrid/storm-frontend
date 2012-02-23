@@ -337,12 +337,12 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     userDN = xmlrpc_string_new(env_addr, clientdn);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
 
-    srmlogit(STORM_LOG_INFO, callerName, "UserDN=%s\n", clientdn);
-    srmlogit(STORM_LOG_INFO, callerName, "Client IP=%s\n", getip(soap, ip));
+    srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
+    srmlogit(STORM_LOG_DEBUG, callerName, "Client IP=%s\n", getip(soap, ip));
 
     xmlrpc_DECREF(userDN);
 
-    srmlogit(STORM_LOG_INFO, callerName, "Number of FQANs: %d\n", nbfqans);
+    srmlogit(STORM_LOG_DEBUG, callerName, "Number of FQANs: %d\n", nbfqans);
 
     if (nbfqans > 0) {
         fqansArray = xmlrpc_array_new(env_addr);

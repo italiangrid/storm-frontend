@@ -1175,17 +1175,6 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
     xmlrpc_env env;
     xmlrpc_value *inputParam;
 
-#if defined(GSI_PLUGINS)
-    clientdn[0] = 0;
-    get_client_dn(soap, clientdn, sizeof(clientdn));
-    srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", clientdn);
-#else
-    if (req->authorizationID != NULL) {
-        srmlogit(STORM_LOG_INFO, func, "Received Ping request from: %s\n", req->authorizationID);
-    } else {
-        srmlogit(STORM_LOG_INFO, func, "Received an anonymous Ping request.\n");
-    }
-#endif
     /************************ Allocate response structure *******************************/
     if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse)))) {
         return (SOAP_EOM);

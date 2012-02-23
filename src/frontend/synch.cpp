@@ -2827,47 +2827,9 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 	{
 		srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
 	}
-	/* commented out. not available in first Argus integration prototype
-	bool black = false;
-	storm::Credentials cred(soap);
-	try
-	{
-		storm::Authorization auth((storm::Credentials*)&cred);
-		black = auth.isBlacklisted();
-	} catch (storm::AuthorizationException& e)
-	{
-		srmlogit(STORM_LOG_WARNING, func, "Received AuthorizationException during authorization authorization: %s\n" , e.what());
-	}
-    if(black)
-    {
-    	srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
-    	struct ns1__srmPingResponse *repp;
-    	int ret_val = get_ns1__srmPingResponse(soap, repp);
-		repp->otherInfo = NULL;
-		rep->srmPingResponse = repp;
-		repp->versionInfo= "User not authorized to ping the service";
-		return(SOAP_OK);
-    }
-    else
-    {
-    	srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
-    }
-	 */
-
-	/*
-	cred.getCertChain();
-	fprintf(stdout,"getCertChain chiamata\n");
-	 */
-
-
-	/*
-	storm::Credentials cred(soap);
-	 char* proxy = cred.getProxy();
-	 */
 	int ret_val = ns1__srmPing_impl(soap, req, rep);
 
 	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
 	boost::posix_time::time_duration et = (end_time - start_time);
 
 	if (ret_val != SOAP_OK)

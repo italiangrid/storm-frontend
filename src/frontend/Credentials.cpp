@@ -63,7 +63,7 @@ Credentials::Credentials(struct soap *soap)
         if (fqans[i] == NULL) {
             srmlogit(STORM_LOG_ERROR, funcName, "Strange error: NULL FQAN\n");
         } else {
-        	srmlogit(STORM_LOG_ERROR, funcName, "Adding FQAN %s\n", fqans[i]);
+        	srmlogit(STORM_LOG_DEBUG, funcName, "Adding FQAN %s\n", fqans[i]);
             _fqans_vector.push_back(fqans[i]);
         }
     }
