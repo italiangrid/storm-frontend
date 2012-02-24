@@ -392,16 +392,14 @@ int main(int argc, char** argv) {
     // the size of mysql_connection pool and thread pool MUST be the same
     mysql_connection_pool = new DBConnectionPool(nThreads);
 
-    ThreadPool *tp;
     try {
-        tp = new ThreadPool(nThreads);
-    } catch (boost::thread_resource_error e) {
-        cout << "Cannot create all the requested threads, not enough resources.";
-        soap_done(soap_data);
-        free(soap_data);
-        return SYERR;
-    }
-
+    	storm::ThreadPool::buildInstance(nThreads);
+	} catch (boost::thread_resource_error e) {
+		cout << "Cannot create all the requested threads, not enough resources.";
+		soap_done(soap_data);
+		free(soap_data);
+		return SYERR;
+	}
     storm::Monitoring* monitoring = storm::Monitoring::getInstance();
     if(monitoring_enabled)
     {
@@ -487,8 +485,8 @@ int main(int argc, char** argv) {
             srmlogit(STORM_LOG_ERROR, func,
                     "Error in soap_copy(), probably system busy retry in 3 seconds. Error message: %s\n",
                     strerror(ENOMEM));
-            srmlogit(STORM_LOG_INFO, func, "AUDIT - CP - Active tasks: %ld\n", tp->get_active());
-            srmlogit(STORM_LOG_INFO, func, "AUDIT - CP - Pending tasks: %ld\n", tp->get_pending());
+            srmlogit(STORM_LOG_DEBUG, func, "AUDIT - CP - Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
+            srmlogit(STORM_LOG_DEBUG, func, "AUDIT - CP - Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
 
             // A memory allocation error here is probably due to system busy so... going to sleep for a while.
             sleep(3);
@@ -496,7 +494,7 @@ int main(int argc, char** argv) {
 
         try {
             srmlogit(STORM_LOG_DEBUG2, func, "Going to bind to a thread\n");
-            tp->schedule(boost::bind(process_request, tsoap));
+            storm::ThreadPool::getInstance()->schedule(boost::bind(process_request, tsoap));
             srmlogit(STORM_LOG_DEBUG2, func, "Bound request to a thread\n");
 
         } catch (exception& e) {
@@ -507,16 +505,14 @@ int main(int argc, char** argv) {
             soap_free(tsoap);
         }
 
-        srmlogit(STORM_LOG_INFO, func, "AUDIT - Active tasks: %ld\n", tp->get_active());
-        srmlogit(STORM_LOG_INFO, func, "AUDIT - Pending tasks: %ld\n", tp->get_pending());
+        srmlogit(STORM_LOG_DEBUG, func, "AUDIT - Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
+        srmlogit(STORM_LOG_DEBUG, func, "AUDIT - Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
 
     }
 
-    srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", tp->get_active());
-    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %ld\n", tp->get_pending());
+    srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
+    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
     srmlogit(STORM_LOG_NONE, func, "Waiting for active and pending tasks to finish...\n");
-
-    delete tp;
 
     soap_destroy(soap_data);
     soap_end(soap_data);

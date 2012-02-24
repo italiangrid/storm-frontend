@@ -20,13 +20,19 @@
 #include "boost/thread/condition.hpp"
 #include "boost/thread.hpp"
 #include "boost/bind.hpp"
-
+#include "boost/lexical_cast.hpp"
 #include <queue>
 #include <iostream>
+#include <string>
 
-using namespace std;
+#include <utility>
+#include <map>
 
-namespace sq {
+#include "srmlogit.h"
+#include <sstream>
+
+namespace storm{
+
 typedef boost::function0<void> task_func;
 
 class SynchronizedQueue {
@@ -34,15 +40,18 @@ class SynchronizedQueue {
 private:
     std::queue<task_func> _q;
     boost::condition _queue_not_empty;
-    boost::mutex _monitor;
+    boost::mutex monitor;
 
 public:
     SynchronizedQueue() {
     }
 
+    ~SynchronizedQueue() {
+    }
+
     task_func pop() {
 
-        boost::mutex::scoped_lock lk(_monitor);
+        boost::mutex::scoped_lock lk(monitor);
 
         while (_q.empty()) {
             _queue_not_empty.wait(lk);
@@ -56,7 +65,7 @@ public:
 
     void push(task_func func) {
 
-        boost::mutex::scoped_lock lk(_monitor);
+        boost::mutex::scoped_lock lk(monitor);
 
         _q.push(func);
         _queue_not_empty.notify_one();
@@ -66,25 +75,56 @@ public:
         return _q.size();
     }
 };
-}
+
+static const int DEFAULT_POOL_SIZE  = 10;
 
 class ThreadPool {
 private:
 
+	static ThreadPool* instance;
     int _nThreads;
     int _queueSize;
     int _activeThreads;
     bool _stop;
     boost::thread* _thread_pool;
-    sq::SynchronizedQueue _sq;
+    SynchronizedQueue _sq;
     boost::mutex _mutex;
 
-    static void thread_function(sq::SynchronizedQueue* sq, int* activeThreads, boost::mutex* mutex,
+    std::map<boost::thread::id, int> idMap;
+
+    ThreadPool(int nThreads) {
+		_nThreads = nThreads;
+		_queueSize = nThreads * 2;
+		_activeThreads = 0;
+		_stop = false;
+		_thread_pool = new boost::thread[_nThreads];
+
+		int i = 0;
+		char* func = "ThreadPool()";
+		try {
+			for (; i < _nThreads; i++) {
+				_thread_pool[i] = boost::thread(boost::bind(&thread_function, &_sq, &_activeThreads, &_mutex,
+						&_stop));
+				idMap.insert(std::make_pair(_thread_pool[i].get_id(), i));
+			}
+		} catch (boost::thread_resource_error e) {
+			_stop = true;
+			for (; i >= 0; i--) {
+				_thread_pool[i].interrupt();
+			}
+			for (int i = 0; i < _nThreads; i++) {
+				_thread_pool[i].join();
+			}
+			throw e;
+		}
+	}
+
+    static void thread_function(SynchronizedQueue* sq, int* activeThreads, boost::mutex* mutex,
             bool* stop) {
         try {
             for (;;) {
 
-                sq::task_func func = (*sq).pop();
+                task_func func = (*sq).pop();
 
                 if (*stop) {
                     break;
@@ -105,31 +145,6 @@ private:
     }
 
 public:
-    ThreadPool(int nThreads) {
-        _nThreads = nThreads;
-        _queueSize = nThreads * 2;
-        _activeThreads = 0;
-        _stop = false;
-
-        _thread_pool = new boost::thread[_nThreads];
-
-        int i = 0;
-        try {
-            for (; i < _nThreads; i++) {
-                _thread_pool[i] = boost::thread(boost::bind(&thread_function, &_sq, &_activeThreads, &_mutex,
-                        &_stop));
-            }
-        } catch (boost::thread_resource_error e) {
-            _stop = true;
-            for (; i >= 0; i--) {
-                _thread_pool[i].interrupt();
-            }
-            for (int i = 0; i < _nThreads; i++) {
-                _thread_pool[i].join();
-            }
-            throw e;
-        }
-    }
 
     ~ThreadPool() {
 
@@ -146,7 +161,20 @@ public:
         delete[] _thread_pool;
     }
 
-    void schedule(sq::task_func const & func) {
+
+    static ThreadPool* getInstance(){
+    	if(ThreadPool::instance == NULL)
+    	{
+    		buildInstance(DEFAULT_POOL_SIZE);
+    	}
+    	return ThreadPool::instance;
+    }
+
+    static void buildInstance(int size)
+	{
+    	ThreadPool::instance = new ThreadPool(size);
+	}
+    void schedule(task_func const & func) {
         _sq.push(func);
     }
 
@@ -157,6 +185,21 @@ public:
     int get_active() {
         return _activeThreads;
     }
-};
 
+    /**
+     * returns an empty string if no id found
+     **/
+    std::string getThreadIdLable(boost::thread::id id)
+    {
+    	std::string lable;
+    	if(this->idMap.find(id) != this->idMap.end())
+    	{
+    		int idLable = this->idMap.find(id)->second;
+    		lable = "Thread " + boost::lexical_cast<std::string>(idLable) + " - ";
+    	}
+
+    	return lable;
+    }
+};
+}
 #endif /* THREADPOOL_HPP_ */

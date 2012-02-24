@@ -24,6 +24,7 @@
 //#include <boost/thread/mutex.hpp>
 
 #include "boost/thread.hpp"
+#include "ThreadPool.hpp"
 #include <sstream>
 #include "srmlogit.h"
 
@@ -156,12 +157,11 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     tm = localtime(&current_time);
 #endif
 
-    std::ostringstream oss;
-
-
-    oss << boost::this_thread::get_id();
-
-    std::string tid = oss.str();
+    std::string tid = storm::ThreadPool::getInstance()->getThreadIdLable(boost::this_thread::get_id());
+    if(tid.empty())
+    {
+    	tid = std::string("Main - ");
+    }
     prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s %s: %s: ", tm->tm_mon + 1, tm->tm_mday,
             tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), func , getLogLevelLable(level).c_str());
 
@@ -232,10 +232,15 @@ int srmLogRequest(const char* requestName, const char* clientIP, const char* cli
     tm = localtime(&current_time);
 #endif
 
+    /*
     std::ostringstream oss;
     oss << boost::this_thread::get_id();
-    std::string tid = oss.str();
-
+    std::string tid = oss.str();*/
+    std::string tid = storm::ThreadPool::getInstance()->getThreadIdLable(boost::this_thread::get_id());
+    if(tid.empty())
+    {
+    	tid = std::string("Main - ");
+    }
     prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s INFO : ", tm->tm_mon + 1, tm->tm_mday,
             tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str());
 

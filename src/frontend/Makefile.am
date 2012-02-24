@@ -72,7 +72,7 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     HttpPostClient.cpp HttpPostClient.h \
     DBConnectionPool.cpp DBConnectionPool.hpp \
-    ThreadPool.hpp \
+    ThreadPool.hpp ThreadPool.cpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
