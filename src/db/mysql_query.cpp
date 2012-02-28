@@ -13,37 +13,31 @@
  * limitations under the License.
 */
 
-#include "srmlogit.h"
-#include <mysql/mysqld_error.h>
-#include <mysql/mysql.h>
+#include <new>
 
-#include <string>
-#include <map>
-#include <vector>
+#include "srmlogit.h"
 
 #include "mysql_query.hpp"
 
-using namespace std;
-
-static pair<MYSQL_FIELD *, MYSQL_RES *> * _query_init(struct srm_dbfd *dbfd, string query) {
+static std::pair<MYSQL_FIELD *, MYSQL_RES *> * _query_init(struct srm_dbfd *dbfd, std::string query) throw(storm_db::mysql_exception){
     static const char * const func = "_query_init";
 
     srmlogit(STORM_LOG_DEBUG, func, "Executing query ``%s''\n", query.c_str());
 
-    if (mysql_query(&dbfd->mysql, query.c_str())) {
+    if (mysql_query((MYSQL*)&dbfd->mysql, query.c_str())) {
         srmlogit(STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n", mysql_error(
-                &dbfd->mysql), query.c_str());
-        throw storm_db::mysql_exception(&dbfd->mysql);
+        		(MYSQL*)&dbfd->mysql), query.c_str());
+        throw storm_db::mysql_exception((MYSQL*)&dbfd->mysql);
     }
 
     MYSQL_RES *res;
     MYSQL_FIELD *fields;
-    if (0 != mysql_field_count(&dbfd->mysql)) { // The stmt has no result.
-        res = mysql_store_result(&dbfd->mysql);
+    if (0 != mysql_field_count((MYSQL*)&dbfd->mysql)) { // The stmt has no result.
+        res = mysql_store_result((MYSQL*)&dbfd->mysql);
         if (NULL == res) { // Error getting the result of the query.
             srmlogit(STORM_LOG_ERROR, func, "mysql_store_res error: %s\n",
-                    mysql_error(&dbfd->mysql));
-            throw storm_db::mysql_exception(&dbfd->mysql);
+                    mysql_error((MYSQL*)&dbfd->mysql));
+            throw storm_db::mysql_exception((MYSQL*)&dbfd->mysql);
         }
         fields = mysql_fetch_fields(res);
     } else {
@@ -51,7 +45,7 @@ static pair<MYSQL_FIELD *, MYSQL_RES *> * _query_init(struct srm_dbfd *dbfd, str
         res = NULL;
     }
 
-    return new pair<MYSQL_FIELD *, MYSQL_RES *> (fields, res);
+    return new std::pair<MYSQL_FIELD *, MYSQL_RES *> (fields, res);
 }
 
 namespace storm_db {
@@ -68,9 +62,9 @@ namespace storm_db {
  * @param query     the query string
  * @param results   a map<string, vector<string> > reference.
  */
-void map_exec_query(struct srm_dbfd *dbfd, const string &query,
-        map<string, vector<string> > &results) {
-    pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
+void map_exec_query(struct srm_dbfd *dbfd, const std::string &query,
+		std::map<std::string, std::vector<std::string> > &results) {
+	std::pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
     MYSQL_FIELD *fields = p->first;
     MYSQL_RES *res = p->second;
 
@@ -103,19 +97,19 @@ void map_exec_query(struct srm_dbfd *dbfd, const string &query,
  *                  if the query has empty result (like INSERT stmt)
  *                  The client must call @c delete to free memory
  */
-map<string, vector<string> > * map_exec_query(struct srm_dbfd *dbfd, const string &query) {
-    map<string, vector<string> > *dbmap = new map<string, vector<string> > ();
+std::map<std::string, std::vector<std::string> > * map_exec_query(struct srm_dbfd *dbfd, const std::string &query) {
+	std::map<std::string, std::vector<std::string> > *dbmap = new std::map<std::string, std::vector<std::string> > ();
     if (NULL == dbmap)
-        throw bad_alloc();
+        throw std::bad_alloc();
 
     map_exec_query(dbfd, query, *dbmap);
 
     return dbmap;
 }
 
-void vector_exec_query(struct srm_dbfd *dbfd, const string &query,
-        vector<map<string, string> > &results) {
-    pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
+void vector_exec_query(struct srm_dbfd *dbfd, const std::string &query,
+		std::vector<std::map<std::string, std::string> > &results) {
+	std::pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
     MYSQL_FIELD *fields = p->first;
     MYSQL_RES *res = p->second;
     MYSQL_ROW row;
@@ -124,7 +118,7 @@ void vector_exec_query(struct srm_dbfd *dbfd, const string &query,
     int num_fields = mysql_num_fields(res);
     if (num_row > 0) {
         for (int j = 0;NULL != (row = mysql_fetch_row(res)); j++) {
-            map<string, string> x;
+        	std::map<std::string, std::string> x;
             for (int i = 0; i < num_fields; i++)
                 x[fields[i].name] = (NULL != row[i] ? row[i] : "");
 
@@ -148,9 +142,9 @@ void vector_exec_query(struct srm_dbfd *dbfd, const string &query,
  *                  The pointer should never be null, but can be empty.
  *                  The client must call @c delete to free memory
  */
-vector<map<string, string> > * vector_exec_query(struct srm_dbfd *dbfd, const string &query) {
+std::vector<std::map<std::string, std::string> > * vector_exec_query(struct srm_dbfd *dbfd, const std::string &query) {
 
-    vector<map<string, string> > *dbvec = new vector<map<string, string> > ();
+	std::vector<std::map<std::string, std::string> > *dbvec = new std::vector<std::map<std::string, std::string> > ();
 
     vector_exec_query(dbfd, query, *dbvec);
 
@@ -171,9 +165,9 @@ vector<map<string, string> > * vector_exec_query(struct srm_dbfd *dbfd, const st
  *                 {@c 0} if the previous statement does not use
  *                 an AUTO_INCREMENT value.
  */
-int ID_exec_query(struct srm_dbfd *dbfd, string query) {
+int ID_exec_query(struct srm_dbfd *dbfd, std::string query) throw(storm_db::mysql_exception) {
 
-    pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
+	std::pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
 
     if (NULL != p) {
         if (NULL != p->second)
@@ -181,7 +175,7 @@ int ID_exec_query(struct srm_dbfd *dbfd, string query) {
         delete p;
     }
 
-    return mysql_insert_id(&dbfd->mysql);
+    return mysql_insert_id((MYSQL*)&dbfd->mysql);
 }
 
 } // namespace storm_db

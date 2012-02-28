@@ -19,27 +19,27 @@
 // C includes
 #include "srm_server.h"
 #include "srmv2H.h"
-#include "storm_util.h"
-#include "srmlogit.h"
+#include "stdsoap2.h"
 
 // STL includes
 #include <string>
-#include <vector>
-#include <map>
 
 // storm_db include
-#include "mysql_query.hpp"
+#include "sql_string.hpp"
 
 // parent
 #include "file_request.hpp"
+
+#include "PtgSurl.hpp"
 
 namespace storm {
 
 class ptg: public storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> {
 public:
     ptg(struct soap *soap) :
-        storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse>(soap) {
-        _response = NULL;
+        storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse>(soap)
+	{
+        this->builtResponse = NULL;
     }
     ;
     void insert(struct srm_dbfd *dbfd);
@@ -67,46 +67,9 @@ public:
     struct ns1__srmPrepareToGetResponse* response();
 
 private:
-    class surl_t {
-    public:
-        surl_t(std::string src, ns1__TDirOption *dirOption) :
-            sourceSURL(src), status(SRM_USCOREREQUEST_USCOREQUEUED) {
-
-            if (dirOption == NULL) {
-                has_diroption = false;
-            } else {
-                has_diroption = true;
-                isdirectory = dirOption->isSourceADirectory;
-                if (dirOption->allLevelRecursive == NULL) {
-                    allLevelRecursive = -1;
-                } else {
-                    if (*(dirOption->allLevelRecursive)) {
-                        allLevelRecursive = 1;
-                    } else {
-                        allLevelRecursive = 0;
-                    }
-                }
-                if (dirOption->numOfLevels == NULL) {
-                    n_levels = -1;
-                } else {
-                    n_levels = *(dirOption->numOfLevels);
-                }
-            }
-        };
-        virtual ~surl_t() {};
-
-        sql_string sourceSURL;
-        bool has_diroption;
-        bool isdirectory;
-        int allLevelRecursive; // -1 means not supplied
-        int n_levels; // -1 means not supplied
-        ns1__TStatusCode status;
-        std::string explanation;
-    };
-
-    std::vector<ptg::surl_t> _surls;
-    struct ns1__srmPrepareToGetResponse * _response;
-    std::vector<sql_string> _protocols;
+    std::vector<PtgSurl> surls;
+    struct ns1__srmPrepareToGetResponse * builtResponse;
+    std::vector<sql_string> protocols;
 
 };
 

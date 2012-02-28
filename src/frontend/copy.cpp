@@ -14,42 +14,38 @@
 */
 
 #include <string>
-#include <vector>
-#include <map>
-#include <iostream>
 #include <sstream>
 
 #include "copy.hpp"
 #include "mysql_query.hpp"
 #include "storm_mysql.h"
 
-using namespace storm;
+#include "srmlogit.h"
 
-bool copy::supportsProtocolSpecification()
+bool storm::copy::supportsProtocolSpecification()
 {
 	return false;
 }
 
-std::vector<sql_string>* copy::getRequestedProtocols()
+std::vector<sql_string>* storm::copy::getRequestedProtocols()
 {
 	return NULL;
 }
 
-void copy::setProtocolVector(std::vector<sql_string>* protocolVector)
+void storm::copy::setProtocolVector(std::vector<sql_string>* protocolVector)
 {
 	//nothing to do form Copy, no protocol list in the request
 }
 
-void copy::setGenericFailureSurls()
+void storm::copy::setGenericFailureSurls()
 {
 	srmlogit(STORM_LOG_DEBUG, "copy::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
-    for (int i = 0; i < _surls.size(); i++) {
-        _surls.at(i).status = SRM_USCOREFAILURE;
+    for (int i = 0; i < surls.size(); i++) {
+        surls.at(i).setStatus(SRM_USCOREFAILURE);
     }
 }
 
-void
-copy::load(struct ns1__srmCopyRequest *req)
+void storm::copy::load(struct ns1__srmCopyRequest *req)
 {
     if (NULL == req)
         throw invalid_request("Request is NULL");
@@ -70,22 +66,14 @@ copy::load(struct ns1__srmCopyRequest *req)
     _r_type = DB_COPY_REQUEST;
 
     // Fill surl
-    for (int i=0; i<req->arrayOfFileRequests->__sizerequestArray; ++i) {
-        if (NULL != req->arrayOfFileRequests->requestArray[i]->dirOption) {
-            _surls.push_back(
-                surl_t(req->arrayOfFileRequests->requestArray[i]->sourceSURL,
-                       req->arrayOfFileRequests->requestArray[i]->targetSURL,
-                       req->arrayOfFileRequests->requestArray[i]->dirOption->isSourceADirectory));
-            if (NULL != req->arrayOfFileRequests->requestArray[i]->dirOption->allLevelRecursive)
-                _surls[i].allrecursive = *req->arrayOfFileRequests->requestArray[i]->dirOption->allLevelRecursive;
-            if (NULL != req->arrayOfFileRequests->requestArray[i]->dirOption->numOfLevels)
-                _surls[i].n_levels = *req->arrayOfFileRequests->requestArray[i]->dirOption->numOfLevels;
-        } else
-            _surls.push_back(
-                surl_t(req->arrayOfFileRequests->requestArray[i]->sourceSURL,
-                       req->arrayOfFileRequests->requestArray[i]->targetSURL));
+    for (int i=0; i<req->arrayOfFileRequests->__sizerequestArray; ++i)
+    {
+		surls.push_back(
+			storm::CopySurl(req->arrayOfFileRequests->requestArray[i]->sourceSURL,
+				   req->arrayOfFileRequests->requestArray[i]->targetSURL,
+				   req->arrayOfFileRequests->requestArray[i]->dirOption));
     }
-    _n_files = _surls.size();
+    _n_files = surls.size();
     // Status
     status(SRM_USCOREREQUEST_USCOREQUEUED);
 
@@ -97,8 +85,9 @@ copy::load(struct ns1__srmCopyRequest *req)
     // User Token
     if (NULL != req->userRequestDescription
         && u_token().size() == 0)
+    {
         u_token(req->userRequestDescription);
-
+    }
     // Request Token will be not written
 
     // File Storage Type
@@ -122,97 +111,92 @@ copy::load(struct ns1__srmCopyRequest *req)
         switch(*req->overwriteOption) {
         case NEVER:
             _overwrite = DB_OVERWRITE_NEVER;
-            //overwrite(DB_OVERWRITE_NEVER);
             break;
         case ALWAYS:
             _overwrite = DB_OVERWRITE_ALWAYS;
-//            overwrite(DB_OVERWRITE_ALWAYS);
             break;
         case WHEN_USCOREFILES_USCOREARE_USCOREDIFFERENT:
             _overwrite = DB_OVERWRITE_IF_DIFFERENT;
-//            overwrite(DB_OVERWRITE_IF_DIFFERENT);
             break;
         default:
             throw std::string("Invalid overwriteOption");
         }
     }
-    // Total Request Time
 
-    // Target SURL lifetime
     if (req->desiredTargetSURLLifeTime != NULL)
     	_lifetime = *req->desiredTargetSURLLifeTime;
 
-
-    // Space Token
     if (NULL != req->targetSpaceToken)
         _s_token = req->targetSpaceToken;
-
-
-    // retention policy
-
-    // Storage System Info
 
     // Temporary hack: proxy saved as a file. TODO: insert the proxy into the DB.
     saveProxy();
 }
 
 
-ns1__srmCopyResponse *
-copy::response()
+ns1__srmCopyResponse* storm::copy::response()
 {
     // soap struct status
-    if (NULL == _response)
-        _response = storm::soap_calloc<ns1__srmCopyResponse>(_soap);
+    if (NULL == this->builtResponse)
+    	this->builtResponse = storm::soap_calloc<ns1__srmCopyResponse>(_soap);
 
-    if (NULL == _response->returnStatus)
-        _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
+    if (NULL == this->builtResponse->returnStatus)
+    	this->builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
 
-    _response->returnStatus->statusCode = status();
-    if ( NULL == _response->returnStatus->explanation )
-        _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
+    this->builtResponse->returnStatus->statusCode = status();
+    if ( NULL == this->builtResponse->returnStatus->explanation )
+    	this->builtResponse->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
     else // how to free() memory allocated with soap_strdup???
-        snprintf(_response->returnStatus->explanation,
-                 strlen(_response->returnStatus->explanation),
+        snprintf(this->builtResponse->returnStatus->explanation,
+                 strlen(this->builtResponse->returnStatus->explanation),
                  _explanation.c_str());
 
     // Fill per-surl info.
     try{
-        if (NULL == _response->arrayOfFileStatuses)
-            _response->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTCopyRequestFileStatus>(_soap);
+        if (NULL == this->builtResponse->arrayOfFileStatuses)
+        {
+        	this->builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTCopyRequestFileStatus>(_soap);
+        }
 
-        if (NULL == _response->arrayOfFileStatuses->statusArray)
-            _response->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TCopyRequestFileStatus>(_soap, _surls.size());
-        _response->arrayOfFileStatuses->__sizestatusArray = _surls.size();
+        if (NULL == this->builtResponse->arrayOfFileStatuses->statusArray)
+        {
+        	this->builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TCopyRequestFileStatus>(_soap, surls.size());
+        }
+
+        this->builtResponse->arrayOfFileStatuses->__sizestatusArray = surls.size();
 
         int n=0;
-        for (std::vector<copy::surl_t>::const_iterator i = _surls.begin();
-            i != _surls.end();
-            ++i, ++n) {
-            if (NULL == _response->arrayOfFileStatuses->statusArray[n])
-                _response->arrayOfFileStatuses->statusArray[n]
+        for (std::vector<storm::CopySurl>::const_iterator i = surls.begin();
+            i != surls.end(); ++i, ++n) {
+            if (NULL == this->builtResponse->arrayOfFileStatuses->statusArray[n])
+            {
+            	this->builtResponse->arrayOfFileStatuses->statusArray[n]
                     = storm::soap_calloc<ns1__TCopyRequestFileStatus>(_soap);
-            if (NULL == _response->arrayOfFileStatuses->statusArray[n]->status )
-                _response->arrayOfFileStatuses->statusArray[n]->status
+            }
+            if (NULL == this->builtResponse->arrayOfFileStatuses->statusArray[n]->status )
+            {
+            	this->builtResponse->arrayOfFileStatuses->statusArray[n]->status
                     = storm::soap_calloc<ns1__TReturnStatus>(_soap);
-            _response->arrayOfFileStatuses->statusArray[n]->sourceSURL = soap_strdup(_soap, i->source.c_str());
-            _response->arrayOfFileStatuses->statusArray[n]->targetSURL = soap_strdup(_soap, i->target.c_str());
-            _response->arrayOfFileStatuses->statusArray[n]->status->statusCode = i->status;
-            _response->arrayOfFileStatuses->statusArray[n]->status->explanation = soap_strdup(_soap, i->explanation.c_str());
+            }
+            this->builtResponse->arrayOfFileStatuses->statusArray[n]->sourceSURL = soap_strdup(_soap, ((storm::CopySurl)*i).getSourceSurl().c_str());
+            this->builtResponse->arrayOfFileStatuses->statusArray[n]->targetSURL = soap_strdup(_soap, ((storm::CopySurl)*i).getDestinationSurl().c_str());
+            this->builtResponse->arrayOfFileStatuses->statusArray[n]->status->statusCode = ((storm::CopySurl)*i).getStatus();
+            this->builtResponse->arrayOfFileStatuses->statusArray[n]->status->explanation = soap_strdup(_soap, ((storm::CopySurl)*i).getExplanation().c_str());
         }
     } catch(std::invalid_argument x) {
         // continuing???
     }
 
     // Fill request token
-    if (NULL == _response->requestToken) {
+    if (NULL == this->builtResponse->requestToken) {
         if (_r_token.size() > 0)
-            _response->requestToken = soap_strdup(_soap, r_token().c_str());
+        	this->builtResponse->requestToken = soap_strdup(_soap, r_token().c_str());
     } else
-        snprintf(_response->requestToken, strlen(_response->requestToken), r_token().c_str());
-    return _response;
+        snprintf(this->builtResponse->requestToken, strlen(this->builtResponse->requestToken), r_token().c_str());
+    return this->builtResponse;
 }
 
-void copy::insert(struct srm_dbfd *db)
+void storm::copy::insert(struct srm_dbfd *db)
 {
     _db = db;
     std::string nullcomma("NULL, ");
@@ -307,36 +291,43 @@ void copy::insert(struct srm_dbfd *db)
         throw _response_error;
     }
     // Insert into request_Copy using the requestID
-    for (std::vector<copy::surl_t>::const_iterator i = _surls.begin();
-        i != _surls.end();
+    for (std::vector<storm::CopySurl>::const_iterator i = surls.begin();
+        i != surls.end();
         ++i)
     {
         // DirOption
         int diroption_id;
-        if (i->has_diroption) {
+        if (((storm::CopySurl)*i).hasDirOption()) {
             std::ostringstream query_d;
             query_d << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) values (";
-            if (false == i->isdirectory)
+            if (false == ((storm::CopySurl)*i).isDirectory())
                 query_d << "0, ";
             else
                 query_d << "1, ";
 
-            if (i->allrecursive == -1)
-                query_d << "NULL, ";
-            else
-                query_d << "1, ";
+            if (((storm::CopySurl)*i).isAllLevelRecursive()) {
+            	query_s << "1, ";
+            } else {
+            	query_s << "0, ";
+			}
 
-            if (i->n_levels != -1)
-                query_d << i->n_levels << ")";
+            if (((storm::CopySurl)*i).hasNumLevels()) {
+            	query_s << ((storm::CopySurl)*i).getNumLevels() << ")";
+			} else {
+				query_s << "NULL)";
+			}
+            /*if (((storm::CopySurl)*i).n_levels != -1)
+                query_d << ((storm::CopySurl)*i).n_levels << ")";
             else
                 query_d << "NULL )";
+                */
             set_savepoint(_db, "COPYFILE");
             try{
                 diroption_id = storm_db::ID_exec_query(_db, query_d.str());
             } catch(int e) {
 
                 _response_errno = 0;
-                _response_error = "DB error inserting DirOption for surl "+i->source;
+                _response_error = "DB error inserting DirOption for surl "+((storm::CopySurl)*i).getSourceSurl();
                 _response_error += "Error = ";
                 _response_error += e;
                 rollback_to_savepoint(_db, "COPYFILE");
@@ -347,12 +338,16 @@ void copy::insert(struct srm_dbfd *db)
 
         std::ostringstream query_s;
         query_s << "INSERT INTO request_Copy (sourceSURL, targetSURL, request_queueID, request_DirOptionID) VALUES ";
-        query_s << "('" << i->source << "', '" << i->target << "', ";
+        query_s << "('" << ((storm::CopySurl)*i).getSourceSurl()<< "', '" << ((storm::CopySurl)*i).getDestinationSurl() << "', ";
         query_s << request_id << ", ";
-        if (i->has_diroption)
+        if (((storm::CopySurl)*i).hasDirOption())
+        {
             query_s << diroption_id<<")";
+        }
         else
+        {
             query_s << "NULL )";
+        }
         int copy_id;
         set_savepoint(_db, "COPYFILE");
         try{
@@ -364,7 +359,7 @@ void copy::insert(struct srm_dbfd *db)
             // Dobbiamo fare un continue, sempre che funzioni, e continuare con le altre surl.
 
             _response_errno = e;
-            _response_error = "DB error inserting surl " + i->source;
+            _response_error = "DB error inserting surl " + ((storm::CopySurl)*i).getSourceSurl();
             _response_error += " into request_Copy. Errno: "+e;
             rollback_to_savepoint(_db, "COPYFILE");
             ++_n_failed;

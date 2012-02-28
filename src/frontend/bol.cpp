@@ -14,41 +14,39 @@
 */
 
 #include <string>
-#include <vector>
-#include <map>
-#include <iostream>
 #include <sstream>
 
-#include "bol.hpp"
+#include "srmlogit.h"
 #include "mysql_query.hpp"
 #include "storm_mysql.h"
 
-using namespace storm;
+#include "bol.hpp"
 
-bool bol::supportsProtocolSpecification()
+
+bool storm::bol::supportsProtocolSpecification()
 {
 	return true;
 }
 
-std::vector<sql_string>* bol::getRequestedProtocols()
+std::vector<sql_string>* storm::bol::getRequestedProtocols()
 {
-	return &(this->_protocols);
+	return &(this->protocols);
 }
 
-void bol::setProtocolVector(std::vector<sql_string>* protocolVector)
+void storm::bol::setProtocolVector(std::vector<sql_string>* protocolVector)
 {
-	this->_protocols = *protocolVector;
+	this->protocols = *protocolVector;
 }
 
-void bol::setGenericFailureSurls()
+void storm::bol::setGenericFailureSurls()
 {
 	srmlogit(STORM_LOG_DEBUG, "bol::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
-    for (int i = 0; i < _surls.size(); i++) {
-        _surls.at(i).status = SRM_USCOREFAILURE;
+    for (int i = 0; i < surls.size(); i++) {
+        surls.at(i).setStatus(SRM_USCOREFAILURE);
     }
 }
 
-void bol::load(struct ns1__srmBringOnlineRequest *req) {
+void storm::bol::load(struct ns1__srmBringOnlineRequest *req) {
     if (NULL == req) {
         throw invalid_request("Request is NULL");
     }
@@ -64,7 +62,7 @@ void bol::load(struct ns1__srmBringOnlineRequest *req) {
     _pinLifetime = -1;
     _remainingTime = -1;
     _lifetime = -1;
-    _deferredStartTime = 0;
+    deferredStartTime = 0;
     _f_type = DB_FILE_TYPE_UNKNOWN;
 
     // Request type
@@ -84,10 +82,10 @@ void bol::load(struct ns1__srmBringOnlineRequest *req) {
     for (int i = 0; i < req->arrayOfFileRequests->__sizerequestArray; ++i) {
 
         ns1__TGetFileRequest* reqSURL = req->arrayOfFileRequests->requestArray[i];
-        _surls.push_back(surl_t(reqSURL->sourceSURL, reqSURL->dirOption));
+        surls.push_back(storm::BolSurl(reqSURL->sourceSURL, reqSURL->dirOption));
 
     }
-    _n_files = _surls.size();
+    _n_files = surls.size();
 
     // User Token
     if (NULL != req->userRequestDescription && u_token().size() == 0) {
@@ -117,7 +115,7 @@ void bol::load(struct ns1__srmBringOnlineRequest *req) {
 
     // deferredStartTime
     if (req->deferredStartTime != NULL) {
-        _deferredStartTime = *(req->deferredStartTime);
+        deferredStartTime = *(req->deferredStartTime);
     }
 
     // Pin Lifetime
@@ -140,47 +138,47 @@ void bol::load(struct ns1__srmBringOnlineRequest *req) {
         // Transfer Protocols
         if (NULL != req->transferParameters->arrayOfTransferProtocols) {
             for (int i = 0; i < req->transferParameters->arrayOfTransferProtocols->__sizestringArray; ++i) {
-                _protocols.push_back(req->transferParameters->arrayOfTransferProtocols->stringArray[i]);
+                protocols.push_back(req->transferParameters->arrayOfTransferProtocols->stringArray[i]);
             }
         }
     }
 }
 
-ns1__srmBringOnlineResponse* bol::response() {
+ns1__srmBringOnlineResponse* storm::bol::response() {
 
     // soap struct status
-    _response = storm::soap_calloc<ns1__srmBringOnlineResponse>(_soap);
-    _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
+    this->builtResponse= storm::soap_calloc<ns1__srmBringOnlineResponse>(_soap);
+    this->builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
 
-    _response->returnStatus->statusCode = status();
+    this->builtResponse->returnStatus->statusCode = status();
 
     if (_explanation.c_str() != NULL) {
-        _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
+    	this->builtResponse->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
     }
 
     // Fill per-surl info.
     try {
-        _response->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTBringOnlineRequestFileStatus>(_soap);
-        _response->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TBringOnlineRequestFileStatus>(
-                _soap, _surls.size());
+    	this->builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTBringOnlineRequestFileStatus>(_soap);
+    	this->builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TBringOnlineRequestFileStatus>(
+                _soap, surls.size());
 
-        _response->arrayOfFileStatuses->__sizestatusArray = _surls.size();
+    	this->builtResponse->arrayOfFileStatuses->__sizestatusArray = surls.size();
 
         int n = 0;
-        for (std::vector<bol::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i, ++n) {
+        for (std::vector<storm::BolSurl>::const_iterator i = surls.begin(); i != surls.end(); ++i, ++n) {
 
             struct ns1__TBringOnlineRequestFileStatus *statusArray = storm::soap_calloc<
                     ns1__TBringOnlineRequestFileStatus>(_soap);
-            _response->arrayOfFileStatuses->statusArray[n] = statusArray;
+            this->builtResponse->arrayOfFileStatuses->statusArray[n] = statusArray;
 
-            statusArray->sourceSURL = soap_strdup(_soap, i->sourceSURL.c_str());
+            statusArray->sourceSURL = soap_strdup(_soap, ((storm::BolSurl)*i).getSurl().c_str());
             statusArray->fileSize = NULL;
             statusArray->estimatedWaitTime = NULL;
             statusArray->remainingPinTime = NULL;
 
             statusArray->status = storm::soap_calloc<ns1__TReturnStatus>(_soap);
-            statusArray->status->statusCode = i->status;
-            statusArray->status->explanation = soap_strdup(_soap, i->explanation.c_str());
+            statusArray->status->statusCode =  ((storm::BolSurl)*i).getStatus();
+            statusArray->status->explanation = soap_strdup(_soap,  ((storm::BolSurl)*i).getExplanation().c_str());
         }
     } catch (std::invalid_argument x) {
         // continuing???
@@ -188,16 +186,16 @@ ns1__srmBringOnlineResponse* bol::response() {
 
     // Fill request token
     if (_r_token.size() > 0) {
-        _response->requestToken = soap_strdup(_soap, r_token().c_str());
+    	this->builtResponse->requestToken = soap_strdup(_soap, r_token().c_str());
     }
 
-    _response->remainingTotalRequestTime = NULL;
-    _response->remainingDeferredStartTime = NULL;
+    this->builtResponse->remainingTotalRequestTime = NULL;
+    this->builtResponse->remainingDeferredStartTime = NULL;
 
-    return _response;
+    return this->builtResponse;
 }
 
-void bol::insert(struct srm_dbfd *db) {
+void storm::bol::insert(struct srm_dbfd *db) {
     _db = db;
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
@@ -263,7 +261,7 @@ void bol::insert(struct srm_dbfd *db) {
     }
 
     // deferredStartTime
-    query_s << _deferredStartTime << ", ";
+    query_s << deferredStartTime << ", ";
 
     query_s << "current_timestamp() )";
 
@@ -279,27 +277,26 @@ void bol::insert(struct srm_dbfd *db) {
     }
 
     // Insert into request_Bol using the requestID
-    for (std::vector<bol::surl_t>::const_iterator i = _surls.begin(); i != _surls.end(); ++i) {
+    for (std::vector<storm::BolSurl>::const_iterator i = surls.begin(); i != surls.end(); ++i) {
         // DirOption
         int diroption_id;
-        if (i->has_diroption) {
+        if (((storm::BolSurl)*i).hasDirOption()) {
             std::ostringstream query_d;
             query_d
                     << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) values (";
 
-            query_d << sql_format(i->isdirectory) << ", ";
-
-            if (i->allLevelRecursive == -1) {
-                query_d << "NULL, ";
+            query_d << sql_format( ((storm::BolSurl)*i).isDirectory()) << ", ";
+            if (((storm::BolSurl)*i).isAllLevelRecursive()) {
+            	query_s << "1, ";
             } else {
-                query_d << "1, ";
-            }
+            	query_s << "0, ";
+			}
 
-            if (i->n_levels != -1) {
-                query_d << i->n_levels << ")";
-            } else {
-                query_d << "NULL )";
-            }
+            if (((storm::BolSurl)*i).hasNumLevels()) {
+            	query_s << ((storm::BolSurl)*i).getNumLevels()<< ")";
+			} else {
+				query_s << "NULL)";
+			}
 
             set_savepoint(_db, "BOLFILE");
 
@@ -309,7 +306,7 @@ void bol::insert(struct srm_dbfd *db) {
 
                 srmlogit(STORM_LOG_ERROR, "bol::insert()",
                         "Error %s inserting surl %s into request_DirOption. Continuing\n", e.what(),
-                        i->sourceSURL.c_str());
+                        ((storm::BolSurl)*i).getSurl().c_str());
                 rollback_to_savepoint(_db, "BOLFILE");
                 ++_n_failed;
                 continue;
@@ -319,10 +316,10 @@ void bol::insert(struct srm_dbfd *db) {
         std::ostringstream query1_s;
 
         query1_s << "INSERT INTO request_BoL (sourceSURL, request_queueID, request_DirOptionID) VALUES (";
-        query1_s << sql_format(i->sourceSURL) << ", ";
+        query1_s << sql_format(((storm::BolSurl)*i).getSurl()) << ", ";
         query1_s << request_id << ", ";
 
-        if (i->has_diroption) {
+        if (((storm::BolSurl)*i).hasDirOption()) {
             query1_s << diroption_id << ")";
         } else {
             query1_s << "NULL )";
@@ -339,7 +336,7 @@ void bol::insert(struct srm_dbfd *db) {
             // Dobbiamo fare un continue, sempre che funzioni, e continuare con le altre surl.
             srmlogit(STORM_LOG_ERROR, "bol::insert()",
                     "Error %s inserting surl %s into request_BoL. Continuing\n", e.what(),
-                    i->sourceSURL.c_str());
+                    ((storm::BolSurl)*i).getSurl().c_str());
             rollback_to_savepoint(_db, "BOLFILE");
             ++_n_failed;
             continue;
@@ -355,7 +352,7 @@ void bol::insert(struct srm_dbfd *db) {
         } catch (storm_db::mysql_exception e) {
             srmlogit(STORM_LOG_ERROR, "bol::insert()",
                     "Error %s inserting surl %s into status_BoL. Continuing\n", e.what(),
-                    i->sourceSURL.c_str());
+                    ((storm::BolSurl)*i).getSurl().c_str());
             rollback_to_savepoint(_db, "BOLFILE");
             ++_n_failed;
             continue;
@@ -363,7 +360,7 @@ void bol::insert(struct srm_dbfd *db) {
     }
 
     // Insert into request_TransferProtocols using the request_ID
-    for (std::vector<sql_string>::const_iterator i = _protocols.begin(); i != _protocols.end(); ++i) { // separati insert, nel caso che uno solo fallisca.
+    for (std::vector<sql_string>::const_iterator i = protocols.begin(); i != protocols.end(); ++i) { // separati insert, nel caso che uno solo fallisca.
         query_s.str("");
         query_s << "INSERT INTO request_TransferProtocols (request_queueID, config_protocolsID) VALUES (";
         query_s << request_id << ", '" << *i << "')";

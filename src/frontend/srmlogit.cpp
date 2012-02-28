@@ -163,7 +163,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     	tid = std::string("Main - ");
     }
     prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s %s: %s: ", tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), func , getLogLevelLable(level).c_str());
+            tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), getLogLevelLable(level).c_str(), func);
 
     max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
     if(max_char_to_write > 0)

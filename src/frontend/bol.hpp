@@ -34,30 +34,26 @@
 
 // C includes
 #include "srmv2H.h"
-#include "srmlogit.h"
 
 // STL includes
-#include <string>
 #include <vector>
-#include <map>
-
-// storm_db include
-#include "mysql_query.hpp"
 
 // parent
 #include "file_request.hpp"
+
+#include "BolSurl.hpp"
 
 namespace storm {
 class bol: public file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> {
 public:
     bol(struct soap *soap) :
         file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> (soap) {
-        _response = NULL;
+        this->builtResponse = NULL;
     }
     ;
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmBringOnlineRequest *req);
-/*
+    /*
      * Returns true if the bol command supports the option for specify the preferred transfer protocol
      * */
     bool supportsProtocolSpecification();
@@ -79,62 +75,11 @@ public:
     ns1__srmBringOnlineResponse * response();
 
 private:
-    class surl_t {
-    public:
-//        surl_t(std::string src) :
-//            source(src), has_diroption(false), status(SRM_USCOREREQUEST_USCOREQUEUED) {
-//        };
-//        surl_t(std::string src, bool isdir) :
-//            source(src), has_diroption(true), status(SRM_USCOREREQUEST_USCOREQUEUED) {
-//            isdirectory = isdir;
-//            n_levels = -1;
-//            allrecursive = -1;
-//        };
-        surl_t(std::string src, ns1__TDirOption *dirOption) :
-            sourceSURL(src), status(SRM_USCOREREQUEST_USCOREQUEUED) {
-
-            if (dirOption == NULL) {
-                has_diroption = false;
-            } else {
-                has_diroption = true;
-                isdirectory = dirOption->isSourceADirectory;
-                if (dirOption->allLevelRecursive == NULL) {
-                    allLevelRecursive = -1;
-                } else {
-                    if (*(dirOption->allLevelRecursive)) {
-                        allLevelRecursive = 1;
-                    } else {
-                        allLevelRecursive = 0;
-                    }
-                }
-                if (dirOption->numOfLevels == NULL) {
-                    n_levels = -1;
-                } else {
-                    n_levels = *(dirOption->numOfLevels);
-                }
-            }
-            estimatedWaitTime = -1;
-        };
-        virtual ~surl_t() {
-        }
-        ;
-        sql_string sourceSURL;
-        bool has_diroption;
-        bool isdirectory;
-        int allLevelRecursive; // -1 means not supplied
-        int n_levels; // -1 means not supplied
-        unsigned long fileSize;
-        int remainingPinTime;
-        int estimatedWaitTime;
-        ns1__TStatusCode status;
-        std::string explanation;
-    };
-
-    int _remainingTotalRequestTime;
-    int _deferredStartTime;
-    std::vector<bol::surl_t> _surls;
-    struct ns1__srmBringOnlineResponse * _response;
-    std::vector<sql_string> _protocols;
+    int remainingTotalRequestTime;
+    int deferredStartTime;
+    std::vector<BolSurl> surls;
+    struct ns1__srmBringOnlineResponse * builtResponse;
+    std::vector<sql_string> protocols;
 
 };
 }

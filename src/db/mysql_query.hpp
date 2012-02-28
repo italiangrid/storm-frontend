@@ -21,7 +21,6 @@
 #include <vector>
 
 #include <exception>
-#include <stdexcept>
 
 #include <mysql/mysql.h>
 #include "storm_functions.h"
@@ -52,6 +51,6 @@ namespace storm_db {
     void vector_exec_query(struct srm_dbfd *dbfd, const std::string &query, std::vector< std::map<std::string, std::string> >& results);
     std::vector< std::map<std::string, std::string> > * vector_exec_query(struct srm_dbfd *dbfd, std::string query);
 
-    int ID_exec_query(struct srm_dbfd *dbfd, std::string query);
+    int ID_exec_query(struct srm_dbfd *dbfd, std::string query) throw(storm_db::mysql_exception);
 }
 #endif // __MYSQL_QUERY_HPP

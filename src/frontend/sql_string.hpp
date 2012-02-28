@@ -20,12 +20,6 @@
 
 class sql_string : public std::string {
 public:
-//     sql_string(std::string *s) : std::string() {
-//         _escape_sql(*s);
-//     }
-//     sql_string(std::string s) : std::string() {
-//         _escape_sql(s);
-//     }
     sql_string() : std::string() {};
     
     sql_string(const std::string &s) : std::string(s) {

@@ -23,8 +23,6 @@
 #define STORM_LOG_DEBUG 4
 #define STORM_LOG_DEBUG2 5
 
-#include <string.h>
-
 #define STORM_AUDIT -1
 
 #ifdef __cplusplus

@@ -23,7 +23,6 @@ extern "C" {
 #include "srmv2H.h"
 #include "storm_util.h"
 
-#include <string>
 #include <vector>
 
 #include <mysql/mysqld_error.h>
@@ -33,7 +32,6 @@ extern "C" {
 #include <stdexcept>
 
 #include "soap_util.hpp"
-#include "sql_string.hpp"
 #include "Credentials.hpp"
 
 /**
@@ -96,7 +94,7 @@ public:
     ;
 
     bool saveProxy() {
-        _credentials.saveProxy(_r_token);
+        return _credentials.saveProxy(_r_token);
     }
     ;
 

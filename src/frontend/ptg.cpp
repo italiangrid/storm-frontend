@@ -13,43 +13,39 @@
  * limitations under the License.
 */
 
-
-#include <string>
-#include <vector>
-#include <map>
-#include <iostream>
 #include <sstream>
 
-#include "ptg.hpp"
+#include "srmlogit.h"
+#include "soap_util.hpp"
 #include "mysql_query.hpp"
 #include "storm_mysql.h"
 
-using namespace storm;
+#include "ptg.hpp"
 
-bool ptg::supportsProtocolSpecification()
+bool storm::ptg::supportsProtocolSpecification()
 {
 	return true;
 }
 
-std::vector<sql_string>* ptg::getRequestedProtocols()
+std::vector<sql_string>* storm::ptg::getRequestedProtocols()
 {
-	return &(this->_protocols);
+	return &(this->protocols);
 }
 
-void ptg::setProtocolVector(std::vector<sql_string>* protocolVector)
+void storm::ptg::setProtocolVector(std::vector<sql_string>* protocolVector)
 {
-	this->_protocols = *protocolVector;
+	this->protocols = *protocolVector;
 }
 
-void ptg::setGenericFailureSurls()
+void storm::ptg::setGenericFailureSurls()
 {
 	srmlogit(STORM_LOG_DEBUG, "ptg::setGenericFailureSurls()", "Setting the status of all requested SURLs to SRM_FAILURE\n");
-    for (int i = 0; i < _surls.size(); i++) {
-        _surls.at(i).status = SRM_USCOREFAILURE;
+    for (int i = 0; i < surls.size(); i++) {
+        surls.at(i).setStatus(SRM_USCOREFAILURE);
     }
 }
 
-void ptg::load(ns1__srmPrepareToGetRequest *req)
+void storm::ptg::load(ns1__srmPrepareToGetRequest *req)
 {
     if (NULL == req) {
         throw invalid_request("Request is NULL");
@@ -85,10 +81,10 @@ void ptg::load(ns1__srmPrepareToGetRequest *req)
     // Fill surl
     for (int i=0; i<req->arrayOfFileRequests->__sizerequestArray; ++i) {
         ns1__TGetFileRequest* reqSURL = req->arrayOfFileRequests->requestArray[i];
-        _surls.push_back(surl_t(reqSURL->sourceSURL, reqSURL->dirOption));
+        surls.push_back(storm::PtgSurl(reqSURL->sourceSURL, reqSURL->dirOption));
     }
     
-    _n_files = _surls.size();
+    _n_files = surls.size();
     
     // User description
     if (NULL != req->userRequestDescription && u_token().size() == 0) {
@@ -136,77 +132,77 @@ void ptg::load(ns1__srmPrepareToGetRequest *req)
         // Transfer Protocols
         if (NULL != req->transferParameters->arrayOfTransferProtocols) {
             for (int i=0; i<req->transferParameters->arrayOfTransferProtocols->__sizestringArray; ++i) {
-                _protocols.push_back(req->transferParameters->arrayOfTransferProtocols->stringArray[i]);
+                protocols.push_back(req->transferParameters->arrayOfTransferProtocols->stringArray[i]);
             }
         }
     }
 }
 
 
-struct ns1__srmPrepareToGetResponse* ptg::response() {
+struct ns1__srmPrepareToGetResponse* storm::ptg::response() {
     // soap struct status
-    if (NULL == _response) {
-        _response = storm::soap_calloc<struct ns1__srmPrepareToGetResponse>(_soap);
+    if (NULL == builtResponse) {
+    	builtResponse = storm::soap_calloc<struct ns1__srmPrepareToGetResponse>(_soap);
     }
 
-    if (NULL == _response->returnStatus) {
-        _response->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
+    if (NULL == builtResponse->returnStatus) {
+    	builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(_soap);
     }
 
-    _response->returnStatus->statusCode = status();
-    if ( NULL == _response->returnStatus->explanation ) {
-        _response->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
+    builtResponse->returnStatus->statusCode = status();
+    if ( NULL == builtResponse->returnStatus->explanation ) {
+    	builtResponse->returnStatus->explanation = soap_strdup(_soap, _explanation.c_str());
     } else { // how to free() memory allocated with soap_strdup???
-        snprintf(_response->returnStatus->explanation,
-                 strlen(_response->returnStatus->explanation),
+        snprintf(builtResponse->returnStatus->explanation,
+                 strlen(builtResponse->returnStatus->explanation),
                  _explanation.c_str());
     }
 
     // Fill arrayOfFileStatuses
     try {
-        if (NULL == _response->arrayOfFileStatuses) {
-            _response->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTGetRequestFileStatus>(_soap);
+        if (NULL == builtResponse->arrayOfFileStatuses) {
+        	builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTGetRequestFileStatus>(_soap);
         }
 
-        _response->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TGetRequestFileStatus>(_soap, _surls.size());
-        _response->arrayOfFileStatuses->__sizestatusArray = _surls.size();
+        builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TGetRequestFileStatus>(_soap, surls.size());
+        builtResponse->arrayOfFileStatuses->__sizestatusArray = surls.size();
 
         int n = 0;
-        for (std::vector<ptg::surl_t>::const_iterator i = _surls.begin();
-                i != _surls.end();
+        for (std::vector<storm::PtgSurl>::const_iterator i = surls.begin();
+                i != surls.end();
                 ++i, ++n)
         {
-            if (NULL == _response->arrayOfFileStatuses->statusArray[n]) {
-                _response->arrayOfFileStatuses->statusArray[n] =
+            if (NULL == builtResponse->arrayOfFileStatuses->statusArray[n]) {
+            	builtResponse->arrayOfFileStatuses->statusArray[n] =
                     storm::soap_calloc<ns1__TGetRequestFileStatus>(_soap);
             }
-            ns1__TGetRequestFileStatus* fileStatus = _response->arrayOfFileStatuses->statusArray[n];
+            ns1__TGetRequestFileStatus* fileStatus = builtResponse->arrayOfFileStatuses->statusArray[n];
             
-            fileStatus->sourceSURL = soap_strdup(_soap, i->sourceSURL.c_str());
+            fileStatus->sourceSURL = soap_strdup(_soap, ((storm::PtgSurl)*i).getSurl().c_str());
 
             if (NULL == fileStatus->status) {
                 fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(_soap);
             }
-            fileStatus->status->statusCode = i->status;
-            fileStatus->status->explanation = soap_strdup(_soap, i->explanation.c_str());
+            fileStatus->status->statusCode = ((storm::PtgSurl)*i).getStatus();
+            fileStatus->status->explanation = soap_strdup(_soap, ((storm::PtgSurl)*i).getExplanation().c_str());
         }
     } catch (std::invalid_argument x) {
         // continuing???
     }
     
     // Fill request token
-    if (NULL == _response->requestToken) {
+    if (NULL == builtResponse->requestToken) {
         if (_r_token.size() > 0) {
-            _response->requestToken = soap_strdup(_soap, r_token().c_str());
+        	builtResponse->requestToken = soap_strdup(_soap, r_token().c_str());
         }
     } else {
-        snprintf(_response->requestToken, strlen(_response->requestToken), r_token().c_str());
+        snprintf(builtResponse->requestToken, strlen(builtResponse->requestToken), r_token().c_str());
     }
     
-    return _response;
+    return builtResponse;
 }
 
-void ptg::insert(struct srm_dbfd *db) {
+void storm::ptg::insert(struct srm_dbfd *db) {
     _db = db;
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
@@ -286,36 +282,46 @@ void ptg::insert(struct srm_dbfd *db) {
     
     
     // Insert into request_Get using the requestID
-    for (std::vector<ptg::surl_t>::const_iterator i = _surls.begin();
-            i != _surls.end();
+    for (std::vector<storm::PtgSurl>::const_iterator i = surls.begin();
+            i != surls.end();
             ++i)
     {
         int dirOptionId = -1;
         
         set_savepoint(_db, "GETFILE");
-        if (i->has_diroption) { // Insert into request_DirOption
+        if (((storm::PtgSurl)*i).hasDirOption()) { // Insert into request_DirOption
             query_s.str("");
             query_s << "INSERT INTO request_DirOption (isSourceADirectory, allLevelRecursive, numOfLevels) VALUES (";
 
-            query_s << sql_format(i->isdirectory) << ", ";
+            query_s << sql_format(((storm::PtgSurl)*i).isDirectory()) << ", ";
 
-            if (i->allLevelRecursive == -1) {
+            if (((storm::PtgSurl)*i).isAllLevelRecursive()) {
+            	query_s << "1, ";
+            } else {
+            	query_s << "0, ";
+			}
+            /*if (((storm::PtgSurl)*i).allLevelRecursive == -1) {
                 query_s << nullcomma;
             } else {
-                query_s << i->allLevelRecursive << ", ";
-            }
-            if (i->n_levels == -1) {
+                query_s << ((storm::PtgSurl)*i).allLevelRecursive << ", ";
+            }*/
+            if (((storm::PtgSurl)*i).hasNumLevels()) {
+            	query_s << ((storm::PtgSurl)*i).getNumLevels() << ")";
+			} else {
+				query_s << "NULL)";
+			}
+            /*if (((storm::PtgSurl)*i).n_levels == -1) {
                 query_s << "NULL)";
             } else {
-                query_s << i->n_levels << ")";
-            }
+                query_s << ((storm::PtgSurl)*i).n_levels << ")";
+            }*/
 
             try {
                 dirOptionId = storm_db::ID_exec_query(_db, query_s.str());
             } catch (storm_db::mysql_exception e) {
                 srmlogit(STORM_LOG_ERROR, "ptg::insert()",
                          "Error %s inserting surl %s into request_Get. Continuing\n",
-                         e.what(), i->sourceSURL.c_str());
+                         e.what(), ((storm::PtgSurl)*i).getSurl().c_str());
                 rollback_to_savepoint(_db, "GETFILE");
                 ++_n_failed;
                 continue;
@@ -323,7 +329,7 @@ void ptg::insert(struct srm_dbfd *db) {
         }
         query_s.str("");
         query_s << "INSERT INTO request_Get (sourceSURL, request_DirOptionID, request_queueID) VALUES ('";
-        query_s << i->sourceSURL << "', ";
+        query_s << ((storm::PtgSurl)*i).getSurl() << "', ";
         if (dirOptionId == -1) {
             query_s << nullcomma;
         } else {
@@ -341,7 +347,7 @@ void ptg::insert(struct srm_dbfd *db) {
 
             srmlogit(STORM_LOG_ERROR, "ptg::insert()",
                      "Error %s inserting surl %s into request_Get. Continuing\n",
-                     e.what(), i->sourceSURL.c_str());
+                     e.what(), ((storm::PtgSurl)*i).getSurl().c_str());
             rollback_to_savepoint(_db, "GETFILE");
             ++_n_failed;
             continue;
@@ -356,7 +362,7 @@ void ptg::insert(struct srm_dbfd *db) {
         } catch (storm_db::mysql_exception e) {
             srmlogit(STORM_LOG_ERROR, "ptg::insert()",
                      "Error %s inserting surl %s into status_Get. Continuing\n",
-                     e.what(), i->sourceSURL.c_str());
+                     e.what(), ((storm::PtgSurl)*i).getSurl().c_str());
             rollback_to_savepoint(_db, "GETFILE");
             ++_n_failed;
             continue;
@@ -365,8 +371,8 @@ void ptg::insert(struct srm_dbfd *db) {
     // Check the nr of successfully inserted qery.
 
     // Insert into request_TransferProtocols using the request_ID
-    for (std::vector<sql_string>::const_iterator i = _protocols.begin();
-            i != _protocols.end();
+    for (std::vector<sql_string>::const_iterator i = protocols.begin();
+            i != protocols.end();
             ++i)
     { // separati insert, nel caso che uno solo fallisca.
         query_s.str("");

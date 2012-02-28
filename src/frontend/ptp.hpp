@@ -16,26 +16,30 @@
 #ifndef __PTP_HPP
 #define __PTP_HPP
 
-// C includes
-#include "srmv2H.h"
-#include "storm_util.h"
-#include "srmlogit.h"
-
 // STL includes
-#include <string>
 #include <vector>
-#include <map>
+
+#include "stdsoap2.h"
+#include "srmv2H.h"
+#include "srm_server.h"
 
 // storm_db include
-#include "mysql_query.hpp"
+#include "sql_string.hpp"
+
+#include "PtpSurl.hpp"
 
 // parent
 #include "file_request.hpp"
 
+
 namespace storm {
 class ptp : public storm::file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse> {
 public:
-    ptp(struct soap *soap) : storm::file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse>(soap){_response=NULL;};
+    ptp(struct soap *soap) :
+			storm::file_request<ns1__srmPrepareToPutRequest,
+					ns1__srmPrepareToPutResponse>(soap) {
+		this->builtResponse = NULL;
+	};
     void insert(struct srm_dbfd *dbfd);
     void load(ns1__srmPrepareToPutRequest *req);
     
@@ -60,24 +64,10 @@ public:
     struct ns1__srmPrepareToPutResponse * response();
 
 private:
-    class surl_t {
-    public:
-        surl_t(std::string s):surl(s), has_expected_size(false), status(SRM_USCOREREQUEST_USCOREQUEUED){};
-        surl_t(std::string s, storm_size_t e):surl(s), has_expected_size(true), status(SRM_USCOREREQUEST_USCOREQUEUED){ expected_size=e;};
-        virtual ~surl_t(){};
-        sql_string surl;
-        bool has_expected_size;
-        storm_size_t expected_size;
-        ns1__TStatusCode status;
-        std::string explanation;
-    };
-
+    std::vector<PtpSurl> surls;
+    struct ns1__srmPrepareToPutResponse * builtResponse;
+    std::vector<sql_string> protocols;
     void set_surl_status(ns1__TStatusCode status);
-
-    std::vector<ptp::surl_t> _surls;
-    struct ns1__srmPrepareToPutResponse * _response;
-    std::vector<sql_string> _protocols;
-
 };
 }
 #endif // __PTP_HPP

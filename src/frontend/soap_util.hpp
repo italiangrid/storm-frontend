@@ -16,6 +16,9 @@
 #ifndef SOAP_UTIL_HPP
 #define SOAP_UTIL_HPP
 
+#include <stdexcept>
+#include <stdsoap2.h>
+
 class soap_bad_alloc : public std::bad_alloc {
 public: 
     soap_bad_alloc(){};
@@ -35,9 +38,11 @@ namespace storm {
     {
         if(NULL == soap)
             throw std::invalid_argument("soap_calloc: soap is a null pointer");
-        soap_type_t *ptr;
-        if(NULL == (ptr = static_cast<soap_type_t*>(soap_malloc(soap, sizeof(soap_type_t)))))
-            throw soap_bad_alloc("soap_calloc(soap)");
+        soap_type_t *ptr = static_cast<soap_type_t*>(soap_malloc(soap,sizeof(soap_type_t)));
+        if(ptr == NULL)
+        {
+        	throw soap_bad_alloc("soap_calloc(soap)");
+        }
         memset(ptr, 0, sizeof(soap_type_t));
         return ptr;
     }
@@ -51,9 +56,11 @@ namespace storm {
             throw std::invalid_argument("soap_calloc: soap is a null pointer");
         if(size<=0)
             throw std::invalid_argument("soap_calloc(,size): size is negative or null");
-        soap_type_t **ptr;
-        if(NULL == (ptr = static_cast<soap_type_t**>(soap_malloc(soap, size * sizeof(soap_type_t*)))))
-            throw soap_bad_alloc("soap_calloc(soap,size)");
+        soap_type_t **ptr = static_cast<soap_type_t**>(soap_malloc(soap, size * sizeof(soap_type_t*)));
+        if(ptr == NULL)
+        {
+        	throw soap_bad_alloc("soap_calloc(soap,size)");
+        }
         memset(ptr, 0, size * sizeof(soap_type_t*));
         return ptr;
     }

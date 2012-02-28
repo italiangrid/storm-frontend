@@ -53,9 +53,6 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         return SOAP_OK;
     }
 
-    srmlogit(STORM_LOG_DEBUG, func, "%s request from: %s\n", funcName, request.getClientDN().c_str());
-    srmlogit(STORM_LOG_DEBUG, func, "Client IP=%s\n", get_ip(soap).c_str());
-
     // Generete the request token (unique identifier)
     uuid_t uuid;
     char r_token[ST_MAXDPMTOKENLEN + 1];
