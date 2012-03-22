@@ -15,8 +15,11 @@
 
 #include "FullCredentials.hpp"
 #include "srmlogit.h"
+#include <openssl/stack.h>
+#include <openssl/x509.h>
 
 using namespace storm;
+
 
 FullCredentials::FullCredentials(struct soap *soap) : Credentials(soap) {
 	static const char* const funcName = "Credentials()";
@@ -40,16 +43,24 @@ FullCredentials::FullCredentials(struct soap *soap) : Credentials(soap) {
 	try
 	{
 		globus_gsi_cred_handle_t gsi_cred = get_gss_cred_handle(cred);
-		X509 * x509 = FullCredentials::gss_cred_extract_cert(gsi_cred);
-		STACK_OF(X509) * chain = FullCredentials::gss_cred_extract_cert_chain(gsi_cred);
+		X509* x509 = FullCredentials::gss_cred_extract_cert(gsi_cred);
+		STACK_OF(X509)* chain = FullCredentials::gss_cred_extract_cert_chain(gsi_cred);
 		if(x509 == NULL || chain == NULL)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Credentials: could not get cert and cert_chain from gsi credentials\n");
+			if(x509 != NULL)
+			{
+				X509_free(x509);
+			}
+			if(chain != NULL)
+			{
+				sk_X509_pop_free(chain,X509_free);
+			}
 			return;
 		}
 		cert_chain = FullCredentials::x509_convert_to_PEM(x509,chain);
-		free(chain);
-		free(x509);
+		sk_X509_pop_free(chain,X509_free);
+		X509_free(x509);
 	}
 	catch(CredentialException &e)
 	{
@@ -76,7 +87,7 @@ gss_cred_id_t FullCredentials::get_gss_cred_id(const gss_ctx_id_t gss_context)  
 globus_gsi_cred_handle_t FullCredentials::get_gss_cred_handle(const gss_cred_id_t gss_cred) throw (CredentialException)
 {
     // function name for error macros
-    static char * funcName = "gss_cred_extract_cert";
+    static char * funcName = "get_gss_cred_handle";
     /* Internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc */
 
     globus_gsi_cred_handle_t gsi_cred;

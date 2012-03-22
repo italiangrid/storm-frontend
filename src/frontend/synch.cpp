@@ -14,6 +14,7 @@
 */
 
 #include "Monitoring.hpp"
+#include "MonitoringHelper.hpp"
 #include "InstrumentedMonitor.hpp"
 #include "MonitorNotEnabledException.hpp"
 #include "srmv2H.h"
@@ -59,9 +60,9 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_MKDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -71,9 +72,9 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_MKDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -86,9 +87,9 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_MKDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -99,36 +100,9 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 	}
 
 	int ret_val = ns1__srmMkdir_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-		boost::posix_time::time_duration et = (end_time - start_time);
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_MKDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_MKDIR_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmMkdirResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_MKDIR_MONITOR_NAME,
+				rep->srmMkdirResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -158,9 +132,9 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_RMDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -170,9 +144,9 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RMDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -185,9 +159,9 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RMDIR_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -198,35 +172,9 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 	}
 
 	int ret_val = ns1__srmRmdir_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RMDIR_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_RMDIR_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmRmdirResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_RMDIR_MONITOR_NAME,
+				rep->srmRmdirResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -256,9 +204,9 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_RM_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -268,9 +216,9 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RM_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -283,9 +231,9 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RM_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -296,35 +244,9 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 	}
 
 	int ret_val = ns1__srmRm_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RM_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_RM_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmRmResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_RM_MONITOR_NAME,
+				rep->srmRmResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -352,9 +274,9 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_LS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			}
@@ -366,9 +288,9 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_LS_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -381,9 +303,9 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_LS_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -394,34 +316,9 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 	}
 
 	int ret_val = ns1__srmLs_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_LS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_LS_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmLsResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_LS_MONITOR_NAME,
+				rep->srmLsResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -451,9 +348,9 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -463,9 +360,9 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -478,9 +375,9 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -491,35 +388,9 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 	}
 
 	int ret_val = ns1__srmStatusOfLsRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmStatusOfLsRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME,
+				rep->srmStatusOfLsRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -549,9 +420,9 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_MV_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -561,9 +432,9 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_MV_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -576,9 +447,9 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_MV_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -589,35 +460,9 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 	}
 
 	int ret_val = ns1__srmMv_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_MV_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_MV_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmMvResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_MV_MONITOR_NAME,
+				rep->srmMvResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -649,9 +494,9 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -661,9 +506,9 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -676,9 +521,9 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -689,35 +534,9 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 	}
 
 	int ret_val = ns1__srmSetPermission_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_SET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_SET_PERMISSION_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmSetPermissionResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_SET_PERMISSION_MONITOR_NAME,
+				rep->srmSetPermissionResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -747,9 +566,9 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -759,9 +578,9 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -774,9 +593,9 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -787,35 +606,9 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 	}
 
 	int ret_val = ns1__srmCheckPermission_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHECK_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_CHECK_PERMISSION_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmCheckPermissionResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_CHECK_PERMISSION_MONITOR_NAME,
+				rep->srmCheckPermissionResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -845,9 +638,9 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -857,9 +650,9 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -872,9 +665,9 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -885,35 +678,9 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 	}
 
 	int ret_val = ns1__srmGetPermission_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_PERMISSION_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_GET_PERMISSION_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmGetPermissionResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_GET_PERMISSION_MONITOR_NAME,
+				rep->srmGetPermissionResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -945,9 +712,9 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -957,9 +724,9 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -972,9 +739,9 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -985,35 +752,9 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 	}
 
 	int ret_val = ns1__srmReserveSpace_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESERVE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_RESERVE_SPACE_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmReserveSpaceResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_RESERVE_SPACE_MONITOR_NAME,
+				rep->srmReserveSpaceResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1043,9 +784,9 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1055,9 +796,9 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1070,9 +811,9 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1083,35 +824,9 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 	}
 
 	int ret_val = ns1__srmStatusOfReserveSpaceRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmStatusOfReserveSpaceRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,
+				rep->srmStatusOfReserveSpaceRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1141,9 +856,9 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1153,9 +868,9 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1168,9 +883,9 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1181,35 +896,9 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 	}
 
 	int ret_val = ns1__srmReleaseSpace_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_RELEASE_SPACE_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmReleaseSpaceResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_RELEASE_SPACE_MONITOR_NAME,
+				rep->srmReleaseSpaceResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1239,9 +928,9 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1251,9 +940,9 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1266,9 +955,9 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1279,35 +968,9 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 	}
 
 	int ret_val = ns1__srmUpdateSpace_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_UPDATE_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_UPDATE_SPACE_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmUpdateSpaceResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_UPDATE_SPACE_MONITOR_NAME,
+				rep->srmUpdateSpaceResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1337,9 +1000,9 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1349,9 +1012,9 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1364,9 +1027,9 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1377,35 +1040,9 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 	}
 
 	int ret_val = ns1__srmStatusOfUpdateSpaceRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmStatusOfUpdateSpaceRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,
+				rep->srmStatusOfUpdateSpaceRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1435,9 +1072,9 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1447,9 +1084,9 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1462,9 +1099,9 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1475,35 +1112,9 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 	}
 
 	int ret_val = ns1__srmGetSpaceMetaData_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmGetSpaceMetaDataResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME,
+				rep->srmGetSpaceMetaDataResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1533,9 +1144,9 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1545,9 +1156,9 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1560,9 +1171,9 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1573,35 +1184,9 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 	}
 
 	int ret_val = ns1__srmGetSpaceTokens_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmGetSpaceTokensResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME,
+				rep->srmGetSpaceTokensResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1631,9 +1216,9 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1643,9 +1228,9 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1658,9 +1243,9 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1671,35 +1256,9 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 	}
 
 	int ret_val = ns1__srmChangeSpaceForFiles_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmChangeSpaceForFilesResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME,
+				rep->srmChangeSpaceForFilesResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1729,9 +1288,9 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1741,9 +1300,9 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1756,9 +1315,9 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1769,35 +1328,9 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 	}
 
 	int ret_val = ns1__srmStatusOfChangeSpaceForFilesRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmStatusOfChangeSpaceForFilesRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,
+				rep->srmStatusOfChangeSpaceForFilesRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1827,9 +1360,9 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1839,9 +1372,9 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1854,9 +1387,9 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1867,35 +1400,9 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 	}
 
 	int ret_val = ns1__srmExtendFileLifeTimeInSpace_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmExtendFileLifeTimeInSpaceResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME,
+				rep->srmExtendFileLifeTimeInSpaceResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -1925,9 +1432,9 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -1937,9 +1444,9 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -1952,9 +1459,9 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -1965,35 +1472,9 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 	}
 
 	int ret_val = ns1__srmPurgeFromSpace_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmPurgeFromSpaceResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME,
+				rep->srmPurgeFromSpaceResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2025,9 +1506,9 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2037,9 +1518,9 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2052,9 +1533,9 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2065,35 +1546,9 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 	}
 
 	int ret_val = ns1__srmReleaseFiles_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RELEASE_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_RELEASE_FILES_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmReleaseFilesResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_RELEASE_FILES_MONITOR_NAME,
+				rep->srmReleaseFilesResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2123,9 +1578,9 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_PUT_DONE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2135,9 +1590,9 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_PUT_DONE_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2150,9 +1605,9 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_PUT_DONE_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2163,34 +1618,9 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 	}
 
 	int ret_val = ns1__srmPutDone_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PUT_DONE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PUT_DONE_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmPutDoneResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+				storm::SRM_PUT_DONE_MONITOR_NAME,
+				rep->srmPutDoneResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2220,9 +1650,9 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2232,9 +1662,9 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2247,9 +1677,9 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2260,35 +1690,9 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 	}
 
 	int ret_val = ns1__srmAbortRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_ABORT_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmAbortRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_ABORT_REQUEST_MONITOR_NAME,
+			rep->srmAbortRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2318,9 +1722,9 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_ABORT_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2330,9 +1734,9 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2345,9 +1749,9 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_FILES_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2358,35 +1762,9 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 	}
 
 	int ret_val = ns1__srmAbortFiles_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_ABORT_FILES_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_ABORT_FILES_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmAbortFilesResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_ABORT_FILES_MONITOR_NAME,
+			rep->srmAbortFilesResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2416,9 +1794,9 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2428,9 +1806,9 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2443,9 +1821,9 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2456,35 +1834,9 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 	}
 
 	int ret_val = ns1__srmSuspendRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_SUSPEND_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_SUSPEND_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmSuspendRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_SUSPEND_REQUEST_MONITOR_NAME,
+			rep->srmSuspendRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2514,9 +1866,9 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2526,9 +1878,9 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2541,9 +1893,9 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2554,35 +1906,9 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 	}
 
 	int ret_val = ns1__srmResumeRequest_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_RESUME_REQUEST_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_RESUME_REQUEST_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmResumeRequestResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_RESUME_REQUEST_MONITOR_NAME,
+			rep->srmResumeRequestResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2612,9 +1938,9 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2624,9 +1950,9 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2639,9 +1965,9 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2652,35 +1978,9 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 	}
 
 	int ret_val = ns1__srmExtendFileLifeTime_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmExtendFileLifeTimeResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME,
+			rep->srmExtendFileLifeTimeResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2710,9 +2010,9 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 				{
 					storm::Monitoring::getInstance()->getMonitor(
 							storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return (SOAP_OK);
 			} else {
@@ -2722,9 +2022,9 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 				try
 				{
 					storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerError(et.total_milliseconds());
-				}catch(storm::MonitorNotEnabledException *exc)
+				}catch(storm::MonitorNotEnabledException& exc)
 				{
-					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+					srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 				}
 				return SOAP_EOM;
 			}
@@ -2737,9 +2037,9 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2750,35 +2050,9 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 	}
 
 	int ret_val = ns1__srmGetTransferProtocols_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmGetTransferProtocolsResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME,
+			rep->srmGetTransferProtocolsResponse->returnStatus->statusCode);
 	return ret_val;
 }
 
@@ -2802,9 +2076,9 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 			{
 				storm::Monitoring::getInstance()->getMonitor(
 						storm::SRM_PING_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return (SOAP_OK);
 		}
@@ -2816,9 +2090,9 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 			try
 			{
 				storm::Monitoring::getInstance()->getMonitor(storm::SRM_PING_MONITOR_NAME)->registerError(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
+			}catch(storm::MonitorNotEnabledException& exc)
 			{
-				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+				srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 			}
 			return SOAP_EOM;
 		}
@@ -2828,33 +2102,7 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 		srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
 	}
 	int ret_val = ns1__srmPing_impl(soap, req, rep);
-
-	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (ret_val != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PING_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PING_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					SRM_USCORESUCCESS);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-
+	storm::MonitoringHelper::registerOperation(start_time, ret_val,
+			storm::SRM_PING_MONITOR_NAME, SRM_USCORESUCCESS);
 	return ret_val;
 }

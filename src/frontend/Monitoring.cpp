@@ -17,33 +17,35 @@
 #include "srmlogit.h"
 #include <boost/thread/exceptions.hpp>
 
-storm::Monitoring* storm::Monitoring::instance = NULL;
+storm::Monitoring* storm::Monitoring::m_instance = NULL;
+int storm::Monitoring::M_DEFAULT_SLEEP_INTERVALL = 60;
+
 
 void storm::Monitoring::thread_function(Monitoring* m) {
     try {
         for (;;) {
         	m->newRound();
-            boost::this_thread::sleep(boost::posix_time::seconds(m->_sleep_interval));
+            boost::this_thread::sleep(boost::posix_time::seconds(m->m_sleep_interval));
 
-            if (!m->_running) {
+            if (!m->m_running) {
                 break;
             }
 
             //print by round
-            if (m->detailed) {
+            if (m->m_detailed) {
             	m->printRoundDetails();
             }
 
 
 			//print all history
 			m->printSummary();
-			if (m->detailed) {
+			if (m->m_detailed) {
 				m->printDetails();
 			}
 
         }
     } catch (boost::thread_interrupted &e) {
-    	srmlogit(STORM_LOG_ERROR, m->_funcName, "Received thread_interrupted exception\n");
+    	srmlogit(STORM_LOG_ERROR, m->m_funcName, "Received thread_interrupted exception\n");
     }
 }
 

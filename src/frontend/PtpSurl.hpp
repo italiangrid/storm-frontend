@@ -13,8 +13,10 @@
  * limitations under the License.
 */
 
-#ifndef __PTP_SURL_HPP
-#define __PTP_SURL_HPP
+#ifndef PTP_SURL_HPP
+#define PTP_SURL_HPP
+
+#include <stdexcept>
 
 #include "srmv2H.h"
 #include "Surl.hpp"
@@ -23,34 +25,37 @@
 namespace storm {
 class PtpSurl : public Surl  {
 public:
-	PtpSurl(std::string surl, storm_size_t size) : Surl(surl) {
-		init(size);
+	PtpSurl(std::string surl, storm_size_t size) throw (InvalidSurl) : Surl(surl) {
+		this->init(size);
 	};
 
 	PtpSurl(std::string surl) : Surl(surl) {
-		init(-1);
+		this->init(-1);
 	};
 
 	~PtpSurl(){};
 
 	bool hasExpected_size()
 	{
-		return this->expected_size > 0;
+		return m_expected_size > 0;
 	}
 
-	storm_size_t getExpected_size()
+	storm_size_t getExpected_size() throw (std::logic_error)
 	{
-		return this->expected_size;
+		if(!this->hasExpected_size())
+		{
+			throw std::logic_error("Cannot get Expected Size value when has not been specified");
+		}
+		return m_expected_size;
 	}
 
 private:
-    storm_size_t expected_size;
+    storm_size_t m_expected_size;
 
     void init(storm_size_t size)
     {
-    	this->expected_size = size;
+    	m_expected_size = size;
     }
-
 };
 }
-#endif // __PTP_SURL_HPP
+#endif // PTP_SURL_HPP

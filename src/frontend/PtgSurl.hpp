@@ -13,11 +13,11 @@
  * limitations under the License.
 */
 
-#ifndef __PTG_SURL_HPP
-#define __PTG_SURL_HPP
+#ifndef PTG_SURL_HPP
+#define PTG_SURL_HPP
 
 #include <string>
-
+#include <stdexcept>
 #include "srmv2H.h"
 #include "sql_string.hpp"
 #include "Surl.hpp"
@@ -25,11 +25,11 @@
 namespace storm {
 class PtgSurl : public Surl  {
 public:
-	PtgSurl(std::string surl, ns1__TDirOption *dirOption) : Surl(surl){
+	PtgSurl(std::string surl, ns1__TDirOption* dirOption) throw (InvalidSurl) : Surl(surl){
 		this->init(dirOption);
 	};
 
-	PtgSurl(std::string surl) : Surl(surl){
+	PtgSurl(std::string& surl) throw (InvalidSurl) : Surl(surl){
 		this->init(NULL);
 	};
 
@@ -37,65 +37,62 @@ public:
 
 	bool hasDirOption()
 	{
-		return this->dirOption;
+		return m_dirOption;
 	}
 
-	bool isDirectory()
+	bool isDirectory() throw (std::logic_error)
 	{
-		return this->directory;
+		if(!this->hasDirOption())
+		{
+			throw std::logic_error("Cannot get Directory flag when Directory Option is not specified");
+		}
+		return m_directory;
 	}
 
-	bool isAllLevelRecursive()
+	bool isAllLevelRecursive() throw (std::logic_error)
 	{
-		return this->allLevelRecursive;
+		if(!this->hasDirOption())
+		{
+			throw std::logic_error("Cannot get All level recursive flag when Directory Option is not specified");
+		}
+		return m_allLevelRecursive;
 	}
 
 	bool hasNumLevels()
 	{
-		return this->numLevels > 0;
+		return m_dirOption && m_numLevels > 0;
 	}
 
-	int getNumLevels()
+	int getNumLevels() throw (std::logic_error)
 	{
-		return this->numLevels;
+		if(!this->hasDirOption())
+		{
+			throw std::logic_error("Cannot get Number of levels when Directory Option is not specified");
+		}
+		return m_numLevels;
 	}
+
 private:
-//	sql_string sourceSURL;
-	bool dirOption;
-	bool directory;
-	bool allLevelRecursive;
-	//int allLevelRecursive; // -1 means not supplied
-	int numLevels; // -1 means not supplied
-//	ns1__TStatusCode status;
-//	std::string explanation;
+	bool m_dirOption;
+	bool m_directory;
+	bool m_allLevelRecursive;
+	int m_numLevels; // -1 means not supplied
 
 	void init(ns1__TDirOption *dirOption)
 	{
 		 if (dirOption == NULL) {
-			 this->dirOption = false;
+			 m_dirOption = false;
 		} else {
-			this->dirOption = true;
-			directory = dirOption->isSourceADirectory;
-			allLevelRecursive = (dirOption->allLevelRecursive != NULL ? *(dirOption->allLevelRecursive) : false);
-			/*
-			if (dirOption->allLevelRecursive == NULL) {
-				allLevelRecursive = -1;
-			} else {
-				if (*(dirOption->allLevelRecursive)) {
-					allLevelRecursive = 1;
-				} else {
-					allLevelRecursive = 0;
-				}
-			}
-			*/
+			m_dirOption = true;
+			m_directory = dirOption->isSourceADirectory;
+			m_allLevelRecursive = (dirOption->allLevelRecursive != NULL ? *(dirOption->allLevelRecursive) : false);
 			if (dirOption->numOfLevels == NULL) {
-				numLevels = -1;
+				m_numLevels = -1;
 			} else {
-				numLevels = *(dirOption->numOfLevels);
+				m_numLevels = *(dirOption->numOfLevels);
 			}
 		}
 	}
-
 };
 }
-#endif // __PTG_SURL_HPP
+#endif // PTG_SURL_HPP

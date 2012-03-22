@@ -32,6 +32,11 @@ db.passwd = password
 #argus-pep.port = 8154 # default is 8154
 #argus-pep.service = authz # default is authz
 
+#monitoring.enabled = true  # default is true
+#monitoring.timeInterval = 60  # default is 60 (seconds)
+#monitoring.detailed = false  # default is false
+
+
 # WSDL to be returned to a GET request
 wsdl.file = @datadir@/wsdl/srm.v2.2.wsdl
 

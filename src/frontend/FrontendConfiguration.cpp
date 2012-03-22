@@ -306,7 +306,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), po::value<unsigned int>()->default_value(DEFAULT_SLEEP_THREADPOOL_MAX_PENDING), EMPTY_DESCRIPTION)
             (OPTL_MAX_GSOAP_PENDING.c_str(), po::value<int>()->default_value(DEFAULT_GSOAP_MAX_PENDING), EMPTY_DESCRIPTION)
             (OPTL_LOG_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), EMPTY_DESCRIPTION)
-            (OPTL_MONITORING_ENABLED.c_str(), po::value<bool>()->default_value(false), EMPTY_DESCRIPTION)
+            (OPTL_MONITORING_ENABLED.c_str(), po::value<bool>()->default_value(DEFAULT_MONITORING_ENABLED), EMPTY_DESCRIPTION)
             (OPTL_MONITORING_DETAILED.c_str(), po::value<bool>()->default_value(DEFAULT_MONITORING_DETAILED), OPT_MONITORING_DETAILED_DESCRIPTION)
             (OPTL_MONITORING_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_MONITORING_FILE_NAME), EMPTY_DESCRIPTION)
             (OPTL_MONITORING_TIME_INTERVAL.c_str(), po::value<int>()->default_value(DEFAULT_MONITORING_TIME_INTERVAL), EMPTY_DESCRIPTION)

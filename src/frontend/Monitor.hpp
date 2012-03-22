@@ -71,7 +71,8 @@ class Monitor {
 		enum OperationType
 		{
 			Synchronous = 0,
-			Asynchronous = 1
+			Asynchronous = 1,
+			Stub = 2
 		};
 
 		static std::string nameOfOperationType(OperationType type)

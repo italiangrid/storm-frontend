@@ -37,7 +37,7 @@ boost::mutex audit_mutex;
 static FILE *log_fd = NULL;
 static FILE *audit_fd = NULL;
 static int loglevel = STORM_LOG_ERROR;
-static bool _auditEnabled;
+static bool m_auditEnabled;
 
 /**
  * This function init the log file. At this moment, open the file in
@@ -52,7 +52,7 @@ static bool _auditEnabled;
  **/
 int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) {
 
-    _auditEnabled = auditEnabled;
+	m_auditEnabled = auditEnabled;
 
     if (NULL == logfile) {
 
@@ -69,7 +69,7 @@ int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) 
         }
     }
 
-    if (_auditEnabled) {
+    if (m_auditEnabled) {
         if (NULL == auditfile) {
 
             audit_fd = stderr;
@@ -129,77 +129,124 @@ std::string getLogLevelLable(int logLevel)
 	return lable;
 }
 
+
+int writeLogPrefix(char* prtbuf, int logLevel, const char* functionName)
+{
+	struct tm *tm;
+#if defined(_REENTRANT) || defined(_THREAD_SAFE)
+	struct tm tmstruc;
+#endif
+	time_t current_time;
+
+(void) time(&current_time); /* Get current time */
+#if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
+	(void) localtime_r(&current_time, &tmstruc);
+	tm = &tmstruc;
+#else
+	tm = localtime(&current_time);
+#endif
+
+	std::string tid = storm::ThreadPool::getInstance()->getThreadIdLable(boost::this_thread::get_id());
+	if(tid.empty())
+	{
+		tid = std::string("Main - ");
+	}
+	if(functionName == NULL)
+	{
+		return snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s %s : ", tm->tm_mon + 1, tm->tm_mday,
+					tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), getLogLevelLable(logLevel).c_str());
+	}
+	else
+	{
+		return snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s %s : %s : ", tm->tm_mon + 1, tm->tm_mday,
+					tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), getLogLevelLable(logLevel).c_str(), functionName);
+	}
+}
+
+int writeLogPrefix(char* prtbuf, int logLevel)
+{
+	return writeLogPrefix(prtbuf, logLevel, NULL);
+}
+
+int loggingError(const char* requestName) {
+	int save_errno = errno;
+	char prtbuf[LOGBUFSZ];
+	signed int max_char_to_write = LOGBUFSZ - 1;
+	int writtenChars = 0;
+	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_ERROR);
+	if(writtenChars < max_char_to_write)
+	{
+		if(requestName != NULL)
+		{
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+					"Unable to log message from function %s, null arguments\n",
+					requestName);
+		}
+		else
+		{
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+					"Unable to log message, null arguments\n");
+		}
+	}
+
+	if (writtenChars < max_char_to_write) {
+		prtbuf[writtenChars] = '\0';
+	}
+	else
+	{
+		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	}
+	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
+	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	fflush(log_fd);
+	lock.unlock();
+
+	errno = save_errno;
+	return 0;
+}
+
+
 int srmlogit(int level, const char *func, const char *msg, ...) {
     va_list args;
+    int save_errno = errno;
     char prtbuf[LOGBUFSZ];
-    int save_errno;
-    int Tid = 0;
-    int prefix_msg_len;
-    signed int max_char_to_write;
-    int desired_buf_len = 0;
-    struct tm *tm;
-#if defined(_REENTRANT) || defined(_THREAD_SAFE)
-    struct tm tmstruc;
-#endif
-    time_t current_time;
+    signed int max_char_to_write = LOGBUFSZ - 1;
+    int writtenChars = 0;
 
     if (level > loglevel) {
         return 0;
     }
 
-    save_errno = errno;
+    /* Should add this check cicling on al elements in va_list args using va_arg macro to extract each
+     * this cannot be done since we parse msg to find %s macros and their value position in va_list args...
+     * quite difficult!
+     * if(requestName == NULL || ??? == NULL || ...)
+	{
+		loggingError(requestName);
+		errno = save_errno;
+		return 1;
+	}
+     * */
+
     va_start(args, msg);
-    (void) time(&current_time); /* Get current time */
-#if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
-    (void) localtime_r(&current_time, &tmstruc);
-    tm = &tmstruc;
-#else
-    tm = localtime(&current_time);
-#endif
-
-    std::string tid = storm::ThreadPool::getInstance()->getThreadIdLable(boost::this_thread::get_id());
-    if(tid.empty())
+    writtenChars += writeLogPrefix(prtbuf, level , func);
+    if(writtenChars < max_char_to_write)
     {
-    	tid = std::string("Main - ");
+    	writtenChars += vsnprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, msg, args);
     }
-    prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s %s: %s: ", tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str(), getLogLevelLable(level).c_str(), func);
-
-    max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
-    if(max_char_to_write > 0)
+    va_end(args);
+    if(writtenChars < max_char_to_write)
     {
-    	desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
+    	prtbuf[writtenChars] = '\0';
     }
     else
     {
     	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
     }
 
-    prtbuf[LOGBUFSZ-1] = '\0';
-    va_end(args);
-
-    // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
-    if (desired_buf_len >= max_char_to_write) {
-        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
-
-    boost::mutex::scoped_lock lock;
-    FILE *fd;
-
-    if (level == STORM_AUDIT) {
-        if (!_auditEnabled) {
-            return 0;
-        }
-        fd = audit_fd;
-        lock = boost::mutex::scoped_lock(audit_mutex);
-    } else {
-        fd = log_fd;
-        lock = boost::mutex::scoped_lock(log_mutex);
-    }
-
-    fwrite(prtbuf, sizeof(char), strlen(prtbuf), fd);
-    fflush(fd);
-
+    boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
+    fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    fflush(log_fd);
     lock.unlock();
 
     errno = save_errno;
@@ -207,92 +254,201 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
 }
 
 int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN) {
+	int save_errno = errno;
     char prtbuf[LOGBUFSZ];
-    int save_errno;
-    int Tid = 0;
-    int prefix_msg_len;
-    signed int max_char_to_write;
-    int desired_buf_len = 0;
-    struct tm *tm;
-#if defined(_REENTRANT) || defined(_THREAD_SAFE)
-    struct tm tmstruc;
-#endif
-    time_t current_time;
-
-    if (STORM_LOG_INFO > loglevel) {
-            return 0;
+    signed int max_char_to_write = LOGBUFSZ - 1;
+    int writtenChars = 0;
+    if(requestName == NULL || clientIP == NULL || clientDN == NULL )
+	{
+		loggingError(requestName);
+		errno = save_errno;
+		return 1;
 	}
 
-    save_errno = errno;
-    (void) time(&current_time); /* Get current time */
-#if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
-    (void) localtime_r(&current_time, &tmstruc);
-    tm = &tmstruc;
-#else
-    tm = localtime(&current_time);
-#endif
-
-    /*
-    std::ostringstream oss;
-    oss << boost::this_thread::get_id();
-    std::string tid = oss.str();*/
-    std::string tid = storm::ThreadPool::getInstance()->getThreadIdLable(boost::this_thread::get_id());
-    if(tid.empty())
-    {
-    	tid = std::string("Main - ");
-    }
-    prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s INFO : ", tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec, tid.c_str());
-
-    max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
-    if(max_char_to_write > 0)
-    {
-    	desired_buf_len = snprintf(prtbuf + prefix_msg_len, max_char_to_write,
+    writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+    if(writtenChars < max_char_to_write)
+	{
+    	writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
 				"Request \'%s\' from Client IP=%s Client DN=%s\n",
 				requestName, clientIP, clientDN);
+    }
+    if(writtenChars < max_char_to_write)
+    {
+    	prtbuf[writtenChars] = '\0';
     }
     else
     {
     	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
     }
 
-    prtbuf[LOGBUFSZ-1] = '\0';
-
-    // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
-    if (desired_buf_len >= max_char_to_write) {
-        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
-
-    boost::mutex::scoped_lock lock;
-    FILE *fd = log_fd;
-	lock = boost::mutex::scoped_lock(log_mutex);
-
-    fwrite(prtbuf, sizeof(char), strlen(prtbuf), fd);
-    fflush(fd);
-
+    boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
+    fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    fflush(log_fd);
     lock.unlock();
 
     errno = save_errno;
     return 0;
 }
 
+int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const char* clientDN, const char* surls, int surlsNum)
+{
+	int save_errno = errno;
+	char prtbuf[LOGBUFSZ];
+	signed int max_char_to_write = LOGBUFSZ - 1;
+	int writtenChars = 0;
+
+	if(requestName == NULL || clientIP == NULL || clientDN == NULL || surls == NULL)
+	{
+		loggingError(requestName);
+		errno = save_errno;
+		return 1;
+	}
+	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	if(writtenChars < max_char_to_write)
+	{
+		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+				"Request \'%s\' from Client IP=\'%s\' Client DN=\'%s\'",
+				requestName, clientIP, clientDN);
+	}
+
+	if (writtenChars < max_char_to_write)
+	{
+		if(surls != NULL && surlsNum > 0)
+		{
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+					" # Requested \'%u\' SURL(s): \'%s\'\n",
+					surlsNum, surls);
+		}
+		else
+		{
+			prtbuf[writtenChars] = '\n';
+			writtenChars++;
+		}
+	}
+
+	if (writtenChars < max_char_to_write) {
+		prtbuf[writtenChars] = '\0';
+	}
+	else
+	{
+		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	}
+
+	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
+	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	fflush(log_fd);
+	lock.unlock();
+
+	errno = save_errno;
+	return 0;
+}
+
+int srmLogRequestWithToken(const char* requestName, const char* clientIP, const char* clientDN, const char* requestToken)
+{
+	int save_errno = errno;
+	char prtbuf[LOGBUFSZ];
+	signed int max_char_to_write = LOGBUFSZ - 1;
+	int writtenChars = 0;
+	if(requestName == NULL || clientIP == NULL || clientDN == NULL || requestToken == NULL)
+	{
+		loggingError(requestName);
+		errno = save_errno;
+		return 1;
+	}
+
+	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	if(writtenChars < max_char_to_write)
+	{
+		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+				"Request \'%s\' from Client IP=\'%s\' Client DN=\'%s\' # Requested token \'%s\'\n",
+				requestName, clientIP, clientDN, requestToken);
+	}
+
+	if (writtenChars < max_char_to_write) {
+		prtbuf[writtenChars] = '\0';
+	}
+	else
+	{
+		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	}
+
+	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
+	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	fflush(log_fd);
+	lock.unlock();
+
+	errno = save_errno;
+	return 0;
+}
+
+int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP, const char* clientDN, const char* requestToken, const char* surls, int surlsNum)
+{
+	int save_errno = errno;
+	char prtbuf[LOGBUFSZ];
+	signed int max_char_to_write = LOGBUFSZ - 1;
+	int writtenChars = 0;
+
+	if(requestName == NULL || clientIP == NULL || clientDN == NULL || requestToken == NULL || surls == NULL)
+	{
+		loggingError(requestName);
+		errno = save_errno;
+		return 1;
+	}
+	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	if(writtenChars < max_char_to_write)
+	{
+		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+				"Request \'%s\' from Client IP=\'%s\' Client DN=\'%s\' # Requested token \'%s\'",
+				requestName, clientIP, clientDN, requestToken);
+	}
+
+	if (writtenChars < max_char_to_write)
+	{
+		if(surls != NULL && surlsNum > 0)
+		{
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
+					" on \'%u\' SURL(s): \'%s\'\n",
+					surlsNum, surls);
+		}
+		else
+		{
+			prtbuf[writtenChars] = '\n';
+			writtenChars++;
+		}
+	}
+
+	if (writtenChars < max_char_to_write) {
+		prtbuf[writtenChars] = '\0';
+	}
+	else
+	{
+		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	}
+
+	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
+	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	fflush(log_fd);
+	lock.unlock();
+
+	errno = save_errno;
+	return 0;
+}
+
 int srmAudit(const char *msg, ...) {
     va_list args;
     char prtbuf[LOGBUFSZ];
-    int save_errno;
-    int prefix_msg_len;
-    signed int max_char_to_write;
-    int desired_buf_len = 0;
+    int save_errno = errno;
+    signed int max_char_to_write = LOGBUFSZ - 1;
+	int writtenChars = 0;
     struct tm *tm;
 #if defined(_REENTRANT) || defined(_THREAD_SAFE)
     struct tm tmstruc;
 #endif
-	if (!_auditEnabled) {
+	if (!m_auditEnabled) {
 		return 0;
 	}
     time_t current_time;
 
-    save_errno = errno;
     va_start(args, msg);
     (void) time(&current_time); /* Get current time */
 #if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
@@ -302,32 +458,25 @@ int srmAudit(const char *msg, ...) {
     tm = localtime(&current_time);
 #endif
 
-    prefix_msg_len = snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d : ", tm->tm_mon + 1, tm->tm_mday,
+    writtenChars += snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d : ", tm->tm_mon + 1, tm->tm_mday,
             tm->tm_hour, tm->tm_min, tm->tm_sec);
 
-    max_char_to_write = LOGBUFSZ - prefix_msg_len - 1;
-    if(max_char_to_write > 0)
+    if(writtenChars < max_char_to_write)
     {
-    	desired_buf_len = vsnprintf(prtbuf + prefix_msg_len, max_char_to_write, msg, args);
+    	writtenChars += vsnprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, msg, args);
     }
-    else
-    {
-    	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
-
-    prtbuf[LOGBUFSZ-1] = '\0';
     va_end(args);
-
-    // Simple (and not 100% correct, but it is enough) check on overflow in writing prtbuf
-    if (desired_buf_len >= max_char_to_write) {
-        sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
+    if (writtenChars < max_char_to_write) {
+		prtbuf[writtenChars] = '\0';
+	}
+	else
+	{
+		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	}
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(audit_mutex);
-
     fwrite(prtbuf, sizeof(char), strlen(prtbuf), audit_fd);
     fflush(audit_fd);
-
     lock.unlock();
 
     errno = save_errno;

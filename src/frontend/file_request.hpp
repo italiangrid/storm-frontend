@@ -20,19 +20,25 @@ extern "C" {
 #include <openssl/x509.h>
 }
 
-#include "srmv2H.h"
-#include "storm_util.h"
-
-#include <vector>
-
 #include <mysql/mysqld_error.h>
 #include <mysql/mysql.h>
 
+// STL includes
+#include <vector>
+#include <string>
 #include <exception>
 #include <stdexcept>
 
+#include <boost/smart_ptr/shared_ptr.hpp>
+
+#include "srmv2H.h"
+#include "storm_util.h"
+#include "srm_server.h"
+
 #include "soap_util.hpp"
 #include "Credentials.hpp"
+#include "sql_string.hpp"
+#include "Surl.hpp"
 
 /**
  * Abstract class representing a generic file request.
@@ -46,11 +52,11 @@ public:
     invalid_request(std::string reason) {
         errmsg = reason.c_str();
     }
-    const char *what() const throw () {
+    const char* what() const throw () {
         return errmsg;
     }
 private:
-    const char *errmsg;
+    const char* errmsg;
 };
 
 class not_supported: public std::exception {
@@ -61,273 +67,255 @@ public:
     not_supported(std::string reason) {
         errmsg = reason.c_str();
     }
-    const char *what() const throw () {
+    const char* what() const throw () {
         return errmsg;
     }
 private:
-    const char *errmsg;
+    const char* errmsg;
+};
+
+class InvalidResponse: public std::exception {
+public:
+	InvalidResponse() {
+    }
+    ;
+	InvalidResponse(std::string reason) {
+        errmsg = reason.c_str();
+    }
+    const char* what() const throw () {
+        return errmsg;
+    }
+private:
+    const char* errmsg;
 };
 
 template<typename soap_in_t, typename soap_out_t>
 class file_request {
 public:
-    file_request(struct soap *soap) :
-        _credentials(soap), _soap(soap) {
+    file_request(struct soap* soapRequest) :
+    	m_credentials(soapRequest), m_soapRequest(soapRequest),
+    	m_status(SRM_USCOREREQUEST_USCOREQUEUED), m_builtResponse(NULL),
+    	m_fileStorageType(DB_FILE_TYPE_UNKNOWN), m_desiredTotalRequestTime(-1) {
+		/*try{*/
+		//m_builtResponse = NULL;
+	    //m_fileStorageType = DB_FILE_TYPE_UNKNOWN;
+
+		/*} catch (storm::invalid_request x) {
+			srmlogit(STORM_LOG_DEBUG, func, "Error loading data for request token %s: %s\n",
+					r_token, x.what());
+			//far lanciare un'eccezione appropriata
+			request.r_token(""); // We do not want to send the Request token, in case of error.
+			*resp = request.error_response(SRM_USCOREINVALID_USCOREREQUEST, x.what());
+
+			return SOAP_OK;
+		}*/
     }
-    ;
 
     virtual ~file_request() {
     }
-    ;
 
-    /**
-     * Get the current client DN
-     */
+    Credentials getCredentials()
+    {
+    	return m_credentials;
+    }
+
     std::string getClientDN() {
-        return _credentials.getDN();
+        return m_credentials.getDN();
     }
-    ;
 
-    void setClientDN(const char* clientDN) {
-        _credentials.setDN(std::string(clientDN));
-    }
-    ;
+    std::vector<sql_string> getFQANsVector() {
+		return m_credentials.getFQANsVector();
+	}
 
     bool saveProxy() {
-        return _credentials.saveProxy(_r_token);
+        return m_credentials.saveProxy(m_requestToken);
     }
-    ;
 
     /**
      * Get the current status code of the file request
      */
-    ns1__TStatusCode status() {
-        return _status;
+    ns1__TStatusCode getStatus() {
+        return m_status;
     }
-    ;
 
-    /**
-     * Set the current status code of the file request
-     * @param i an integer
-     * @return i an integer: the current status code
-     */
-    ns1__TStatusCode status(int i) {
-        ns1__TStatusCode old = _status;
-        _status = static_cast<ns1__TStatusCode> (i);
-        return old;
+    std::string getSurlsList()
+    {
+    	std::string builtList;
+    	std::vector<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+    	bool first = true;
+    	for (std::vector<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+    		if(first)
+    		{
+    			first = false;
+    		}
+    		else
+    		{
+    			builtList += ' ';
+    		}
+    		builtList += (*i)->getSurl();
+
+    	}
+    	return builtList;
     }
-    ;
+
+    int getSurlsNumber()
+    {
+    	return m_surls.size();
+    }
 
     /**
      * Get the current explanation string
      */
-    std::string explanation() {
-        return _explanation;
+    std::string getExplanation() {
+        return m_explanation;
     }
-    ;
-
-    /**
-     * Set the current status explanation string
-     * @param s a std::string
-     * @return the old explanation string of the instance
-     */
-    std::string explanation(std::string s) {
-        std::string old = _explanation;
-        _explanation = s;
-        return old;
-    }
-    ;
-
-    std::string sql_format(char c) {
-        std::string s = "'";
-
-        s.append(1, c);
-        s.append("'");
-        return s;
-    }
-    ;
-
-    std::string sql_format(const std::string& s) {
-        std::string formatted_s = "'";
-
-        formatted_s.append(s);
-        formatted_s.append("'");
-        return formatted_s;
-    }
-    ;
-
-    std::string sql_format(bool value) {
-        if (value) {
-            return "1";
-        }
-        return "0";
-    }
-    ;
 
     /**
      * get the current request token
      */
-    std::string r_token() {
-        return _r_token;
+    std::string getRequestToken() {
+        return m_requestToken;
     }
-    ;
 
-    /**
-     * Set the current request token
-     * @param s a std::string
-     * @return the old request token of the instance
-     */
-    std::string r_token(std::string s) {
-        std::string old = _r_token;
-        _r_token = s;
-        return old;
+    void setRequestToken(std::string token)
+    {
+    	m_requestToken = sql_string(token);
     }
-    ;
+
+    void invalidateRequestToken()
+    {
+    	m_requestToken = sql_string("");
+    }
 
     /**
      * get the current user token
      */
-    std::string u_token() {
-        return _u_token;
+    std::string getUserToken() {
+        return m_userToken;
     }
-    ;
-
-    /**
-     * Set the current user token
-     * @param s a std::string
-     * @return the old user token of the instance
-     */
-    std::string u_token(std::string s) {
-        std::string old = _u_token;
-        _u_token = s;
-        return old;
-    }
-    ;
 
     /**
      * get the current space token
      */
-    std::string s_token() {
-        return _s_token;
+    std::string getSpaceToken() {
+        return m_spaceToken;
     }
-    ;
 
-    /**
-     * Set the current space token
-     * @param s a std::string
-     * @return the old user token of the instance
-     */
-    std::string s_token(std::string s) {
-        std::string old = _s_token;
-        _s_token = s;
-        return old;
-    }
-    ;
+    virtual void load(soap_in_t* req) throw (invalid_request) = 0;
 
-    /**
-     * Set the proxy date
-     * @param date char*
-     * @return old date
-     */
-    char* proxy_date(char * date) {
-        char* old = date;
-        _proxy_date = date;
-        return old;
-    }
-    ;
-
-    /**
-     * get the current date
-     */
-    char* proxy_date() {
-        return _proxy_date;
-    }
-    ;
-
-    /**
-     * Set the proxy
-     * @param date X509*
-     * @return void
-     */
-    void proxy(X509* p) {
-        _proxy = p;
-    }
-    ;
-
-    /**
-     * get the current proxy
-     */
-    X509* proxy() {
-        return _proxy;
-    }
-    ;
-
-    std::vector<sql_string> getFQANsVector() {
-        return _credentials.getFQANsVector();
-    }
-    ;
-
-    char overwrite() {
-        return _overwrite;
-    }
-    ;
-
-    char overwrite(char o) {
-        char old = _overwrite, _overwrite = o;
-        return old;
-    }
-    ;
-
-    virtual void load(soap_in_t *req) = 0;
     virtual bool supportsProtocolSpecification() = 0;
-    virtual std::vector<sql_string>* getRequestedProtocols() = 0;
-    virtual void setProtocolVector(std::vector<sql_string>* protocolVector) = 0;
+
+    void setProtocolVector(std::vector<sql_string>* protocolVector)
+    {
+    	m_protocols = *protocolVector;
+    }
+
+    std::vector<sql_string>* getRequestedProtocols() throw (std::logic_error)
+	{
+    	if(!this->supportsProtocolSpecification())
+    	{
+    		throw std::logic_error("Cannot get Requested Protocols when protocol specification is not supported");
+    	}
+    	return &(m_protocols);
+	}
+
+    void failRequest(std::string explaination) {
+    	m_status = SRM_USCOREFAILURE;
+    	m_explanation = explaination;
+    	this->setGenericFailureSurls();
+    }
 
     /*
      * Set the status code at SURL level to SRM_FAILURE to all requested SURLs
      */
-    virtual void setGenericFailureSurls() = 0;
-    virtual void insert(struct srm_dbfd *dbfd) = 0;
-    virtual soap_out_t *response() = 0;
-    soap_out_t *error_response(ns1__TStatusCode s, const char * const expl) {
-        _status = s;
-        _explanation = expl;
-        return response();
+    void setGenericFailureSurls()
+    {
+    	std::vector<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+		for (std::vector<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+			(*i)->setStatus(SRM_USCOREFAILURE);
+		}
     }
-    ;
+
+    virtual void insertIntoDB(struct srm_dbfd* dbfd) throw (std::logic_error , storm_db::mysql_exception) = 0;
+
+    soap_out_t* buildSpecificResponse(ns1__TStatusCode status, const char* const explanation) throw (InvalidResponse) {
+		m_status = status;
+		m_explanation = explanation;
+		return this->buildResponse();
+	}
+
+    virtual soap_out_t* buildResponse() throw (std::logic_error , InvalidResponse) = 0;
+
+    std::string sqlFormat(char c) {
+        std::string formattedString("\'");
+        formattedString.append(1, c);
+        formattedString += '\'';
+        return formattedString;
+    }
+
+    std::string sqlFormat(const std::string& s) {
+        std::string formatted_s("\'");
+        formatted_s += s;
+        formatted_s += '\'';
+        return formatted_s;
+    }
+
+    std::string sqlFormat(bool value) {
+        return value ? "1" : "0";
+    }
 
 protected:
-    soap* _soap;
-    storm::Credentials _credentials;
-    sql_string _client_dn;
-    std::vector<sql_string> _fqans;
-    std::string _fqans_one_string; // Temporary hack: inserted in the BLOB column of the DB
-    std::string _explanation;
-    ns1__TStatusCode _status; // Staus of the SRM request
-    sql_string _r_token; // Request Token
-    sql_string _u_token; // User Token
-    sql_string _s_token; // Space Token
-    struct srm_dbfd *_db;
-    // std::string _proxy;
-    storm_time_t _retrytime;
-    storm_time_t _pinLifetime; // -1 = not specified
-    storm_time_t _remainingTime; // -1 = not specified
-    storm_time_t _lifetime;
-    int _n_files;
-    int _n_completed;
-    int _n_waiting;
-    int _n_failed;
-    char _f_type;
-    char _overwrite;
-    std::string _r_type;
+    soap* m_soapRequest;
+    // -------------------------------
+    // --- incoming request parameters
+    typedef boost::shared_ptr<Surl> SurlPtr;
+    std::vector<SurlPtr> m_surls;
+    sql_string m_userToken; // User Token
+    sql_string m_spaceToken; // Space Token
+    char m_fileStorageType; // from --> ns1__TFileStorageType *desiredFileStorageType
+    std::vector<sql_string> m_protocols; // --> contained in ns1__TTransferParameters* transferParameters;
+    Credentials m_credentials; // --> if available built on char* authorizationID
+    //NUOVI MIEI
+	std::string m_userRequestDescription;
+	storm_time_t m_desiredTotalRequestTime;
+	ns1__ArrayOfTExtraInfo* m_storageSystemInfo; //ignored
+	ns1__TRetentionPolicyInfo* m_targetFileRetentionPolicyInfo; // ignored
+	//
+    // --- parameters end
+    // -------------------------------
 
-    std::string _response_error;
-    int _response_errno;
+    soap_out_t* m_builtResponse;
+    //--------------------------------
+    // --- response build elements
+    ns1__TStatusCode m_status;
+    std::string m_explanation;
+    sql_string m_requestToken;
+	// --- response elements end
+    //--------------------------------
 
-    //User Credential
-    char *_proxy_date;
-    X509 *_proxy;
+    //--------------------------------
+    // --- internal use fields
+    std::string m_requestType;
+    // --- internal use fields end
+    //--------------------------------
+
+    void setFileStorageType(ns1__TFileStorageType type) throw (std::domain_error)
+    {
+    	 switch (type) {
+			case VOLATILE:
+				m_fileStorageType = DB_FILE_TYPE_VOLATILE;
+				break;
+			case DURABLE:
+				m_fileStorageType = DB_FILE_TYPE_DURABLE;
+				break;
+			case PERMANENT:
+				m_fileStorageType = DB_FILE_TYPE_PERMANENT;
+				break;
+			default:
+				throw std::domain_error("Invalid desiredFileStorageType");
+		}
+    }
 };
 }
 
-#endif
+#endif // FILE_REQUEST_HPP

@@ -23,15 +23,14 @@
 #include "srmv2H.h"
 #include "srmlogit.h"
 #include "filerequest_template.hpp"
-#include "ptp.hpp"
-#include "ptg.hpp"
-#include "copy.hpp"
-#include "bol.hpp"
+#include "PtpRequest.hpp"
+#include "PtgRequest.hpp"
+#include "CopyRequest.hpp"
+#include "BolRequest.hpp"
 
 #include "Credentials.hpp"
 #include "Authorization.hpp"
-#include "Monitoring.hpp"
-#include "InstrumentedMonitor.hpp"
+#include "MonitoringHelper.hpp"
 
 #include "get_socket_info.hpp"
 
@@ -42,23 +41,37 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 
     static const char* funcName = "srmPrepareToPut";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::ptp request(soap);
-    srmLogRequest("PTP",get_ip(soap).c_str(),request.getClientDN().c_str());
+    storm::PtpRequest* request;
+    try{ request = new storm::PtpRequest(soap, req); }
+    catch(storm::invalid_request &e)
+    {
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
+    	storm::MonitoringHelper::registerOperationError(start_time,
+    					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
+		return(SOAP_FATAL_ERROR);
+    }
+    srmLogRequestWithSurls("PTP", get_ip(soap).c_str(),
+			request->getClientDN().c_str(), request->getSurlsList().c_str(),
+			request->getSurlsNumber());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		request.r_token("");
-		rep->srmPrepareToPutResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-		boost::posix_time::time_duration et = (end_time - start_time);
+		request->invalidateRequestToken();
 		try
 		{
-			storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
+			rep->srmPrepareToPutResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		} catch(storm::InvalidResponse &exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			delete request;
+	    	storm::MonitoringHelper::registerOperationError(start_time,
+	    					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
+			return(SOAP_FATAL_ERROR);
 		}
+		storm::MonitoringHelper::registerOperation(start_time,
+					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
+					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+		delete request;
 		return(SOAP_OK);
 	}
 	else
@@ -67,34 +80,11 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 	}
 
     int soap_status = __process_file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse> (
-            soap, request, funcName, req, &rep->srmPrepareToPutResponse);
-
-    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (soap_status != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PREPARE_TO_PUT_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmPrepareToPutResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
+            soap, *request, funcName, req, &rep->srmPrepareToPutResponse);
+	storm::MonitoringHelper::registerOperation(start_time, soap_status,
+				storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
+				rep->srmPrepareToPutResponse->returnStatus->statusCode);
+	delete request;
     return soap_status;
 }
 
@@ -103,23 +93,37 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 
     static const char* funcName = "srmPrepareToGet";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::ptg request(soap);
-    srmLogRequest("PTG",get_ip(soap).c_str(),request.getClientDN().c_str());
+    storm::PtgRequest* request;
+    try{ request = new storm::PtgRequest(soap, req); }
+    catch(storm::invalid_request &e)
+    {
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
+    	storm::MonitoringHelper::registerOperationError(start_time,
+    					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
+    	return(SOAP_FATAL_ERROR);
+    }
+	srmLogRequestWithSurls("PTG", get_ip(soap).c_str(),
+			request->getClientDN().c_str(), request->getSurlsList().c_str(),
+			request->getSurlsNumber());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		request.r_token("");
-		rep->srmPrepareToGetResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-		boost::posix_time::time_duration et = (end_time - start_time);
+		request->invalidateRequestToken();
 		try
 		{
-			storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PREPARE_TO_GET_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
+			rep->srmPrepareToGetResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		} catch(storm::InvalidResponse &exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			delete request;
+	    	storm::MonitoringHelper::registerOperationError(start_time,
+	    					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
+			return(SOAP_FATAL_ERROR);
 		}
+		storm::MonitoringHelper::registerOperation(start_time,
+					storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
+					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+		delete request;
 		return(SOAP_OK);
 	}
 	else
@@ -128,33 +132,11 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 	}
 
     int soap_status = __process_file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> (
-            soap, request, funcName, req, &rep->srmPrepareToGetResponse);
-    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (soap_status != SOAP_OK)
-	{
-		try
-		{
-			storm::Monitoring::getInstance()->getMonitor(storm::SRM_PREPARE_TO_GET_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
-	else
-	{
-		try
-		{
-			((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_PREPARE_TO_GET_MONITOR_NAME))->registerCompleted(
-					et.total_milliseconds(),
-					rep->srmPrepareToGetResponse->returnStatus->statusCode);
-		}catch(storm::MonitorNotEnabledException *exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-		}
-	}
+            soap, *request, funcName, req, &rep->srmPrepareToGetResponse);
+	storm::MonitoringHelper::registerOperation(start_time, soap_status,
+				storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
+				rep->srmPrepareToGetResponse->returnStatus->statusCode);
+	delete request;
     return soap_status;
 }
 
@@ -163,23 +145,37 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 
     static const char* funcName = "srmCopy";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::copy request(soap);
-    srmLogRequest("Cp",get_ip(soap).c_str(),request.getClientDN().c_str());
+    storm::CopyRequest* request;
+    try{ request = new storm::CopyRequest(soap, req); }
+    catch(storm::invalid_request &e)
+    {
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
+    	storm::MonitoringHelper::registerOperationError(start_time,
+    					storm::SRM_COPY_MONITOR_NAME);
+    	return(SOAP_FATAL_ERROR);
+    }
+	srmLogRequestWithSurls("CP", get_ip(soap).c_str(),
+			request->getClientDN().c_str(), request->getSurlsList().c_str(),
+			request->getSurlsNumber());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		request.r_token("");
-		rep->srmCopyResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-		boost::posix_time::time_duration et = (end_time - start_time);
+		request->invalidateRequestToken();
 		try
 		{
-			storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_COPY_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
+			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		} catch(storm::InvalidResponse &exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			delete request;
+	    	storm::MonitoringHelper::registerOperationError(start_time,
+	    					storm::SRM_COPY_MONITOR_NAME);
+			return(SOAP_FATAL_ERROR);
 		}
+		storm::MonitoringHelper::registerOperation(start_time,
+					storm::SRM_COPY_MONITOR_NAME,
+					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+		delete request;
 		return(SOAP_OK);
 	}
 	else
@@ -187,34 +183,12 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
 	}
 
-    int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse> (soap, request,
+    int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse> (soap, *request,
             funcName, req, &rep->srmCopyResponse);
-    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (soap_status != SOAP_OK)
-		{
-			try
-			{
-				storm::Monitoring::getInstance()->getMonitor(storm::SRM_COPY_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-			}
-		}
-		else
-		{
-			try
-			{
-				((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-						storm::SRM_COPY_MONITOR_NAME))->registerCompleted(
-						et.total_milliseconds(),
-						rep->srmCopyResponse->returnStatus->statusCode);
-			}catch(storm::MonitorNotEnabledException *exc)
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-			}
-		}
+	storm::MonitoringHelper::registerOperation(start_time, soap_status,
+				storm::SRM_COPY_MONITOR_NAME,
+				rep->srmCopyResponse->returnStatus->statusCode);
+	delete request;
     return soap_status;
 }
 
@@ -223,23 +197,37 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 
     static const char* funcName = "srmBringOnline";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::bol request(soap);
-    srmLogRequest("BOL",get_ip(soap).c_str(),request.getClientDN().c_str());
+    storm::BolRequest* request;
+    try{ request = new storm::BolRequest(soap, req); }
+    catch(storm::invalid_request &e)
+    {
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
+    	storm::MonitoringHelper::registerOperationError(start_time,
+    					storm::SRM_BRING_ONLINE_MONITOR_NAME);
+    	return(SOAP_FATAL_ERROR);
+    }
+	srmLogRequestWithSurls("BOL", get_ip(soap).c_str(),
+			request->getClientDN().c_str(), request->getSurlsList().c_str(),
+			request->getSurlsNumber());
     if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		request.r_token("");
-		rep->srmBringOnlineResponse = request.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-		boost::posix_time::time_duration et = (end_time - start_time);
+		request->invalidateRequestToken();
 		try
 		{
-			storm::Monitoring::getInstance()->getMonitor(
-					storm::SRM_BRING_ONLINE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-		}catch(storm::MonitorNotEnabledException *exc)
+			rep->srmBringOnlineResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		} catch(storm::InvalidResponse &exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			delete request;
+	    	storm::MonitoringHelper::registerOperationError(start_time,
+	    					storm::SRM_BRING_ONLINE_MONITOR_NAME);
+			return(SOAP_FATAL_ERROR);
 		}
+		storm::MonitoringHelper::registerOperation(start_time,
+					storm::SRM_BRING_ONLINE_MONITOR_NAME,
+					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+		delete request;
 		return(SOAP_OK);
 	}
 	else
@@ -248,61 +236,10 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 	}
 
     int soap_status = __process_file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> (
-            soap, request, funcName, req, &rep->srmBringOnlineResponse);
-    boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration et = (end_time - start_time);
-
-	if (soap_status != SOAP_OK)
-		{
-			try
-			{
-				storm::Monitoring::getInstance()->getMonitor(storm::SRM_BRING_ONLINE_MONITOR_NAME)->registerFailure(et.total_milliseconds());
-			}catch(storm::MonitorNotEnabledException *exc)
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-			}
-		}
-		else
-		{
-			try
-			{
-				((storm::InstrumentedMonitor*) storm::Monitoring::getInstance()->getMonitor(
-						storm::SRM_BRING_ONLINE_MONITOR_NAME))->registerCompleted(
-						et.total_milliseconds(),
-						rep->srmBringOnlineResponse->returnStatus->statusCode);
-			}catch(storm::MonitorNotEnabledException *exc)
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc->what());
-			}
-		}
+            soap, *request, funcName, req, &rep->srmBringOnlineResponse);
+	storm::MonitoringHelper::registerOperation(start_time, soap_status,
+				storm::SRM_BRING_ONLINE_MONITOR_NAME,
+				rep->srmBringOnlineResponse->returnStatus->statusCode);
+	delete request;
     return soap_status;
-
-    //    static const char* funcName = "srmBringOnline";
-    //    struct ns1__srmBringOnlineResponse *repp;
-    //    storm::Credentials credentials(soap);
-    //
-    //    srmlogit(STORM_LOG_INFO, funcName, "%s request from: %s\n", funcName, credentials.getDN().c_str());
-    //    srmlogit(STORM_LOG_INFO, funcName, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
-    //             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
-    //
-    //    try {
-    //        repp = storm::soap_calloc<ns1__srmBringOnlineResponse>(soap);
-    //        repp->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(soap);
-    //    }
-    //    catch (soap_bad_alloc) {
-    //        srmlogit(STORM_LOG_ERROR, funcName, "Memory allocation error (response structure)!\n");
-    //        return SOAP_EOM;
-    //    }
-    //    catch (std::invalid_argument) {
-    //        srmlogit(STORM_LOG_ERROR, funcName, "soap pointer is NULL!\n");
-    //        return SOAP_NULL;
-    //    }
-    //
-    //    repp->returnStatus->statusCode = SRM_USCORESUCCESS;
-    //    repp->returnStatus->explanation = "This functionality is not meaningful for StoRM.";
-    //    rep->srmBringOnlineResponse = repp;
-    //
-    //    srmlogit(STORM_LOG_INFO, funcName, "Completed. Status: SRM_SUCCESS\n");
-    //
-    //    return(SOAP_OK);
 }

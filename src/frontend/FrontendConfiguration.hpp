@@ -52,6 +52,7 @@ static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
 static const int DEFAULT_PORT = 8444;
+static const bool DEFAULT_MONITORING_ENABLED = true;
 static const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
 static const bool DEFAULT_MONITORING_DETAILED = false;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;

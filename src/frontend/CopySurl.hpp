@@ -25,13 +25,15 @@
 namespace storm {
 class CopySurl : public PtgSurl  {
 public:
-	CopySurl(std::string sourceSurl, std::string destinationSurl,
-			ns1__TDirOption *dirOption) :
-			PtgSurl(sourceSurl, dirOption), destinationSURL(destinationSurl) {};
+	CopySurl(std::string sourceSurl, std::string destinationSurl, ns1__TDirOption* dirOption)
+	throw (InvalidSurl) : PtgSurl(sourceSurl, dirOption) {
+		this->init(destinationSurl);
+	};
 
-	CopySurl(std::string sourceSurl, std::string destinationSurl) :
-			PtgSurl(sourceSurl, NULL), destinationSURL(destinationSurl) {
-	}
+	CopySurl(std::string& sourceSurl, std::string& destinationSurl)  throw (InvalidSurl) :
+			PtgSurl(sourceSurl, NULL) {
+		this->init(destinationSurl);
+	};
 
 	~CopySurl(){};
 
@@ -42,11 +44,19 @@ public:
 
 	sql_string getDestinationSurl()
 	{
-		return this->destinationSURL;
+		return m_destinationSURL;
 	}
 private:
-	sql_string destinationSURL;
+	sql_string m_destinationSURL;
 
+	void init(std::string& destinationSurl) throw (InvalidSurl)
+	{
+		if(destinationSurl.empty())
+		{
+			throw InvalidSurl("Unable to create an empty destination SURL");
+		}
+		m_destinationSURL = sql_string(destinationSurl);
+	}
 };
 }
 #endif // __COPY_SURL_HPP

@@ -13,39 +13,55 @@
  * limitations under the License.
 */
 
-#ifndef __BOL_SURL_HPP
-#define __BOL_SURL_HPP
+#ifndef BOL_SURL_HPP
+#define BOL_SURL_HPP
 
 #include "PtgSurl.hpp"
 
 namespace storm {
 class BolSurl : public PtgSurl {
 public:
-	BolSurl(std::string surl, ns1__TDirOption *dirOption) : PtgSurl(surl, dirOption){
-		estimatedWaitTime = -1;
-	};
+	BolSurl(std::string surl, ns1__TDirOption* dirOption) throw (InvalidSurl) :
+			PtgSurl(surl, dirOption), m_fileSize(-1), m_estimatedWaitTime(-1),
+			m_remainingPinTime(-1) {
+	}
 
-	~BolSurl(){};
+	~BolSurl(){}
 
 	unsigned long getFileSize()
 	{
-		return this->fileSize;
+		return m_fileSize;
 	}
 
 	int getRemainingPinTime()
 	{
-		return this->remainingPinTime;
+		return m_remainingPinTime;
 	}
 
 	int getEstimatedWaitTime()
 	{
-		return this->estimatedWaitTime;
+		return m_estimatedWaitTime;
+	}
+
+	void setFileSize(unsigned long fileSize)
+	{
+		m_fileSize = fileSize;
+	}
+
+	void setRemainingPinTime(int remainingPinTime)
+	{
+		m_remainingPinTime = remainingPinTime;
+	}
+
+	void setEstimatedWaitTime(int estimatedWaitTime)
+	{
+		m_estimatedWaitTime = estimatedWaitTime;
 	}
 
 private:
-	unsigned long fileSize;
-	int remainingPinTime;
-	int estimatedWaitTime;
+	unsigned long m_fileSize;
+	int m_remainingPinTime;
+	int m_estimatedWaitTime;
 };
 }
-#endif // __PTG_SURL_HPP
+#endif // BOL_SURL_HPP

@@ -59,16 +59,18 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     get_socket_info.hpp get_socket_info.cpp \
     file_request.hpp filerequest_template.hpp \
     status_template.hpp file_status.hpp \
-    bol.cpp bol.hpp bol_status.cpp bol_status.hpp \
-    ptp.cpp ptp.hpp put_status.cpp put_status.hpp \
-    ptg.cpp ptg.hpp get_status.cpp get_status.hpp \
+    StatusTemplate.hpp FileStatusRequest.hpp \
+    BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
+    PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
+    PtgRequest.cpp PtgRequest.hpp GetStatusRequest.cpp GetStatusRequest.hpp \
+    CopyRequest.cpp CopyRequest.hpp copy_status.cpp copy_status.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
     AuthorizationException.hpp cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
-    copy.cpp copy.hpp copy_status.cpp copy_status.hpp \
     asynch.cpp asynch_status.cpp \
     Surl.hpp BolSurl.hpp PtgSurl.hpp PtpSurl.hpp CopySurl.hpp \
+    Turl.hpp PtpTurl.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     HttpPostClient.cpp HttpPostClient.h \
@@ -83,9 +85,9 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     srmv2C.cc \
     srmv2Server.cc \
     Monitor.hpp InstrumentedMonitor.hpp \
-    InstrumentedMonitorBuilder.hpp \
+    MonitorStub.hpp InstrumentedMonitorBuilder.hpp \
     MonitorHelper.hpp MonitorHelper.cpp \
-    Monitoring.hpp Monitoring.cpp \
+    Monitoring.hpp Monitoring.cpp MonitoringHelper.hpp \
     MonitorNotEnabledException.hpp \
     $(noinst_INCLUDES)
 
