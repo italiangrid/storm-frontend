@@ -28,7 +28,7 @@ void storm::PutStatusRequest::load(ns1__srmStatusOfPutRequestRequest* req)
 		/*storm::Surl surl(
 					req->arrayOfTargetSURLs->urlArray[i]);
 		m_surls.insert(surl);*/
-		m_surls.insert(storm::Surl(req->arrayOfTargetSURLs->urlArray[i]));
+		m_surls.insert(SurlPtr(new storm::Surl(req->arrayOfTargetSURLs->urlArray[i])));
 	}
 }
 
@@ -50,9 +50,9 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 						+ sqlFormat(m_requestToken) + " and "
 						"c.targetSURL in (";
 		bool first = true;
-		std::set<Surl>::const_iterator const vectorEnd = m_surls.end();
-		for (std::set<Surl>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
-			Surl current = *i;
+		std::set<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+		for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+			Surl* current = i->get();
 			if(first)
 			{
 				first = false;
@@ -61,7 +61,7 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 			{
 				query += " , ";
 			}
-			query += sqlFormat(current.getSurl());
+			query += sqlFormat(current->getSurl());
 		}
 		query += ")";
     }
@@ -262,11 +262,15 @@ void storm::PutStatusRequest::addMissingSurls() throw (std::logic_error)
 {
 	int index = (m_turls.empty() ? 0 : m_turls.size() - 1);
 
-	std::set<Surl>::const_iterator const surlVectorEnd = m_surls.end();
-	for (std::set<Surl>::const_iterator i = m_surls.begin(); i != surlVectorEnd; ++i) {
+	std::set<SurlPtr>::const_iterator const surlVectorEnd = m_surls.end();
+	for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != surlVectorEnd; ++i) {
 
-		storm::Surl current = *i;
-		if(this->checkSurl(current.getSurl()))
+		storm::Surl* current = dynamic_cast<storm::Surl*> (i->get());
+		if(!current)
+		{
+			throw std::logic_error("Unable to cast SurlPtr to Surl, cast failure");
+		}
+		if(this->checkSurl(current->getSurl()))
 		{
 			continue;
 		}
@@ -287,7 +291,7 @@ void storm::PutStatusRequest::addMissingSurls() throw (std::logic_error)
 		fileStatus->remainingPinLifetime = NULL;
 		fileStatus->remainingFileLifetime = NULL;
 		fileStatus->estimatedWaitTime = NULL;
-		fileStatus->SURL = soap_strdup(m_soapRequest, current.getSurl().c_str());
+		fileStatus->SURL = soap_strdup(m_soapRequest, current->getSurl().c_str());
 		fileStatus->transferURL = NULL;
 		try
 		{

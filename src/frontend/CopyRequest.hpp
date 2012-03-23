@@ -44,6 +44,8 @@ public:
 
 	struct ns1__srmCopyResponse* buildResponse() throw (std::logic_error , storm::InvalidResponse);
 
+	std::string getSurlsList();
+
 private:
     storm_time_t m_fileLifetime; // -1 = not specified --> stands for desiredTargetSURLLifeTime
     char m_overwrite;

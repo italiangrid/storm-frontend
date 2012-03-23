@@ -30,9 +30,17 @@ public:
 		this->init(destinationSurl);
 	};
 
-	CopySurl(std::string& sourceSurl, std::string& destinationSurl)  throw (InvalidSurl) :
-			PtgSurl(sourceSurl, NULL) {
+	CopySurl(std::string sourceSurl, ns1__TDirOption* dirOption)
+	throw (InvalidSurl) : PtgSurl(sourceSurl, dirOption) , m_destinationSURL("") {
+	};
+
+	CopySurl(std::string sourceSurl, std::string destinationSurl)  throw (InvalidSurl) :
+			PtgSurl(sourceSurl) {
 		this->init(destinationSurl);
+	};
+
+	CopySurl(std::string sourceSurl)  throw (InvalidSurl) :
+			PtgSurl(sourceSurl) , m_destinationSURL("") {
 	};
 
 	~CopySurl(){};
@@ -42,12 +50,30 @@ public:
 		return this->getSurl();
 	}
 
-	sql_string getDestinationSurl()
+	void setDestinationSurl(std::string& destinationSurl) throw (std::logic_error)
 	{
+		if(hasDestinationSurl())
+		{
+			throw std::logic_error("Destination SURL can be settend only when not available");
+		}
+		m_destinationSURL = sql_string(destinationSurl);
+	}
+
+	bool hasDestinationSurl()
+	{
+		return !m_destinationSURL.empty();
+	}
+
+	sql_string getDestinationSurl() throw (std::logic_error)
+	{
+		if(!hasDestinationSurl())
+		{
+			throw std::logic_error("Cannot get the destination SURL, not provided");
+		}
 		return m_destinationSURL;
 	}
 private:
-	sql_string m_destinationSURL;
+	sql_string m_destinationSURL; // "" means not initialized
 
 	void init(std::string& destinationSurl) throw (InvalidSurl)
 	{

@@ -22,11 +22,10 @@
 
 #include "srmv2H.h"
 #include "srmlogit.h"
-#include "status_template.hpp"
 #include "StatusTemplate.hpp"
 #include "PutStatusRequest.hpp"
 #include "GetStatusRequest.hpp"
-#include "copy_status.hpp"
+#include "CopyStatusRequest.hpp"
 #include "BolStatusRequest.hpp"
 
 #include "boost/date_time/posix_time/posix_time.hpp"
@@ -64,7 +63,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str());
 	}
 
-    if(Authorization::checkBlacklist(soap))
+    if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		try{
@@ -124,7 +123,7 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 		srmLogRequestWithToken("PTG status", get_ip(soap).c_str(),
 						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str());
 	}
-    if(Authorization::checkBlacklist(soap))
+    if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		try {
@@ -183,7 +182,7 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 		srmLogRequestWithToken("BOL status", get_ip(soap).c_str(),
 						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str());
 	}
-    if(Authorization::checkBlacklist(soap))
+    if(storm::Authorization::checkBlacklist(soap))
 	{
     	srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
     	try {
@@ -212,6 +211,7 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,
 				rep->srmStatusOfBringOnlineRequestResponse->returnStatus->statusCode);
+	delete request;
     return soap_status;
 }
 
@@ -222,69 +222,56 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
 {
     static const char* funcName = "srmStatusOfCopyRequest";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::copy_status status(soap);
-    srmLogRequest("Cp status",get_ip(soap).c_str(),status.getClientDN().c_str());
-    if(Authorization::checkBlacklist(soap))
+    storm::CopyStatusRequest* request;
+   	try{ request = new storm::CopyStatusRequest(soap, req); }
+   	catch(storm::invalid_request& e)
+   	{
+   		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
+   		storm::MonitoringHelper::registerOperationError(start_time,
+   						storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);
+   		return(SOAP_FATAL_ERROR);
+   	}
+   	if(request->hasSurls())
+   	{
+   		srmLogRequestWithTokenAndSurls("COPY status", get_ip(soap).c_str(),
+   						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str(), request->getSurlsList().c_str(),
+   						request->getSurlsNumber());
+   	}
+   	else
+   	{
+   		srmLogRequestWithToken("COPY status", get_ip(soap).c_str(),
+   						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str());
+   	}
+    if(storm::Authorization::checkBlacklist(soap))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		rep->srmStatusOfCopyRequestResponse = status.error_response(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		try {
+			rep->srmStatusOfCopyRequestResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+		} catch(std::logic_error& exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
+			delete request;
+			storm::MonitoringHelper::registerOperationError(start_time,
+					storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);
+			return(SOAP_FATAL_ERROR);
+		}
 		storm::MonitoringHelper::registerOperation(start_time,
 									storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,
 									SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+		delete request;
 		return(SOAP_OK);
 	}
 	else
 	{
 		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
 	}
-    // If the request contains some surl, then fill the copy_status object
-    if ((NULL != req->arrayOfSourceSURLs) && (NULL != req->arrayOfTargetSURLs)) {
-        if (req->arrayOfSourceSURLs->__sizeurlArray == req->arrayOfTargetSURLs->__sizeurlArray) {
-            for (int i = 0; i < req->arrayOfSourceSURLs->__sizeurlArray; ++i)
-                status.add_requested_surl(req->arrayOfSourceSURLs->urlArray[i],
-                        req->arrayOfTargetSURLs->urlArray[i]);
-        }
-    }
 
-    int soap_status = __process_request_status<ns1__srmStatusOfCopyRequestResponse>
-    (soap, req->requestToken, funcName, status, &rep->srmStatusOfCopyRequestResponse);
+    int soap_status = processRequestStatus<ns1__srmStatusOfCopyRequestRequest, ns1__srmStatusOfCopyRequestResponse>
+		   (soap, funcName, *request, &rep->srmStatusOfCopyRequestResponse);
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,
 				rep->srmStatusOfCopyRequestResponse->returnStatus->statusCode);
+	delete request;
     return soap_status;
 
 }
-
-//extern "C"
-//int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
-//        struct ns1__srmStatusOfBringOnlineRequestRequest *req,
-//        struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep)
-//{
-//    static const char* func = "srmStatusOfBringOnLineRequest";
-//    struct ns1__srmStatusOfBringOnlineRequestResponse *repp;
-//    storm::Credentials credentials(soap);
-//
-//    srmlogit(STORM_LOG_INFO, func, "%s request from: %s\n", func, credentials.getDN().c_str());
-//    srmlogit(STORM_LOG_INFO, func, "Client IP=%d.%d.%d.%d\n", (soap->ip >> 24) & 0xFF,
-//             (soap->ip >> 16) & 0xFF, (soap->ip >> 8) & 0xFF, (soap->ip) & 0xFF);
-//
-//    try {
-//        repp = storm::soap_calloc<ns1__srmStatusOfBringOnlineRequestResponse>(soap);
-//        repp->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(soap);
-//    }
-//    catch (soap_bad_alloc) {
-//        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
-//        return SOAP_EOM;
-//    }
-//    catch (std::invalid_argument) {
-//        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
-//        return SOAP_NULL;
-//    }
-//
-//    repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-//    repp->returnStatus->explanation = "srmBringOnLine implementation is synchronous";
-//    rep->srmStatusOfBringOnlineRequestResponse = repp;
-//    srmlogit(STORM_LOG_INFO, func, "Returning status: SRM_NOT_SUPPORTED\n");
-//
-//    return SOAP_OK;
-//}

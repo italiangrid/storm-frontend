@@ -192,20 +192,23 @@ public:
     std::string getSurlsList()
     {
     	std::string builtList;
-    	std::set<Surl>::const_iterator const vectorEnd = m_surls.end();
-    	bool first = true;
-    	for (std::set<Surl>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
-    		Surl current = *i;
-    		if(first)
-    		{
-    			first = false;
-    		}
-    		else
-    		{
-    			builtList += ' ';
-    		}
-    		builtList += current.getSurl();
-
+    	if(m_surls.empty())
+    	{
+    		return builtList;
+    	}
+		std::set<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+		bool first = true;
+		for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+			Surl* current = i->get();
+			if(first)
+			{
+				first = false;
+			}
+			else
+			{
+				builtList += ' ';
+			}
+			builtList += current->getSurl();
     	}
     	return builtList;
     }
@@ -221,8 +224,9 @@ protected:
     // -------------------------------
     // --- incoming request parameters
     //
-    //std::vector<Surl> m_surls;
-    std::set<Surl> m_surls;
+    //std::set<Surl> m_surls;
+    typedef boost::shared_ptr<Surl> SurlPtr;
+    std::set<SurlPtr> m_surls;
     sql_string m_requestToken;
     storm::Credentials m_credentials;
     sql_string m_authorizationID; //ignored

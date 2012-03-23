@@ -341,3 +341,29 @@ void storm::CopyRequest::insertIntoDB(struct srm_dbfd *db)  throw (std::logic_er
     // attribute using the requestID
 
 }
+std::string storm::CopyRequest::getSurlsList()
+{
+	std::string builtList;
+	std::vector<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+	bool first = true;
+	for (std::vector<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+		storm::CopySurl* surl = dynamic_cast<storm::CopySurl*> (i->get());
+		if(!surl)
+		{
+			throw std::logic_error("Unable to cast SurlPtr to CopySurl, cast failure");
+		}
+		if(first)
+		{
+			first = false;
+		}
+		else
+		{
+			builtList += ' ';
+		}
+		builtList += surl->getSourceSurl();
+		builtList += " -> ";
+		builtList += surl->getDestinationSurl();
+
+	}
+	return builtList;
+}

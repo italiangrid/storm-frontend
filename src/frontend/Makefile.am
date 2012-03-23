@@ -58,19 +58,19 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
     file_request.hpp filerequest_template.hpp \
-    status_template.hpp file_status.hpp \
+    file_status.hpp \
     StatusTemplate.hpp FileStatusRequest.hpp \
     BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
     PtgRequest.cpp PtgRequest.hpp GetStatusRequest.cpp GetStatusRequest.hpp \
-    CopyRequest.cpp CopyRequest.hpp copy_status.cpp copy_status.hpp \
+    CopyRequest.cpp CopyRequest.hpp CopyStatusRequest.cpp CopyStatusRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
     AuthorizationException.hpp cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
     Surl.hpp BolSurl.hpp PtgSurl.hpp PtpSurl.hpp CopySurl.hpp \
-    Turl.hpp BolTurl.hpp PtgTurl.hpp PtpTurl.hpp \
+    Turl.hpp BolTurl.hpp PtgTurl.hpp PtpTurl.hpp CopyTurl.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     HttpPostClient.cpp HttpPostClient.h \
