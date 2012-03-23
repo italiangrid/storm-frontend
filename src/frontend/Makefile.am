@@ -70,7 +70,7 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
     Surl.hpp BolSurl.hpp PtgSurl.hpp PtpSurl.hpp CopySurl.hpp \
-    Turl.hpp PtpTurl.hpp \
+    Turl.hpp BolTurl.hpp PtgTurl.hpp PtpTurl.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
     FrontendConfiguration.cpp FrontendConfiguration.hpp \
     HttpPostClient.cpp HttpPostClient.h \
