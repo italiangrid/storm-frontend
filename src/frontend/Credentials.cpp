@@ -143,19 +143,17 @@ bool Credentials::saveProxy(std::string requestToken)
         proxy_filename += "/" + requestToken;
         char *tmp = strdup(proxy_filename.c_str()); // why export_delegated_cretentials() needs char* instead of const char *????
         int stat = export_delegated_credentials(_soap, tmp);
-        if (getuid() != proxy_uid || getgid() != proxy_gid) {
-            chown(proxy_filename.c_str(), proxy_uid, proxy_gid);
-        }
-
         free(tmp);
         /* check export status */
         if (stat == 0) {
             srmlogit(STORM_LOG_DEBUG, funcName, "Proxy successfully written: %s\n", _clientDN.c_str());
             result = true;
         } else {
-            srmlogit(STORM_LOG_ERROR, funcName, "Unable to write the proxy.\n");
+            srmlogit(STORM_LOG_ERROR, funcName, "Unable to write the proxy. Token: %s , proxy_filename %s , return code %d\n" , requestToken.c_str(), proxy_filename.c_str(), stat);
         }
-
+        if (getuid() != proxy_uid || getgid() != proxy_gid) {
+		   chown(proxy_filename.c_str(), proxy_uid, proxy_gid);
+	   }
     } else { /* No delegation. */
         srmlogit(STORM_LOG_DEBUG, funcName, "%s: has NOT delegated credentials to server\n", _clientDN.c_str());
     }

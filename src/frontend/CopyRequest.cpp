@@ -88,7 +88,6 @@ void storm::CopyRequest::load(struct ns1__srmCopyRequest* req) throw (storm::inv
     }
 
     // Temporary hack: proxy saved as a file. TODO: insert the proxy into the DB.
-    saveProxy();
 }
 
 
@@ -337,6 +336,8 @@ void storm::CopyRequest::insertIntoDB(struct srm_dbfd *db)  throw (std::logic_er
     {
     	storm_end_tr(db);
     }
+
+    saveProxy();
     // insert into retention policy, clientNetworks, extrainfo, VOMS
     // attribute using the requestID
 
