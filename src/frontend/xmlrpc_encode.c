@@ -490,6 +490,42 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
     return(0);
 }
 
+/*
+int encode_TExtraInfo(const char *callerName, xmlrpc_env *env_addr, xmlrpc_value* infoArray,
+		char* key, char* value)
+{
+    xmlrpc_value* infoElement;
+
+	infoElement = xmlrpc_struct_new(env_addr);
+
+	if (key == NULL) {
+		srmlogit(STORM_LOG_ERROR, callerName, "StorageSystemInfo[%d] is NULL\n", i);
+		return(ENCODE_ERR_GENERAL_ERROR);
+	}
+	if(getXMLRPCCheckAscii() && !isASCII(key))
+	{
+		srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", key);
+		xmlrpc_DECREF(infoElement);
+		return(ENCODE_ERR_ENCODING_ERROR);
+	}
+	xmlrpc_struct_set_value(env_addr, infoElement, "key", xmlrpc_string_new(env_addr, key));
+
+	if (value != NULL)
+	{
+		if(getXMLRPCCheckAscii() && !isASCII(value))
+		{
+			srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", value);
+			xmlrpc_DECREF(infoElement);
+			return(ENCODE_ERR_ENCODING_ERROR);
+		}
+		xmlrpc_struct_set_value(env_addr, infoElement, "value", xmlrpc_string_new(env_addr, value));
+	}
+	xmlrpc_array_append_item(env_addr, infoArray, infoElement);
+	xmlrpc_DECREF(infoElement);
+    return(0);
+}
+*/
+
 /**
  * The encode_charPointer() function encodes the string field (SRM v2.2) into a xml structure
  * @param callerName The name of the caller function (for log messages).

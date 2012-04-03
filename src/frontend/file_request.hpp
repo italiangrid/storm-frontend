@@ -96,19 +96,6 @@ public:
     	m_credentials(soapRequest), m_soapRequest(soapRequest),
     	m_status(SRM_USCOREREQUEST_USCOREQUEUED), m_builtResponse(NULL),
     	m_fileStorageType(DB_FILE_TYPE_UNKNOWN), m_desiredTotalRequestTime(-1) {
-		/*try{*/
-		//m_builtResponse = NULL;
-	    //m_fileStorageType = DB_FILE_TYPE_UNKNOWN;
-
-		/*} catch (storm::invalid_request x) {
-			srmlogit(STORM_LOG_DEBUG, func, "Error loading data for request token %s: %s\n",
-					r_token, x.what());
-			//far lanciare un'eccezione appropriata
-			request.r_token(""); // We do not want to send the Request token, in case of error.
-			*resp = request.error_response(SRM_USCOREINVALID_USCOREREQUEST, x.what());
-
-			return SOAP_OK;
-		}*/
     }
 
     virtual ~file_request() {

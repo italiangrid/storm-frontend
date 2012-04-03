@@ -99,7 +99,7 @@ public:
     	}
     	if(req->requestToken == NULL)
     	{
-    		throw invalid_request("ns1__srmStatusOfPutRequestRequest has NULLrequestToken");
+    		throw invalid_request("FileStatusRequest has NULLrequestToken");
     	}
     	m_requestToken = sql_string(req->requestToken);
     	if(req->authorizationID != NULL)
@@ -159,6 +159,11 @@ public:
     	return m_requestToken;
     }
 
+    ns1__TStatusCode getStatus()
+    {
+    	return m_status;
+    }
+
     bool hasSurls()
     {
     	return !m_surls.empty();
@@ -180,7 +185,7 @@ public:
 		{
 			srmlogit(STORM_LOG_INFO, "storm::file_status::fillCommonFields()",
 					"The provided request token does not belong to the requesting user %s but to %s\n",
-					m_credentials.getDN().c_str(), m_storedClientDN);
+					m_credentials.getDN().c_str(), m_storedClientDN.c_str());
 			return false;
 		}
     	else

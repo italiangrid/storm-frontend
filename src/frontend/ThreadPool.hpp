@@ -28,7 +28,6 @@
 #include <utility>
 #include <map>
 
-#include "srmlogit.h"
 #include <sstream>
 
 namespace storm{
@@ -52,21 +51,16 @@ public:
     task_func pop() {
 
         boost::mutex::scoped_lock lk(monitor);
-
         while (_q.empty()) {
             _queue_not_empty.wait(lk);
         }
-
         task_func func = _q.front();
         _q.pop();
-
         return func;
     }
 
     void push(task_func func) {
-
         boost::mutex::scoped_lock lk(monitor);
-
         _q.push(func);
         _queue_not_empty.notify_one();
     }
@@ -82,6 +76,7 @@ class ThreadPool {
 private:
 
 	static ThreadPool* instance;
+	//static boost::mutex initLock;
     int _nThreads;
     int _queueSize;
     int _activeThreads;
@@ -123,9 +118,7 @@ private:
             bool* stop) {
         try {
             for (;;) {
-
                 task_func func = (*sq).pop();
-
                 if (*stop) {
                     break;
                 }
@@ -135,7 +128,6 @@ private:
                 lk.unlock();
 
                 func();
-
                 lk.lock();
                 (*activeThreads)--;
                 lk.unlock();
@@ -161,19 +153,24 @@ public:
         delete[] _thread_pool;
     }
 
-
-    static ThreadPool* getInstance(){
-    	if(ThreadPool::instance == NULL)
+   static ThreadPool* getInstance(){
+    	if(instance == NULL)
     	{
     		buildInstance(DEFAULT_POOL_SIZE);
     	}
-    	return ThreadPool::instance;
+    	return instance;
     }
 
     static void buildInstance(int size)
 	{
-    	ThreadPool::instance = new ThreadPool(size);
+    	instance = new ThreadPool(size);
 	}
+
+    static bool isInstanceAvailable()
+	{
+    	return instance != NULL;
+	}
+
     void schedule(task_func const & func) {
         _sq.push(func);
     }

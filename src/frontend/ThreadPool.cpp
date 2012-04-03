@@ -19,5 +19,7 @@
 #include "ThreadPool.hpp"
 
 storm::ThreadPool* storm::ThreadPool::instance = NULL;
+//boost::mutex storm::ThreadPool::initLock;
+
 
 #endif /* THREADPOOL_CPP_ */

@@ -64,6 +64,36 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
     PtgRequest.cpp PtgRequest.hpp GetStatusRequest.cpp GetStatusRequest.hpp \
     CopyRequest.cpp CopyRequest.hpp CopyStatusRequest.cpp CopyStatusRequest.hpp \
+    request/synch/SynchRequest.hpp \
+    request/synch/MkdirRequest.cpp request/synch/MkdirRequest.hpp \
+    request/synch/RmdirRequest.cpp request/synch/RmdirRequest.hpp \
+    request/synch/RmRequest.cpp request/synch/RmRequest.hpp \
+    request/synch/LsRequest.cpp request/synch/LsRequest.hpp \
+    request/synch/StatusLsRequest.cpp request/synch/StatusLsRequest.hpp \
+    request/synch/MvRequest.cpp request/synch/MvRequest.hpp \
+    request/synch/SetPermissionRequest.cpp request/synch/SetPermissionRequest.hpp \
+    request/synch/CheckPermissionRequest.cpp request/synch/CheckPermissionRequest.hpp \
+    request/synch/GetPermissionRequest.cpp request/synch/GetPermissionRequest.hpp \
+    request/synch/ReserveSpaceRequest.cpp request/synch/ReserveSpaceRequest.hpp \
+    request/synch/StatusReserveSpaceRequest.cpp request/synch/StatusReserveSpaceRequest.hpp \
+    request/synch/ReleaseSpaceRequest.cpp request/synch/ReleaseSpaceRequest.hpp \
+    request/synch/UpdateSpaceRequest.cpp request/synch/UpdateSpaceRequest.hpp \
+    request/synch/StatusUpdateSpaceRequest.cpp request/synch/StatusUpdateSpaceRequest.hpp \
+    request/synch/GetSpaceMetaDataRequest.cpp request/synch/GetSpaceMetaDataRequest.hpp \
+    request/synch/GetSpaceTokensRequest.cpp request/synch/GetSpaceTokensRequest.hpp \
+    request/synch/ChangeSpaceForFilesRequest.cpp request/synch/ChangeSpaceForFilesRequest.hpp \
+    request/synch/StatusChangeSpaceForFilesRequest.cpp request/synch/StatusChangeSpaceForFilesRequest.hpp \
+    request/synch/ExtendFileLifeTimeInSpaceRequest.cpp request/synch/ExtendFileLifeTimeInSpaceRequest.hpp \
+    request/synch/PurgeFromSpaceRequest.cpp request/synch/PurgeFromSpaceRequest.hpp \
+    request/synch/ReleaseFilesRequest.cpp request/synch/ReleaseFilesRequest.hpp \
+    request/synch/PutDoneRequest.cpp request/synch/PutDoneRequest.hpp \
+    request/synch/AbortRequestRequest.cpp request/synch/AbortRequestRequest.hpp \
+    request/synch/AbortFilesRequest.cpp request/synch/AbortFilesRequest.hpp \
+    request/synch/SuspendRequestRequest.cpp request/synch/SuspendRequestRequest.hpp \
+    request/synch/ResumeRequestRequest.cpp request/synch/ResumeRequestRequest.hpp \
+    request/synch/ExtendFileLifeTimeRequest.cpp request/synch/ExtendFileLifeTimeRequest.hpp \
+    request/synch/GetTransferProtocolsRequest.cpp request/synch/GetTransferProtocolsRequest.hpp \
+    request/synch/PingRequest.cpp request/synch/PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
     AuthorizationException.hpp cgsi_plugin_int.h \

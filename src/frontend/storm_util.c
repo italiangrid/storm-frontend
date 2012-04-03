@@ -209,74 +209,79 @@ int convertStatusCode(char* code) {
 }
 
 char* reconvertStatusCode(int code) {
-    if (code == 0)
-        return "SRM_SUCCESS"; // 0
-    if (code == 1)
-        return "SRM_FAILURE"; // 1
-    if (code == 2)
-        return "SRM_AUTHENTICATION_FAILURE"; // 2
-    if (code == 3)
-        return "SRM_AUTHORIZATION_FAILURE"; // 3
-    if (code == 4)
-        return "SRM_INVALID_REQUEST"; // 4
-    if (code == 5)
-        return "SRM_INVALID_PATH"; // 5
-    if (code == 6)
-        return "SRM_FILE_LIFETIME_EXPIRED"; // 6
-    if (code == 7)
-        return "SRM_SPACE_LIFETIME_EXPIRED"; // 7
-    if (code == 8)
-        return "SRM_EXCEED_ALLOCATION"; // 8
-    if (code == 9)
-        return "SRM_NO_USER_SPACE"; // 9
-    if (code == 10)
-        return "SRM_NO_FREE_SPACE"; // 10
-    if (code == 11)
-        return "SRM_DUPLICATION_ERROR"; // 1
-    if (code == 12)
-        return "SRM_NON_EMPTY_DIRECTORY"; // 12
-    if (code == 13)
-        return "SRM_TOO_MANY_RESULTS"; // 13
-    if (code == 14)
-        return "SRM_INTERNAL_ERROR"; // 14
-    if (code == 15)
-        return "SRM_FATAL_INTERNAL_ERROR"; // 15
-    if (code == 16)
-        return "SRM_NOT_SUPPORTED"; // 16
-    if (code == 17)
-        return "SRM_REQUEST_QUEUED"; // 17
-    if (code == 18)
-        return "SRM_REQUEST_INPROGRESS"; // 18
-    if (code == 19)
-        return "SRM_REQUEST_SUSPENDED"; // 19
-    if (code == 20)
-        return "SRM_ABORTED"; // 20
-    if (code == 21)
-        return "SRM_RELEASED"; // 21
-    if (code == 22)
-        return "SRM_FILE_PINNED"; // 22
-    if (code == 23)
-        return "SRM_FILE_IN_CACHE"; // 23
-    if (code == 24)
-        return "SRM_SPACE_AVAILABLE"; // 24
-    if (code == 25)
-        return "SRM_LOWER_SPACE_GRANTED"; // 25
-    if (code == 26)
-        return "SRM_DONE"; // 26
-    if (code == 27)
-        return "SRM_PARTIAL_SUCCESS"; // 27
-    if (code == 28)
-        return "SRM_REQUEST_TIMED_OUT"; // 28
-    if (code == 29)
-        return "SRM_LAST_COPY"; // 29
-    if (code == 30)
-        return "SRM_FILE_BUSY"; // 30
-    if (code == 31)
-        return "SRM_FILE_LOST"; // 31
-    if (code == 32)
-        return "SRM_FILE_UNAVAILABLE"; // 32
-    if (code == 33)
-        return "SRM_CUSTOM_STATUS"; // 33
+	switch (code) {
+	case 0:
+		return "SRM_SUCCESS";
+	case 1:
+		return "SRM_FAILURE";
+	case 2:
+		return "SRM_AUTHENTICATION_FAILURE";
+	case 3:
+		return "SRM_AUTHORIZATION_FAILURE";
+	case 4:
+		return "SRM_INVALID_REQUEST";
+	case 5:
+		return "SRM_INVALID_PATH";
+	case 6:
+		return "SRM_FILE_LIFETIME_EXPIRED";
+	case 7:
+		return "SRM_SPACE_LIFETIME_EXPIRED";
+	case 8:
+		return "SRM_EXCEED_ALLOCATION";
+	case 9:
+		return "SRM_NO_USER_SPACE";
+	case 10:
+		return "SRM_NO_FREE_SPACE";
+	case 11:
+		return "SRM_DUPLICATION_ERROR";
+	case 12:
+		return "SRM_NON_EMPTY_DIRECTORY";
+	case 13:
+		return "SRM_TOO_MANY_RESULTS";
+	case 14:
+		return "SRM_INTERNAL_ERROR";
+	case 15:
+		return "SRM_FATAL_INTERNAL_ERROR";
+	case 16:
+		return "SRM_NOT_SUPPORTED";
+	case 17:
+		return "SRM_REQUEST_QUEUED";
+	case 18:
+		return "SRM_REQUEST_INPROGRESS";
+	case 19:
+		return "SRM_REQUEST_SUSPENDED";
+	case 20:
+		return "SRM_ABORTED";
+	case 21:
+		return "SRM_RELEASED";
+	case 22:
+		return "SRM_FILE_PINNED";
+	case 23:
+		return "SRM_FILE_IN_CACHE";
+	case 24:
+		return "SRM_SPACE_AVAILABLE";
+	case 25:
+		return "SRM_LOWER_SPACE_GRANTED";
+	case 26:
+		return "SRM_DONE";
+	case 27:
+		return "SRM_PARTIAL_SUCCESS";
+	case 28:
+		return "SRM_REQUEST_TIMED_OUT";
+	case 29:
+		return "SRM_LAST_COPY";
+	case 30:
+		return "SRM_FILE_BUSY";
+	case 31:
+		return "SRM_FILE_LOST";
+	case 32:
+		return "SRM_FILE_UNAVAILABLE";
+	case 33:
+		return "SRM_CUSTOM_STATUS";
+	default:
+		srmlogit(STORM_LOG_WARNING, "reconvertStatusCode", "Received an unknown status code: %d\n", code);
+		return "UNKNOWN";
+	}
 }
 
 /*** Get chain ***/

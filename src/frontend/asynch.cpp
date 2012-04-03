@@ -13,13 +13,6 @@
  * limitations under the License.
 */
 
-/*
- * asynch.cpp
- *
- *  Created on: Dec 12, 2008
- *      Author: alb
- */
-
 #include "srmv2H.h"
 #include "srmlogit.h"
 #include "filerequest_template.hpp"
@@ -48,6 +41,7 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
     	storm::MonitoringHelper::registerOperationError(start_time,
     					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
+    	srmLogResponse("PTP", SRM_USCOREFAILURE);
 		return(SOAP_FATAL_ERROR);
     }
     srmLogRequestWithSurls("PTP", get_ip(soap).c_str(),
@@ -66,11 +60,13 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
+	    	srmLogResponse("PTP", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+					request->getStatus());
+		srmLogResponse("PTP", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -84,6 +80,8 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
 				rep->srmPrepareToPutResponse->returnStatus->statusCode);
+    srmLogResponseWithToken("PTP", request->getRequestToken().c_str(),
+    			request->getStatus());
 	delete request;
     return soap_status;
 }
@@ -100,6 +98,7 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
     	storm::MonitoringHelper::registerOperationError(start_time,
     					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
+    	srmLogResponse("PTG", SRM_USCOREFAILURE);
     	return(SOAP_FATAL_ERROR);
     }
 	srmLogRequestWithSurls("PTG", get_ip(soap).c_str(),
@@ -118,11 +117,13 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
+	    	srmLogResponse("PTG", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+					request->getStatus());
+		srmLogResponse("PTG", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -136,6 +137,8 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
 				rep->srmPrepareToGetResponse->returnStatus->statusCode);
+    srmLogResponseWithToken("PTG", request->getRequestToken().c_str(),
+    			request->getStatus());
 	delete request;
     return soap_status;
 }
@@ -152,6 +155,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
     	storm::MonitoringHelper::registerOperationError(start_time,
     					storm::SRM_COPY_MONITOR_NAME);
+    	srmLogResponse("CP", SRM_USCOREFAILURE);
     	return(SOAP_FATAL_ERROR);
     }
 	srmLogRequestWithSurls("CP", get_ip(soap).c_str(),
@@ -170,11 +174,13 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_COPY_MONITOR_NAME);
+	    	srmLogResponse("CP", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_COPY_MONITOR_NAME,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+					request->getStatus());
+		srmLogResponse("CP", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -188,6 +194,8 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_COPY_MONITOR_NAME,
 				rep->srmCopyResponse->returnStatus->statusCode);
+	srmLogResponseWithToken("CP", request->getRequestToken().c_str(),
+	    			request->getStatus());
 	delete request;
     return soap_status;
 }
@@ -204,6 +212,7 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
     	storm::MonitoringHelper::registerOperationError(start_time,
     					storm::SRM_BRING_ONLINE_MONITOR_NAME);
+    	srmLogResponse("BOL", SRM_USCOREFAILURE);
     	return(SOAP_FATAL_ERROR);
     }
 	srmLogRequestWithSurls("BOL", get_ip(soap).c_str(),
@@ -222,11 +231,13 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_BRING_ONLINE_MONITOR_NAME);
+	    	srmLogResponse("BOL", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_BRING_ONLINE_MONITOR_NAME,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+					request->getStatus());
+		srmLogResponse("BOL", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -240,6 +251,8 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_BRING_ONLINE_MONITOR_NAME,
 				rep->srmBringOnlineResponse->returnStatus->statusCode);
+    srmLogResponseWithToken("BOL", request->getRequestToken().c_str(),
+    			request->getStatus());
 	delete request;
     return soap_status;
 }

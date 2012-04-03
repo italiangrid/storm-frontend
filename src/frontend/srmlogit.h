@@ -23,6 +23,8 @@
 #define STORM_LOG_DEBUG 4
 #define STORM_LOG_DEBUG2 5
 
+#include "srmv2H.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,11 +32,15 @@ extern "C" {
 int srmlogit_set_debuglevel(int level);
 int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled);
 int srmlogit(int level,const char *func, const char *msg, ...);
+//int srmlogitNoThread(int level,const char *func, const char *msg, ...);
 int srmAudit(const char *msg, ...) ;
 int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN);
 int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const char* clientDN, const char* surls, int surlsNum);
 int srmLogRequestWithToken(const char* requestName, const char* clientIP, const char* clientDN, const char* requestToken);
+int srmLogRequestWithTokenList(const char* requestName, const char* clientIP, const char* clientDN, const char* tokens, int tokensNum);
 int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP, const char* clientDN, const char* requestToken, const char* surls, int surlsNum);
+int srmLogResponse(const char* requestName, const ns1__TStatusCode statusCode);
+int srmLogResponseWithToken(const char* requestName, const char* requestToken, const ns1__TStatusCode statusCode);
 
 #ifdef __cplusplus
 }

@@ -13,8 +13,8 @@
  * limitations under the License.
 */
 
-#ifndef SYNCH_HPP_
-#define SYNCH_HPP_
+#ifndef SYNCH_HPP
+#define SYNCH_HPP
 
 //Directory Functions
 
@@ -126,4 +126,4 @@ extern "C" int ns1__srmGetTransferProtocols_impl (struct soap *soap,
 extern "C" int ns1__srmPing_impl(struct soap* soap,
 		struct ns1__srmPingRequest *req, struct ns1__srmPingResponse_ *rep);
 
-#endif /*SYNCH_HPP_*/
+#endif // SYNCH_HPP

@@ -49,6 +49,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
     	storm::MonitoringHelper::registerOperationError(start_time,
     					storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME);
+    	srmLogResponse("PTP status", SRM_USCOREFAILURE);
 		return(SOAP_FATAL_ERROR);
 	}
 	if(request->hasSurls())
@@ -74,11 +75,13 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 							storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME);
+			srmLogResponse("PTP status", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 							storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,
-							SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+							request->getStatus());
+		srmLogResponse("PTP status", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -92,6 +95,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,
 				rep->srmStatusOfPutRequestResponse->returnStatus->statusCode);
+	srmLogResponse("PTP status", request->getStatus());
 	delete request;
     return soap_status;
 }
@@ -110,6 +114,7 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
 		storm::MonitoringHelper::registerOperationError(start_time,
 						storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME);
+		srmLogResponse("PTG status", SRM_USCOREFAILURE);
 		return(SOAP_FATAL_ERROR);
 	}
 	if(request->hasSurls())
@@ -134,11 +139,13 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 					storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME);
+			srmLogResponse("PTG status", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 				storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,
-				SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+				request->getStatus());
+		srmLogResponse("PTG status", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -151,6 +158,7 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,
 				rep->srmStatusOfGetRequestResponse->returnStatus->statusCode);
+	srmLogResponse("PTG status", request->getStatus());
 	delete request;
     return soap_status;
 }
@@ -169,6 +177,7 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
 		storm::MonitoringHelper::registerOperationError(start_time,
 						storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME);
+		srmLogResponse("BOL status", SRM_USCOREFAILURE);
 		return(SOAP_FATAL_ERROR);
 	}
 	if(request->hasSurls())
@@ -193,11 +202,13 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 					storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME);
+			srmLogResponse("BOL status", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 									storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,
-									SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+									request->getStatus());
+		srmLogResponse("BOL status", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -211,6 +222,7 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,
 				rep->srmStatusOfBringOnlineRequestResponse->returnStatus->statusCode);
+	srmLogResponse("BOL status", request->getStatus());
 	delete request;
     return soap_status;
 }
@@ -229,17 +241,18 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
    		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
    		storm::MonitoringHelper::registerOperationError(start_time,
    						storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);
+   		srmLogResponse("CP status", SRM_USCOREFAILURE);
    		return(SOAP_FATAL_ERROR);
    	}
    	if(request->hasSurls())
    	{
-   		srmLogRequestWithTokenAndSurls("COPY status", get_ip(soap).c_str(),
+   		srmLogRequestWithTokenAndSurls("CP status", get_ip(soap).c_str(),
    						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str(), request->getSurlsList().c_str(),
    						request->getSurlsNumber());
    	}
    	else
    	{
-   		srmLogRequestWithToken("COPY status", get_ip(soap).c_str(),
+   		srmLogRequestWithToken("CP status", get_ip(soap).c_str(),
    						request->getCredentials().getDN().c_str(), request->getRequestToken().c_str());
    	}
     if(storm::Authorization::checkBlacklist(soap))
@@ -253,11 +266,13 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 					storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);
+			srmLogResponse("CP status", SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 									storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,
-									SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+									request->getStatus());
+		srmLogResponse("CP status", request->getStatus());
 		delete request;
 		return(SOAP_OK);
 	}
@@ -271,6 +286,7 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
 	storm::MonitoringHelper::registerOperation(start_time, soap_status,
 				storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,
 				rep->srmStatusOfCopyRequestResponse->returnStatus->statusCode);
+	srmLogResponse("CP status", request->getStatus());
 	delete request;
     return soap_status;
 
