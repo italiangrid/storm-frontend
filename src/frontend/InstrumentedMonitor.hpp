@@ -32,7 +32,6 @@ class InstrumentedMonitor : public Monitor {
 		};
 
 		~InstrumentedMonitor() {
-			delete m_statusCodeMapping;
 		};
 
 
