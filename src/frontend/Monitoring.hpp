@@ -23,6 +23,7 @@
 
 #include <string>
 #include <iostream>
+#include <set>
 #include <math.h>
 
 #include "srmlogit.h"
@@ -347,6 +348,19 @@ public:
 			return m_defaultMonitor;
 		}
 	}
+
+    std::set<std::string> getMonitorNames()
+   	{
+       	boost::lock_guard<boost::recursive_mutex> lock(m_mutex);
+       	std::set<std::string> names;
+       	std::vector<Monitor*>::const_iterator const vectorEnd = m_monitor_vector.end();
+   		for (std::vector<Monitor *>::iterator it = m_monitor_vector.begin();
+   				it != vectorEnd; ++it)
+   		{
+   			names.insert(((Monitor*)*it)->getName());
+   		}
+   		return names;
+   	}
 };
 }
 #endif /* MONITORING_HPP_ */

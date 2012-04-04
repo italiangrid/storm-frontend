@@ -33,8 +33,8 @@ unsigned int ProtocolChecker::init(char*** protocolList, unsigned int protocolLi
 	int i;
 	for (i = 0; i < protocolListSize; i++) {
 		srmlogit(STORM_LOG_DEBUG, func, "Adding protocol %s to supported protocols list\n" , (*protocolList)[i]);
-		std::string* current = new std::string((*protocolList)[i]);
-		this->protocolVector.push_back(*current);
+		std::string current((*protocolList)[i]);
+		this->protocolVector.push_back(current);
 	}
 	srmlogit(STORM_LOG_DEBUG, func, "ProtocolChecker initialization completed\n");
 }

@@ -116,7 +116,7 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     srmv2Server.cc \
     Monitor.hpp InstrumentedMonitor.hpp \
     MonitorStub.hpp InstrumentedMonitorBuilder.hpp \
-    MonitorHelper.hpp MonitorHelper.cpp \
+    MonitorHelper.hpp \
     Monitoring.hpp Monitoring.cpp MonitoringHelper.hpp \
     MonitorNotEnabledException.hpp \
     $(noinst_INCLUDES)

@@ -330,8 +330,6 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_ARGUS_PEP_HOSTNAME.c_str(), po::value<string>(), OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION)
             (OPTL_ARGUS_PEP_AUTH_PORT.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_PORT), OPT_ARGUS_PEP_AUTH_PORT_DESCRIPTION)
             (OPTL_ARGUS_PEP_AUTH_SERVICE.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_PEP_AUTH_SERVICE), OPT_ARGUS_PEP_AUTH_SERVICE_DESCRIPTION);
-//            (OPTL_DISABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_MAPPING_DESCRIPTION)
-//            (OPTL_DISABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(false), OPT_DISABLE_VOMSCHECK_DESCRIPTION);
 
     return configurationFileOptions;
 }
@@ -510,9 +508,7 @@ string FrontendConfiguration::getFromEnvironment(const char* envVar, const strin
     if (envVal == NULL) {
         return defaultValue;
     }
-
     return string(envVal);
-
 }
 
 string FrontendConfiguration::getFilename(string path) {

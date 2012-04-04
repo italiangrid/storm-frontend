@@ -17,10 +17,11 @@
 #define MONITOR_STUB_HPP_
 
 #include <string>
+#include "InstrumentedMonitor.hpp"
 
 namespace storm {
 
-class MonitorStub : public Monitor {
+class MonitorStub : public InstrumentedMonitor {
 	public:
 
 		static std::string nameOfOperationType(OperationType type)
@@ -28,7 +29,7 @@ class MonitorStub : public Monitor {
 			return std::string("void");
 		}
 
-		MonitorStub() : Monitor(std::string("Stub"), std::string("Stub"), Stub)
+		MonitorStub() : InstrumentedMonitor(std::string("Stub"), std::string("Stub"), Stub)
 		{
 			M_EMPTY_VALUE = -1;
 		};
@@ -143,6 +144,23 @@ class MonitorStub : public Monitor {
 		}
 
 		void print()
+		{
+		}
+
+		void registerCompleted(long executionTimeInMills, int returnCode)
+		{
+		}
+
+		void addStatusCodeMapping(int returnStatus, bool successfull)
+		{
+		}
+
+		bool getStatusCodeMapping(int returnStatus)
+		{
+			return true;
+		}
+
+		void printStatusCodeMappings()
 		{
 		}
 

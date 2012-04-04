@@ -543,6 +543,7 @@ int main(int argc, char** argv) {
 
     delete mysql_connection_pool;
     delete monitoring;
+    delete storm::ThreadPool::getInstance();
 
     curl_global_cleanup();
 

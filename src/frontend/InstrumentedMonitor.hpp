@@ -16,9 +16,10 @@
 #ifndef INSTRUMENTED_MONITOR_HPP_
 #define INSTRUMENTED_MONITOR_HPP_
 
-#include <string.h>
+#include <string>
+#include <map>
 #include "Monitor.hpp"
-#include "MonitorHelper.hpp"
+#include "srmlogit.h"
 
 namespace storm {
 
@@ -26,16 +27,18 @@ class InstrumentedMonitor : public Monitor {
 	public:
 
 
-		InstrumentedMonitor(std::string name , std::string friendlyName, OperationType type) : Monitor(name,friendlyName,type)
+		InstrumentedMonitor(std::string name , std::string friendlyName, OperationType type) : Monitor(name,friendlyName,type) , m_statusCodeMapping()
 		{
 		};
 
-		~InstrumentedMonitor() {};
+		~InstrumentedMonitor() {
+			delete m_statusCodeMapping;
+		};
 
 
 		void registerCompleted(long executionTimeInMills, int returnCode)
 		{
-			if(MonitorHelper::isSuccessfull(this->getName() , returnCode))
+			if(getStatusCodeMapping(returnCode))
 			{
 				registerSuccess(executionTimeInMills);
 			}
@@ -45,7 +48,43 @@ class InstrumentedMonitor : public Monitor {
 			}
 		}
 
+		void addStatusCodeMapping(int returnStatus, bool successfull)
+		{
+			if(m_statusCodeMapping.find(returnStatus) == m_statusCodeMapping.end())
+			{
+				m_statusCodeMapping[returnStatus] = successfull;
+			}
+			else
+			{
+				if(m_statusCodeMapping.find(returnStatus)->second != successfull)
+				{
+					srmlogit(STORM_LOG_WARNING, "storm::InstrumentedMonitor::addStatusCodeMapping()", "Attempt to modify already stored status code mapping for status %d\n" , returnStatus);
+				}
+			}
+		}
+
+		bool getStatusCodeMapping(int returnStatus)
+		{
+			bool mapping = false;
+			if(m_statusCodeMapping.find(returnStatus) != m_statusCodeMapping.end())
+			{
+				mapping = m_statusCodeMapping.find(returnStatus)->second;
+			}
+			return mapping;
+		}
+
+		void printStatusCodeMappings()
+		{
+			std::map<int, bool>::const_iterator const mapEnd = m_statusCodeMapping.end();
+			for(std::map<int, bool>::const_iterator it = m_statusCodeMapping.begin();
+	   				it != mapEnd; ++it)
+			{
+				srmlogit(STORM_LOG_DEBUG, "storm::InstrumentedMonitor::printStatusCodeMapping()", "Code %d Successful %s\n" , it->first, (it->second? "true" : "false"));
+			}
+		}
+	private:
+		std::map<int, bool> m_statusCodeMapping;
+
 	};
 }
 #endif /* INSTRUMENTED_MONITOR_HPP_ */
-

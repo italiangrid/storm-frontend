@@ -36,17 +36,17 @@ namespace po = boost::program_options;
 using namespace std;
 
 // Costants
-static const string DEFAULT_CONFIGURATION_FILE = "storm-frontend.conf";
-static const string DEFAULT_GRIDMAPFILE = "/etc/grid-security/grid-mapfile";
-static const string DEFAULT_HOST_CERT_FILE = "/etc/grid-security/hostcert.pem";
-static const string DEFAULT_HOST_KEY_FILE = "/etc/grid-security/hostkey.pem";
-static const string DEFAULT_LOG_FILE_NAME = "storm-frontend.log";
-static const string DEFAULT_MONITORING_FILE_NAME = "monitoring.log";
+static const string DEFAULT_CONFIGURATION_FILE = string("storm-frontend.conf");
+static const string DEFAULT_GRIDMAPFILE = string("/etc/grid-security/grid-mapfile");
+static const string DEFAULT_HOST_CERT_FILE = string("/etc/grid-security/hostcert.pem");
+static const string DEFAULT_HOST_KEY_FILE = string("/etc/grid-security/hostkey.pem");
+static const string DEFAULT_LOG_FILE_NAME = string("storm-frontend.log");
+static const string DEFAULT_MONITORING_FILE_NAME = string("monitoring.log");
 static const string DEFAULT_WSDL_FILE = "";
-static const string DEFAULT_XMLRPC_HOST = "localhost";
-static const string DEFAULT_XMLRPC_PORT = "8080";
-static const string DEFAULT_XMLRPC_PATH = "/RPC2";
-static const string DEFAULT_DEBUG_LEVEL = "INFO";
+static const string DEFAULT_XMLRPC_HOST = string("localhost");
+static const string DEFAULT_XMLRPC_PORT = string("8080");
+static const string DEFAULT_XMLRPC_PATH = string("/RPC2");
+static const string DEFAULT_DEBUG_LEVEL = string("INFO");
 static const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING = 3;
 static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
@@ -57,10 +57,10 @@ static const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
 static const bool DEFAULT_MONITORING_DETAILED = false;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
-static const string DEFAULT_ARGUS_PEP_AUTH_PROTOCOL = "https";
-static const string DEFAULT_ARGUS_PEP_AUTH_PORT = "8154";
-static const string DEFAULT_ARGUS_PEP_AUTH_SERVICE = "authz";
-static const string DEFAULT_CA_CERTIFICATES_FOLDER = "/etc/grid-security/certificates";
+static const string DEFAULT_ARGUS_PEP_AUTH_PROTOCOL = string("https");
+static const string DEFAULT_ARGUS_PEP_AUTH_PORT = string("8154");
+static const string DEFAULT_ARGUS_PEP_AUTH_SERVICE = string("authz");
+static const string DEFAULT_CA_CERTIFICATES_FOLDER = string("/etc/grid-security/certificates");
 
 
 static const char* EMPTY_DESCRIPTION = "";
@@ -70,105 +70,101 @@ static const char* ENVVAR_X509_USER_CERT = "X509_USER_CERT";
 static const char* ENVVAR_X509_USER_KEY = "X509_USER_KEY";
 static const char* ENVVAR_X509_CERT_DIR = "X509_CERT_DIR";
 
-static const string OPT_HELP = "h";
-static const string OPTL_HELP = "help";
+static const string OPT_HELP = string("h");
+static const string OPTL_HELP = string("help");
 static const char* OPT_HELP_DESCRIPTION = "Print this message";
 
-static const string OPT_VERSION = "v";
-static const string OPTL_VERSION = "version";
+static const string OPT_VERSION = string("v");
+static const string OPTL_VERSION = string("version");
 static const char* OPT_VERSION_DESCRIPTION = "Print version";
 
-static const string OPT_CONFIG_FILE = "c";
-static const string OPTL_CONFIG_FILE = "config-file";
+static const string OPT_CONFIG_FILE = string("c");
+static const string OPTL_CONFIG_FILE = string("config-file");
 static const char* OPT_CONFIG_FILE_DESCRIPTION = "Configuration file";
 
-static const string OPT_DEBUG = "d";
-static const string OPTL_DEBUG = "debug-mode";
+static const string OPT_DEBUG = string("d");
+static const string OPTL_DEBUG = string("debug-mode");
 static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
 
 // Renamed disable with enable and changed checks accordingly
-//static const string OPTL_DISABLE_MAPPING = "security.disable.mapping";
-//static const char* OPT_DISABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
-static const string OPTL_ENABLE_MAPPING = "security.enable.mapping";
+static const string OPTL_ENABLE_MAPPING = string("security.enable.mapping");
 static const char* OPT_ENABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
 
-//static const string OPTL_DISABLE_VOMSCHECK = "security.disable.vomscheck";
-//static const char* OPT_DISABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
-static const string OPTL_ENABLE_VOMSCHECK = "security.enable.vomscheck";
+static const string OPTL_ENABLE_VOMSCHECK = string("security.enable.vomscheck");
 static const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
 
-static const string OPTL_MONITORING_ENABLED = "monitoring.enabled";
+static const string OPTL_MONITORING_ENABLED = string("monitoring.enabled");
 
-static const string OPTL_MONITORING_FILE_NAME = "monitoring.filename";
+static const string OPTL_MONITORING_FILE_NAME = string("monitoring.filename");
 static const char* OPT_MONITORING_FILE_NAME_DESCRIPTION = "Use <arg> as monitoring file";
 
-static const string OPTL_MONITORING_DETAILED = "monitoring.detailed";
+static const string OPTL_MONITORING_DETAILED = string("monitoring.detailed");
 static const char* OPT_MONITORING_DETAILED_DESCRIPTION = "Enable detailed monitoring for each operation";
 
-static const string OPTL_MONITORING_TIME_INTERVAL = "monitoring.timeInterval";
+static const string OPTL_MONITORING_TIME_INTERVAL = string("monitoring.timeInterval");
 static const char* OPT_MONITORING_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print monitoring information.";
 
-static const string OPTL_LOG_FILE_NAME = "log.filename";
+static const string OPTL_LOG_FILE_NAME = string("log.filename");
 static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
 
-static const string OPTL_DEBUG_LEVEL = "log.debuglevel";
+static const string OPTL_DEBUG_LEVEL = string("log.debuglevel");
 static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2";
 
-static const string OPTL_PORT = "fe.port";
+static const string OPTL_PORT = string("fe.port");
 static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
 
-static const string OPTL_NUM_THREADS = "fe.threadpool.threads.number";
+static const string OPTL_NUM_THREADS = string("fe.threadpool.threads.number");
 
-static const string OPTL_MAX_THREADPOOL_PENDING = "fe.threadpool.maxpending";
+static const string OPTL_MAX_THREADPOOL_PENDING = string("fe.threadpool.maxpending");
 
-static const string OPTL_SLEEP_THREADPOOL_MAX_PENDING = "fe.threadpool.maxpending.sleep";
+static const string OPTL_SLEEP_THREADPOOL_MAX_PENDING = string("fe.threadpool.maxpending.sleep");
 
-static const string OPTL_MAX_GSOAP_PENDING = "fe.gsoap.maxpending";
+static const string OPTL_MAX_GSOAP_PENDING = string("fe.gsoap.maxpending");
 
-static const string OPTL_PROXY_DIR = "proxy.dir";
+static const string OPTL_PROXY_DIR = string("proxy.dir");
 static const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
 
-static const string OPTL_PROXY_USER = "proxy.user";
+static const string OPTL_PROXY_USER = string("proxy.user");
 static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
 
-static const string OPTL_XMLRPC_HOST = "be.xmlrpc.host";
+static const string OPTL_XMLRPC_HOST = string("be.xmlrpc.host");
 static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
 
-static const string OPTL_RECALLTABLE_PORT = "be.recalltable.port";
-static const string OPTL_XMLRPC_PORT = "be.xmlrpc.port";
+static const string OPTL_RECALLTABLE_PORT = string("be.recalltable.port");
+static const string OPTL_XMLRPC_PORT = string("be.xmlrpc.port");
 static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
 
-static const string OPTL_XMLRPC_PATH = "be.xmlrpc.path";
+static const string OPTL_XMLRPC_PATH = string("be.xmlrpc.path");
 static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
-static const string OPTL_WSDL_FILE = "wsdl.file";
+static const string OPTL_WSDL_FILE = string("wsdl.file");
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
 
-static const string OPTL_DB_HOST = "db.host";
+static const string OPTL_DB_HOST = string("db.host");
 static const char* OPT_DB_HOST_DESCRIPTION = "Machine hosting the DB";
 
-static const string OPTL_DB_USER = "db.user";
+static const string OPTL_DB_USER = string("db.user");
 static const char* OPT_DB_USER_DESCRIPTION = "Database user";
 
-static const string OPTL_DB_USER_PASSWORD = "db.passwd";
+static const string OPTL_DB_USER_PASSWORD = string("db.passwd");
 static const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
 
-static const string OPTL_XMLRPC_CHECK_ASCII = "be.xmlrpc.check.ascii";
+static const string OPTL_XMLRPC_CHECK_ASCII = string("be.xmlrpc.check.ascii");
 static const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not strings to be sent via xmlrpc to the BE";
 
-static const string OPTL_USER_CHECK_BLACKLIST = "check.user.blacklisting";
+static const string OPTL_USER_CHECK_BLACKLIST = string("check.user.blacklisting");
 static const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
 
-static const string OPTL_ARGUS_PEP_AUTH_PROTOCOL = "argus-pep.protocol";
+static const string OPTL_ARGUS_PEP_AUTH_PROTOCOL = string("argus-pep.protocol");
 static const char* OPT_ARGUS_PEP_AUTH_PROTOCOL_DESCRIPTION = "The protocol to contact Argus PEP service";
 
-static const string OPTL_ARGUS_PEP_HOSTNAME = "argus-pep.hostname";
+static const string OPTL_ARGUS_PEP_HOSTNAME = string("argus-pep.hostname");
 static const char* OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION = "Full hostname of the Argus PEP host";
 
-static const string OPTL_ARGUS_PEP_AUTH_PORT = "argus-pep.port";
+static const string OPTL_ARGUS_PEP_AUTH_PORT = string("argus-pep.port");
 static const char* OPT_ARGUS_PEP_AUTH_PORT_DESCRIPTION = "Port of the Argus PEP authorization service";
 
-static const string OPTL_ARGUS_PEP_AUTH_SERVICE = "argus-pep.service";
+static const string OPTL_ARGUS_PEP_AUTH_SERVICE = string("argus-pep.service");
 static const char* OPT_ARGUS_PEP_AUTH_SERVICE_DESCRIPTION = "The service endpoint serving Argus PEP service";
 
 // A helper function to simplify printing options stuff

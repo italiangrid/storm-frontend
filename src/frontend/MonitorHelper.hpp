@@ -20,6 +20,8 @@
 #include <utility>
 #include <map>
 #include "srmlogit.h"
+#include "InstrumentedMonitor.hpp"
+#include "Monitoring.hpp"
 
 namespace storm {
 
@@ -34,92 +36,32 @@ class MonitorHelper{
 		{
 			std::string funcName("addSuccessStatusCodeMapping");
 			srmlogit(STORM_LOG_DEBUG2, funcName.c_str(), "Adding code %u for monitor %s\n" , successReturnStatus , monitorName.c_str());
-			std::map < int , bool > * monitor_map = getMonitorMap(monitorName);
-			if(monitor_map != NULL)
-			{
-				checkUpdateSuccessStatusCodeMapping(successReturnStatus, monitor_map);
-			}
-			else
-			{
-				std::pair< std::string , std::map < int , bool > * > newStatusMapping = buildSuccessStatusCodeMap(monitorName, successReturnStatus);
-				status_code_map.insert(newStatusMapping);
-			}
+			((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(monitorName))->addStatusCodeMapping(successReturnStatus,true);
 		}
 
-		static bool isSuccessfull(std::string monitorName, int successReturnStatus)
+		static bool isSuccessfull(std::string monitorName, int returnStatus)
 		{
-			bool successfull = false;
-			if(status_code_map.find(monitorName) != status_code_map.end())
-			{
-				if(status_code_map.find(monitorName)->second->find(successReturnStatus) != status_code_map.find(monitorName)->second->end())
-				{
-					successfull = status_code_map.find(monitorName)->second->find(successReturnStatus)->second;
-				}
-			}
-			return successfull;
+			return ((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(monitorName))->getStatusCodeMapping(returnStatus);
 		}
-
 
 		static void printMappings()
 		{
 			std::string funcName("printMappings");
-			std::map< std::string, std::map < int , bool > * >::iterator ite;
-			std::map < int , bool >::iterator innerIte;
-			for(ite=status_code_map.begin();ite!=status_code_map.end(); ite++)
+			std::set<std::string> names = Monitoring::getInstance()->getMonitorNames();
+			std::set<std::string>::const_iterator const setEnd = names.end();
+			for(std::set<std::string>::const_iterator it = names.begin();
+	   				it != setEnd; ++it)
 			{
-				srmlogit(STORM_LOG_DEBUG, funcName.c_str(), "Printing mappings for monitor %s :\n" , ite->first.c_str());
-				for(innerIte=ite->second->begin();innerIte!=ite->second->end();innerIte++)
-				{
-					srmlogit(STORM_LOG_DEBUG, funcName.c_str(), "Code %d\n" , innerIte->first);
-				}
+				srmlogit(STORM_LOG_DEBUG, funcName.c_str(), "Printing mappings for monitor %s :\n" , it->c_str());
+				((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(*it))->printStatusCodeMappings();
 			}
 		}
 
 
 	private:
-		static std::map< std::string, std::map < int , bool > * > status_code_map;
-
-		static std::map < int , bool > * getMonitorMap(std::string monitorName)
+		static bool testAddedMapping(std::string monitorName, int returnStatus, bool successful)
 		{
-			std::map < int , bool > * statusMappings = NULL;
-			if(status_code_map.find(monitorName) != status_code_map.end())
-			{
-				statusMappings = status_code_map.find(monitorName)->second;
-			}
-			return statusMappings;
-		}
-
-		static void checkUpdateSuccessStatusCodeMapping(int successReturnStatus, std::map < int , bool > * statusCodeMap)
-		{
-			if(statusCodeMap->find(successReturnStatus) != statusCodeMap->end())
-			{
-				//already in
-			}
-			else
-			{
-				statusCodeMap->insert(std::make_pair(successReturnStatus, true));
-			}
-		}
-
-		static std::pair< std::string , std::map < int , bool > * > buildSuccessStatusCodeMap(std::string monitorName, int successReturnStatus)
-		{
-			std::map < int , bool > * statusCodeMap =  new std::map < int , bool >();
-			statusCodeMap->insert(std::make_pair(successReturnStatus, true));
-			std::pair < std::string , std::map < int , bool > * > statusMapping = std::make_pair(monitorName, statusCodeMap);
-			return statusMapping;
-		}
-
-		static bool testAddedMapping(std::string monitorName, int successReturnStatus)
-		{
-			bool found = false;
-			if(status_code_map.find(monitorName) != status_code_map.end())
-			{
-				if(status_code_map.find(monitorName)->second->find(successReturnStatus) != status_code_map.find(monitorName)->second->end())
-				{
-					found = true;
-				}
-			}
-			return found;
+			return ((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(monitorName))->getStatusCodeMapping(returnStatus) == successful;
 		}
 	};
 }
