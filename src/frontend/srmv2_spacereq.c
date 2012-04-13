@@ -414,7 +414,7 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     	return(SOAP_EOM);
     }
     
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
     return(SOAP_OK);
 }
@@ -448,7 +448,7 @@ int ns1__srmStatusOfReserveSpaceRequest_impl(struct soap *soap,
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     repp->returnStatus->explanation = "srmReserveSpace implementation is synchronous";
     rep->srmStatusOfReserveSpaceRequestResponse = repp;
-    srmlogit(STORM_LOG_INFO, func, "Returning status: SRM_NOT_SUPPORTED\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Returning status: SRM_NOT_SUPPORTED\n");
     return(SOAP_OK);
 }
 
@@ -642,7 +642,7 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
         return(SOAP_EOM);
     }
     
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
     return(SOAP_OK);
 }
@@ -674,7 +674,7 @@ int ns1__srmUpdateSpace_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmUpdateSpaceResponse = repp;
     
-    srmlogit(STORM_LOG_INFO, func, "Not supported.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Not supported.\n");
 
     return (SOAP_OK);
 }
@@ -705,7 +705,7 @@ int ns1__srmStatusOfUpdateSpaceRequest_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmStatusOfUpdateSpaceRequestResponse = repp;
     
-    srmlogit(STORM_LOG_INFO, func, "Not supported.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Not supported.\n");
 
     return (SOAP_OK);
 }
@@ -882,7 +882,7 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
     	return(SOAP_EOM);
     }
     
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
     return(SOAP_OK);
 }
@@ -1063,7 +1063,7 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
     	return(SOAP_EOM);
     }
     
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
     return(SOAP_OK);
 }
@@ -1124,7 +1124,7 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmStatusOfChangeSpaceForFilesRequestResponse = repp;
     
-    srmlogit(STORM_LOG_INFO, func, "Not supported.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Not supported.\n");
 
     return (SOAP_OK);
 }
@@ -1153,7 +1153,7 @@ int ns1__srmExtendFileLifeTimeInSpace_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmExtendFileLifeTimeInSpaceResponse = repp;
     
-    srmlogit(STORM_LOG_INFO, func, "Not supported.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Not supported.\n");
 
     return (SOAP_OK);
 }
@@ -1182,7 +1182,7 @@ int ns1__srmPurgeFromSpace_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmPurgeFromSpaceResponse = repp;
     
-    srmlogit(STORM_LOG_INFO, func, "Not supported.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Not supported.\n");
 
     return (SOAP_OK);
 }

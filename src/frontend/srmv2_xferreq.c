@@ -228,8 +228,7 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
         return(SOAP_EOM);
     }
 
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
-
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     return(SOAP_OK);
 }
 
@@ -421,7 +420,7 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
         return(SOAP_EOM);
     }
 
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
     return(SOAP_OK);
 }
@@ -584,7 +583,7 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
         return(SOAP_EOM);
     }
 
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
     return(SOAP_OK);
 }
@@ -780,7 +779,7 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
         return(SOAP_EOM);
     }
 
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
     return(SOAP_OK);
 }
@@ -1003,7 +1002,7 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
         return(SOAP_EOM);
     }
 
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
     return(SOAP_OK);
 }
@@ -1256,7 +1255,7 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
             return error;
         }
     }
-    srmlogit(STORM_LOG_INFO, func, "Request done.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Request done.\n");
 
     return(SOAP_OK);
 }
@@ -1344,7 +1343,7 @@ int ns1__srmSuspendRequest_impl(struct soap *soap,
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     rep->srmSuspendRequestResponse = repp;
 
-    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
+    srmlogit(STORM_LOG_DEBUG, func, "Result: SRM_NOT_SUPPORTED");
 
     return(SOAP_OK);
 }
@@ -1366,7 +1365,7 @@ int ns1__srmResumeRequest_impl(struct soap *soap,
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     rep->srmResumeRequestResponse = repp;
 
-    srmlogit(STORM_LOG_INFO, func, "Result: SRM_NOT_SUPPORTED");
+    srmlogit(STORM_LOG_DEBUG, func, "Result: SRM_NOT_SUPPORTED");
 
     return(SOAP_OK);
 }

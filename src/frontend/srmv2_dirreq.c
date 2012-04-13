@@ -1101,7 +1101,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     	return(SOAP_EOM);
     }
     
-	srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 	    
     return(SOAP_OK);
 }
@@ -1130,7 +1130,7 @@ int ns1__srmStatusOfLsRequest_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmStatusOfLsRequestResponse = repp;
     
-	srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
     return (SOAP_OK);
 }
@@ -1329,7 +1329,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     
     xmlrpc_DECREF(inputParam);
 
-    srmlogit(STORM_LOG_INFO, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
     return(SOAP_OK);
 }
