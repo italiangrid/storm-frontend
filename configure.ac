@@ -23,7 +23,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # Release number
 osdist=`cat /etc/redhat-release | awk 'BEGIN {FS="release "} {print $2}'| awk 'BEGIN {FS="."} {print $1}'`
 AC_SUBST([STORM_FRONTEND_SO], [sl$osdist])
-AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [6])
+AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [7])
 
 AC_SUBST([PACKAGE_PREFIX_NAME], [storm])
 AC_SUBST([PACKAGE_LONG_NAME], [storm-frontend-server])
