@@ -65,7 +65,51 @@ template<typename soap_in_t, typename soap_out_t, typename soap_out_root_t>
 int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 		, char* funcName, boost::posix_time::ptime startTime
 		, soap_out_root_t* response) {
-	if(storm::Authorization::checkBlacklist(request->getSoapRequest()))
+	 bool blacklisted = false;
+	try
+	{
+		blacklisted = storm::Authorization::checkBlacklist(request->getSoapRequest());
+	}catch( storm::AuthorizationException& e)
+	{
+		srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+		try
+		{
+			request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
+		} catch(storm::InvalidResponse& exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			storm::MonitoringHelper::registerOperationError(startTime,
+				request->getmonitorName());
+			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
+			return(SOAP_FATAL_ERROR);
+		}
+		storm::MonitoringHelper::registerOperation(startTime,
+				request->getmonitorName(),
+				request->getStatus());
+		srmLogResponse(request->getName().c_str(), request->getStatus());
+		return(SOAP_OK);
+	}catch(storm::ArgusException& e)
+	{
+		srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
+		try
+		{
+			request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
+		} catch(storm::InvalidResponse &exc)
+		{
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			storm::MonitoringHelper::registerOperationError(startTime,
+				request->getmonitorName());
+			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
+			return(SOAP_FATAL_ERROR);
+		}
+		storm::MonitoringHelper::registerOperation(startTime,
+				request->getmonitorName(),
+				request->getStatus());
+		srmLogResponse(request->getName().c_str(), request->getStatus());
+		return(SOAP_OK);
+	}
+	if(blacklisted)
+	//if(storm::Authorization::checkBlacklist(request->getSoapRequest()))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		try

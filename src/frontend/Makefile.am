@@ -96,7 +96,8 @@ stormfrontend_others = Credentials.cpp Credentials.hpp \
     request/synch/PingRequest.cpp request/synch/PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
-    AuthorizationException.hpp cgsi_plugin_int.h \
+    AuthorizationException.hpp ArgusException.hpp \
+    cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
     Surl.hpp BolSurl.hpp PtgSurl.hpp PtpSurl.hpp CopySurl.hpp \

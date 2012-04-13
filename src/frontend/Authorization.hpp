@@ -24,6 +24,7 @@
 
 #include "FullCredentials.hpp"
 #include "AuthorizationException.hpp"
+#include "ArgusException.hpp"
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 
@@ -51,44 +52,19 @@ public:
 				throw exc;
 			}
 
-			std::string argusPepProtocol = FrontendConfiguration::getInstance()->getArgusPepProtocol();
-			if(argusPepProtocol.empty())
+			std::string argusPepdEndpoint = FrontendConfiguration::getInstance()->getArgusPepdEndpoint();
+			if(argusPepdEndpoint.empty())
 			{
-				srmlogit(STORM_LOG_ERROR, funcName, "No protocol for Argus PEP server available in configuration! Unable to build PEP client\n");
-				std::string  errMessage("No protocol for Argus PEP server available in configuration\n");
+				srmlogit(STORM_LOG_ERROR, funcName, "No endpoint for Argus PEPD server available in configuration! Unable to build PEP client\n");
+				std::string  errMessage("No endpoint for Argus PEP server available in configuration\n");
 				storm::AuthorizationException exc(errMessage);
 				throw exc;
 			}
-			std::string argusPepHostname = FrontendConfiguration::getInstance()->getArgusPepHostname();
-			if(argusPepHostname.empty())
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "No Hostname for Argus PEP server available in configuration! Unable to build PEP client\n");
-				std::string  errMessage("No Hostname for Argus PEP server available in configuration\n");
-				storm::AuthorizationException exc(errMessage);
-				throw exc;
-			}
-			std::string argusPepAuthzPort = FrontendConfiguration::getInstance()->getArgusPepAuthzPort();
-			if(argusPepAuthzPort.empty())
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "No Port for Argus PEP service available in configuration! Unable to build PEP client\n");
-				std::string  errMessage("No Port for Argus PEP service available in configuration\n");
-				storm::AuthorizationException exc(errMessage);
-				throw exc;
-			}
-			std::string argusPepAuthzService = FrontendConfiguration::getInstance()->getArgusPepAuthzService();
-			if(argusPepAuthzService.empty())
-			{
-				srmlogit(STORM_LOG_ERROR, funcName, "No service endpoint for Argus PEP service available in configuration! Unable to build PEP client\n");
-				std::string  errMessage("No service endpoint for Argus PEP service available in configuration\n");
-				storm::AuthorizationException exc(errMessage);
-				throw exc;
-			}
-			std::string pep_url = argusPepProtocol + "://" + argusPepHostname + ":" + argusPepAuthzPort + "/" + argusPepAuthzService;
 
 			// configure PEP client: PEP Server endpoint url
-			pep_error_t pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_URL, pep_url.c_str());
+			pep_error_t pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_URL, argusPepdEndpoint.c_str());
 			if (pep_rc != PEP_OK) {
-				srmlogit(STORM_LOG_ERROR, funcName, "Failed to set PEP endpoint: %s: %s\n", pep_url.c_str(), pep_strerror(pep_rc));
+				srmlogit(STORM_LOG_ERROR, funcName, "Failed to set PEP endpoint: %s: %s\n", argusPepdEndpoint.c_str(), pep_strerror(pep_rc));
 				std::string  errMessage("Failed to set PEP endpoint\n");
 				storm::AuthorizationException exc(errMessage);
 				throw exc;
@@ -166,20 +142,20 @@ public:
 		pep_destroy(pep);
 	}
 
-	static bool checkBlacklist(struct soap *soap)
-	 {
+	static bool checkBlacklist(struct soap *soap) throw (AuthorizationException, ArgusException)
+	{
 		bool response = false;
-		if(FrontendConfiguration::getInstance()->getUserCheckBlacklist())
+		if (FrontendConfiguration::getInstance()->getUserCheckBlacklist())
 		{
-			storm::FullCredentials cred(soap);
-			storm::Authorization auth((storm::FullCredentials*)&cred);
+			FullCredentials cred(soap);
+			Authorization auth((storm::FullCredentials*) &cred);
 			response = auth.isBlacklisted();
 		}
 		return response;
-	 }
+	}
 
     bool isAuthorized(std::string resource, std::string action) throw (storm::AuthorizationException) ;
-    bool isBlacklisted() throw (storm::AuthorizationException) ;
+    bool isBlacklisted() throw (storm::AuthorizationException, storm::ArgusException) ;
 
 private:
     FullCredentials * credentials;

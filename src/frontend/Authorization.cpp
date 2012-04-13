@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include "Authorization.hpp"
+#include "ArgusException.hpp"
 #include "srmlogit.h"
 
 using namespace storm;
@@ -75,7 +76,7 @@ bool Authorization::isAuthorized(std::string resource, std::string action) throw
  * Return true if the user is blacklisted, false otherwise
  * We consider an user blacklisted if the authorization answer for DEFAULT_RESOURCE ans DEFAULT_ACTION is Deny;
  * */
-bool Authorization::isBlacklisted() throw (storm::AuthorizationException)
+bool Authorization::isBlacklisted() throw (storm::AuthorizationException, storm::ArgusException)
 {
 
 	char* funcName = "isBlacklisted";
@@ -90,7 +91,7 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException)
 		if (pep_rc != PEP_OK) {
 			xacml_request_delete(request);
 			xacml_response_delete(response);
-			throw storm::AuthorizationException(new std::string("Failed to authorize XACML request: %s\n", pep_strerror(pep_rc)));
+			throw storm::ArgusException(new std::string("Failed to authorize XACML request: %s\n", pep_strerror(pep_rc)));
 		}
 		xacml_decision_t decision;
 		 try

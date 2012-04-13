@@ -248,10 +248,7 @@ void logConfiguration()
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_FILE_NAME.c_str(), configuration->getMonitoringFile().c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_DETAILED.c_str(), (configuration->getMonitoringDetailed() ? "true" : "false"));
     srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_MONITORING_TIME_INTERVAL.c_str(), configuration->getMonitoringTimeInterval());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_AUTH_PROTOCOL.c_str(), configuration->getArgusPepProtocol().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_HOSTNAME.c_str(), configuration->getArgusPepHostname().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_AUTH_PORT.c_str(), configuration->getArgusPepAuthzPort().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEP_AUTH_SERVICE.c_str(), configuration->getArgusPepAuthzService().c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEPD_ENDPOINT.c_str(), configuration->getArgusPepdEndpoint().c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", configuration->getXMLRPCEndpoint().c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(), configuration->getRecalltablePort());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), configuration->getDebugLevelString().c_str());

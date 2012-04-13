@@ -57,9 +57,6 @@ static const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
 static const bool DEFAULT_MONITORING_DETAILED = false;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
-static const string DEFAULT_ARGUS_PEP_AUTH_PROTOCOL = string("https");
-static const string DEFAULT_ARGUS_PEP_AUTH_PORT = string("8154");
-static const string DEFAULT_ARGUS_PEP_AUTH_SERVICE = string("authz");
 static const string DEFAULT_CA_CERTIFICATES_FOLDER = string("/etc/grid-security/certificates");
 
 
@@ -155,17 +152,8 @@ static const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not st
 static const string OPTL_USER_CHECK_BLACKLIST = string("check.user.blacklisting");
 static const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
 
-static const string OPTL_ARGUS_PEP_AUTH_PROTOCOL = string("argus-pep.protocol");
-static const char* OPT_ARGUS_PEP_AUTH_PROTOCOL_DESCRIPTION = "The protocol to contact Argus PEP service";
-
-static const string OPTL_ARGUS_PEP_HOSTNAME = string("argus-pep.hostname");
-static const char* OPT_ARGUS_PEP_HOSTNAME_DESCRIPTION = "Full hostname of the Argus PEP host";
-
-static const string OPTL_ARGUS_PEP_AUTH_PORT = string("argus-pep.port");
-static const char* OPT_ARGUS_PEP_AUTH_PORT_DESCRIPTION = "Port of the Argus PEP authorization service";
-
-static const string OPTL_ARGUS_PEP_AUTH_SERVICE = string("argus-pep.service");
-static const char* OPT_ARGUS_PEP_AUTH_SERVICE_DESCRIPTION = "The service endpoint serving Argus PEP service";
+static const string OPTL_ARGUS_PEPD_ENDPOINT = string("argus-pepd-endpoint");
+static const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION = "Full SERVICE ENDPOINT of the Argus PEP Daemon";
 
 // A helper function to simplify printing options stuff
 template<class T>
@@ -223,10 +211,7 @@ public:
     string getHostKeyFile();
     bool getXMLRPCCheckAscii();
     bool getUserCheckBlacklist();
-    string getArgusPepProtocol();
-    string getArgusPepHostname();
-    string getArgusPepAuthzPort();
-    string getArgusPepAuthzService();
+    string getArgusPepdEndpoint();
     string getCaCertificatesFolder();
 
 private:
@@ -284,11 +269,8 @@ private:
     string hostkeyfile;
     bool xmlrpc_check_ascii;
     bool user_check_blacklist;
-    string argus_pep_authz_protocol;
-    string argus_pep_hostname;
-    string argus_pep_authz_port;
+    string argus_pepd_endpoint;
     string ca_certificates_folder;
-    string argus_pep_authz_service;
 
 };
 

@@ -27,10 +27,7 @@ db.passwd = password
 
 # Argus Blacklisting
 #check.user.blacklisting = false # default is false
-#argus-pep.protocol = https # default is https
-#argus-pep.hostname =
-#argus-pep.port = 8154 # default is 8154
-#argus-pep.service = authz # default is authz
+#argus-pepd-endpoint =
 
 #monitoring.enabled = true  # default is true
 #monitoring.timeInterval = 60  # default is 60 (seconds)
