@@ -18,7 +18,7 @@
 
 #include "SynchRequest.hpp"
 #include "srmv2H.h"
-#include "vector.h"
+#include <vector>
 
 namespace storm {
 
