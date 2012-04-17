@@ -23,7 +23,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # Release number
 osdist=`cat /etc/redhat-release | awk 'BEGIN {FS="release "} {print $2}'| awk 'BEGIN {FS="."} {print $1}'`
 AC_SUBST([STORM_FRONTEND_SO], [sl$osdist])
-AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [7])
+AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [8])
 
 AC_SUBST([PACKAGE_PREFIX_NAME], [storm])
 AC_SUBST([PACKAGE_LONG_NAME], [storm-frontend-server])
@@ -140,15 +140,14 @@ have_curl_devel=no
 have_xmlrpc_c_devel=no
 
 AC_CURL([])
-AC_XMLRPC_C([])
+AC_STORM_XMLRPC_C([])
 AC_CURL_DEVEL([], have_curl_devel=yes, have_curl_devel=no)
-AC_XMLRPC_C_DEVEL([], have_xmlrpc_c_devel=yes, have_xmlrpc_c_devel=no)
+AC_STORM_XMLRPC_C_DEVEL([], have_storm_xmlrpc_c_devel=yes, have_storm_xmlrpc_c_devel=no)
 
 AC_MSG_RESULT(["CURL found"])
-AC_MSG_RESULT(["XMLRPC_C found"])
+AC_MSG_RESULT(["STORM_XMLRPC_C found"])
 AC_MSG_RESULT(["CURL_DEVEL found $have_curl_devel"])
-AC_MSG_RESULT(["XMLRPC_C_DEVEL found $have_xmlrpc_c_devel"])
-
+AC_MSG_RESULT(["STORM_XMLRPC_C_DEVEL found $have_storm_xmlrpc_c_devel"])
 have_globus=no
 
 AC_GLOBUS([], have_globus=yes, have_globus=no)

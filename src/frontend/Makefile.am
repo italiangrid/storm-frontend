@@ -27,7 +27,7 @@ storm_frontend_server_CXXFLAGS = $(INCLUDES)
 storm_frontend_server_LDADD = \
     @VOMS_LIBS@ \
     @MYSQL_LIBS@ \
-    @XMLRPC_C_DEVEL_LIBS@ \
+    @STORM_XMLRPC_C_DEVEL_LIBS@ \
     @CURL_DEVEL_LIBS@ \
     -L/usr/lib64 -lglobus_gssapi_gsi -lglobus_gss_assist \
     @CGSI_GSOAP_VOMS_CPP_PTHR_LIBS@ \
@@ -128,7 +128,7 @@ INCLUDES = \
     -I$(GENERATED_GSOAP_INCLUDES) \
     @GLOBUS_THR_CFLAGS@ \
     @STORM_FRONTEND_CFLAGS@ \
-    @XMLRPC_C_DEVEL_CFLAGS@ \
+    @STORM_XMLRPC_C_DEVEL_CFLAGS@ \
     @CURL_DEVEL_CFLAGS@ \
     @VOMS_CFLAGS@ \
     @GSOAP_SSL_PP_CFLAGS@  \
