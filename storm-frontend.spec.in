@@ -52,6 +52,7 @@ BuildRequires: libtool
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: curl-devel
+BuildRequires: libuuid-devel
 BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
 BuildRequires: globus-gss-assist-devel
