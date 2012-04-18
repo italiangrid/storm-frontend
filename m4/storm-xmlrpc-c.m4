@@ -99,23 +99,23 @@ AC_DEFUN([AC_STORM_XMLRPC_C_DEVEL],
     fi
 
     STORM_XMLRPC_C_DEVEL_LIBS="$STORM_XMLRPC_C_LIBS $STORM_XMLRPC_C_DEVEL_LIBS -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok"
-    CFLAGS="$STORM_XMLRPC_C_DEVEL_CFLAGS $CFLAGS"
-    LIBS="$STORM_XMLRPC_C_DEVEL_LIBS $LIBS"
-    AC_TRY_COMPILE([ #include <xmlrpc-c/util.h> ],
-                   [ xmlrpc_env x ],
-                   [ ac_cv_storm_xmlrpc_c_devel_valid=yes ], [ ac_cv_storm_xmlrpc_c_devel_valid=no ])
-    CFLAGS=$ac_save_CFLAGS
-    LIBS=$ac_save_LIBS
-    AC_MSG_RESULT([$ac_cv_storm_xmlrpc_c_devel_valid])
+    #CFLAGS="$STORM_XMLRPC_C_DEVEL_CFLAGS $CFLAGS"
+    #LIBS="$STORM_XMLRPC_C_DEVEL_LIBS $LIBS"
+    #AC_TRY_COMPILE([ #include <xmlrpc-c/util.h> ],
+    #               [ xmlrpc_env x ],
+    #               [ ac_cv_storm_xmlrpc_c_devel_valid=yes ], [ ac_cv_storm_xmlrpc_c_devel_valid=no ])
+    #CFLAGS=$ac_save_CFLAGS
+    #LIBS=$ac_save_LIBS
+    #AC_MSG_RESULT([$ac_cv_storm_xmlrpc_c_devel_valid])
 
-    if test x$ac_cv_storm_xmlrpc_c_devel_valid = xyes ; then
+    #if test x$ac_cv_storm_xmlrpc_c_devel_valid = xyes ; then
         STORM_XMLRPC_C_DEVEL_LOCATION=$with_storm_xmlrpc_c_devel_prefix
         ifelse([$2], , :, [$2])
-    else
-        STORM_XMLRPC_C_DEVEL_CFLAGS=""
-        STORM_XMLRPC_C_DEVEL_LIBS=""
-        ifelse([$3], , :, [$3])
-    fi
+    #else
+    #   STORM_XMLRPC_C_DEVEL_CFLAGS=""
+    #   STORM_XMLRPC_C_DEVEL_LIBS=""
+    #    ifelse([$3], , :, [$3])
+    #fi
 
     AC_SUBST(STORM_XMLRPC_C_DEVEL_LOCATION)
     AC_SUBST(STORM_XMLRPC_C_DEVEL_CFLAGS)
