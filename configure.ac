@@ -134,10 +134,9 @@ else
 fi
 
 AC_STORM([])
-AC_STORM_FRONTEND([])
 
 have_curl_devel=no
-have_xmlrpc_c_devel=no
+have_storm_xmlrpc_c_devel=no
 
 AC_CURL([])
 AC_STORM_XMLRPC_C([])

@@ -27,8 +27,6 @@
 %define curldir    @CURL_LOCATION@
 %define curldevdir @CURL_DEVEL_LOCATION@
 
-%define stormfrontenddir @STORM_FRONTEND_LOCATION@
-
 %define prefixname @PACKAGE_PREFIX_NAME@
 %define shortname  @PACKAGE_SHORT_NAME@
 %define longname   @PACKAGE_LONG_NAME@
@@ -101,7 +99,7 @@ GPFS from IBM and Lustre from SUN.
 
 %build
 ./bootstrap emi.storm.common
-./configure --prefix=/usr --sbindir=/usr/sbin --datadir=/usr/share --localstatedir=/var --sysconfdir=/etc --with-boost-prefix=%{boostdir} --with-boost-devel-prefix=%{boostdevdir}  --enable-boost-mt --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-storm-xmlrpc-c-prefix=%{stormxmlrpccdir} --with-storm-xmlrpc-c-devel-prefix=%{stormxmlrpccdevdir} --with-cgsi-gsoap-location=%{cgsigsoapdir} --with-argus-location=%{argusdir} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldevdir} --with-voms-prefix=%{vomsdir} --with-voms-include=%{vomsincludedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=%{gsoapversion} --with-gsoap-wsdl2h-version=%{gsoapwsdl2hversion} --with-storm-frontend-location=%{stormfrontenddir} --enable-gsoapgsi
+./configure --prefix=/usr --sbindir=/usr/sbin --datadir=/usr/share --localstatedir=/var --sysconfdir=/etc --with-boost-prefix=%{boostdir} --with-boost-devel-prefix=%{boostdevdir}  --enable-boost-mt --with-curl-prefix=%{curldir} --with-curl-devel-prefix=%{curldevdir} --with-storm-xmlrpc-c-prefix=%{stormxmlrpccdir} --with-storm-xmlrpc-c-devel-prefix=%{stormxmlrpccdevdir} --with-cgsi-gsoap-location=%{cgsigsoapdir} --with-argus-location=%{argusdir} --with-mysql-prefix=%{mysqldir} --with-mysql-devel-prefix=%{mysqldevdir} --with-voms-prefix=%{vomsdir} --with-voms-include=%{vomsincludedir} --with-gsoap-location=%{gsoapdir} --with-gsoap-wsdl2h-location=%{gsoapwsdl2hdir} --with-gsoap-version=%{gsoapversion} --with-gsoap-wsdl2h-version=%{gsoapwsdl2hversion} --enable-gsoapgsi
 make
 
 %pre
