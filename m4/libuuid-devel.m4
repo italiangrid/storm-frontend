@@ -28,8 +28,8 @@ AC_DEFUN([AC_LIBUUID_DEVEL],
 [
     AC_ARG_WITH(libuuid-devel, 
            		 [  --with-libuuid-devel=Flag to require or not libuuid-devel at build time.],
-                [echo mamma ; with_libuuid_devel="BuildRequires: libuuid-devel"], 
-                [echo babbo ; with_libuuid_devel=${BUILD_REQUIRES_LIBUUID_DEVEL:-""}]
+                [ with_libuuid_devel="BuildRequires: libuuid-devel"], 
+                [ with_libuuid_devel=${BUILD_REQUIRES_LIBUUID_DEVEL:-""}]
                 )
     AC_MSG_CHECKING([if libuuid-devel is requested at build time])
     if test -n "$with_libuuid_devel" ; then
