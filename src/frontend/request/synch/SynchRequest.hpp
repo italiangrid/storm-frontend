@@ -194,15 +194,15 @@ public:
     	return m_builtResponse;
     }
 
-    void buildSpecificResponse(ns1__TStatusCode status, const char* const explanation) throw (InvalidResponse) {
+    int buildSpecificResponse(ns1__TStatusCode status, const char* const explanation) throw (InvalidResponse) {
 		m_status = status;
 		m_explanation = explanation;
-		this->buildResponse();
+		return this->buildResponse();
 	}
 
     virtual void load(soap_in_t* req) throw (invalid_request) = 0;
 
-    virtual void buildResponse() throw (std::logic_error , InvalidResponse) = 0;
+    virtual int buildResponse() throw (std::logic_error , InvalidResponse) = 0;
 
     virtual int performXmlRpcCall(soap_out_root_t* response) = 0;
 

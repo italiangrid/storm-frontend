@@ -34,7 +34,7 @@ public:
 
     void load(ns1__srmReleaseFilesRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 
 	bool hasRequestToken()
 	{

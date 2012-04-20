@@ -223,6 +223,17 @@ public:
 		}
     }
 
+    /*
+    * Set the status code at SURL level to SRM_AUTHORIZATION_FAILURE to all requested SURLs
+    */
+    void setAuthorizationFailureSurls()
+    {
+    	std::vector<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+    	for (std::vector<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+    		(*i)->setStatus(SRM_USCOREAUTHORIZATION_USCOREFAILURE);
+    	}
+    }
+
     virtual void insertIntoDB(struct srm_dbfd* dbfd) throw (std::logic_error , storm_db::mysql_exception) = 0;
 
     soap_out_t* buildSpecificResponse(ns1__TStatusCode status, const char* const explanation) throw (InvalidResponse) {

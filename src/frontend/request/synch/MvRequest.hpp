@@ -35,7 +35,7 @@ public:
 
     void load(ns1__srmMvRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 private:
 	std::string m_fromSURL;
 	std::string m_toSURL;

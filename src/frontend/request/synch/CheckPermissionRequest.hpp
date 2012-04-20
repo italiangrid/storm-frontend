@@ -37,7 +37,7 @@ public:
 
     void load(ns1__srmCheckPermissionRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 };
 }
 #endif // CHECK_PERMISSION_REQUEST_HPP

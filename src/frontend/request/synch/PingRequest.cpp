@@ -28,8 +28,18 @@ int storm::PingRequest::performXmlRpcCall(ns1__srmPingResponse_* response){
 	return ret;
 }
 
-void storm::PingRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::PingRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
 {
     srmlogit(STORM_LOG_DEBUG, "storm::PingRequest::buildResponse()", "called.\n");
-	//fake
+    m_builtResponse = storm::soap_calloc<struct ns1__srmPingResponse>(m_soapRequest);
+	if(m_builtResponse != NULL)
+	{
+		m_builtResponse->versionInfo = soap_strdup(m_soapRequest, m_explanation.c_str());
+		return 0;
+	}
+	else
+	{
+		srmlogit(STORM_LOG_ERROR, "storm::PingRequest::buildResponse()", "Unable to allocate memory for the response\n");
+		return SOAP_EOM;
+	}
 }

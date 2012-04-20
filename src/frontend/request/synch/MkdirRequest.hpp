@@ -34,7 +34,7 @@ public:
 
     void load(ns1__srmMkdirRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse() throw (std::logic_error , InvalidResponse);
 };
 }
 #endif // MKDIR_REQUEST_HPP

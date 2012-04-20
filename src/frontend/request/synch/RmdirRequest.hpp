@@ -36,7 +36,7 @@ public:
 
     void load(ns1__srmRmdirRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 private:
 	bool m_recursive;
 };

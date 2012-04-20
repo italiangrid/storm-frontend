@@ -43,23 +43,34 @@ int storm::SuspendRequestRequest::performXmlRpcCall(ns1__srmSuspendRequestRespon
 	return ret;
 }
 
-void storm::SuspendRequestRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::SuspendRequestRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
 {
     srmlogit(STORM_LOG_DEBUG, "storm::SuspendRequestRequest::buildResponse()", "called.\n");
-    if(m_builtResponse != NULL)
+	if(m_builtResponse != NULL)
 	{
-		return;
+		return 0;
 	}
 	try
 	{
 		m_builtResponse = storm::soap_calloc<ns1__srmSuspendRequestResponse>(m_soapRequest);
+		if(m_builtResponse == NULL)
+		{
+			srmlogit(STORM_LOG_ERROR, "storm::SuspendRequestRequest::buildResponse()", "Unable to allocate memory for the response\n");
+			return SOAP_EOM;
+		}
 		m_builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
+		if(m_builtResponse->returnStatus == NULL)
+		{
+			srmlogit(STORM_LOG_ERROR, "storm::SuspendRequestRequest::buildResponse()", "Unable to allocate memory for the return status\n");
+			return SOAP_EOM;
+		}
 	} catch (std::invalid_argument& exc) {
 		throw std::logic_error("Unable to allocate memory for the response. invalid_argument Exception: "
 				+ std::string(exc.what()));
 	}
 	m_builtResponse->returnStatus->statusCode = m_status;
-	if (!m_explanation.empty()) {
-		m_builtResponse->returnStatus->explanation = soap_strdup(m_soapRequest, m_explanation.c_str());
-	}
+  	if (!m_explanation.empty()) {
+  		m_builtResponse->returnStatus->explanation = soap_strdup(m_soapRequest, m_explanation.c_str());
+  	}
+	return 0;
 }

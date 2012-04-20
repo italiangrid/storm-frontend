@@ -38,7 +38,7 @@ public:
 
     void load(ns1__srmLsRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 private:
 	ns1__TFileStorageType m_fileStorageType;
 	bool m_fullDetailedList;

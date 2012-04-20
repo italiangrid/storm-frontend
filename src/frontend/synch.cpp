@@ -61,11 +61,18 @@
 #include "request/synch/GetTransferProtocolsRequest.hpp"
 #include "request/synch/PingRequest.hpp"
 
+
+/*
+ * Return:
+ * 			0 success
+ * 			-1 error. Specific response built
+ * 			>0 error
+ * */
 template<typename soap_in_t, typename soap_out_t, typename soap_out_root_t>
 int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 		, char* funcName, boost::posix_time::ptime startTime
 		, soap_out_root_t* response) {
-	 bool blacklisted = false;
+	bool blacklisted = false;
 	try
 	{
 		blacklisted = storm::Authorization::checkBlacklist(request->getSoapRequest());
@@ -87,7 +94,7 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 				request->getmonitorName(),
 				request->getStatus());
 		srmLogResponse(request->getName().c_str(), request->getStatus());
-		return(SOAP_OK);
+		return(-1);
 	}catch(storm::ArgusException& e)
 	{
 		srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
@@ -106,15 +113,16 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 				request->getmonitorName(),
 				request->getStatus());
 		srmLogResponse(request->getName().c_str(), request->getStatus());
-		return(SOAP_OK);
+		return(-1);
 	}
 	if(blacklisted)
 	//if(storm::Authorization::checkBlacklist(request->getSoapRequest()))
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
+		int returnValue = 0;
 		try
 		{
-			request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
+			returnValue = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
 		} catch(storm::InvalidResponse& exc)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
@@ -123,10 +131,20 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
-		storm::MonitoringHelper::registerOperation(startTime,
-					request->getmonitorName(), request->getStatus());
-		srmLogResponse(request->getName().c_str(), request->getStatus());
-		return(SOAP_OK);
+		if(returnValue != 0)
+		{
+			storm::MonitoringHelper::registerOperationError(startTime,
+											request->getmonitorName());
+			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
+		}
+		else
+		{
+			storm::MonitoringHelper::registerOperation(startTime,
+								request->getmonitorName(), request->getStatus());
+			srmLogResponse(request->getName().c_str(), request->getStatus());
+			returnValue = -1;
+		}
+		return(returnValue);
 	}
 	else
 	{
@@ -161,7 +179,14 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 	    		request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmMkdirRequest, ns1__srmMkdirResponse,ns1__srmMkdirResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmMkdirResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmMkdirResponse);
+	}
 	//
 	rep->srmMkdirResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -189,7 +214,14 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 				request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmRmdirRequest, ns1__srmRmdirResponse,ns1__srmRmdirResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmRmdirResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmRmdirResponse);
+	}
 	//
 	rep->srmRmdirResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -217,7 +249,14 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 				request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmRmRequest, ns1__srmRmResponse,ns1__srmRmResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmRmResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmRmResponse);
+	}
 	//
 	rep->srmRmResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -245,7 +284,14 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 				request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmLsRequest, ns1__srmLsResponse,ns1__srmLsResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmLsResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmLsResponse);
+	}
 	//
 	rep->srmLsResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -272,7 +318,14 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfLsRequestRequest, ns1__srmStatusOfLsRequestResponse,ns1__srmStatusOfLsRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmStatusOfLsRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmStatusOfLsRequestResponse);
+	}
 	//
 	rep->srmStatusOfLsRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -300,7 +353,14 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 				request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmMvRequest, ns1__srmMvResponse,ns1__srmMvResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmMvResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmMvResponse);
+	}
 	//
 	rep->srmMvResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -331,7 +391,14 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 	int returnValue = process<ns1__srmSetPermissionRequest,
 			ns1__srmSetPermissionResponse, ns1__srmSetPermissionResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmSetPermissionResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmSetPermissionResponse);
+	}
 	//
 	rep->srmSetPermissionResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -360,7 +427,14 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 	int returnValue = process<ns1__srmCheckPermissionRequest,
 			ns1__srmCheckPermissionResponse, ns1__srmCheckPermissionResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmCheckPermissionResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmCheckPermissionResponse);
+	}
 	//
 	rep->srmCheckPermissionResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -389,7 +463,14 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 	int returnValue = process<ns1__srmGetPermissionRequest,
 			ns1__srmGetPermissionResponse, ns1__srmGetPermissionResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmGetPermissionResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmGetPermissionResponse);
+	}
 	//
 	rep->srmGetPermissionResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -419,7 +500,14 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 	int returnValue = process<ns1__srmReserveSpaceRequest,
 			ns1__srmReserveSpaceResponse, ns1__srmReserveSpaceResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmReserveSpaceResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmReserveSpaceResponse);
+	}
 	//
 	rep->srmReserveSpaceResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -446,7 +534,14 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfReserveSpaceRequestRequest, ns1__srmStatusOfReserveSpaceRequestResponse,ns1__srmStatusOfReserveSpaceRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmStatusOfReserveSpaceRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmStatusOfReserveSpaceRequestResponse);
+	}
 	//
 	rep->srmStatusOfReserveSpaceRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -473,7 +568,14 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str());
 	int returnValue = process<ns1__srmReleaseSpaceRequest, ns1__srmReleaseSpaceResponse,ns1__srmReleaseSpaceResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmReleaseSpaceResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmReleaseSpaceResponse);
+	}
 	//
 	rep->srmReleaseSpaceResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -500,7 +602,14 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str());
 	int returnValue = process<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse,ns1__srmUpdateSpaceResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmUpdateSpaceResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmUpdateSpaceResponse);
+	}
 	//
 	rep->srmUpdateSpaceResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -527,7 +636,14 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfUpdateSpaceRequestRequest, ns1__srmStatusOfUpdateSpaceRequestResponse,ns1__srmStatusOfUpdateSpaceRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmStatusOfUpdateSpaceRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmStatusOfUpdateSpaceRequestResponse);
+	}
 	//
 	rep->srmStatusOfUpdateSpaceRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -554,7 +670,14 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 	srmLogRequestWithTokenList(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceTokensList().c_str(), request->getSpaceTokensNumber());
 	int returnValue = process<ns1__srmGetSpaceMetaDataRequest, ns1__srmGetSpaceMetaDataResponse,ns1__srmGetSpaceMetaDataResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmGetSpaceMetaDataResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmGetSpaceMetaDataResponse);
+	}
 	//
 	rep->srmGetSpaceMetaDataResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -581,7 +704,14 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 	srmLogRequest(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str());
 	int returnValue = process<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse,ns1__srmGetSpaceTokensResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmGetSpaceTokensResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmGetSpaceTokensResponse);
+	}
 	//
 	rep->srmGetSpaceTokensResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -608,7 +738,14 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 	srmLogRequestWithTokenAndSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getTargetSpaceToken().c_str(), request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse,ns1__srmChangeSpaceForFilesResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmChangeSpaceForFilesResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmChangeSpaceForFilesResponse);
+	}
 	//
 	rep->srmChangeSpaceForFilesResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -635,7 +772,14 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfChangeSpaceForFilesRequestRequest, ns1__srmStatusOfChangeSpaceForFilesRequestResponse,ns1__srmStatusOfChangeSpaceForFilesRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmStatusOfChangeSpaceForFilesRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmStatusOfChangeSpaceForFilesRequestResponse);
+	}
 	//
 	rep->srmStatusOfChangeSpaceForFilesRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -662,7 +806,14 @@ int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFi
 	srmLogRequestWithTokenAndSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str(), request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse,ns1__srmExtendFileLifeTimeInSpaceResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmExtendFileLifeTimeInSpaceResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmExtendFileLifeTimeInSpaceResponse);
+	}
 	//
 	rep->srmExtendFileLifeTimeInSpaceResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -689,7 +840,14 @@ int ns1__srmPurgeFromSpace(struct soap* soap, struct ns1__srmPurgeFromSpaceReque
 	srmLogRequestWithTokenAndSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str(), request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmPurgeFromSpaceRequest, ns1__srmPurgeFromSpaceResponse,ns1__srmPurgeFromSpaceResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmPurgeFromSpaceResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmPurgeFromSpaceResponse);
+	}
 	//
 	rep->srmPurgeFromSpaceResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -742,7 +900,14 @@ int ns1__srmReleaseFiles(struct soap* soap, struct ns1__srmReleaseFilesRequest *
 	}
 	int returnValue = process<ns1__srmReleaseFilesRequest, ns1__srmReleaseFilesResponse,ns1__srmReleaseFilesResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmReleaseFilesResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmReleaseFilesResponse);
+	}
 	//
 	rep->srmReleaseFilesResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -772,7 +937,14 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 			request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmPutDoneRequest, ns1__srmPutDoneResponse,ns1__srmPutDoneResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmPutDoneResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmPutDoneResponse);
+	}
 	//
 	rep->srmPutDoneResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -801,7 +973,14 @@ int ns1__srmAbortRequest(struct soap* soap, struct ns1__srmAbortRequestRequest *
 			request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmAbortRequestRequest, ns1__srmAbortRequestResponse,ns1__srmAbortRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmAbortRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmAbortRequestResponse);
+	}
 	//
 	rep->srmAbortRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -831,7 +1010,14 @@ int ns1__srmAbortFiles(struct soap* soap, struct ns1__srmAbortFilesRequest *req,
 			request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmAbortFilesRequest, ns1__srmAbortFilesResponse,ns1__srmAbortFilesResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmAbortFilesResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmAbortFilesResponse);
+	}
 	//
 	rep->srmAbortFilesResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -860,7 +1046,14 @@ int ns1__srmSuspendRequest(struct soap* soap, struct ns1__srmSuspendRequestReque
 			request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmSuspendRequestRequest, ns1__srmSuspendRequestResponse,ns1__srmSuspendRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmSuspendRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmSuspendRequestResponse);
+	}
 	//
 	rep->srmSuspendRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -889,7 +1082,14 @@ int ns1__srmResumeRequest(struct soap* soap, struct ns1__srmResumeRequestRequest
 			request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmResumeRequestRequest, ns1__srmResumeRequestResponse,ns1__srmResumeRequestResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmResumeRequestResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmResumeRequestResponse);
+	}
 	//
 	rep->srmResumeRequestResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -928,7 +1128,14 @@ int ns1__srmExtendFileLifeTime(struct soap* soap, struct ns1__srmExtendFileLifeT
 	}
 	int returnValue = process<ns1__srmExtendFileLifeTimeRequest, ns1__srmExtendFileLifeTimeResponse,ns1__srmExtendFileLifeTimeResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmExtendFileLifeTimeResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmExtendFileLifeTimeResponse);
+	}
 	//
 	rep->srmExtendFileLifeTimeResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -956,7 +1163,14 @@ int ns1__srmGetTransferProtocols(struct soap* soap, struct ns1__srmGetTransferPr
 			get_ip(soap).c_str(), request->getClientDN().c_str());
 	int returnValue = process<ns1__srmGetTransferProtocolsRequest, ns1__srmGetTransferProtocolsResponse,ns1__srmGetTransferProtocolsResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmGetTransferProtocolsResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmGetTransferProtocolsResponse);
+	}
 	//
 	rep->srmGetTransferProtocolsResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());
@@ -984,7 +1198,14 @@ int ns1__srmPing(struct soap* soap, struct ns1__srmPingRequest *req,
 			get_ip(soap).c_str(), request->getClientDN().c_str());
 	int returnValue = process<ns1__srmPingRequest, ns1__srmPingResponse,ns1__srmPingResponse_>(request, funcName, startTime, rep);
 	//cheat
-	request->setResponse(rep->srmPingResponse);
+	if(returnValue == -1)
+	{
+		returnValue = SOAP_OK;
+	}
+	else
+	{
+		request->setResponse(rep->srmPingResponse);
+	}
 	//
 	rep->srmPingResponse = request->getResponse();
 	srmLogResponse(requestName.c_str(), request->getStatus());

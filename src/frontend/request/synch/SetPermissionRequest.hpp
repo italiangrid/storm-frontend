@@ -37,7 +37,7 @@ public:
 
     void load(ns1__srmSetPermissionRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 private:
 	ns1__TPermissionType m_permissionType;
 	ns1__TPermissionMode m_ownerPermission;

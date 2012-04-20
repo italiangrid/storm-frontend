@@ -34,7 +34,7 @@ public:
 
     void load(ns1__srmPingRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 };
 }
 #endif // PING_REQUEST_HPP

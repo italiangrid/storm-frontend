@@ -38,7 +38,7 @@ public:
 
     void load(ns1__srmReserveSpaceRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 private:
 	std::string m_userSpaceTokenDescription;
 	ns1__TRetentionPolicy m_retentionPolicy;

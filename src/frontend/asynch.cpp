@@ -100,6 +100,7 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request->invalidateRequestToken();
+		request->setAuthorizationFailureSurls();
 		try
 		{
 			rep->srmPrepareToPutResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
@@ -206,6 +207,7 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		request->invalidateRequestToken();
+		request->setAuthorizationFailureSurls();
 		try
 		{
 			rep->srmPrepareToGetResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
@@ -289,6 +291,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     {
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
 		request->invalidateRequestToken();
+		request->setAuthorizationFailureSurls();
 		try
 		{
 			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
@@ -373,6 +376,7 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     {
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
 		request->invalidateRequestToken();
+		request->setAuthorizationFailureSurls();
 		try
 		{
 			rep->srmBringOnlineResponse = request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");

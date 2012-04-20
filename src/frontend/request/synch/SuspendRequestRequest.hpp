@@ -34,7 +34,7 @@ public:
 
     void load(ns1__srmSuspendRequestRequest* req) throw (invalid_request);
 
-	void buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() throw (std::logic_error , InvalidResponse);
 
 	std::string getRequestToken() throw (std::logic_error)
 	{
