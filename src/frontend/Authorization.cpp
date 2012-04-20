@@ -83,7 +83,7 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException, storm:
 	bool blacklisted = false;
 	if(Authorization::blacklistRequested)
 	{
-		xacml_response_t * response;
+		xacml_response_t * response = NULL;
 		//const char* subject = credentials->getDN().c_str();
 		//srmlogit(STORM_LOG_DEBUG, funcName, "Constructing Subject from %s\n", subject);
 		xacml_request_t * request = create_xacml_request(credentials->getCertChain(), DEFAULT_AUTHORIZATION_RESOURCE.c_str(), DEFAULT_AUTHORIZATION_ACTION.c_str());
@@ -97,7 +97,7 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException, storm:
 		 try
 		{
 			decision = process_xacml_response(response);
-		}catch(AuthorizationException &e)
+		}catch(AuthorizationException& e)
 		{
 			xacml_request_delete(request);
 			xacml_response_delete(response);

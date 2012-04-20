@@ -516,7 +516,7 @@ int main(int argc, char** argv) {
     	return SYERR;
     }
 
-    curl_global_init(CURL_GLOBAL_NOTHING);
+    curl_global_init(CURL_GLOBAL_ALL);
 
     setupXmlrpc();
     // the size of mysql_connection pool and thread pool MUST be the same
