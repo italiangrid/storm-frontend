@@ -50,7 +50,6 @@ BuildRequires: libtool
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: curl-devel
-BuildRequires: libuuid-devel
 BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
 BuildRequires: globus-gss-assist-devel
@@ -66,6 +65,7 @@ BuildRequires: mysql-devel
 BuildRequires: storm-xmlrpc-c-devel
 BuildRequires: argus-pep-api-c
 BuildRequires: argus-pep-api-c-devel
+@BUILD_REQUIRES_LIBUUID_DEVEL@
 
 Requires(post):   chkconfig
 Requires(preun):  chkconfig

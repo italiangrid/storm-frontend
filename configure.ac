@@ -174,6 +174,8 @@ fi
 AC_MSG_RESULT(["BOOST on sl$osdist $BOOST_SUFFIX"])
 AC_SUBST(BOOST_SUFFIX)
 
+AC_LIBUUID_DEVEL([])
+
 # Configuration items
 AM_CONFIG_HEADER([src/autogen/config.h])
 
