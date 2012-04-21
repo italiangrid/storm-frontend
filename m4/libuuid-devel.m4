@@ -27,16 +27,18 @@ dnl - XMLRPC_C_DEVEL_LOCATION
 AC_DEFUN([AC_LIBUUID_DEVEL],
 [
     AC_ARG_WITH(libuuid-devel, 
-           		 [  --with-libuuid-devel=Flag to require or not libuuid-devel at build time.],
-                [ with_libuuid_devel="BuildRequires: libuuid-devel"], 
-                [ with_libuuid_devel=${BUILD_REQUIRES_LIBUUID_DEVEL:-""}]
-                )
+           		[  --with-libuuid-devel=Flag to require or not libuuid-devel at build time.],
+                [ ac_with_libuuid_devel="$withval" ], 
+                [ ac_with_libuuid_devel=${BUILD_REQUIRES_LIBUUID_DEVEL:-"no"}]
+               )
     AC_MSG_CHECKING([if libuuid-devel is requested at build time])
-    if test -n "$with_libuuid_devel" ; then
-    	AC_MSG_RESULT(["requested"])
+    if [ x"$ac_with_libuuid_devel" == x"yes" ]; then
+    	BUILD_REQUIRES_LIBUUID_DEVEL="BuildRequires: libuuid-devel"
+    	AC_MSG_RESULT(["yes"])
 	else
-		AC_MSG_RESULT(["not requested"])
+		BUILD_REQUIRES_LIBUUID_DEVEL=""
+		AC_MSG_RESULT(["no"])
     fi
-    BUILD_REQUIRES_LIBUUID_DEVEL="$with_libuuid_devel"
+    
     AC_SUBST(BUILD_REQUIRES_LIBUUID_DEVEL)
 ])
