@@ -32,7 +32,7 @@ AC_DEFUN([AC_LIBUUID_DEVEL],
                 [ ac_with_libuuid_devel=${BUILD_REQUIRES_LIBUUID_DEVEL:-"no"}]
                )
     AC_MSG_CHECKING([if libuuid-devel is requested at build time])
-    if [ x"$ac_with_libuuid_devel" == x"yes" ]; then
+    if test x"$ac_with_libuuid_devel" == x"yes" ; then
     	BUILD_REQUIRES_LIBUUID_DEVEL="BuildRequires: libuuid-devel"
     	AC_MSG_RESULT(["yes"])
 	else
