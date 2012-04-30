@@ -70,7 +70,7 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
 int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char *autohID, xmlrpc_value *xmlStruct);
 int encode_ArrayOfAnyURI(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfAnyURI *arrayOfSURLs, char *fieldName, xmlrpc_value *xmlStruct);
 int encode_ArrayOfTExtraInfo(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfTExtraInfo *extraInfo, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_TExtraInfo(const char *callerName, xmlrpc_env *env_addr, xmlrpc_value* infoArray, char* key, char* value);
+//int encode_TExtraInfo(const char *callerName, xmlrpc_env *env_addr, xmlrpc_value* infoArray, char* key, char* value);
 int encode_string(const char *callerName, xmlrpc_env *env_addr, char *anyURI, char* fieldName, xmlrpc_value *xmlStruct);
 int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char *fieldName, xmlrpc_value *xmlStruct);
 int encode_TTransferParameters(const char *callerName, xmlrpc_env *env_addr, struct ns1__TTransferParameters *transferParameters, char *fieldName, xmlrpc_value *xmlStruct);
