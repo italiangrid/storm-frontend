@@ -39,6 +39,13 @@ class MonitorHelper{
 			((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(monitorName))->addStatusCodeMapping(successReturnStatus,true);
 		}
 
+		static void addSuccessStatusCodeMapping(InstrumentedMonitor* instrumentedMonitor, int successReturnStatus)
+		{
+			std::string funcName("addSuccessStatusCodeMapping");
+			srmlogit(STORM_LOG_DEBUG2, funcName.c_str(), "Adding code %u for monitor %s\n" , successReturnStatus , instrumentedMonitor->getName().c_str());
+			instrumentedMonitor->addStatusCodeMapping(successReturnStatus,true);
+		}
+
 		static bool isSuccessfull(std::string monitorName, int returnStatus)
 		{
 			return ((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(monitorName))->getStatusCodeMapping(returnStatus);
@@ -62,6 +69,11 @@ class MonitorHelper{
 		static bool testAddedMapping(std::string monitorName, int returnStatus, bool successful)
 		{
 			return ((InstrumentedMonitor*)Monitoring::getInstance()->getMonitor(monitorName))->getStatusCodeMapping(returnStatus) == successful;
+		}
+
+		static bool testAddedMapping(InstrumentedMonitor* instrumentedMonitor, int returnStatus, bool successful)
+		{
+			return instrumentedMonitor->getStatusCodeMapping(returnStatus) == successful;
 		}
 	};
 }

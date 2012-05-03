@@ -131,6 +131,11 @@ class Monitor {
 			return this->aggregated_status.errors;
 		}
 
+		int getSuccessfull()
+		{
+			return (this->aggregated_status.completed - (this->aggregated_status.failures + this->aggregated_status.errors));
+		}
+
 		float getMaxTime()
 		{
 			return this->aggregated_status.max_exec_time;
@@ -159,6 +164,11 @@ class Monitor {
 		int getErrorsRound()
 		{
 			return this->current_status.errors;
+		}
+
+		int getSuccessfullRound()
+		{
+			return (this->current_status.completed - (this->current_status.failures + this->current_status.errors));
 		}
 
 		float getMaxTimeRound()

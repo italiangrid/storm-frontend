@@ -206,7 +206,7 @@ private:
 				}
 				srmAudit(m_details_template_msg,
 						((Monitor*) *it)->getFriendlyName().c_str(),
-						((Monitor*) *it)->getCompleted(),
+						((Monitor*) *it)->getSuccessfull(),
 						((Monitor*) *it)->getFailed(),
 						((Monitor*) *it)->getErrors(),
 						((Monitor*) *it)->computeAverageExecTime(),
@@ -233,7 +233,7 @@ private:
 				}
    				srmAudit(m_details_template_msg,
    						((Monitor*) *it)->getFriendlyName().c_str(),
-   						((Monitor*) *it)->getCompletedRound(),
+   						((Monitor*) *it)->getSuccessfullRound(),
    						((Monitor*) *it)->getFailedRound(),
    						((Monitor*) *it)->getErrorsRound(),
    						((Monitor*) *it)->computeAverageExecTimeRound(),

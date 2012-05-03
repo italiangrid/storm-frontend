@@ -33,302 +33,341 @@ class InstrumentedMonitorBuilder{
 
 		static InstrumentedMonitor* buildAbortFiles()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_ABORT_FILES_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_ABORT_FILES_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_ABORT_FILES_MONITOR_NAME, "Abort files", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = new InstrumentedMonitor(SRM_ABORT_FILES_MONITOR_NAME, "Abort files", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildAbortRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_ABORT_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_ABORT_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_ABORT_REQUEST_MONITOR_NAME, "Abort request", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_ABORT_REQUEST_MONITOR_NAME, "Abort request", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildBringOnline()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_BRING_ONLINE_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_BRING_ONLINE_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_BRING_ONLINE_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_BRING_ONLINE_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_BRING_ONLINE_MONITOR_NAME, "BOL" , Monitor::Asynchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_BRING_ONLINE_MONITOR_NAME, "BOL" , Monitor::Asynchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildChangeSpaceForFiles()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME, "Change space for files", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME, "Change space for files", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildCheckPermission()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_CHECK_PERMISSION_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_CHECK_PERMISSION_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_CHECK_PERMISSION_MONITOR_NAME,"Check permission" , Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_CHECK_PERMISSION_MONITOR_NAME,"Check permission" , Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildCopy()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_COPY_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_COPY_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_COPY_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_COPY_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_COPY_MONITOR_NAME, "Cp" ,Monitor::Asynchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_COPY_MONITOR_NAME, "Cp" ,Monitor::Asynchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildExtendFileLifeTimeInSpace()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME, "Extend file life time in space" ,Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME, "Extend file life time in space" ,Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildExtendFileLifeTime()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME, "Extend file life time" , Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME, "Extend file life time" , Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildGetPermission()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_PERMISSION_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_PERMISSION_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_GET_PERMISSION_MONITOR_NAME, "Get permission", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_GET_PERMISSION_MONITOR_NAME, "Get permission", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildGetRequestSummary()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_REQUEST_SUMMARY_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_REQUEST_SUMMARY_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_GET_REQUEST_SUMMARY_MONITOR_NAME, "Get request summary", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_GET_REQUEST_SUMMARY_MONITOR_NAME, "Get request summary", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildGetRequestTokens()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_REQUEST_TOKENS_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_GET_REQUEST_TOKENS_MONITOR_NAME, "Get request tokens", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_GET_REQUEST_TOKENS_MONITOR_NAME, "Get request tokens", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildGetSpaceMetaData()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_SPACE_META_DATA_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_SPACE_META_DATA_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_GET_SPACE_META_DATA_MONITOR_NAME, "Get space meta data", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_GET_SPACE_META_DATA_MONITOR_NAME, "Get space meta data", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildGetSpaceTokens()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_SPACE_TOKENS_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_GET_SPACE_TOKENS_MONITOR_NAME, "Get space tokens", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_GET_SPACE_TOKENS_MONITOR_NAME, "Get space tokens", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildGetTransferProtocols()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME, "Get transfer protocols", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME, "Get transfer protocols", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildLs()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_LS_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_LS_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_LS_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_LS_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_LS_MONITOR_NAME, "Ls", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_LS_MONITOR_NAME, "Ls", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildMkdir()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_MKDIR_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_MKDIR_MONITOR_NAME, "Mkdir", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_MKDIR_MONITOR_NAME, "Mkdir", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildMv()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_MV_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_MV_MONITOR_NAME, "Mv", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_MV_MONITOR_NAME, "Mv", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildPing()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PING_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_PING_MONITOR_NAME, "Ping", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_PING_MONITOR_NAME, "Ping", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildPrepareToGet()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_GET_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_GET_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_GET_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_GET_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_PREPARE_TO_GET_MONITOR_NAME, "PTG", Monitor::Asynchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_PREPARE_TO_GET_MONITOR_NAME, "PTG", Monitor::Asynchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildPrepareToPut()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_PUT_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_PUT_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_PUT_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PREPARE_TO_PUT_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_PREPARE_TO_PUT_MONITOR_NAME, "PTP", Monitor::Asynchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_PREPARE_TO_PUT_MONITOR_NAME, "PTP", Monitor::Asynchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildPurgeFromSpace()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PURGE_FROM_SPACE_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PURGE_FROM_SPACE_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_PURGE_FROM_SPACE_MONITOR_NAME, "Purge from Space", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_PURGE_FROM_SPACE_MONITOR_NAME, "Purge from Space", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildPutDone()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PUT_DONE_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_PUT_DONE_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_PUT_DONE_MONITOR_NAME, "Put done", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_PUT_DONE_MONITOR_NAME, "Put done", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildReleaseFiles()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RELEASE_FILES_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RELEASE_FILES_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_RELEASE_FILES_MONITOR_NAME, "Release files", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_RELEASE_FILES_MONITOR_NAME, "Release files", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildReleaseSpace()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RELEASE_SPACE_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_RELEASE_SPACE_MONITOR_NAME, "Release space", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_RELEASE_SPACE_MONITOR_NAME, "Release space", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildReserveSpace()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RESERVE_SPACE_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RESERVE_SPACE_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RESERVE_SPACE_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RESERVE_SPACE_MONITOR_NAME,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
-			return new InstrumentedMonitor(SRM_RESERVE_SPACE_MONITOR_NAME, "Reserve space", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_RESERVE_SPACE_MONITOR_NAME, "Reserve space", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildResumeRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RESUME_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_RESUME_REQUEST_MONITOR_NAME, "Resume request", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_RESUME_REQUEST_MONITOR_NAME, "Resume request", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildRmdir()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RMDIR_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_RMDIR_MONITOR_NAME, "Rmdir", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_RMDIR_MONITOR_NAME, "Rmdir", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildRm()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RM_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_RM_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_RM_MONITOR_NAME, "Rm", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_RM_MONITOR_NAME, "Rm", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildSetPermission()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_SET_PERMISSION_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_SET_PERMISSION_MONITOR_NAME, "Set permission", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_SET_PERMISSION_MONITOR_NAME, "Set permission", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfBringOnlineRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME, "Status BOL", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME, "Status BOL", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfChangeSpaceForFilesRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME, "Status change space for files", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME, "Status change space for files", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfCopyRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME, "Status cp", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME, "Status cp", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfGetRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME, "Status PTG",  Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME, "Status PTG",  Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfLsRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			return new InstrumentedMonitor(SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME, "Status ls", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME, "Status ls", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfPutRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,SRM_USCOREPARTIAL_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME, "Status PTP", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME, "Status PTP", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREPARTIAL_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfReserveSpaceRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME, "Status reserve space", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME, "Status reserve space", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildStatusOfUpdateSpaceRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCOREINPROGRESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,SRM_USCOREREQUEST_USCORESUSPENDED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
-			return new InstrumentedMonitor(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME, "Status update space", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME, "Status update space", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREINPROGRESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCORESUSPENDED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildSuspendRequest()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_SUSPEND_REQUEST_MONITOR_NAME,SRM_USCORESUCCESS);
-			return new InstrumentedMonitor(SRM_SUSPEND_REQUEST_MONITOR_NAME, "Suspend request", Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_SUSPEND_REQUEST_MONITOR_NAME, "Suspend request", Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			return monitor;
 		}
 
 		static InstrumentedMonitor* buildUpdateSpace()
 		{
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_UPDATE_SPACE_MONITOR_NAME,SRM_USCORESUCCESS);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_UPDATE_SPACE_MONITOR_NAME,SRM_USCOREREQUEST_USCOREQUEUED);
-			MonitorHelper::addSuccessStatusCodeMapping(SRM_UPDATE_SPACE_MONITOR_NAME,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
-			return new InstrumentedMonitor(SRM_UPDATE_SPACE_MONITOR_NAME, "Update space" , Monitor::Synchronous);
+			InstrumentedMonitor* monitor = InstrumentedMonitor(SRM_UPDATE_SPACE_MONITOR_NAME, "Update space" , Monitor::Synchronous);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORESUCCESS);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCOREREQUEST_USCOREQUEUED);
+			MonitorHelper::addSuccessStatusCodeMapping(monitor,SRM_USCORELOWER_USCORESPACE_USCOREGRANTED);
+			return monitor;
 		}
 	};
 }

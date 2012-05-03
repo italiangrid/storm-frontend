@@ -36,15 +36,18 @@ public:
 	FullCredentials(struct soap *soap);// : Credentials(soap){};
 
 	~FullCredentials(){
-		free(this->cert_chain);
+		if(m_cert_chain != NULL)
+		{
+			free(m_cert_chain);
+		}
 	}
 
 	char* getCertChain() {
-		return cert_chain;
+		return m_cert_chain;
 	}
 
 private:
-	char* cert_chain;
+	char* m_cert_chain;
 
 	static STACK_OF(X509) * gss_cred_extract_cert_chain(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException);
 	static char * x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain) throw (CredentialException);

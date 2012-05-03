@@ -58,7 +58,7 @@ FullCredentials::FullCredentials(struct soap *soap) : Credentials(soap) {
 			}
 			return;
 		}
-		cert_chain = FullCredentials::x509_convert_to_PEM(x509,chain);
+		m_cert_chain = FullCredentials::x509_convert_to_PEM(x509,chain);
 		sk_X509_pop_free(chain,X509_free);
 		X509_free(x509);
 	}
