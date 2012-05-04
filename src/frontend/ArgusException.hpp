@@ -9,23 +9,18 @@ namespace storm {
 class ArgusException: public std::exception
 {
 public:
-	ArgusException(std::string* text) {
-		message = text;
-	};
 
-	ArgusException(std::string text) {
-		message = &text;
+	ArgusException(std::string const& text): message(text) {
 	};
 
 	~ArgusException() throw () {
-		delete message;
 	};
 
 	const char* what() const throw () {
-		return (*message).c_str();
+		return message.c_str();
 	}
 private:
-	std::string* message;
+	std::string message;
 };
 
 }

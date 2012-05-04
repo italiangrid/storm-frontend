@@ -91,7 +91,7 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException, storm:
 		if (pep_rc != PEP_OK) {
 			xacml_request_delete(request);
 			xacml_response_delete(response);
-			throw storm::ArgusException(new std::string("Failed to authorize XACML request: %s\n", pep_strerror(pep_rc)));
+			throw storm::ArgusException(std::string("Failed to authorize XACML request: ") + std::string(pep_strerror(pep_rc)));
 		}
 		xacml_decision_t decision;
 		 try
