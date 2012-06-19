@@ -242,7 +242,7 @@ fi
 %config(noreplace) %attr(644,%{default_user},%{default_user}) %{_sysconfdir}/logrotate.d/%{longname}
 
 %dir %{_sysconfdir}/%{prefixname}/%{shortname}
-%config(noreplace) %{_sysconfdir}/%{prefixname}/%{shortname}/%{longname}.conf.template
+%config(noreplace) %attr(640,%{default_user},%{default_user}) %{_sysconfdir}/%{prefixname}/%{shortname}/%{longname}.conf.template
 
 %doc %dir %{_datadir}/doc/%{name}-%{version}
 %doc %{_datadir}/doc/%{name}-%{version}/ChangeLog
