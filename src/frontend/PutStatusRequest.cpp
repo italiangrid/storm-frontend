@@ -174,87 +174,90 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     
     // Fill status for each surl.
     int fileStatusArraySize = (m_surls.empty() ? m_turls.size() : m_surls.size());
-    try
-	{
-		m_builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTPutRequestFileStatus>(m_soapRequest);
-		m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TPutRequestFileStatus>(
-				m_soapRequest, fileStatusArraySize);
-	} catch (std::invalid_argument& exc) {
-		throw std::logic_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
-	}
-	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = fileStatusArraySize;
-	int index = 0;
-	std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
-	for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i, ++index) {
-		ns1__TPutRequestFileStatus *fileStatus;
-		try
-		{
-			fileStatus = storm::soap_calloc<ns1__TPutRequestFileStatus>(m_soapRequest);
-		} catch (std::invalid_argument& exc) {
-				throw std::logic_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
-		}
-		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
+    if(fileStatusArraySize > 0)
+    {
+    	try
+    	{
+    		m_builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTPutRequestFileStatus>(m_soapRequest);
+    		m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TPutRequestFileStatus>(
+    				m_soapRequest, fileStatusArraySize);
+    	} catch (std::invalid_argument& exc) {
+    		throw std::logic_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
+    	}
+    	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = fileStatusArraySize;
+    	int index = 0;
+    	std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
+    	for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i, ++index) {
+    		ns1__TPutRequestFileStatus *fileStatus;
+    		try
+    		{
+    			fileStatus = storm::soap_calloc<ns1__TPutRequestFileStatus>(m_soapRequest);
+    		} catch (std::invalid_argument& exc) {
+    			throw std::logic_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+    		}
+    		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 
-		storm::PtpTurl* turl = dynamic_cast<storm::PtpTurl*> (i->get());
-		if(!turl)
-		{
-			throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
-		}
-		fileStatus->SURL = soap_strdup(m_soapRequest, turl->getSurl().getSurl().c_str());
-		if(!turl->isEmpty())
-		{
-			fileStatus->transferURL = soap_strdup(m_soapRequest, turl->getTurl().c_str());
-		}
-		else
-		{
-			fileStatus->transferURL = NULL;
-		}
-		try
-		{
-			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
-		} catch (std::invalid_argument& exc) {
-				throw std::logic_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
-		}
-		if (turl->hasFileSize()) {
-			fileStatus->fileSize = storm::soap_calloc<ULONG64>(m_soapRequest);
-			*fileStatus->fileSize = turl->getFileSize();
-		}
-		else
-		{
-			fileStatus->fileSize = NULL;
-		}
-		if (turl->hasEstimatedWaitTime()) {
-			fileStatus->estimatedWaitTime = storm::soap_calloc<int>(m_soapRequest);
-			*fileStatus->estimatedWaitTime = turl->getEstimatedWaitTime();
-		}
-		else
-		{
-			fileStatus->estimatedWaitTime = NULL;
-		}
-		if (turl->hasRemainingFileLifetime()) {
-			fileStatus->remainingFileLifetime = storm::soap_calloc<int>(m_soapRequest);
-			*fileStatus->remainingFileLifetime = turl->getRemainingFileLifetime();
-		}
-		else
-		{
-			fileStatus->remainingFileLifetime = NULL;
-		}
-		if (turl->hasRemainingPinLifetime()) {
-			fileStatus->remainingPinLifetime = storm::soap_calloc<int>(m_soapRequest);
-			*fileStatus->remainingPinLifetime = turl->getRemainingPinLifetime();
-		}
-		else
-		{
-			fileStatus->remainingPinLifetime = NULL;
-		}
-		fileStatus->status->statusCode = turl->getStatus();
-		fileStatus->status->explanation = soap_strdup(m_soapRequest, turl->getExplanation().c_str());
-		fileStatus->transferProtocolInfo = NULL;
-	}
-	if(this->hasMissingSurls())
-	{
-		this->addMissingSurls();
-	}
+    		storm::PtpTurl* turl = dynamic_cast<storm::PtpTurl*> (i->get());
+    		if(!turl)
+    		{
+    			throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
+    		}
+    		fileStatus->SURL = soap_strdup(m_soapRequest, turl->getSurl().getSurl().c_str());
+    		if(!turl->isEmpty())
+    		{
+    			fileStatus->transferURL = soap_strdup(m_soapRequest, turl->getTurl().c_str());
+    		}
+    		else
+    		{
+    			fileStatus->transferURL = NULL;
+    		}
+    		try
+    		{
+    			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
+    		} catch (std::invalid_argument& exc) {
+    			throw std::logic_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
+    		}
+    		if (turl->hasFileSize()) {
+    			fileStatus->fileSize = storm::soap_calloc<ULONG64>(m_soapRequest);
+    			*fileStatus->fileSize = turl->getFileSize();
+    		}
+    		else
+    		{
+    			fileStatus->fileSize = NULL;
+    		}
+    		if (turl->hasEstimatedWaitTime()) {
+    			fileStatus->estimatedWaitTime = storm::soap_calloc<int>(m_soapRequest);
+    			*fileStatus->estimatedWaitTime = turl->getEstimatedWaitTime();
+    		}
+    		else
+    		{
+    			fileStatus->estimatedWaitTime = NULL;
+    		}
+    		if (turl->hasRemainingFileLifetime()) {
+    			fileStatus->remainingFileLifetime = storm::soap_calloc<int>(m_soapRequest);
+    			*fileStatus->remainingFileLifetime = turl->getRemainingFileLifetime();
+    		}
+    		else
+    		{
+    			fileStatus->remainingFileLifetime = NULL;
+    		}
+    		if (turl->hasRemainingPinLifetime()) {
+    			fileStatus->remainingPinLifetime = storm::soap_calloc<int>(m_soapRequest);
+    			*fileStatus->remainingPinLifetime = turl->getRemainingPinLifetime();
+    		}
+    		else
+    		{
+    			fileStatus->remainingPinLifetime = NULL;
+    		}
+    		fileStatus->status->statusCode = turl->getStatus();
+    		fileStatus->status->explanation = soap_strdup(m_soapRequest, turl->getExplanation().c_str());
+    		fileStatus->transferProtocolInfo = NULL;
+    	}
+    	if(this->hasMissingSurls())
+    	{
+    		this->addMissingSurls();
+    	}
+   }
     return m_builtResponse;
 }
 

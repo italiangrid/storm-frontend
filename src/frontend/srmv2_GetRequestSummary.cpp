@@ -190,153 +190,155 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         
         // Allocate 'arrayOfRequestSummaries' in the response structure
         repp->arrayOfRequestSummaries = storm::soap_calloc<struct ns1__ArrayOfTRequestSummary>(soap);
-        repp->arrayOfRequestSummaries->__sizesummaryArray = numOfRequestTokens;
-        repp->arrayOfRequestSummaries->summaryArray = storm::soap_calloc<struct ns1__TRequestSummary>(soap, numOfRequestTokens);
-        
-        // For each requested token, if it was found in the DB then the retrieved sumary is returned
-        // (by querying the table corresponding to the request to calculate some values to be returned),
-        // otherwise a SRM_INVALID_REQUEST with "Invalid request token" explanation are returned.
-        requestSuccess = true;
-        requestFailure = true;
-        int i;
-        for (i=0; i<numOfRequestTokens; i++) {
-            if (req->arrayOfRequestTokens->stringArray[i] == NULL) {
-                (repp->arrayOfRequestSummaries->__sizesummaryArray)--;
-                continue;
-            }
-            std::string reqToken = req->arrayOfRequestTokens->stringArray[i];
-            repp->arrayOfRequestSummaries->summaryArray[i] = storm::soap_calloc<struct ns1__TRequestSummary>(soap);
-            struct ns1__TRequestSummary* reqSummary = repp->arrayOfRequestSummaries->summaryArray[i];
-            reqSummary->status = storm::soap_calloc<struct ns1__TReturnStatus>(soap);
-            // Check if the requested token was found in the DB
-            bool found = false;
-            int j;
-            for (j=0; j<resultsSize; j++) {
-                if (reqToken.compare(results[j]["r_token"]) == 0) {
-                    found = true;
-                    break;
-                }
-            }
-            reqSummary->requestToken = soap_strdup(soap, reqToken.c_str());
-            if (found) {
-                requestFailure = false;
-                
-                // statusCode
-                int intVal;
-                string2num(intVal, results[j]["status"]);
-                enum ns1__TStatusCode r_status = ns1__TStatusCode(intVal);
-                reqSummary->status->statusCode = r_status;
-                
-                // explanation
-                reqSummary->status->explanation = soap_strdup(soap, results[j]["errstring"].c_str());
-                
-                // totalNumFilesInRequest
-                int r_nbreqfiles;
-                if (!string2num(r_nbreqfiles, results[j]["nbreqfiles"])) {
-                    reqSummary->totalNumFilesInRequest = storm::soap_calloc<int>(soap);
-                    *(reqSummary->totalNumFilesInRequest) = r_nbreqfiles;
-                }
-                
-                // requestType
-                reqSummary->requestType = storm::soap_calloc<enum ns1__TRequestType>(soap);
-                enum ns1__TRequestType r_type = getRequestType(results[j]["config_RequestTypeID"]);
-                *(reqSummary->requestType) = r_type;
-                
-                // Create the SQL query to retrieve the status of the request
-                switch (r_type) {
-                    case PREPARE_USCORETO_USCOREGET:
-                        query_sql = "SELECT statusCode FROM status_Get s JOIN request_Get c ON "
-                                    "(c.request_queueID='";
-                        query_sql += results[j]["ID"];
-                        query_sql += "' AND s.request_GetID=c.ID)"; 
-                        break;
-                    case PREPARE_USCORETO_USCOREPUT:
-                        query_sql = "SELECT statusCode FROM status_Put s JOIN request_Put c ON "
-                                    "(c.request_queueID='";
-                        query_sql += results[j]["ID"];
-                        query_sql += "' AND s.request_PutID=c.ID)"; 
-                        break;
-                    case COPY:
-                        query_sql = "SELECT statusCode FROM status_Copy s JOIN request_Copy c ON "
-                                    "(c.request_queueID='";
-                        query_sql += results[j]["ID"];
-                        query_sql += "' AND s.request_CopyID=c.ID)"; 
-                        break;
-                    case BRING_USCOREONLINE:
-                        query_sql = "SELECT statusCode FROM status_BoL s JOIN request_BoL c ON "
-                                    "(c.request_queueID='";
-                        query_sql += results[j]["ID"];
-                        query_sql += "' AND s.request_BoLID=c.ID)"; 
-                        break;
-                    default:
-                        query_sql = string();
-                        break;
-                }
-                if (!query_sql.empty()) {
-                    // Calculate the values: numOfCompletedFiles, numOfWaitingFiles, numOfFailedFiles
-                    vector< map<string, string> > results_status;
-                    storm_db::vector_exec_query(&thip->dbfd, query_sql, results_status);
-                    
-                    if (results_status.size() != r_nbreqfiles) {
-                        reqSummary->status->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-                        reqSummary->status->explanation = soap_strdup(soap, "BUG! In DB wrong nbreqfiles");
-                    } else {
-                        int numOfCompleted = 0;
-                        int numOfWaiting = 0;
-                        int numOfFailed = 0;
-                        int k;
-                        for (k=0; k<r_nbreqfiles; k++) {
-                            string2num(intVal, results_status[k]["statusCode"]);
-                            enum ns1__TStatusCode r_status = ns1__TStatusCode(intVal);
-                            switch (r_status) {
-                                case SRM_USCORESUCCESS:
-                                case SRM_USCORERELEASED:
-                                case SRM_USCOREFILE_USCOREPINNED:
-                                case SRM_USCOREFILE_USCOREIN_USCORECACHE:
-                                case SRM_USCORESPACE_USCOREAVAILABLE:
-                                case SRM_USCOREDONE:
-                                    numOfCompleted++;
-                                    break;
-                                case SRM_USCOREREQUEST_USCOREQUEUED:
-                                case SRM_USCOREREQUEST_USCOREINPROGRESS:
-                                    numOfWaiting++;
-                                    break;
-                                default:
-                                    numOfFailed++;
-                                    break;
-                            }
-                        }
-                        // numOfCompletedFiles
-                        reqSummary->numOfCompletedFiles = storm::soap_calloc<int>(soap);
-                        *(reqSummary->numOfCompletedFiles) = numOfCompleted;
-                        // numOfWaitingFiles
-                        reqSummary->numOfWaitingFiles = storm::soap_calloc<int>(soap);
-                        *(reqSummary->numOfWaitingFiles) = numOfWaiting;
-                        // numOfFailedFiles
-                        reqSummary->numOfFailedFiles = storm::soap_calloc<int>(soap);
-                        *(reqSummary->numOfFailedFiles) = numOfFailed;
-                    } 
-                }
-            } else {
-                requestSuccess = false;
-                reqSummary->status->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-                reqSummary->status->explanation = "Invalid request token";
-            }
-        }
-    }
-    catch (soap_bad_alloc) {
-        if ((thip->dbfd).tr_started == 1)
-            storm_end_tr(&thip->dbfd); 
-        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
-        storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
-        return SOAP_EOM;
-    }
-    catch (std::invalid_argument) {
-        if ((thip->dbfd).tr_started == 1)
-            storm_end_tr(&thip->dbfd);
-        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
-        storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
-        return SOAP_NULL;
+        if(numOfRequestTokens > 0)
+        {
+			repp->arrayOfRequestSummaries->__sizesummaryArray = numOfRequestTokens;
+			repp->arrayOfRequestSummaries->summaryArray = storm::soap_calloc<struct ns1__TRequestSummary>(soap, numOfRequestTokens);
+			// For each requested token, if it was found in the DB then the retrieved sumary is returned
+			// (by querying the table corresponding to the request to calculate some values to be returned),
+			// otherwise a SRM_INVALID_REQUEST with "Invalid request token" explanation are returned.
+			requestSuccess = true;
+			requestFailure = true;
+			int i;
+			for (i=0; i<numOfRequestTokens; i++) {
+				if (req->arrayOfRequestTokens->stringArray[i] == NULL) {
+					(repp->arrayOfRequestSummaries->__sizesummaryArray)--;
+					continue;
+				}
+				std::string reqToken = req->arrayOfRequestTokens->stringArray[i];
+				repp->arrayOfRequestSummaries->summaryArray[i] = storm::soap_calloc<struct ns1__TRequestSummary>(soap);
+				struct ns1__TRequestSummary* reqSummary = repp->arrayOfRequestSummaries->summaryArray[i];
+				reqSummary->status = storm::soap_calloc<struct ns1__TReturnStatus>(soap);
+				// Check if the requested token was found in the DB
+				bool found = false;
+				int j;
+				for (j=0; j<resultsSize; j++) {
+					if (reqToken.compare(results[j]["r_token"]) == 0) {
+						found = true;
+						break;
+					}
+				}
+				reqSummary->requestToken = soap_strdup(soap, reqToken.c_str());
+				if (found) {
+					requestFailure = false;
+
+					// statusCode
+					int intVal;
+					string2num(intVal, results[j]["status"]);
+					enum ns1__TStatusCode r_status = ns1__TStatusCode(intVal);
+					reqSummary->status->statusCode = r_status;
+
+					// explanation
+					reqSummary->status->explanation = soap_strdup(soap, results[j]["errstring"].c_str());
+
+					// totalNumFilesInRequest
+					int r_nbreqfiles;
+					if (!string2num(r_nbreqfiles, results[j]["nbreqfiles"])) {
+						reqSummary->totalNumFilesInRequest = storm::soap_calloc<int>(soap);
+						*(reqSummary->totalNumFilesInRequest) = r_nbreqfiles;
+					}
+
+					// requestType
+					reqSummary->requestType = storm::soap_calloc<enum ns1__TRequestType>(soap);
+					enum ns1__TRequestType r_type = getRequestType(results[j]["config_RequestTypeID"]);
+					*(reqSummary->requestType) = r_type;
+
+					// Create the SQL query to retrieve the status of the request
+					switch (r_type) {
+						case PREPARE_USCORETO_USCOREGET:
+							query_sql = "SELECT statusCode FROM status_Get s JOIN request_Get c ON "
+										"(c.request_queueID='";
+							query_sql += results[j]["ID"];
+							query_sql += "' AND s.request_GetID=c.ID)";
+							break;
+						case PREPARE_USCORETO_USCOREPUT:
+							query_sql = "SELECT statusCode FROM status_Put s JOIN request_Put c ON "
+										"(c.request_queueID='";
+							query_sql += results[j]["ID"];
+							query_sql += "' AND s.request_PutID=c.ID)";
+							break;
+						case COPY:
+							query_sql = "SELECT statusCode FROM status_Copy s JOIN request_Copy c ON "
+										"(c.request_queueID='";
+							query_sql += results[j]["ID"];
+							query_sql += "' AND s.request_CopyID=c.ID)";
+							break;
+						case BRING_USCOREONLINE:
+							query_sql = "SELECT statusCode FROM status_BoL s JOIN request_BoL c ON "
+										"(c.request_queueID='";
+							query_sql += results[j]["ID"];
+							query_sql += "' AND s.request_BoLID=c.ID)";
+							break;
+						default:
+							query_sql = string();
+							break;
+					}
+					if (!query_sql.empty()) {
+						// Calculate the values: numOfCompletedFiles, numOfWaitingFiles, numOfFailedFiles
+						vector< map<string, string> > results_status;
+						storm_db::vector_exec_query(&thip->dbfd, query_sql, results_status);
+
+						if (results_status.size() != r_nbreqfiles) {
+							reqSummary->status->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
+							reqSummary->status->explanation = soap_strdup(soap, "BUG! In DB wrong nbreqfiles");
+						} else {
+							int numOfCompleted = 0;
+							int numOfWaiting = 0;
+							int numOfFailed = 0;
+							int k;
+							for (k=0; k<r_nbreqfiles; k++) {
+								string2num(intVal, results_status[k]["statusCode"]);
+								enum ns1__TStatusCode r_status = ns1__TStatusCode(intVal);
+								switch (r_status) {
+									case SRM_USCORESUCCESS:
+									case SRM_USCORERELEASED:
+									case SRM_USCOREFILE_USCOREPINNED:
+									case SRM_USCOREFILE_USCOREIN_USCORECACHE:
+									case SRM_USCORESPACE_USCOREAVAILABLE:
+									case SRM_USCOREDONE:
+										numOfCompleted++;
+										break;
+									case SRM_USCOREREQUEST_USCOREQUEUED:
+									case SRM_USCOREREQUEST_USCOREINPROGRESS:
+										numOfWaiting++;
+										break;
+									default:
+										numOfFailed++;
+										break;
+								}
+							}
+							// numOfCompletedFiles
+							reqSummary->numOfCompletedFiles = storm::soap_calloc<int>(soap);
+							*(reqSummary->numOfCompletedFiles) = numOfCompleted;
+							// numOfWaitingFiles
+							reqSummary->numOfWaitingFiles = storm::soap_calloc<int>(soap);
+							*(reqSummary->numOfWaitingFiles) = numOfWaiting;
+							// numOfFailedFiles
+							reqSummary->numOfFailedFiles = storm::soap_calloc<int>(soap);
+							*(reqSummary->numOfFailedFiles) = numOfFailed;
+						}
+					}
+				} else {
+					requestSuccess = false;
+					reqSummary->status->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
+					reqSummary->status->explanation = "Invalid request token";
+				}
+			}
+		}
+		catch (soap_bad_alloc) {
+			if ((thip->dbfd).tr_started == 1)
+				storm_end_tr(&thip->dbfd);
+			srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
+			storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
+			return SOAP_EOM;
+		}
+		catch (std::invalid_argument) {
+			if ((thip->dbfd).tr_started == 1)
+				storm_end_tr(&thip->dbfd);
+			srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
+			storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
+			return SOAP_NULL;
+		}
     }
     storm_end_tr(&thip->dbfd);    
     if (requestSuccess) {

@@ -164,74 +164,77 @@ ns1__srmStatusOfGetRequestResponse* storm::GetStatusRequest::buildResponse() thr
     
     // Fill status for each surl.
     int fileStatusArraySize = (m_surls.empty() ? m_turls.size() : m_surls.size());
-    try
-	{
-		m_builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTGetRequestFileStatus>(m_soapRequest);
-		m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TGetRequestFileStatus>(
-				m_soapRequest, fileStatusArraySize);
-	} catch (std::invalid_argument& exc) {
-		throw std::logic_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
-	}
-	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = fileStatusArraySize;
-	int index = 0;
-	std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
-	for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i, ++index) {
-		ns1__TGetRequestFileStatus *fileStatus;
+    if(fileStatusArraySize > 0)
+    {
 		try
 		{
-			fileStatus = storm::soap_calloc<ns1__TGetRequestFileStatus>(m_soapRequest);
+			m_builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTGetRequestFileStatus>(m_soapRequest);
+			m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TGetRequestFileStatus>(
+					m_soapRequest, fileStatusArraySize);
 		} catch (std::invalid_argument& exc) {
-				throw std::logic_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+			throw std::logic_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
 		}
-		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
+		m_builtResponse->arrayOfFileStatuses->__sizestatusArray = fileStatusArraySize;
+		int index = 0;
+		std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
+		for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i, ++index) {
+			ns1__TGetRequestFileStatus *fileStatus;
+			try
+			{
+				fileStatus = storm::soap_calloc<ns1__TGetRequestFileStatus>(m_soapRequest);
+			} catch (std::invalid_argument& exc) {
+					throw std::logic_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+			}
+			m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 
-		storm::PtgTurl* turl = dynamic_cast<storm::PtgTurl*> (i->get());
-		if(!turl)
+			storm::PtgTurl* turl = dynamic_cast<storm::PtgTurl*> (i->get());
+			if(!turl)
+			{
+				throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
+			}
+			if (turl->getStatus() == SRM_USCOREREQUEST_USCOREINPROGRESS) {
+				/* Useful for tape enabled file systems. Tells the BE to check if the SURL is already
+				 * recalled from tame and in that case to update DB info (that will be available to the next
+				 * get status request).
+				 */
+				isSurlOnDisk(turl->getSurl().getSurl());
+			}
+			fileStatus->sourceSURL = soap_strdup(m_soapRequest, turl->getSurl().getSurl().c_str());
+			if(!turl->isEmpty())
+			{
+				fileStatus->transferURL = soap_strdup(m_soapRequest, turl->getTurl().c_str());
+			}
+			else
+			{
+				fileStatus->transferURL = NULL;
+			}
+			try
+			{
+				fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
+			} catch (std::invalid_argument& exc) {
+					throw std::logic_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
+			}
+			if (turl->hasFileSize()) {
+				fileStatus->fileSize = storm::soap_calloc<ULONG64>(m_soapRequest);
+				*fileStatus->fileSize = turl->getFileSize();
+			}
+			if (turl->hasEstimatedWaitTime()) {
+				fileStatus->estimatedWaitTime = storm::soap_calloc<int>(m_soapRequest);
+				*fileStatus->estimatedWaitTime = turl->getEstimatedWaitTime();
+			}
+			if (turl->hasRemainingPinLifetime()) {
+				fileStatus->remainingPinTime = storm::soap_calloc<int>(m_soapRequest);
+				*fileStatus->remainingPinTime = turl->hasRemainingPinLifetime();
+			}
+			fileStatus->status->statusCode = turl->getStatus();
+			fileStatus->status->explanation = soap_strdup(m_soapRequest, turl->getExplanation().c_str());
+			fileStatus->transferProtocolInfo = NULL;
+		}
+		if(this->hasMissingSurls())
 		{
-			throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
+			this->addMissingSurls();
 		}
-		if (turl->getStatus() == SRM_USCOREREQUEST_USCOREINPROGRESS) {
-			/* Useful for tape enabled file systems. Tells the BE to check if the SURL is already
-			 * recalled from tame and in that case to update DB info (that will be available to the next
-			 * get status request).
-			 */
-			isSurlOnDisk(turl->getSurl().getSurl());
-		}
-		fileStatus->sourceSURL = soap_strdup(m_soapRequest, turl->getSurl().getSurl().c_str());
-		if(!turl->isEmpty())
-		{
-			fileStatus->transferURL = soap_strdup(m_soapRequest, turl->getTurl().c_str());
-		}
-		else
-		{
-			fileStatus->transferURL = NULL;
-		}
-		try
-		{
-			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
-		} catch (std::invalid_argument& exc) {
-				throw std::logic_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
-		}
-		if (turl->hasFileSize()) {
-			fileStatus->fileSize = storm::soap_calloc<ULONG64>(m_soapRequest);
-			*fileStatus->fileSize = turl->getFileSize();
-		}
-		if (turl->hasEstimatedWaitTime()) {
-			fileStatus->estimatedWaitTime = storm::soap_calloc<int>(m_soapRequest);
-			*fileStatus->estimatedWaitTime = turl->getEstimatedWaitTime();
-		}
-		if (turl->hasRemainingPinLifetime()) {
-        	fileStatus->remainingPinTime = storm::soap_calloc<int>(m_soapRequest);
-            *fileStatus->remainingPinTime = turl->hasRemainingPinLifetime();
-        }
-		fileStatus->status->statusCode = turl->getStatus();
-		fileStatus->status->explanation = soap_strdup(m_soapRequest, turl->getExplanation().c_str());
-		fileStatus->transferProtocolInfo = NULL;
-	}
-	if(this->hasMissingSurls())
-	{
-		this->addMissingSurls();
-	}
+    }
 	if(this->hasRemainingTotalRequestTime())
 	{
 		m_builtResponse->remainingTotalRequestTime = storm::soap_calloc<int>(m_soapRequest);
