@@ -49,6 +49,7 @@ Summary:        The StoRM FrontEnd component
 BuildRequires: libtool
 BuildRequires: autoconf
 BuildRequires: automake
+BuildRequires: boost@BOOST_SUFFIX@-devel
 BuildRequires: curl-devel
 BuildRequires: mysql-devel
 BuildRequires: globus-gssapi-gsi-devel
