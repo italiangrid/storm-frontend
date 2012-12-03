@@ -38,7 +38,7 @@ AC_DEFUN([AC_BOOST],
   else 
     a=`echo $with_boost_prefix | awk -F '/' '{print $NF}'`
     if test "$a"  != "usr" ; then
-      ac_boost_prefix="$ac_boost_prefix/usr"
+      ac_boost_prefix="$ac_boost_prefix"
     fi
   fi
 
@@ -58,7 +58,7 @@ AC_DEFUN([AC_BOOST],
   else
     a=`echo $with_boost_devel_prefix | awk -F '/' '{print $NF}'`
     if test "$a"  != "usr" ; then
-      ac_boost_devel_prefix="$ac_boost_devel_prefix/usr"
+      ac_boost_devel_prefix="$ac_boost_devel_prefix"
     fi
   fi
 
