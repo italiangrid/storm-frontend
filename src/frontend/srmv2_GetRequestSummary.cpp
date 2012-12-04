@@ -325,21 +325,22 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 				}
 			}
 		}
-		catch (soap_bad_alloc) {
-			if ((thip->dbfd).tr_started == 1)
-				storm_end_tr(&thip->dbfd);
-			srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
-			storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
-			return SOAP_EOM;
-		}
-		catch (std::invalid_argument) {
-			if ((thip->dbfd).tr_started == 1)
-				storm_end_tr(&thip->dbfd);
-			srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
-			storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
-			return SOAP_NULL;
-		}
     }
+	catch (soap_bad_alloc) {
+		if ((thip->dbfd).tr_started == 1)
+			storm_end_tr(&thip->dbfd);
+		srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
+		storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
+		return SOAP_EOM;
+	}
+	catch (std::invalid_argument) {
+		if ((thip->dbfd).tr_started == 1)
+			storm_end_tr(&thip->dbfd);
+		srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
+		storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
+		return SOAP_NULL;
+	}
+
     storm_end_tr(&thip->dbfd);    
     if (requestSuccess) {
         srmlogit(STORM_LOG_INFO, func, "Return status: SRM_SUCCESS\n");
