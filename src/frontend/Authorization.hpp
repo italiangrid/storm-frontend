@@ -34,7 +34,7 @@ const std::string DEFAULT_AUTHORIZATION_ACTION("access");
 const std::string DEFAULT_AUTHORIZATION_PROFILE("http://glite.org/xacml/profile/grid-wn/1.0");
 class Authorization {
 public:
-	Authorization(FullCredentials *cred) throw (AuthorizationException) {
+	Authorization(FullCredentials *cred) throw (AuthorizationException) : m_argusResourceId(DEFAULT_AUTHORIZATION_RESOURCE){
 		char* funcName = "Authorization";
 		credentials = cred;
 
@@ -134,6 +134,11 @@ public:
 				storm::AuthorizationException exc(errMessage);
 				throw exc;
 			}
+			std::string argusResourceId = FrontendConfiguration::getInstance()->getArgusResourceId();
+			if(!argusResourceId.empty())
+			{
+				m_argusResourceId(argusResourceId);
+			}
 		}
 	};
 
@@ -161,7 +166,7 @@ private:
     FullCredentials * credentials;
     PEP * pep;
     bool blacklistRequested;
-
+    std::string m_argusResourceId;
     xacml_request_t* create_xacml_request(const char * subjectid, const char * resourceid, const char * actionid) throw (storm::AuthorizationException);
     xacml_subject_t * create_xacml_subject(const char * subject_id) throw (storm::AuthorizationException);
     xacml_resource_t* create_xacml_resource(const char * resourceid) throw (storm::AuthorizationException);

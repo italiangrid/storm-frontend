@@ -86,7 +86,7 @@ bool Authorization::isBlacklisted() throw (storm::AuthorizationException, storm:
 		xacml_response_t * response = NULL;
 		//const char* subject = credentials->getDN().c_str();
 		//srmlogit(STORM_LOG_DEBUG, funcName, "Constructing Subject from %s\n", subject);
-		xacml_request_t * request = create_xacml_request(credentials->getCertChain(), DEFAULT_AUTHORIZATION_RESOURCE.c_str(), DEFAULT_AUTHORIZATION_ACTION.c_str());
+		xacml_request_t * request = create_xacml_request(credentials->getCertChain(), m_argusResourceId.c_str(), DEFAULT_AUTHORIZATION_ACTION.c_str());
 		pep_error_t pep_rc = pep_authorize(pep, &request, &response);
 		if (pep_rc != PEP_OK) {
 			xacml_request_delete(request);

@@ -58,7 +58,7 @@ static const bool DEFAULT_MONITORING_DETAILED = false;
 static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
 static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
 static const string DEFAULT_CA_CERTIFICATES_FOLDER = string("/etc/grid-security/certificates");
-
+static const string DEFAULT_ARGUS_RESOURCE_ID = "storm";
 
 static const char* EMPTY_DESCRIPTION = "";
 
@@ -155,6 +155,9 @@ static const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not 
 static const string OPTL_ARGUS_PEPD_ENDPOINT = string("argus-pepd-endpoint");
 static const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION = "Full SERVICE ENDPOINT of the Argus PEP Daemon";
 
+static const string OPTL_ARGUS_RESOURCE_ID = string("argus.resource-id");
+static const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION = "the resource identifier for StoRM service in Argus policies";
+
 // A helper function to simplify printing options stuff
 template<class T>
 ostream& operator<<(ostream& os, const vector<T>& v)
@@ -212,6 +215,7 @@ public:
     bool getXMLRPCCheckAscii();
     bool getUserCheckBlacklist();
     string getArgusPepdEndpoint();
+    string getArgusResourceId();
     string getCaCertificatesFolder();
 
 private:
@@ -270,6 +274,7 @@ private:
     bool xmlrpc_check_ascii;
     bool user_check_blacklist;
     string argus_pepd_endpoint;
+    string argus_resource_id;
     string ca_certificates_folder;
 
 };

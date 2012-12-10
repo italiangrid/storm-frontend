@@ -276,6 +276,10 @@ string FrontendConfiguration::getArgusPepdEndpoint() {
     return argus_pepd_endpoint;
 }
 
+string FrontendConfiguration::getArgusResourceId() {
+    return argus_resource_id;
+}
+
 string FrontendConfiguration::getCaCertificatesFolder() {
     return ca_certificates_folder;
 }
@@ -312,7 +316,8 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_ENABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_ENABLE_MAPPING_DESCRIPTION)
             (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION)
             (OPTL_USER_CHECK_BLACKLIST.c_str(), po::value<bool>()->default_value(DEFAULT_USER_CHECK_BLACKLIST), OPT_USER_CHECK_BLACKLIST_DESCRIPTION)
-            (OPTL_ARGUS_PEPD_ENDPOINT.c_str(), po::value<string>(), OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION);
+            (OPTL_ARGUS_PEPD_ENDPOINT.c_str(), po::value<string>(), OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION)
+            (OPTL_ARGUS_RESOURCE_ID.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_RESOURCE_ID), OPT_ARGUS_RESOURCE_ID_DESCRIPTION);
 
     return configurationFileOptions;
 }
@@ -399,6 +404,9 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_ARGUS_PEPD_ENDPOINT))
     	argus_pepd_endpoint = vm[OPTL_ARGUS_PEPD_ENDPOINT].as<string> ();
+
+    if (vm.count(OPTL_ARGUS_RESOURCE_ID))
+    	argus_resource_id = vm[OPTL_ARGUS_RESOURCE_ID].as<string> ();
 
     log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
     monitoring_file = vm[OPTL_MONITORING_FILE_NAME].as<string> ();

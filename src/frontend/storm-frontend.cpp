@@ -249,6 +249,7 @@ void logConfiguration()
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_DETAILED.c_str(), (configuration->getMonitoringDetailed() ? "true" : "false"));
     srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_MONITORING_TIME_INTERVAL.c_str(), configuration->getMonitoringTimeInterval());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEPD_ENDPOINT.c_str(), configuration->getArgusPepdEndpoint().c_str());
+    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_RESOURCE_ID.c_str(), configuration->getArgusResourceId().c_str());
     srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", configuration->getXMLRPCEndpoint().c_str());
     srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(), configuration->getRecalltablePort());
     srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), configuration->getDebugLevelString().c_str());
