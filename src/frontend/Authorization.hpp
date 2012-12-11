@@ -137,7 +137,7 @@ public:
 			std::string argusResourceId = FrontendConfiguration::getInstance()->getArgusResourceId();
 			if(!argusResourceId.empty())
 			{
-				m_argusResourceId(argusResourceId);
+				m_argusResourceId = argusResourceId;
 			}
 		}
 	};
