@@ -38,14 +38,14 @@ SL6 only
 * libuuid-devel
 
 Build command:
-* on SL55
+* on SL5
 
 ```bash
 ./bootstrap
 ./configure --with-gsoap-version=2.7.13 --with-gsoap-wsdl2h-version=1.2.13
 make rpm
 ```
-* on SL56 
+* on SL6 
 
 ```bash
 ./bootstrap
