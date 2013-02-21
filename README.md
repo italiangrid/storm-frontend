@@ -5,8 +5,8 @@ StoRM FrontEnd provides an implementation of the SRM v2.2 Web Service interface.
 
 ## Supported platforms
 
-Scientific Linux 5 x86_64
-Scientific Linux 6 x86_64
+* Scientific Linux 5 x86_64
+* Scientific Linux 6 x86_64
 
 ## Required repositories
 
