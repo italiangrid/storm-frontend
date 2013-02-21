@@ -1,7 +1,7 @@
-The StoRM BackEnd Service
+The StoRM Frontend Service
 ===============================
 
-StoRM FrontEnd provides an implementation of the SRM v2.2 Web Service interface.
+StoRM Frontend provides an implementation of the SRM v2.2 Web Service interface.
 
 ## Supported platforms
 
