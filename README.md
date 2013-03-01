@@ -44,7 +44,7 @@ yum install emi-release
 ```
 
 
-### Building instructions
+### Build instructions
 
 #### Build-time dependencies
 
