@@ -82,16 +82,6 @@ SL5 only:
 
 #### Build commands
 
-* on SL5
-
-```bash
-./bootstrap
-./configure 
-make
-make rpm
-```
-* on SL6 
-
 ```bash
 ./bootstrap
 ./configure 
