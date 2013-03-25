@@ -20,6 +20,7 @@ AC_DEFUN([AC_GSOAP],
     dnl
     dnl GSOAP Location
     dnl
+
     AC_ARG_WITH(gsoap-location,
 	[  --with-gsoap-location=PFX     prefix where GSOAP is installed. (/usr)],
 	[],
@@ -105,6 +106,7 @@ AC_DEFUN([AC_GSOAP],
 	[],
         with_gsoap_wsdl2h_location=${GSOAP_WSDL2H_LOCATION:-/usr})
 
+
     AC_MSG_RESULT([checking for gsoap wsdl2h... ])
 
     if test -n "$with_gsoap_wsdl2h_location" ; then
@@ -116,13 +118,16 @@ AC_DEFUN([AC_GSOAP],
     dnl
     dnl GSOAP Version
     dnl
+    
+    gsoap_version="`cat /usr/include/stdsoap2.h|grep stdsoap2.h|head -1|sed -e "s/stdsoap2.h//g" -e "s/[ \t]//g"`"
+
     AC_ARG_WITH(gsoap-version,
 	[  --with-gsoap-version=PFX     GSOAP version (2.7.13)],
 	[],
-        with_gsoap_version=${GSOAP_VERSION:-2.7.13})
+        with_gsoap_version=${GSOAP_VERSION:-$gsoap_version})
 
     AC_MSG_RESULT([checking for gsoap version... ])
-	
+
     if test -n "$with_gsoap_version" ; then
 	GSOAP_VERSION="$with_gsoap_version"
     else
@@ -132,17 +137,26 @@ AC_DEFUN([AC_GSOAP],
     dnl
     dnl GSOAP WSDL2H Version
     dnl
+
+    wsdl2h_cmd="`which wsdl2h`"
+    
+    gsoap_wsdl2h_version="`$wsdl2h_cmd -help 2>&1|grep \"The gSOAP WSDL parser for C and C++\"| sed -e \"s/**  The gSOAP WSDL parser for C and C++//g\" -e "s/[ \t]*//g\"`"
+
+    if test -z "$gsoap_wsdl2h_version" ; then
+	gsoap_wsdl2h_version="`$wsdl2h_cmd -help 2>&1|grep "release"| sed -e "s/**  The gSOAP WSDL\/Schema processor for C and C++, wsdl2h release //g" -e "s/[ \t]*//g"|head -1`"
+    fi
+
     AC_ARG_WITH(gsoap-wsdl2h-version,
 	[  --with-gsoap-wsdl2h-version=PFX     WSDL2h version (1.2.13)],
 	[],
-        with_gsoap_wsdl2h_version=${GSOAP_WSDL2H_VERSION:-$GSOAP_VERSION})
+        with_gsoap_wsdl2h_version=${GSOAP_WSDL2H_VERSION:-$gsoap_wsdl2h_version})
 
     AC_MSG_RESULT([checking for gsoap WSDL2H version... ])
 	
     if test -n "$with_gsoap_wsdl2h_version" ; then
  	GSOAP_WSDL2H_VERSION="$with_gsoap_wsdl2h_version"
     else
-	GSOAP_WSDL2H_VERSION="$GSOAP_VERSION"
+	GSOAP_WSDL2H_VERSION=""
     fi
     
     dnl
