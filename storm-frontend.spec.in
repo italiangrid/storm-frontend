@@ -240,6 +240,7 @@ fi
 %defattr(-,%{default_user},%{default_user},-)
 %{_sbindir}/%{longname}
 %{_sysconfdir}/init.d/%{longname}
+%{_sysconfdir}/sysconfig/%{longname}
 %config(noreplace) %attr(644,%{default_user},%{default_user}) %{_sysconfdir}/logrotate.d/%{longname}
 
 %dir %{_sysconfdir}/%{prefixname}/%{shortname}

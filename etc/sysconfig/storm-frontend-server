@@ -1,0 +1,4 @@
+# /etc/sysconfig/storm-frontend-server
+
+# user that will own the StoRM FE process
+STORM_FE_USER=storm
