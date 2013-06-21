@@ -32,6 +32,8 @@ ARC=`/bin/uname -m`
 FRONTEND_DAEMON=@sbindir@/$prog
 CONFIGURATION_FILE=@sysconfdir@/@PACKAGE_PREFIX_NAME@/@PACKAGE_SHORT_NAME@/@PACKAGE@.conf
 
+source /etc/sysconfig/$prog
+
 if [ -z $STORM_FE_USER ]; then
     STORM_FE_USER=storm
 fi
