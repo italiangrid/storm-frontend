@@ -13,7 +13,7 @@
 # limitations under the License.
 
 AC_PREREQ([2.59])
-AC_INIT([storm frontend server], [1.8.1])
+AC_INIT([storm frontend server], [1.8.2])
 AC_CONFIG_AUX_DIR([./project])
 #AM_INIT_AUTOMAKE([1.6.3 subdir-objects])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
