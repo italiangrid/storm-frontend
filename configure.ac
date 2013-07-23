@@ -187,7 +187,6 @@ AC_CONFIG_FILES([etc/logrotate/storm-frontend-server])
 AC_CONFIG_FILES([etc/init.d/Makefile])
 AC_CONFIG_FILES([etc/init.d/storm-frontend-server])
 AC_CONFIG_FILES([etc/sysconfig/Makefile])
-AC_CONFIG_FILES([etc/sysconfig/storm-frontend-server])
 AC_CONFIG_FILES([wsdl/Makefile])
 
 AC_CONFIG_FILES([src/Makefile])

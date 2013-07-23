@@ -12,11 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-EXTRA_DIST = storm-frontend-server.in
-
 stormetcsysdir = $(sysconfdir)/sysconfig
 dist_stormetcsys_SCRIPTS = storm-frontend-server
-
-CLEANFILES =  storm-frontend-server
 
 MAINTAINERCLEANFILES = Makefile.in
