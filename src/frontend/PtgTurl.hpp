@@ -24,24 +24,24 @@ namespace storm {
 
 class PtgTurl : public Turl  {
 public:
-	PtgTurl(std::string turl, Surl surl, storm_size_t size)
+  PtgTurl(std::string turl, Surl surl, storm_size_t size, storm_size_t expectedSize)
 			throw (InvalidSurl, InvalidTurl) :
-			Turl(turl, surl), m_fileSize(size), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
+    Turl(turl, surl), m_fileSize(size), m_expectedFileSize(expectedSize), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
 	PtgTurl(std::string turl, Surl surl)
 			throw (InvalidSurl, InvalidTurl) :
-				Turl(turl, surl), m_fileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
+	  Turl(turl, surl), m_fileSize(-1), m_expectedFileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
-	PtgTurl(Surl surl, storm_size_t size)
+  PtgTurl(Surl surl, storm_size_t size, storm_size_t expectedSize)
 			throw (InvalidSurl, InvalidTurl) :
-			Turl(surl), m_fileSize(size), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
+    Turl(surl), m_fileSize(size), m_expectedFileSize(expectedSize), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
 	PtgTurl(Surl surl)
 			throw (InvalidSurl, InvalidTurl) :
-				Turl(surl), m_fileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
+	  Turl(surl), m_fileSize(-1), m_expectedFileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
 	~PtgTurl(){}
@@ -51,9 +51,21 @@ public:
 		return m_fileSize;
 	}
 
+	storm_size_t getExpectedFileSize()
+	{
+		return m_expectedFileSize;
+	}
+
+
+
 	bool hasFileSize()
 	{
 		return m_fileSize != -1;
+	}
+
+	bool hasExpectedFileSize()
+	{
+		return m_expectedFileSize != -1;
 	}
 
 	void setEstimatedWaitTime(storm_time_t estimatedWaitTime)
@@ -96,6 +108,7 @@ public:
 
 private:
     storm_size_t m_fileSize;
+    storm_size_t m_expectedFileSize;
     storm_time_t m_estimatedWaitTime; // -1 means unknown
     storm_time_t m_remainingPinLifetime; // -1 means unknown
     ns1__ArrayOfTExtraInfo* transferProtocolInfo; //ignored

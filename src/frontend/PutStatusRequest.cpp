@@ -36,15 +36,12 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 
     srmlogit(STORM_LOG_DEBUG, "storm::PutStatusRequest::loadFromDB", "R_token: %s\n",  m_requestToken.c_str());
 
-    /*std::string query = "SELECT r.client_dn, r.status, r.errstring, r.remainingTotalTime, r.pinLifetime, r.fileLifetime, "
-    		"from request_queue r JOIN (request_Put c, status_Put s) ON "
-             "(c.request_queueID=r.ID AND s.request_PutID=c.ID) "
-             "WHERE r.r_token='" + requestToken + "'";*/
     std::string query("");
+
     if(m_surls.size() > 0)
     {
 		query += "SELECT r.client_dn, r.status, r.errstring, r.remainingTotalTime,"
-						" c.targetSURL , s.transferURL ,  s.fileSize , s.estimatedWaitTime , s.remainingPinTime , s.remainingFileTime , s.statusCode , s.explanation"
+						" c.targetSURL , c.expectedFileSize , s.transferURL ,  s.fileSize , s.estimatedWaitTime , s.remainingPinTime , s.remainingFileTime , s.statusCode , s.explanation"
 						" from request_queue r JOIN (request_Put c, status_Put s) ON "
 						"(c.request_queueID=r.ID AND s.request_PutID=c.ID) WHERE r.r_token="
 						+ sqlFormat(m_requestToken) + " and "
@@ -68,7 +65,7 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
     else
     {
 		query += "SELECT r.client_dn, r.status, r.errstring, r.remainingTotalTime,"
-						" c.targetSURL , s.transferURL , s.fileSize , s.estimatedWaitTime , s.remainingPinTime , s.remainingFileTime , s.statusCode , s.explanation"
+						" c.targetSURL , c.expectedFileSize , s.transferURL , s.fileSize , s.estimatedWaitTime , s.remainingPinTime , s.remainingFileTime , s.statusCode , s.explanation"
 						" from request_queue r JOIN (request_Put c, status_Put s) ON "
 						"(c.request_queueID=r.ID AND s.request_PutID=c.ID) WHERE r.r_token="
 						+ sqlFormat(m_requestToken);
@@ -99,28 +96,51 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 		std::string turlString = currentResutl["transferURL"];
 		storm::Surl surl(currentResutl["targetSURL"].c_str());
 		PtpTurl* turl;
+	
 		if(!turlString.empty())
 		{
 			if(currentResutl["fileSize"].empty())
 			{
+			  if(currentResutl["expectedFileSize"].empty()) {
 				turl = new storm::PtpTurl(turlString, surl);
+			  }
+			  else {
+			    turl = new storm::PtpTurl(turlString, surl, -1, atoi(currentResutl["expectedFileSize"].c_str()));
+			  }
 			}
 			else
 			{
-				turl = new storm::PtpTurl(turlString,surl, atoi(currentResutl["fileSize"].c_str()));
+			  if(currentResutl["expectedFileSize"].empty()) {
+			    turl = new storm::PtpTurl(turlString,surl, atoi(currentResutl["fileSize"].c_str()), -1);
+			  } 
+			  else {
+			    turl = new storm::PtpTurl(turlString,surl, atoi(currentResutl["fileSize"].c_str()), atoi(currentResutl["expectedFileSize"].c_str()));
+			  }
 			}
 		}
 		else
 		{
 			if(currentResutl["fileSize"].empty())
 			{
+			  if(currentResutl["expectedFileSize"].empty()) {
+
 				turl = new storm::PtpTurl(surl);
+			  }
+			  else {
+			    turl = new storm::PtpTurl(surl, -1, atoi(currentResutl["expectedFileSize"].c_str()));
+			  }
 			}
 			else
 			{
-				turl = new storm::PtpTurl(surl, atoi(currentResutl["fileSize"].c_str()));
+			  if(currentResutl["expectedFileSize"].empty()) {
+			    turl = new storm::PtpTurl(surl, atoi(currentResutl["fileSize"].c_str()), -1);			  
+			  }
+			  else {
+			    turl = new storm::PtpTurl(surl, atoi(currentResutl["fileSize"].c_str()), atoi(currentResutl["expectedFileSize"].c_str()));
+			  }
 			}
 		}
+
 		if(currentResutl["statusCode"].empty())
 		{
 			srmlogit(STORM_LOG_ERROR, "storm::PutStatusRequest::loadFromDB()",
@@ -186,23 +206,31 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     	}
     	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = fileStatusArraySize;
     	int index = 0;
+
     	std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
+
     	for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i, ++index) {
+
     		ns1__TPutRequestFileStatus *fileStatus;
+
     		try
     		{
     			fileStatus = storm::soap_calloc<ns1__TPutRequestFileStatus>(m_soapRequest);
     		} catch (std::invalid_argument& exc) {
     			throw std::logic_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
     		}
-    		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
+
+   		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 
     		storm::PtpTurl* turl = dynamic_cast<storm::PtpTurl*> (i->get());
+
     		if(!turl)
     		{
     			throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
     		}
+
     		fileStatus->SURL = soap_strdup(m_soapRequest, turl->getSurl().getSurl().c_str());
+
     		if(!turl->isEmpty())
     		{
     			fileStatus->transferURL = soap_strdup(m_soapRequest, turl->getTurl().c_str());
@@ -211,20 +239,23 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     		{
     			fileStatus->transferURL = NULL;
     		}
+
     		try
     		{
     			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
     		} catch (std::invalid_argument& exc) {
     			throw std::logic_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
     		}
-    		if (turl->hasFileSize()) {
+
+    		if (turl->hasExpectedFileSize()) {
     			fileStatus->fileSize = storm::soap_calloc<ULONG64>(m_soapRequest);
-    			*fileStatus->fileSize = turl->getFileSize();
+    			*fileStatus->fileSize = turl->getExpectedFileSize();
     		}
     		else
     		{
     			fileStatus->fileSize = NULL;
     		}
+
     		if (turl->hasEstimatedWaitTime()) {
     			fileStatus->estimatedWaitTime = storm::soap_calloc<int>(m_soapRequest);
     			*fileStatus->estimatedWaitTime = turl->getEstimatedWaitTime();
@@ -233,6 +264,7 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     		{
     			fileStatus->estimatedWaitTime = NULL;
     		}
+
     		if (turl->hasRemainingFileLifetime()) {
     			fileStatus->remainingFileLifetime = storm::soap_calloc<int>(m_soapRequest);
     			*fileStatus->remainingFileLifetime = turl->getRemainingFileLifetime();
@@ -241,6 +273,7 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     		{
     			fileStatus->remainingFileLifetime = NULL;
     		}
+
     		if (turl->hasRemainingPinLifetime()) {
     			fileStatus->remainingPinLifetime = storm::soap_calloc<int>(m_soapRequest);
     			*fileStatus->remainingPinLifetime = turl->getRemainingPinLifetime();
@@ -249,10 +282,12 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     		{
     			fileStatus->remainingPinLifetime = NULL;
     		}
+
     		fileStatus->status->statusCode = turl->getStatus();
     		fileStatus->status->explanation = soap_strdup(m_soapRequest, turl->getExplanation().c_str());
     		fileStatus->transferProtocolInfo = NULL;
     	}
+
     	if(this->hasMissingSurls())
     	{
     		this->addMissingSurls();

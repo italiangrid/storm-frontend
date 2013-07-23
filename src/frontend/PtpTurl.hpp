@@ -24,9 +24,9 @@ namespace storm {
 
 class PtpTurl : public PtgTurl  {
 public:
-	PtpTurl(std::string turl, Surl surl, storm_size_t size)
+	PtpTurl(std::string turl, Surl surl, storm_size_t size, storm_size_t expectedFileSize)
 			throw (InvalidSurl, InvalidTurl) :
-				PtgTurl(turl, surl,size), m_remainingFileLifetime(-1) {
+				PtgTurl(turl, surl, size, expectedFileSize), m_remainingFileLifetime(-1) {
 	}
 
 	PtpTurl(std::string turl, Surl surl) throw (InvalidSurl, InvalidTurl) :
@@ -34,9 +34,9 @@ public:
 	}
 
 
-	PtpTurl(Surl surl, storm_size_t size)
+	PtpTurl(Surl surl, storm_size_t size, storm_size_t expectedFileSize)
 			throw (InvalidSurl, InvalidTurl) :
-				PtgTurl(surl,size), m_remainingFileLifetime(-1) {
+				PtgTurl(surl, size, expectedFileSize), m_remainingFileLifetime(-1) {
 	}
 
 	PtpTurl(Surl surl) throw (InvalidSurl, InvalidTurl) :
