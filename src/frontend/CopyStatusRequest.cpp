@@ -134,7 +134,7 @@ void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Tok
 		}
 		else
 		{
-			turl = new CopyTurl(surl, destinationSURL, atoi(currentResutl["fileSize"].c_str()));
+			turl = new CopyTurl(surl, destinationSURL, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10));
 		}
 		if(currentResutl["statusCode"].empty())
 		{

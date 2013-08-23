@@ -105,16 +105,18 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 				turl = new storm::PtpTurl(turlString, surl);
 			  }
 			  else {
-			    turl = new storm::PtpTurl(turlString, surl, -1, atoi(currentResutl["expectedFileSize"].c_str()));
+			    turl = new storm::PtpTurl(turlString, surl, -1,
+                strtoull(currentResutl["expectedFileSize"].c_str(),(char**)NULL,10));
 			  }
 			}
 			else
 			{
 			  if(currentResutl["expectedFileSize"].empty()) {
-			    turl = new storm::PtpTurl(turlString,surl, atoi(currentResutl["fileSize"].c_str()), -1);
+			    turl = new storm::PtpTurl(turlString,surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10), -1);
 			  } 
 			  else {
-			    turl = new storm::PtpTurl(turlString,surl, atoi(currentResutl["fileSize"].c_str()), atoi(currentResutl["expectedFileSize"].c_str()));
+			    turl = new storm::PtpTurl(turlString,surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10), 
+                    strtoull(currentResutl["expectedFileSize"].c_str(),(char**)NULL,10));
 			  }
 			}
 		}
@@ -127,16 +129,17 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 				turl = new storm::PtpTurl(surl);
 			  }
 			  else {
-			    turl = new storm::PtpTurl(surl, -1, atoi(currentResutl["expectedFileSize"].c_str()));
+			    turl = new storm::PtpTurl(surl, -1, strtoull(currentResutl["expectedFileSize"].c_str(),(char**)NULL,10));
 			  }
 			}
 			else
 			{
 			  if(currentResutl["expectedFileSize"].empty()) {
-			    turl = new storm::PtpTurl(surl, atoi(currentResutl["fileSize"].c_str()), -1);			  
+			    turl = new storm::PtpTurl(surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10), -1);			  
 			  }
 			  else {
-			    turl = new storm::PtpTurl(surl, atoi(currentResutl["fileSize"].c_str()), atoi(currentResutl["expectedFileSize"].c_str()));
+			    turl = new storm::PtpTurl(surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10),
+                strtoull(currentResutl["expectedFileSize"].c_str(),(char**)NULL,10));
 			  }
 			}
 		}

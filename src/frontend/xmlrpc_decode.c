@@ -1028,7 +1028,7 @@ int decode_ULONG64(const char *callerName,
     *outputULONG64 = soap_malloc(soap, sizeof(ULONG64));
     if (NULL == *(outputULONG64)) return(DECODE_ERR_SOAP_MEMORY_ERROR);
     
-    **outputULONG64 = atoll((char*) strULONG64);
+    **outputULONG64 = strtoull((char*) strULONG64, (char**)NULL,10);
     
     // strULONG64 is allocated with soap_strdup(), therefore it must not be freed
     

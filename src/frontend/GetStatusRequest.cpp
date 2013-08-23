@@ -100,7 +100,7 @@ void storm::GetStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 			}
 			else
 			{
-				turl = new PtgTurl(turlString,surl, atoi(currentResutl["fileSize"].c_str()), -1);
+				turl = new PtgTurl(turlString,surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10), -1);
 			}
 		}
 		else
@@ -111,7 +111,7 @@ void storm::GetStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 			}
 			else
 			{
-				turl = new PtgTurl(surl, atoi(currentResutl["fileSize"].c_str()), -1);
+				turl = new PtgTurl(surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10), -1);
 			}
 		}
 

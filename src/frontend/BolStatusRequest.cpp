@@ -97,7 +97,7 @@ void storm::BolStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 		}
 		else
 		{
-			turl = new BolTurl(surl, atoi(currentResutl["fileSize"].c_str()));
+			turl = new BolTurl(surl, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10));
 		}
 		if(currentResutl["statusCode"].empty())
 		{
