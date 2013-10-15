@@ -44,3 +44,5 @@ libtool
 *.gcda
 app.info
 coverage_report
+/project
+/storm-frontend.spec
