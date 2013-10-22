@@ -47,3 +47,5 @@ coverage_report
 /project
 /storm-frontend.spec
 /rpm
+/aux
+/src/frontend/frontend_version.h

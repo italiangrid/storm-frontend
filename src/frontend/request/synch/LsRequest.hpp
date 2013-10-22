@@ -24,8 +24,7 @@ namespace storm {
 class LsRequest: public SynchRequest<ns1__srmLsRequest, ns1__srmLsResponse,ns1__srmLsResponse_> {
 public:
 	LsRequest(struct soap* soapRequest, struct ns1__srmLsRequest* request,
-			std::string requestName, std::string monitorName)
-					throw (invalid_request) :
+			std::string requestName, std::string monitorName):
 			SynchRequest<ns1__srmLsRequest, ns1__srmLsResponse, ns1__srmLsResponse_>
 					(soapRequest, request, requestName, monitorName) ,
 					m_fullDetailedList(false), m_allLevelRecursive(false),
@@ -36,9 +35,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmLsResponse_* response);
 
-    void load(ns1__srmLsRequest* req) throw (invalid_request);
+    void load(ns1__srmLsRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 private:
 	ns1__TFileStorageType m_fileStorageType;
 	bool m_fullDetailedList;

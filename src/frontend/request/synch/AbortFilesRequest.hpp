@@ -23,7 +23,7 @@ namespace storm {
 
 class AbortFilesRequest: public SynchRequest<ns1__srmAbortFilesRequest, ns1__srmAbortFilesResponse,ns1__srmAbortFilesResponse_> {
 public:
-	AbortFilesRequest(struct soap* soapRequest, struct ns1__srmAbortFilesRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
+	AbortFilesRequest(struct soap* soapRequest, struct ns1__srmAbortFilesRequest* request, std::string requestName, std::string monitorName):
 		SynchRequest<ns1__srmAbortFilesRequest, ns1__srmAbortFilesResponse, ns1__srmAbortFilesResponse_> (soapRequest, request, requestName, monitorName) {
 		this->load(request);
     }
@@ -32,11 +32,11 @@ public:
 
 	int performXmlRpcCall(ns1__srmAbortFilesResponse_* response);
 
-    void load(ns1__srmAbortFilesRequest* req) throw (invalid_request);
+    void load(ns1__srmAbortFilesRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 
-	std::string getRequestToken() throw (std::logic_error)
+	std::string getRequestToken()
 	{
 		return m_requestToken;
 	}

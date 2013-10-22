@@ -16,13 +16,17 @@
 #include "StatusChangeSpaceForFilesRequest.hpp"
 #include "srmlogit.h"
 
-void storm::StatusChangeSpaceForFilesRequest::load(ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request) throw (storm::invalid_request)
+void storm::StatusChangeSpaceForFilesRequest::load(ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request)
 {
 	if(request->requestToken == NULL)
 	{
 		throw storm::invalid_request("Received NULL requestToken in the request");
 	}
+
 	m_requestToken = std::string(request->requestToken);
+
+	validate_token(m_requestToken);
+
 }
 
 int storm::StatusChangeSpaceForFilesRequest::performXmlRpcCall(ns1__srmStatusOfChangeSpaceForFilesRequestResponse_* response){
@@ -43,7 +47,7 @@ int storm::StatusChangeSpaceForFilesRequest::performXmlRpcCall(ns1__srmStatusOfC
 	return ret;
 }
 
-int storm::StatusChangeSpaceForFilesRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::StatusChangeSpaceForFilesRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::StatusChangeSpaceForFilesRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

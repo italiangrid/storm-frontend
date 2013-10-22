@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef STATUS_CHANGE_SPACE_FOR_FILES_REQUEST_HPP
 #define STATUS_CHANGE_SPACE_FOR_FILES_REQUEST_HPP
@@ -21,23 +21,32 @@
 
 namespace storm {
 
-class StatusChangeSpaceForFilesRequest: public SynchRequest<ns1__srmStatusOfChangeSpaceForFilesRequestRequest, ns1__srmStatusOfChangeSpaceForFilesRequestResponse,ns1__srmStatusOfChangeSpaceForFilesRequestResponse_> {
+class StatusChangeSpaceForFilesRequest: public SynchRequest<
+		ns1__srmStatusOfChangeSpaceForFilesRequestRequest,
+		ns1__srmStatusOfChangeSpaceForFilesRequestResponse,
+		ns1__srmStatusOfChangeSpaceForFilesRequestResponse_> {
 public:
-	StatusChangeSpaceForFilesRequest(struct soap* soapRequest, struct ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmStatusOfChangeSpaceForFilesRequestRequest, ns1__srmStatusOfChangeSpaceForFilesRequestResponse,ns1__srmStatusOfChangeSpaceForFilesRequestResponse_> (soapRequest, request, requestName, monitorName) {
+	StatusChangeSpaceForFilesRequest(struct soap* soapRequest,
+			struct ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmStatusOfChangeSpaceForFilesRequestRequest,
+					ns1__srmStatusOfChangeSpaceForFilesRequestResponse,
+					ns1__srmStatusOfChangeSpaceForFilesRequestResponse_>(
+					soapRequest, request, requestName, monitorName) {
 		this->load(request);
-    }
+	}
 
-	~StatusChangeSpaceForFilesRequest() {}
+	~StatusChangeSpaceForFilesRequest() {
+	}
 
-	int performXmlRpcCall(ns1__srmStatusOfChangeSpaceForFilesRequestResponse_* response);
+	int performXmlRpcCall(
+			ns1__srmStatusOfChangeSpaceForFilesRequestResponse_* response);
 
-    void load(ns1__srmStatusOfChangeSpaceForFilesRequestRequest* req) throw (invalid_request);
+	void load(ns1__srmStatusOfChangeSpaceForFilesRequestRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 
-	std::string getRequestToken()
-	{
+	std::string getRequestToken() {
 		return m_requestToken;
 	}
 

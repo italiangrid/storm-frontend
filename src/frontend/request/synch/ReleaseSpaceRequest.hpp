@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef RELEASE_SPACE_REQUEST_HPP
 #define RELEASE_SPACE_REQUEST_HPP
@@ -21,23 +21,28 @@
 
 namespace storm {
 
-class ReleaseSpaceRequest: public SynchRequest<ns1__srmReleaseSpaceRequest, ns1__srmReleaseSpaceResponse,ns1__srmReleaseSpaceResponse_> {
+class ReleaseSpaceRequest: public SynchRequest<ns1__srmReleaseSpaceRequest,
+		ns1__srmReleaseSpaceResponse, ns1__srmReleaseSpaceResponse_> {
 public:
-	ReleaseSpaceRequest(struct soap* soapRequest, struct ns1__srmReleaseSpaceRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmReleaseSpaceRequest, ns1__srmReleaseSpaceResponse, ns1__srmReleaseSpaceResponse_> (soapRequest, request, requestName, monitorName) {
+	ReleaseSpaceRequest(struct soap* soapRequest,
+			struct ns1__srmReleaseSpaceRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmReleaseSpaceRequest,
+					ns1__srmReleaseSpaceResponse, ns1__srmReleaseSpaceResponse_>(
+					soapRequest, request, requestName, monitorName) {
 		this->load(request);
-    }
+	}
 
-	virtual ~ReleaseSpaceRequest() {}
+	virtual ~ReleaseSpaceRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmReleaseSpaceResponse_* response);
 
-    void load(ns1__srmReleaseSpaceRequest* req) throw (invalid_request);
+	void load(ns1__srmReleaseSpaceRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 
-	std::string getSpaceToken()
-	{
+	std::string getSpaceToken() {
 		return m_spaceToken;
 	}
 private:

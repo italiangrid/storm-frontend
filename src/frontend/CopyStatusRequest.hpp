@@ -23,19 +23,19 @@ namespace storm{
 class CopyStatusRequest : public FileStatusRequest<ns1__srmStatusOfCopyRequestRequest , ns1__srmStatusOfCopyRequestResponse>
 {
 public:
-	CopyStatusRequest(struct soap* soap, ns1__srmStatusOfCopyRequestRequest* req) throw (invalid_request) :
+	CopyStatusRequest(struct soap* soap, ns1__srmStatusOfCopyRequestRequest* req) :
 		FileStatusRequest<ns1__srmStatusOfCopyRequestRequest, ns1__srmStatusOfCopyRequestResponse>(soap, req) , m_allTargetSurlSpecified(true){
 		this->load(req);
 	}
 
 	virtual void load(ns1__srmStatusOfCopyRequestRequest* req);
 
-	void loadFromDB(struct srm_dbfd* db) throw (TokenNotFound);
+	void loadFromDB(struct srm_dbfd* db);
 
-	ns1__srmStatusOfCopyRequestResponse* buildResponse() throw (std::logic_error);
+	ns1__srmStatusOfCopyRequestResponse* buildResponse();
 
 protected:
-	void addMissingSurls() throw (std::logic_error);
+	void addMissingSurls();
 private:
 	bool m_allTargetSurlSpecified;
 

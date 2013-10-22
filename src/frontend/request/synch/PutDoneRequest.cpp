@@ -15,8 +15,9 @@
 
 #include "PutDoneRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::PutDoneRequest::load(ns1__srmPutDoneRequest* request) throw (storm::invalid_request)
+void storm::PutDoneRequest::load(ns1__srmPutDoneRequest* request)
 {
 	if (request->requestToken == NULL)
 	{
@@ -26,8 +27,10 @@ void storm::PutDoneRequest::load(ns1__srmPutDoneRequest* request) throw (storm::
 		throw storm::invalid_request("SURLs array is NULL");
 	}
 	m_requestToken = std::string(request->requestToken);
+	validate_token(m_requestToken);
+
 	for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-		m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+		m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 	}
 }
 
@@ -49,7 +52,7 @@ int storm::PutDoneRequest::performXmlRpcCall(ns1__srmPutDoneResponse_* response)
 	return ret;
 }
 
-int storm::PutDoneRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::PutDoneRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::PutDoneRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

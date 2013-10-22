@@ -42,7 +42,7 @@ public:
      * */
     bool supportsProtocolSpecification();
 
-    struct ns1__srmPrepareToPutResponse* buildResponse() throw (std::logic_error , storm::InvalidResponse);
+    struct ns1__srmPrepareToPutResponse* buildResponse();
 
 private:
     storm_time_t m_pinLifetime; // -1 = not specified

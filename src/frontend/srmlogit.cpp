@@ -250,17 +250,6 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
         return 0;
     }
 
-    /* Should add this check cicling on al elements in va_list args using va_arg macro to extract each
-     * this cannot be done since we parse msg to find %s macros and their value position in va_list args...
-     * quite difficult!
-     * if(requestName == NULL || ??? == NULL || ...)
-	{
-		loggingError(requestName);
-		errno = save_errno;
-		return 1;
-	}
-     * */
-
     va_start(args, msg);
     writtenChars += writeLogPrefix(prtbuf, level , func);
     if(writtenChars < max_char_to_write)

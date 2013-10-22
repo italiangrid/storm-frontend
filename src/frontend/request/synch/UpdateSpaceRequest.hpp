@@ -23,7 +23,7 @@ namespace storm {
 
 class UpdateSpaceRequest: public SynchRequest<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse,ns1__srmUpdateSpaceResponse_> {
 public:
-	UpdateSpaceRequest(struct soap* soapRequest, struct ns1__srmUpdateSpaceRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
+	UpdateSpaceRequest(struct soap* soapRequest, struct ns1__srmUpdateSpaceRequest* request, std::string requestName, std::string monitorName):
 		SynchRequest<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse, ns1__srmUpdateSpaceResponse_> (soapRequest, request, requestName, monitorName) {
 		this->load(request);
     }
@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmUpdateSpaceResponse_* response);
 
-    void load(ns1__srmUpdateSpaceRequest* req) throw (invalid_request);
+    void load(ns1__srmUpdateSpaceRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 
 	std::string getSpaceToken()
 	{

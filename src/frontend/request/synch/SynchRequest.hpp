@@ -27,63 +27,25 @@
 #include "synch.hpp"
 #include "Credentials.hpp"
 #include "srmlogit.h"
-
+#include "token_validator.hpp"
+#include "storm_exception.hpp"
 
 /**
  * Abstract class representing a generic file request.
  */
 namespace storm {
-class invalid_request: public std::exception {
-public:
-    invalid_request() {
-    }
-    ;
-    invalid_request(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-private:
-    const char* errmsg;
-};
-
-class not_supported: public std::exception {
-public:
-    not_supported() {
-    }
-    ;
-    not_supported(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-private:
-    const char* errmsg;
-};
-
-class InvalidResponse: public std::exception {
-public:
-	InvalidResponse() {
-    }
-    ;
-	InvalidResponse(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-private:
-    const char* errmsg;
-};
 
 template<typename soap_in_t, typename soap_out_t, typename soap_out_root_t>
 class SynchRequest {
 public:
 	SynchRequest (struct soap* soapRequest, soap_in_t* request, std::string name, std::string monitorName) :
-    	m_credentials(soapRequest), m_soapRequest(soapRequest), m_request(request), m_name(name), m_monitorName(monitorName),
-    	m_status(SRM_USCOREREQUEST_USCOREQUEUED), m_builtResponse(NULL) {
+		m_soapRequest(soapRequest),
+		m_credentials(soapRequest),
+		m_request(request),
+		m_builtResponse(NULL),
+		m_name(name),
+		m_monitorName(monitorName),
+    	m_status(SRM_USCOREREQUEST_USCOREQUEUED){
 		this->loadCommonFields(request);
     }
 
@@ -105,7 +67,7 @@ public:
     	return m_name;
     }
 
-    std::string getmonitorName()
+    std::string getMonitorName()
     {
     	return m_monitorName;
     }
@@ -123,9 +85,6 @@ public:
 		return m_credentials.getFQANsVector();
 	}
 
-    /**
-     * Get the current status code of the file request
-     */
     ns1__TStatusCode getStatus() {
         return m_status;
     }
@@ -138,9 +97,6 @@ public:
     	m_explanation = std::string(explanation);
     }
 
-    /**
-     * Get the current explanation string
-     */
     std::string getExplanation() {
     	return m_explanation;
     }
@@ -194,46 +150,38 @@ public:
     	return m_builtResponse;
     }
 
-    int buildSpecificResponse(ns1__TStatusCode status, const char* const explanation) throw (InvalidResponse) {
+    int buildSpecificResponse(ns1__TStatusCode status, const char* const explanation){
 		m_status = status;
 		m_explanation = explanation;
 		return this->buildResponse();
 	}
 
-    virtual void load(soap_in_t* req) throw (invalid_request) = 0;
+    virtual void load(soap_in_t* req) = 0;
 
-    virtual int buildResponse() throw (std::logic_error , InvalidResponse) = 0;
+    virtual int buildResponse() = 0;
 
     virtual int performXmlRpcCall(soap_out_root_t* response) = 0;
 
 protected:
     soap* m_soapRequest;
-    // -------------------------------
-    // --- incoming request parameters
-    //typedef boost::shared_ptr<Surl> SurlPtr;
-    std::set<std::string> m_surls;
-    Credentials m_credentials; // --> if m_authorizationID is available are built on it
-    std::string m_authorizationID;
-    std::set<std::pair<char*,char*> > m_extraInfo;
-    // --- parameters end
-    // -------------------------------
-
-    soap_out_t* m_builtResponse;
-    //--------------------------------
-    // --- response build elements
-    ns1__TStatusCode m_status;
-    std::string m_explanation;
-	// --- response elements end
-    //--------------------------------
+    Credentials m_credentials;
 
     soap_in_t* m_request;
+    soap_out_t* m_builtResponse;
 
-    //--------------------------------
-    // --- internal use fields
+    std::set<std::string> m_surls;
+
+    std::string m_authorizationID;
+    std::set<std::pair<char*,char*> > m_extraInfo;
+
     std::string m_name;
     std::string m_monitorName;
-    // --- internal use fields end
-    //--------------------------------
+
+    ns1__TStatusCode m_status;
+
+    std::string m_explanation;
+
+
 
     bool convertBoolean(xsd__boolean boolean) {
     	switch (boolean) {
@@ -248,6 +196,12 @@ protected:
     	return false;
     }
 
+    void validate_token(const std::string& token){
+    	if (! storm::token::valid(token)){
+    		throw storm::invalid_request("invalid token: "+token);
+    	}
+    }
+
 private:
     void loadCommonFields(soap_in_t* request) throw (invalid_request)
     {
@@ -255,6 +209,7 @@ private:
 		{
 			throw invalid_request("Received NULL request parameter");
 		}
+
 		if(request->authorizationID != NULL)
 		{
 			m_authorizationID = request->authorizationID;

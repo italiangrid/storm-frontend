@@ -23,7 +23,7 @@ namespace storm{
 class BolStatusRequest : public FileStatusRequest<ns1__srmStatusOfBringOnlineRequestRequest , ns1__srmStatusOfBringOnlineRequestResponse>
 {
 public:
-	BolStatusRequest(struct soap* soap, ns1__srmStatusOfBringOnlineRequestRequest* req) throw (invalid_request) :
+	BolStatusRequest(struct soap* soap, ns1__srmStatusOfBringOnlineRequestRequest* req):
 		FileStatusRequest<ns1__srmStatusOfBringOnlineRequestRequest, ns1__srmStatusOfBringOnlineRequestResponse>(soap, req) {
 		m_remainingDeferredStartTime = -1;
 		this->load(req);
@@ -31,12 +31,12 @@ public:
 
 	virtual void load(ns1__srmStatusOfBringOnlineRequestRequest* req);
 
-	void loadFromDB(struct srm_dbfd* db) throw (TokenNotFound);
+	void loadFromDB(struct srm_dbfd* db);
 
-	ns1__srmStatusOfBringOnlineRequestResponse* buildResponse() throw (std::logic_error);
+	ns1__srmStatusOfBringOnlineRequestResponse* buildResponse();
 
 protected:
-	void addMissingSurls() throw (std::logic_error);
+	void addMissingSurls();
 private:
 	int m_remainingDeferredStartTime; //ignored
 };

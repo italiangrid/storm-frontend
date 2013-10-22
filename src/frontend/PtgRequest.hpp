@@ -23,7 +23,7 @@ namespace storm {
 
 class PtgRequest: public file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse> {
 public:
-	PtgRequest(struct soap* soapRequest, struct ns1__srmPrepareToGetRequest* ptgRequest) throw (invalid_request) :
+	PtgRequest(struct soap* soapRequest, struct ns1__srmPrepareToGetRequest* ptgRequest):
         	storm::file_request<ns1__srmPrepareToGetRequest, ns1__srmPrepareToGetResponse >(soapRequest) {
 		m_requestType = DB_GET_REQUEST;
 		m_pinLifetime = -1;
@@ -31,16 +31,13 @@ public:
 		this->load(ptgRequest);
     }
 
-    void insertIntoDB(struct srm_dbfd* dbfd) throw (std::logic_error , storm_db::mysql_exception);
+    void insertIntoDB(struct srm_dbfd* dbfd);
 
-    void load(ns1__srmPrepareToGetRequest* req) throw (invalid_request) ;
+    void load(ns1__srmPrepareToGetRequest* req);
     
-    /*
-     * Returns true if the ptg command supports the option for specify the preferred transfer protocol
-     * */
     bool supportsProtocolSpecification();
 
-    struct ns1__srmPrepareToGetResponse* buildResponse() throw (std::logic_error , storm::InvalidResponse);
+    struct ns1__srmPrepareToGetResponse* buildResponse();
 
 private:
     storm_time_t m_pinLifetime; // -1 = not specified

@@ -16,7 +16,7 @@
 #include "GetSpaceMetaDataRequest.hpp"
 #include "srmlogit.h"
 
-void storm::GetSpaceMetaDataRequest::load(ns1__srmGetSpaceMetaDataRequest* request) throw (storm::invalid_request)
+void storm::GetSpaceMetaDataRequest::load(ns1__srmGetSpaceMetaDataRequest* request)
 {
 	if (NULL == request->arrayOfSpaceTokens) {
 		throw storm::invalid_request("SpaceTokens array is NULL");
@@ -26,7 +26,12 @@ void storm::GetSpaceMetaDataRequest::load(ns1__srmGetSpaceMetaDataRequest* reque
 	}
 
 	for (int i = 0; i < request->arrayOfSpaceTokens->__sizestringArray; ++i) {
-		m_spaceTokens.insert(std::string(request->arrayOfSpaceTokens->stringArray[i]));
+
+		std::string space_token= std::string(request->arrayOfSpaceTokens->stringArray[i]);
+
+		validate_token(space_token);
+
+		m_spaceTokens.insert(space_token);
 	}
 }
 
@@ -48,7 +53,7 @@ int storm::GetSpaceMetaDataRequest::performXmlRpcCall(ns1__srmGetSpaceMetaDataRe
 	return ret;
 }
 
-int storm::GetSpaceMetaDataRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::GetSpaceMetaDataRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::GetSpaceMetaDataRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

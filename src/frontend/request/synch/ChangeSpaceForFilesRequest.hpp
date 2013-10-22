@@ -23,7 +23,7 @@ namespace storm {
 
 class ChangeSpaceForFilesRequest: public SynchRequest<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse,ns1__srmChangeSpaceForFilesResponse_> {
 public:
-	ChangeSpaceForFilesRequest(struct soap* soapRequest, struct ns1__srmChangeSpaceForFilesRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
+	ChangeSpaceForFilesRequest(struct soap* soapRequest, struct ns1__srmChangeSpaceForFilesRequest* request, std::string requestName, std::string monitorName):
 		SynchRequest<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse, ns1__srmChangeSpaceForFilesResponse_> (soapRequest, request, requestName, monitorName) {
 		this->load(request);
     }
@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmChangeSpaceForFilesResponse_* response);
 
-    void load(ns1__srmChangeSpaceForFilesRequest* req) throw (invalid_request);
+    void load(ns1__srmChangeSpaceForFilesRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 
 	std::string getTargetSpaceToken()
 	{

@@ -17,13 +17,16 @@
 #include "ReleaseSpaceRequest.hpp"
 #include "srmlogit.h"
 
-void storm::ReleaseSpaceRequest::load(ns1__srmReleaseSpaceRequest* request) throw (storm::invalid_request)
+void storm::ReleaseSpaceRequest::load(ns1__srmReleaseSpaceRequest* request)
 {
 	if(request->spaceToken == NULL)
 	{
 		throw storm::invalid_request("Received NULL spaceToken in the request");
 	}
 	m_spaceToken = std::string(request->spaceToken);
+
+	validate_token(m_spaceToken);
+
 	if(request->forceFileRelease != NULL)
 	{
 		 m_forceFileRelease = convertBoolean(*(request->forceFileRelease));
@@ -56,7 +59,7 @@ int storm::ReleaseSpaceRequest::performXmlRpcCall(ns1__srmReleaseSpaceResponse_*
 	return ret;
 }
 
-int storm::ReleaseSpaceRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ReleaseSpaceRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ReleaseSpaceRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

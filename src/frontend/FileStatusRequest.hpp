@@ -39,48 +39,20 @@
 #include "FrontendConfiguration.hpp"
 #include "Surl.hpp"
 #include "Turl.hpp"
+#include "token_validator.hpp"
+#include "storm_exception.hpp"
 
 namespace storm {
 
 typedef std::map<std::string, std::string> file_status_result_t;
 typedef std::vector<file_status_result_t> file_status_results_t;
 
-class TokenNotFound: public std::exception {
-public:
-	TokenNotFound() {
-    }
-
-	TokenNotFound(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-
-private:
-    const char* errmsg;
-};
-
-class invalid_request: public std::exception {
-public:
-    invalid_request() {
-    }
-    ;
-    invalid_request(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-private:
-    const char* errmsg;
-};
 
 template<typename soap_in_t, typename soap_out_t>
 class FileStatusRequest {
 public:
 
-	FileStatusRequest(struct soap* soap, soap_in_t* req) throw (invalid_request) :
+	FileStatusRequest(struct soap* soap, soap_in_t* req):
     	m_soapRequest(soap), m_credentials(soap), m_builtResponse(NULL) {
     	m_be_rest_port = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
     	m_be_hostname = FrontendConfiguration::getInstance()->getXmlRpcHost();
@@ -91,7 +63,7 @@ public:
     virtual ~FileStatusRequest() {
 	}
 
-    void loadCommonFields(soap_in_t* req) throw (invalid_request)
+    void loadCommonFields(soap_in_t* req)
 	{
     	if(req == NULL)
     	{
@@ -101,6 +73,12 @@ public:
     	{
     		throw invalid_request("FileStatusRequest has NULLrequestToken");
     	}
+
+    	// Validate request token
+    	if (!storm::token::valid(std::string(req->requestToken))){
+    		throw invalid_request("Invalid request token");
+    	}
+
     	m_requestToken = sql_string(req->requestToken);
     	if(req->authorizationID != NULL)
     	{
@@ -109,19 +87,19 @@ public:
 	}
 
     virtual soap_out_t* buildSpecificResponse(const ns1__TStatusCode srmStatusCode,
-            const char* const srmStatusExplanation) throw (std::logic_error) {
+            const char* const srmStatusExplanation){
         m_status = srmStatusCode;
         m_explanation = srmStatusExplanation;
         return buildResponse();
     }
 
-    virtual soap_out_t* buildResponse() throw (std::logic_error) = 0;
+    virtual soap_out_t* buildResponse() = 0;
 
     virtual void load(soap_in_t* req) = 0;
 
-    virtual void loadFromDB(struct srm_dbfd *db) throw (TokenNotFound) = 0;
+    virtual void loadFromDB(struct srm_dbfd *db) = 0;
 
-    virtual void fillCommonFields(file_status_results_t& statusResult) throw (std::logic_error)
+    virtual void fillCommonFields(file_status_results_t& statusResult)
 	{
     	if (statusResult.size() == 0)
 		{
@@ -226,18 +204,13 @@ public:
 protected:
 
     soap * m_soapRequest;
-    // -------------------------------
-    // --- incoming request parameters
-    //
-    //std::set<Surl> m_surls;
+
     typedef boost::shared_ptr<Surl> SurlPtr;
     std::set<SurlPtr> m_surls;
     sql_string m_requestToken;
     storm::Credentials m_credentials;
     sql_string m_authorizationID; //ignored
-    //
-	// --- parameters end
-	// -------------------------------
+
 
     soap_out_t* m_builtResponse;
     typedef boost::shared_ptr<Turl> TurlPtr;
@@ -279,7 +252,7 @@ protected:
 		return false;
 	}
 
-	virtual void addMissingSurls() throw (std::logic_error) = 0;
+	virtual void addMissingSurls() = 0;
 
 	 std::string sqlFormat(char c) {
 		std::string formattedString("\'");

@@ -25,7 +25,7 @@ class CheckPermissionRequest: public SynchRequest<ns1__srmCheckPermissionRequest
 		ns1__srmCheckPermissionResponse, ns1__srmCheckPermissionResponse_> {
 public:
 	CheckPermissionRequest(struct soap* soapRequest, struct ns1__srmCheckPermissionRequest* request, std::string requestName,
-			std::string monitorName) throw (invalid_request) :
+			std::string monitorName):
 			SynchRequest<ns1__srmCheckPermissionRequest, ns1__srmCheckPermissionResponse, ns1__srmCheckPermissionResponse_>
 			(soapRequest, request, requestName, monitorName) {
 		this->load(request);
@@ -35,9 +35,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmCheckPermissionResponse_* response);
 
-    void load(ns1__srmCheckPermissionRequest* req) throw (invalid_request);
+    void load(ns1__srmCheckPermissionRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 };
 }
 #endif // CHECK_PERMISSION_REQUEST_HPP

@@ -17,7 +17,7 @@
 #include "GetTransferProtocolsRequest.hpp"
 #include "srmlogit.h"
 
-void storm::GetTransferProtocolsRequest::load(ns1__srmGetTransferProtocolsRequest* request) throw (storm::invalid_request)
+void storm::GetTransferProtocolsRequest::load(ns1__srmGetTransferProtocolsRequest* request)
 {
 }
 
@@ -39,7 +39,7 @@ int storm::GetTransferProtocolsRequest::performXmlRpcCall(ns1__srmGetTransferPro
 	return ret;
 }
 
-int storm::GetTransferProtocolsRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::GetTransferProtocolsRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::GetTransferProtocolsRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

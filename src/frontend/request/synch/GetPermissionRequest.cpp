@@ -15,8 +15,9 @@
 
 #include "GetPermissionRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::GetPermissionRequest::load(ns1__srmGetPermissionRequest* request) throw (storm::invalid_request)
+void storm::GetPermissionRequest::load(ns1__srmGetPermissionRequest* request)
 {
 	if (NULL == request->arrayOfSURLs) {
 		throw storm::invalid_request("SURLs array is NULL");
@@ -26,7 +27,7 @@ void storm::GetPermissionRequest::load(ns1__srmGetPermissionRequest* request) th
 	}
 
 	for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-		m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+		m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 	}
 	if(request->storageSystemInfo != NULL && request->storageSystemInfo->__sizeextraInfoArray > 0 && request->storageSystemInfo->extraInfoArray != NULL)
 	{
@@ -56,7 +57,7 @@ int storm::GetPermissionRequest::performXmlRpcCall(ns1__srmGetPermissionResponse
 	return ret;
 }
 
-int storm::GetPermissionRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::GetPermissionRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::GetPermissionRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

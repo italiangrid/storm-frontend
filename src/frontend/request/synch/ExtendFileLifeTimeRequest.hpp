@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmExtendFileLifeTimeResponse_* response);
 
-    void load(ns1__srmExtendFileLifeTimeRequest* req) throw (invalid_request);
+    void load(ns1__srmExtendFileLifeTimeRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 
 	bool hasRequestToken()
 	{

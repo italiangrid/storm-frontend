@@ -25,7 +25,7 @@ namespace storm {
 
 class InvalidTurl: public std::exception {
 public:
-	InvalidTurl() {}
+	InvalidTurl() {errmsg = 0;}
 
 	InvalidTurl(std::string reason) {
         errmsg = reason.c_str();

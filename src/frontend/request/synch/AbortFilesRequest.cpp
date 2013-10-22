@@ -15,8 +15,10 @@
 
 #include "AbortFilesRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::AbortFilesRequest::load(ns1__srmAbortFilesRequest* request) throw (storm::invalid_request)
+
+void storm::AbortFilesRequest::load(ns1__srmAbortFilesRequest* request)
 {
 	if (request->requestToken == NULL)
 	{
@@ -25,9 +27,12 @@ void storm::AbortFilesRequest::load(ns1__srmAbortFilesRequest* request) throw (s
 	if (request->arrayOfSURLs == NULL || request->arrayOfSURLs->__sizeurlArray == 0 || request->arrayOfSURLs->urlArray == NULL) {
 		throw storm::invalid_request("SURLs array is NULL");
 	}
+
 	m_requestToken = std::string(request->requestToken);
+	validate_token(m_requestToken);
+
 	for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-		m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+		m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 	}
 }
 
@@ -49,7 +54,7 @@ int storm::AbortFilesRequest::performXmlRpcCall(ns1__srmAbortFilesResponse_* res
 	return ret;
 }
 
-int storm::AbortFilesRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::AbortFilesRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::AbortFilesRequest::buildResponse()", "called.\n");
     if(m_builtResponse != NULL)

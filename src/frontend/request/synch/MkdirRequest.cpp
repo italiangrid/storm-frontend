@@ -16,14 +16,15 @@
 
 #include "MkdirRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::MkdirRequest::load(ns1__srmMkdirRequest* request) throw (storm::invalid_request)
+void storm::MkdirRequest::load(ns1__srmMkdirRequest* request)
 {
 	if(request->SURL == NULL)
 	{
 		throw storm::invalid_request("Received NULL surl in the request");
 	}
-	m_surls.insert(std::string(request->SURL));
+	m_surls.insert(storm::normalize_surl(std::string(request->SURL)));
 	if(request->storageSystemInfo != NULL && request->storageSystemInfo->__sizeextraInfoArray > 0 && request->storageSystemInfo->extraInfoArray != NULL)
 	{
 		for(int i = 0; i < request->storageSystemInfo->__sizeextraInfoArray; ++i)
@@ -52,7 +53,7 @@ int storm::MkdirRequest::performXmlRpcCall(ns1__srmMkdirResponse_* response){
 	return ret;
 }
 
-int storm::MkdirRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::MkdirRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::MkdirRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)
@@ -74,7 +75,7 @@ int storm::MkdirRequest::buildResponse() throw (std::logic_error, storm::Invalid
 			return SOAP_EOM;
 		}
 	} catch (std::invalid_argument& exc) {
-		throw std::logic_error("Unable to allocate memory for the response. invalid_argument Exception: "
+		throw std::runtime_error("Unable to allocate memory for the response. invalid_argument Exception: "
 				+ std::string(exc.what()));
 	}
 	m_builtResponse->returnStatus->statusCode = m_status;

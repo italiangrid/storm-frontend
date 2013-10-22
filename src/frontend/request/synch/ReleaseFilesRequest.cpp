@@ -15,20 +15,22 @@
 
 #include "ReleaseFilesRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::ReleaseFilesRequest::load(ns1__srmReleaseFilesRequest* request) throw (storm::invalid_request)
+void storm::ReleaseFilesRequest::load(ns1__srmReleaseFilesRequest* request)
 {
 	if (request->requestToken == NULL && (request->arrayOfSURLs == NULL || request->arrayOfSURLs->__sizeurlArray == 0 || request->arrayOfSURLs->urlArray == NULL)) {
 		throw storm::invalid_request("SpaceToken and SURLs array are NULL");
 	}
 	if (request->arrayOfSURLs != NULL && request->arrayOfSURLs->__sizeurlArray > 0 && request->arrayOfSURLs->urlArray != NULL) {
 		for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-			m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+			m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 		}
 	}
 	if (request->requestToken != NULL)
 	{
 		m_requestToken = std::string(request->requestToken);
+		validate_token(m_requestToken);
 	}
 	if (request->doRemove != NULL)
 	{
@@ -54,7 +56,7 @@ int storm::ReleaseFilesRequest::performXmlRpcCall(ns1__srmReleaseFilesResponse_*
 	return ret;
 }
 
-int storm::ReleaseFilesRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ReleaseFilesRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ReleaseFilesRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

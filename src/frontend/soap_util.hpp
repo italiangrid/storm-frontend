@@ -21,7 +21,7 @@
 
 class soap_bad_alloc : public std::bad_alloc {
 public: 
-    soap_bad_alloc(){};
+    soap_bad_alloc():errmsg(0){};
     soap_bad_alloc(std::string reason){errmsg=reason.c_str();}
     const char *what() const throw() {return errmsg;}
 private:

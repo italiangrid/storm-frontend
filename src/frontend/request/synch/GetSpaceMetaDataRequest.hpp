@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmGetSpaceMetaDataResponse_* response);
 
-    void load(ns1__srmGetSpaceMetaDataRequest* req) throw (invalid_request);
+    void load(ns1__srmGetSpaceMetaDataRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 
 	std::string getSpaceTokensList()
 	{

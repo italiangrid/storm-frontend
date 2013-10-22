@@ -15,8 +15,10 @@
 
 #include "ExtendFileLifeTimeRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::ExtendFileLifeTimeRequest::load(ns1__srmExtendFileLifeTimeRequest* request) throw (storm::invalid_request)
+
+void storm::ExtendFileLifeTimeRequest::load(ns1__srmExtendFileLifeTimeRequest* request)
 {
 	//complex parameter checks by srm specs
 	if (request->newPinLifeTime == NULL && request->newFileLifeTime == NULL)
@@ -41,12 +43,13 @@ void storm::ExtendFileLifeTimeRequest::load(ns1__srmExtendFileLifeTimeRequest* r
 	}
 	if (request->arrayOfSURLs != NULL && request->arrayOfSURLs->__sizeurlArray > 0 && request->arrayOfSURLs->urlArray != NULL) {
 		for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-			m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+			m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 		}
 	}
 	if (request->requestToken != NULL)
 	{
 		m_requestToken = std::string(request->requestToken);
+		validate_token(m_requestToken);
 	}
 	if (request->requestToken == NULL)
 	{
@@ -79,7 +82,7 @@ int storm::ExtendFileLifeTimeRequest::performXmlRpcCall(ns1__srmExtendFileLifeTi
 	return ret;
 }
 
-int storm::ExtendFileLifeTimeRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ExtendFileLifeTimeRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ExtendFileLifeTimeRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

@@ -16,14 +16,16 @@
 
 #include "RmdirRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::RmdirRequest::load(ns1__srmRmdirRequest* request) throw (storm::invalid_request)
+void storm::RmdirRequest::load(ns1__srmRmdirRequest* request)
 {
 	if(request->SURL == NULL)
 	{
 		throw storm::invalid_request("Received NULL surl in the request");
 	}
-	m_surls.insert(std::string(request->SURL));
+	m_surls.insert(storm::normalize_surl(std::string(request->SURL)));
+
 	if(request->recursive != NULL)
 	{
 		m_recursive =  convertBoolean(*(request->recursive));
@@ -56,7 +58,7 @@ int storm::RmdirRequest::performXmlRpcCall(ns1__srmRmdirResponse_* response){
 	return ret;
 }
 
-int storm::RmdirRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::RmdirRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::RmdirRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

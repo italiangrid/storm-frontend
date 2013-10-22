@@ -13,24 +13,21 @@
 # limitations under the License.
 
 AC_PREREQ([2.59])
-AC_INIT([storm frontend server], [1.8.3])
-AC_CONFIG_AUX_DIR([./project])
+AC_INIT([storm frontend server], [1.8.4], andrea.ceccanti@cnaf.infn.it)
+
+AC_CONFIG_AUX_DIR([./aux])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/frontend/storm-frontend.cpp])
 AM_INIT_AUTOMAKE
-AC_CONFIG_MACRO_DIR([m4])
 
-# Release number
-osdist=`cat /etc/redhat-release | awk 'BEGIN {FS="release "} {print $2}'| awk 'BEGIN {FS="."} {print $1}'`
-AC_SUBST([STORM_FRONTEND_SO], [sl$osdist])
-AC_SUBST([STORM_FRONTEND_AGE_NUMBER], [1])
+AC_COPYRIGHT([Copyright (c) 2004-2013 Istituto Nazionale di Fisica Nucleare 
+See LICENCE file for details
+])
 
 AC_SUBST([PACKAGE_PREFIX_NAME], [storm])
 AC_SUBST([PACKAGE_LONG_NAME], [storm-frontend-server])
 AC_SUBST([PACKAGE_SHORT_NAME], [frontend-server])
 
-# Notices.
-AC_COPYRIGHT([See LICENCE file for details])
-AC_REVISION([$Revision: $])
 
 #Environment.
 WORKDIR=`pwd`
@@ -38,8 +35,6 @@ AC_SUBST(WORKDIR)
 
 GSOAP_GENERATED_CODE_DIR_NAME=gsoap-generated
 AC_SUBST(GSOAP_GENERATED_CODE_DIR_NAME)
-
-DEFAULT_RPM_DIR=`pwd`
 
 AC_PROG_CXX
 AC_PROG_CC
@@ -94,15 +89,9 @@ AC_CHECK_FUNC(wctomb,          [AC_DEFINE(HAVE_WCTOMB)])
 AC_CHECK_FUNC(timegm,          [AC_DEFINE(HAVE_TIMEGM)])
 #:END
 
-#AC_CHECK_FUNCS([random gettimeofday ftime localtime_r timegm gmtime gmtime_r memset select socket strchr strerror strrchr strstr strtol strtoul strtoll strtoull strtold strtod strtof strtold_l strtod_l strtof_l sscanf sscanf_l sprintf_l wctomb mbtowc getenv])
 AC_CHECK_FUNCS([memmove memset mkdir putenv rmdir strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol])
 
-AC_SUBST([STORM_FRONTEND_ARCH], [$host_cpu])
-
-dnl this macro is used to get the arguments supplied
-dnl to the configure script (./configure --enable-debug)
-dnl Check if we have enable debug support.
-AC_MSG_CHECKING(whether to enable debugging)
+AC_MSG_CHECKING(whether to enable debug)
 default="no"
 DEBUG=
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/yes] turn on debugging
@@ -117,7 +106,7 @@ else
    AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING(whether to enable walling)
+AC_MSG_CHECKING(whether to enable all warnings)
 wall="no"
 DEBUG=
 AC_ARG_ENABLE(wall, [  --enable-wall=[no/yes] turn on debugging
@@ -192,7 +181,6 @@ AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([src/db/Makefile])
 AC_CONFIG_FILES([src/frontend/Makefile])
 AC_CONFIG_FILES([src/frontend/frontend_version.h])
-AC_CONFIG_FILES([storm-frontend.spec])
 
 AC_OUTPUT
 

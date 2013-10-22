@@ -50,7 +50,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
     	storm::MonitoringHelper::registerOperationError(start_time,
     					storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME);
     	srmLogResponse("PTP status", SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return soap_sender_fault(soap, e.what(), 0);
 	}
 	if(request->hasSurls())
 	{
@@ -69,14 +69,14 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		try{
 			rep->srmStatusOfPutRequestResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(std::logic_error& exc)
+		} catch(std::runtime_error& exc)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 							storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME);
 			srmLogResponse("PTP status", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap, exc.what(), 0);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 							storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,
@@ -115,7 +115,7 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 		storm::MonitoringHelper::registerOperationError(start_time,
 						storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME);
 		srmLogResponse("PTG status", SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return soap_sender_fault(soap, e.what(), 0);;
 	}
 	if(request->hasSurls())
 	{
@@ -133,14 +133,14 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		try {
 			rep->srmStatusOfGetRequestResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(std::logic_error& exc)
+		} catch(std::runtime_error& exc)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 					storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME);
 			srmLogResponse("PTG status", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap, exc.what(), 0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 				storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,
@@ -178,7 +178,7 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 		storm::MonitoringHelper::registerOperationError(start_time,
 						storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME);
 		srmLogResponse("BOL status", SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return soap_sender_fault(soap, e.what(), 0);;
 	}
 	if(request->hasSurls())
 	{
@@ -196,14 +196,14 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
     	srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
     	try {
 			rep->srmStatusOfBringOnlineRequestResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(std::logic_error& exc)
+		} catch(std::runtime_error& exc)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 					storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME);
 			srmLogResponse("BOL status", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap, exc.what(), 0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 									storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,
@@ -242,7 +242,7 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
    		storm::MonitoringHelper::registerOperationError(start_time,
    						storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);
    		srmLogResponse("CP status", SRM_USCOREFAILURE);
-   		return(SOAP_FATAL_ERROR);
+   		return soap_sender_fault(soap, e.what(), 0);;
    	}
    	if(request->hasSurls())
    	{
@@ -260,14 +260,14 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
 		try {
 			rep->srmStatusOfCopyRequestResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(std::logic_error& exc)
+		} catch(std::runtime_error& exc)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 					storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);
 			srmLogResponse("CP status", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap, exc.what(), 0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 									storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME,

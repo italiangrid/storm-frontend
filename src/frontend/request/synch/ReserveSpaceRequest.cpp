@@ -16,7 +16,7 @@
 #include "ReserveSpaceRequest.hpp"
 #include "srmlogit.h"
 
-void storm::ReserveSpaceRequest::load(ns1__srmReserveSpaceRequest* request) throw (storm::invalid_request)
+void storm::ReserveSpaceRequest::load(ns1__srmReserveSpaceRequest* request)
 {
 	if (request->retentionPolicyInfo == NULL) {
 		throw storm::invalid_request("retentionPolicyInfo is NULL");
@@ -96,7 +96,7 @@ int storm::ReserveSpaceRequest::performXmlRpcCall(ns1__srmReserveSpaceResponse_*
 	return ret;
 }
 
-int storm::ReserveSpaceRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ReserveSpaceRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ReserveSpaceRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

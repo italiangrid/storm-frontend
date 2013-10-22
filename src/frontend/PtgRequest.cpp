@@ -26,7 +26,7 @@ bool storm::PtgRequest::supportsProtocolSpecification()
 	return true;
 }
 
-void storm::PtgRequest::load(ns1__srmPrepareToGetRequest *req) throw (storm::invalid_request)
+void storm::PtgRequest::load(ns1__srmPrepareToGetRequest *req)
 {
     if (NULL == req) {
         throw storm::invalid_request("Request is NULL");
@@ -83,7 +83,7 @@ void storm::PtgRequest::load(ns1__srmPrepareToGetRequest *req) throw (storm::inv
 /*
  * Builds the response given object's state. It builds the response just once.
  * */
-struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() throw (std::logic_error , storm::InvalidResponse) {
+struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() {
 
 	if(m_builtResponse != NULL)
 	{
@@ -94,7 +94,7 @@ struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() throw (s
 		m_builtResponse = storm::soap_calloc<struct ns1__srmPrepareToGetResponse>(m_soapRequest);
 		m_builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 	} catch (std::invalid_argument& exc) {
-		throw storm::InvalidResponse("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
+		throw storm::storm_error("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
 	}
 	m_builtResponse->returnStatus->statusCode = m_status;
 
@@ -107,7 +107,7 @@ struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() throw (s
 		m_builtResponse->arrayOfFileStatuses = storm::soap_calloc<ns1__ArrayOfTGetRequestFileStatus>(m_soapRequest);
         m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TGetRequestFileStatus>(m_soapRequest, m_surls.size());
     } catch (std::invalid_argument& exc) {
-		throw storm::InvalidResponse("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
+		throw storm::storm_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
 	}
 	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = m_surls.size();
 
@@ -118,7 +118,7 @@ struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() throw (s
 		try {
 			fileStatus = storm::soap_calloc<ns1__TGetRequestFileStatus>(m_soapRequest);
 		} catch (std::invalid_argument &exc) {
-			throw storm::InvalidResponse("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+			throw storm::storm_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 		storm::PtgSurl* surl = dynamic_cast<storm::PtgSurl*> (i->get());
@@ -139,7 +139,7 @@ struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() throw (s
 		{
 			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 		} catch (std::invalid_argument& exc) {
-				throw storm::InvalidResponse("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
+				throw storm::storm_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		fileStatus->status->statusCode = surl->getStatus();
 		fileStatus->status->explanation = soap_strdup(m_soapRequest, surl->getExplanation().c_str());
@@ -153,7 +153,7 @@ struct ns1__srmPrepareToGetResponse* storm::PtgRequest::buildResponse() throw (s
     return m_builtResponse;
 }
 
-void storm::PtgRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_error , storm_db::mysql_exception){
+void storm::PtgRequest::insertIntoDB(struct srm_dbfd* db){
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
     std::string q("INSERT INTO request_queue ("
@@ -231,7 +231,7 @@ void storm::PtgRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_erro
         throw e;
     }
     
-    int failedCount = 0;
+    unsigned int failedCount = 0;
     // Insert into request_Get using the requestID
     std::vector<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
 	for (std::vector<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {

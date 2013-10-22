@@ -284,6 +284,10 @@ string FrontendConfiguration::getCaCertificatesFolder() {
     return ca_certificates_folder;
 }
 
+const string& FrontendConfiguration::getXMLRPCToken(){
+	return xmlrpc_token;
+}
+
 /******************************** Private methods ****************************/
 
 po::options_description FrontendConfiguration::defineConfigFileOptions() {
@@ -305,6 +309,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
             (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
             (OPTL_XMLRPC_PATH.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PATH), OPT_XMLRPC_PATH_DESCRIPTION)
+            (OPTL_XMLRPC_TOKEN.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_TOKEN), OPT_XMLRPC_TOKEN_DESCRIPTION)
             (OPTL_XMLRPC_CHECK_ASCII.c_str(), po::value<bool>()->default_value(DEFAULT_XMLRPC_CHECK_ASCII), OPT_XMLRPC_CHECK_ASCII_DESCRIPTION)
             (OPTL_RECALLTABLE_PORT.c_str(), po::value<int>()->default_value(9998), EMPTY_DESCRIPTION)
             (OPTL_PROXY_USER.c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
@@ -380,6 +385,9 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_XMLRPC_PATH))
         xmlrpc_path = vm[OPTL_XMLRPC_PATH].as<string> ();
+
+    if (vm.count(OPTL_XMLRPC_TOKEN))
+    	xmlrpc_token = vm[OPTL_XMLRPC_TOKEN].as<string> ();
 
     if (vm.count(OPTL_XMLRPC_CHECK_ASCII))
             xmlrpc_check_ascii = vm[OPTL_XMLRPC_CHECK_ASCII].as<bool> ();
@@ -524,17 +532,7 @@ extern "C" {
 	#include "xmlrpc_encode.h"
 	}
 
-/*extern "C" int call_FrontendConfiguration_getXMLRPCCheckAscii(FrontendConfiguration* wrapping) {
-	//if(wrapping->getInstance()->getXMLRPCCheckAscii())
-	if(wrapping->getXMLRPCCheckAscii())
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}*/
+
 
 extern "C" int call_FrontendConfiguration_getXMLRPCCheckAscii() {
 	if(getInstanceXMLRPCCheckAscii() > 0)

@@ -23,7 +23,7 @@ namespace storm {
 
 class ExtendFileLifeTimeInSpaceRequest: public SynchRequest<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse,ns1__srmExtendFileLifeTimeInSpaceResponse_> {
 public:
-	ExtendFileLifeTimeInSpaceRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeInSpaceRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
+	ExtendFileLifeTimeInSpaceRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeInSpaceRequest* request, std::string requestName, std::string monitorName):
 		SynchRequest<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse, ns1__srmExtendFileLifeTimeInSpaceResponse_> (soapRequest, request, requestName, monitorName) {
 		this->load(request);
     }
@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmExtendFileLifeTimeInSpaceResponse_* response);
 
-    void load(ns1__srmExtendFileLifeTimeInSpaceRequest* req) throw (invalid_request);
+    void load(ns1__srmExtendFileLifeTimeInSpaceRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 
 	std::string getSpaceToken()
 	{

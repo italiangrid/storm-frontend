@@ -16,8 +16,9 @@
 
 #include "MvRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::MvRequest::load(ns1__srmMvRequest* request) throw (storm::invalid_request)
+void storm::MvRequest::load(ns1__srmMvRequest* request)
 {
 	if (request->fromSURL == NULL) {
 		throw storm::invalid_request("fromSURL is NULL");
@@ -25,8 +26,8 @@ void storm::MvRequest::load(ns1__srmMvRequest* request) throw (storm::invalid_re
 	if (request->toSURL == NULL) {
 		throw storm::invalid_request("toSURL is NULL");
 	}
-	m_fromSURL = std::string(request->fromSURL);
-	m_toSURL = std::string(request->toSURL);
+	m_fromSURL = storm::normalize_surl(std::string(request->fromSURL));
+	m_toSURL = storm::normalize_surl(std::string(request->toSURL));
 	if(request->storageSystemInfo != NULL && request->storageSystemInfo->__sizeextraInfoArray > 0 && request->storageSystemInfo->extraInfoArray != NULL)
 	{
 		for(int i = 0; i < request->storageSystemInfo->__sizeextraInfoArray; ++i)
@@ -55,7 +56,7 @@ int storm::MvRequest::performXmlRpcCall(ns1__srmMvResponse_* response){
 	return ret;
 }
 
-int storm::MvRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::MvRequest::buildResponse()
 {
 	srmlogit(STORM_LOG_DEBUG, "storm::MvRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

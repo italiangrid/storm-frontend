@@ -16,13 +16,15 @@
 #include "ResumeRequestRequest.hpp"
 #include "srmlogit.h"
 
-void storm::ResumeRequestRequest::load(ns1__srmResumeRequestRequest* request) throw (storm::invalid_request)
+void storm::ResumeRequestRequest::load(ns1__srmResumeRequestRequest* request)
 {
 	if (request->requestToken == NULL)
 	{
 		throw storm::invalid_request("requestToken is NULL");
 	}
+
 	m_requestToken = std::string(request->requestToken);
+	validate_token(m_requestToken);
 }
 
 int storm::ResumeRequestRequest::performXmlRpcCall(ns1__srmResumeRequestResponse_* response){
@@ -43,7 +45,7 @@ int storm::ResumeRequestRequest::performXmlRpcCall(ns1__srmResumeRequestResponse
 	return ret;
 }
 
-int storm::ResumeRequestRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ResumeRequestRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ResumeRequestRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

@@ -177,7 +177,8 @@ AC_DEFUN([AC_BOOST],
 
   BOOST_THREAD_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_thread$ext -lpthread"
   BOOST_PO_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_program_options$ext"
-
+  BOOST_REGEX_LIBS="-L$ac_boost_devel_prefix/$libdir_local/boost141 -lboost_regex$ext"
+  
   BOOST_INSTALL_PATH=$ac_boost_prefix
   BOOST_INCLUDE_PATH=$ac_boost_include
   BOOST_DEVEL_INSTALL_PATH=$ac_boost_devel_prefix
@@ -214,6 +215,7 @@ AC_DEFUN([AC_BOOST],
   AC_SUBST(BOOST_CFLAGS)
   AC_SUBST(BOOST_THREAD_LIBS)
   AC_SUBST(BOOST_PO_LIBS)
+  AC_SUBST(BOOST_REGEX_LIBS)
 ])
 
 

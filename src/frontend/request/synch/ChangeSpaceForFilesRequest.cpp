@@ -15,18 +15,24 @@
 
 #include "ChangeSpaceForFilesRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::ChangeSpaceForFilesRequest::load(ns1__srmChangeSpaceForFilesRequest* request) throw (storm::invalid_request)
+
+void storm::ChangeSpaceForFilesRequest::load(ns1__srmChangeSpaceForFilesRequest* request)
 {
 	if (request->targetSpaceToken == NULL) {
 		throw storm::invalid_request("targetSpaceToken is NULL");
 	}
+
 	if (request->arrayOfSURLs == NULL || request->arrayOfSURLs->__sizeurlArray == 0 || request->arrayOfSURLs->urlArray == NULL) {
 		throw storm::invalid_request("SURLs array is NULL");
 	}
+
 	m_targetSpaceToken = std::string(request->targetSpaceToken);
+	validate_token(m_targetSpaceToken);
+
 	for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-		m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+		m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 	}
 	if(request->storageSystemInfo != NULL && request->storageSystemInfo->__sizeextraInfoArray > 0 && request->storageSystemInfo->extraInfoArray != NULL)
 	{
@@ -56,7 +62,7 @@ int storm::ChangeSpaceForFilesRequest::performXmlRpcCall(ns1__srmChangeSpaceForF
 	return ret;
 }
 
-int storm::ChangeSpaceForFilesRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ChangeSpaceForFilesRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ChangeSpaceForFilesRequest::buildResponse()", "called.\n");
     if(m_builtResponse != NULL)

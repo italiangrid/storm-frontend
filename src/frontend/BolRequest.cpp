@@ -27,7 +27,7 @@ bool storm::BolRequest::supportsProtocolSpecification()
 	return true;
 }
 
-void storm::BolRequest::load(struct ns1__srmBringOnlineRequest* req) throw (storm::invalid_request)
+void storm::BolRequest::load(struct ns1__srmBringOnlineRequest* req)
 {
     if (NULL == req) {
         throw storm::invalid_request("Request is NULL");
@@ -84,7 +84,7 @@ void storm::BolRequest::load(struct ns1__srmBringOnlineRequest* req) throw (stor
     }
 }
 
-struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() throw (std::logic_error , storm::InvalidResponse) {
+struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() {
 
 	if(m_builtResponse != NULL)
 	{
@@ -95,7 +95,7 @@ struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() throw (st
 		m_builtResponse = storm::soap_calloc<ns1__srmBringOnlineResponse>(m_soapRequest);
 		m_builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 	} catch (std::invalid_argument &exc) {
-    	throw storm::InvalidResponse("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
+    	throw storm::invalid_response("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
     }
     m_builtResponse->returnStatus->statusCode = m_status;
 
@@ -109,7 +109,7 @@ struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() throw (st
     	m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TBringOnlineRequestFileStatus>(
     			m_soapRequest, m_surls.size());
     } catch (std::invalid_argument &exc) {
-		throw storm::InvalidResponse("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
+		throw storm::invalid_response("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
 	}
 	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = m_surls.size();
 
@@ -122,12 +122,12 @@ struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() throw (st
 		{
 			fileStatus = storm::soap_calloc<ns1__TBringOnlineRequestFileStatus>(m_soapRequest);
 		} catch (std::invalid_argument &exc) {
-				throw storm::InvalidResponse("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+				throw storm::invalid_response("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 
 		storm::BolSurl* surl = dynamic_cast<storm::BolSurl*> (i->get());
-		//storm::BolSurl const& surl = dynamic_cast<storm::BolSurl const&> (**i);
+
 		if(!surl)
 		{
 			throw std::logic_error("Unable to cast SurlPtr to BolSurl, cast failure");
@@ -140,7 +140,7 @@ struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() throw (st
 		{
 			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 		} catch (std::invalid_argument &exc) {
-				throw storm::InvalidResponse("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
+				throw storm::invalid_response("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		fileStatus->status->statusCode =  surl->getStatus();
 		fileStatus->status->explanation = soap_strdup(m_soapRequest,  surl->getExplanation().c_str());
@@ -156,7 +156,7 @@ struct ns1__srmBringOnlineResponse* storm::BolRequest::buildResponse() throw (st
     return m_builtResponse;
 }
 
-void storm::BolRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_error , storm_db::mysql_exception) {
+void storm::BolRequest::insertIntoDB(struct srm_dbfd* db){
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
 

@@ -89,6 +89,14 @@ make
 make rpm
 ```
 
+To configure the frontend with debug symbols use:
+```bash
+./boostrap
+./configure --enable-debug --enable-wall
+make
+make rpm
+```
+
 # Contact info
 
 If you have problems, questions, ideas or suggestions, please contact us at

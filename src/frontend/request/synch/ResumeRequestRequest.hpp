@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef RESUME_REQUEST_REQUEST_HPP
 #define RESUME_REQUEST_REQUEST_HPP
@@ -21,23 +21,29 @@
 
 namespace storm {
 
-class ResumeRequestRequest: public SynchRequest<ns1__srmResumeRequestRequest, ns1__srmResumeRequestResponse,ns1__srmResumeRequestResponse_> {
+class ResumeRequestRequest: public SynchRequest<ns1__srmResumeRequestRequest,
+		ns1__srmResumeRequestResponse, ns1__srmResumeRequestResponse_> {
 public:
-	ResumeRequestRequest(struct soap* soapRequest, struct ns1__srmResumeRequestRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmResumeRequestRequest, ns1__srmResumeRequestResponse, ns1__srmResumeRequestResponse_> (soapRequest, request, requestName, monitorName) {
+	ResumeRequestRequest(struct soap* soapRequest,
+			struct ns1__srmResumeRequestRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmResumeRequestRequest,
+					ns1__srmResumeRequestResponse,
+					ns1__srmResumeRequestResponse_>(soapRequest, request,
+					requestName, monitorName) {
 		this->load(request);
-    }
+	}
 
-	virtual ~ResumeRequestRequest() {}
+	virtual ~ResumeRequestRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmResumeRequestResponse_* response);
 
-    void load(ns1__srmResumeRequestRequest* req) throw (invalid_request);
+	void load(ns1__srmResumeRequestRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 
-	std::string getRequestToken() throw (std::logic_error)
-	{
+	std::string getRequestToken() {
 		return m_requestToken;
 	}
 private:

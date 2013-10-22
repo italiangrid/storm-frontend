@@ -16,14 +16,21 @@
 
 #include "StatusLsRequest.hpp"
 #include "srmlogit.h"
+#include "token_validator.hpp"
 
-void storm::StatusLsRequest::load(ns1__srmStatusOfLsRequestRequest* request) throw (storm::invalid_request)
+void storm::StatusLsRequest::load(ns1__srmStatusOfLsRequestRequest* request)
 {
 	if(request->requestToken == NULL)
 	{
 		throw storm::invalid_request("Received NULL requestToken in the request");
 	}
+	// Ensure token is a UUID
+	if (!storm::token::valid(std::string(request->requestToken))){
+		throw storm::invalid_request("Invalid request token");
+	}
 	m_requestToken = std::string(request->requestToken);
+	validate_token(m_requestToken);
+
 	if(request->count != NULL)
 	{
 		m_count = *request->count;
@@ -52,7 +59,7 @@ int storm::StatusLsRequest::performXmlRpcCall(ns1__srmStatusOfLsRequestResponse_
 	return ret;
 }
 
-int storm::StatusLsRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::StatusLsRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::StatusLsRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

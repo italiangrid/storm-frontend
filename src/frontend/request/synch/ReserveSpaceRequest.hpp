@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef RESERVE_SPACE_REQUEST_HPP
 #define RESERVE_SPACE_REQUEST_HPP
@@ -25,20 +25,23 @@ namespace storm {
 class ReserveSpaceRequest: public SynchRequest<ns1__srmReserveSpaceRequest,
 		ns1__srmReserveSpaceResponse, ns1__srmReserveSpaceResponse_> {
 public:
-	ReserveSpaceRequest(struct soap* soapRequest, struct ns1__srmReserveSpaceRequest* request, std::string requestName,
-			std::string monitorName) throw (invalid_request) :
-			SynchRequest<ns1__srmReserveSpaceRequest, ns1__srmReserveSpaceResponse, ns1__srmReserveSpaceResponse_>
-			(soapRequest, request, requestName, monitorName) {
+	ReserveSpaceRequest(struct soap* soapRequest,
+			struct ns1__srmReserveSpaceRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmReserveSpaceRequest,
+					ns1__srmReserveSpaceResponse, ns1__srmReserveSpaceResponse_>(
+					soapRequest, request, requestName, monitorName) {
 		this->load(request);
 	}
 
-	virtual ~ReserveSpaceRequest() {}
+	virtual ~ReserveSpaceRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmReserveSpaceResponse_* response);
 
-    void load(ns1__srmReserveSpaceRequest* req) throw (invalid_request);
+	void load(ns1__srmReserveSpaceRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 private:
 	std::string m_userSpaceTokenDescription;
 	ns1__TRetentionPolicy m_retentionPolicy;

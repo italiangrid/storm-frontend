@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef RM_REQUEST_HPP
 #define RM_REQUEST_HPP
@@ -21,21 +21,25 @@
 
 namespace storm {
 
-class RmRequest: public SynchRequest<ns1__srmRmRequest, ns1__srmRmResponse,ns1__srmRmResponse_> {
+class RmRequest: public SynchRequest<ns1__srmRmRequest, ns1__srmRmResponse,
+		ns1__srmRmResponse_> {
 public:
-	RmRequest(struct soap* soapRequest, struct ns1__srmRmRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmRmRequest, ns1__srmRmResponse,ns1__srmRmResponse_>(soapRequest, request, requestName,
-					monitorName) , m_recursive(false) {
+	RmRequest(struct soap* soapRequest, struct ns1__srmRmRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmRmRequest, ns1__srmRmResponse,
+					ns1__srmRmResponse_>(soapRequest, request, requestName,
+					monitorName), m_recursive(false) {
 		this->load(request);
-    }
+	}
 
-	virtual ~RmRequest() {}
+	virtual ~RmRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmRmResponse_* response);
 
-    void load(ns1__srmRmRequest* req) throw (invalid_request);
+	void load(ns1__srmRmRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 private:
 	bool m_recursive;
 };

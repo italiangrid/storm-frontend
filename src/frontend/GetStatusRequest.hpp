@@ -23,19 +23,19 @@ namespace storm{
 class GetStatusRequest : public FileStatusRequest<ns1__srmStatusOfGetRequestRequest , ns1__srmStatusOfGetRequestResponse>
 {
 public:
-	GetStatusRequest(struct soap* soap, ns1__srmStatusOfGetRequestRequest* req) throw (invalid_request) :
+	GetStatusRequest(struct soap* soap, ns1__srmStatusOfGetRequestRequest* req):
 		FileStatusRequest<ns1__srmStatusOfGetRequestRequest, ns1__srmStatusOfGetRequestResponse>(soap, req) {
 		this->load(req);
 	}
 
 	virtual void load(ns1__srmStatusOfGetRequestRequest* req);
 
-	void loadFromDB(struct srm_dbfd* db) throw (TokenNotFound);
+	void loadFromDB(struct srm_dbfd* db);
 
-	ns1__srmStatusOfGetRequestResponse* buildResponse() throw (std::logic_error);
+	ns1__srmStatusOfGetRequestResponse* buildResponse();
 
 protected:
-	void addMissingSurls() throw (std::logic_error);
+	void addMissingSurls();
 };
 }
 

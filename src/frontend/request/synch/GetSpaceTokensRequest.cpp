@@ -16,7 +16,7 @@
 #include "GetSpaceTokensRequest.hpp"
 #include "srmlogit.h"
 
-void storm::GetSpaceTokensRequest::load(ns1__srmGetSpaceTokensRequest* request) throw (storm::invalid_request)
+void storm::GetSpaceTokensRequest::load(ns1__srmGetSpaceTokensRequest* request)
 {
 	if(request->userSpaceTokenDescription != NULL)
 	{
@@ -42,7 +42,7 @@ int storm::GetSpaceTokensRequest::performXmlRpcCall(ns1__srmGetSpaceTokensRespon
 	return ret;
 }
 
-int storm::GetSpaceTokensRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::GetSpaceTokensRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::GetSpaceTokensRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

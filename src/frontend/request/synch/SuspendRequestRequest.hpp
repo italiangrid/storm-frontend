@@ -32,11 +32,11 @@ public:
 
 	int performXmlRpcCall(ns1__srmSuspendRequestResponse_* response);
 
-    void load(ns1__srmSuspendRequestRequest* req) throw (invalid_request);
+    void load(ns1__srmSuspendRequestRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse() ;
 
-	std::string getRequestToken() throw (std::logic_error)
+	std::string getRequestToken()
 	{
 		return m_requestToken;
 	}

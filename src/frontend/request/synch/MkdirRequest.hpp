@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmMkdirResponse_* response);
 
-    void load(ns1__srmMkdirRequest* req) throw (invalid_request);
+    void load(ns1__srmMkdirRequest* req);
 
-	int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 };
 }
 #endif // MKDIR_REQUEST_HPP

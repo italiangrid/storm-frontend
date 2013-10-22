@@ -15,14 +15,15 @@
 
 #include "SetPermissionRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::SetPermissionRequest::load(ns1__srmSetPermissionRequest* request) throw (storm::invalid_request)
+void storm::SetPermissionRequest::load(ns1__srmSetPermissionRequest* request)
 {
 	if(request->SURL == NULL)
 	{
 		throw storm::invalid_request("Received NULL surl in the request");
 	}
-	m_surls.insert(std::string(request->SURL));
+	m_surls.insert(storm::normalize_surl(std::string(request->SURL)));
 	m_permissionType = request->permissionType;
 	if(request->ownerPermission != NULL)
 	{
@@ -78,7 +79,7 @@ int storm::SetPermissionRequest::performXmlRpcCall(ns1__srmSetPermissionResponse
 	return ret;
 }
 
-int storm::SetPermissionRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::SetPermissionRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::SetPermissionRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

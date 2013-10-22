@@ -16,8 +16,9 @@
 
 #include "LsRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::LsRequest::load(ns1__srmLsRequest* request) throw (storm::invalid_request)
+void storm::LsRequest::load(ns1__srmLsRequest* request)
 {
 	if (NULL == request->arrayOfSURLs) {
 		throw storm::invalid_request("SURLs array is NULL");
@@ -27,7 +28,7 @@ void storm::LsRequest::load(ns1__srmLsRequest* request) throw (storm::invalid_re
 	}
 
 	for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-		m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+		m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 	}
 	if(request->fileStorageType != NULL)
 	{
@@ -81,7 +82,7 @@ int storm::LsRequest::performXmlRpcCall(ns1__srmLsResponse_* response){
 	return ret;
 }
 
-int storm::LsRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::LsRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::LsRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef SET_PERMISSION_REQUEST_HPP
 #define SET_PERMISSION_REQUEST_HPP
@@ -24,20 +24,24 @@ namespace storm {
 class SetPermissionRequest: public SynchRequest<ns1__srmSetPermissionRequest,
 		ns1__srmSetPermissionResponse, ns1__srmSetPermissionResponse_> {
 public:
-	SetPermissionRequest(struct soap* soapRequest, struct ns1__srmSetPermissionRequest* request, std::string requestName,
-			std::string monitorName) throw (invalid_request) :
-			SynchRequest<ns1__srmSetPermissionRequest, ns1__srmSetPermissionResponse, ns1__srmSetPermissionResponse_>
-			(soapRequest, request, requestName, monitorName) {
+	SetPermissionRequest(struct soap* soapRequest,
+			struct ns1__srmSetPermissionRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmSetPermissionRequest,
+					ns1__srmSetPermissionResponse,
+					ns1__srmSetPermissionResponse_>(soapRequest, request,
+					requestName, monitorName) {
 		this->load(request);
 	}
 
-	virtual ~SetPermissionRequest() {}
+	virtual ~SetPermissionRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmSetPermissionResponse_* response);
 
-    void load(ns1__srmSetPermissionRequest* req) throw (invalid_request);
+	void load(ns1__srmSetPermissionRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 private:
 	ns1__TPermissionType m_permissionType;
 	ns1__TPermissionMode m_ownerPermission;

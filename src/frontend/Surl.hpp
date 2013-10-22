@@ -23,9 +23,11 @@
 
 namespace storm {
 
+std::string normalize_surl(std::string surl);
+
 class InvalidSurl: public std::exception {
 public:
-	InvalidSurl() {}
+	InvalidSurl() { errmsg = 0;}
 
 	InvalidSurl(std::string reason) {
         errmsg = reason.c_str();
@@ -39,7 +41,9 @@ private:
 
 class Surl  {
 public:
-	Surl(std::string const& surl) throw (InvalidSurl) : m_status(SRM_USCOREREQUEST_USCOREQUEUED) , m_surlString(surl){
+	Surl(std::string const& surl) throw (InvalidSurl) :
+		m_surlString(normalize_surl(surl)),
+		m_status(SRM_USCOREREQUEST_USCOREQUEUED){
 
 		if(surl.empty())
 		{
@@ -82,6 +86,8 @@ private:
 	sql_string m_surlString;
 	ns1__TStatusCode m_status;
 	std::string m_explanation;
+
 };
+
 }
 #endif // SURL_HPP

@@ -24,6 +24,8 @@ extern "C"{
 #include "cgsi_plugin.h"
 }
 
+#include "config.h"
+
 #include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_functions.h"
@@ -144,7 +146,6 @@ process_request(struct soap* tsoap) {
 
     if (soap_serve((struct soap*)tsoap) && (tsoap->error != SOAP_EOF || (tsoap->errnum != 0 && !(tsoap->omode & SOAP_IO_KEEPALIVE))))
     {
-//      srmlogit(STORM_LOG_ERROR, "process_request", "Thread %d completed with failure %d\n", (int)tsoap->user, tsoap->error);
       soap_print_fault(tsoap, stderr);
     }
     srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_serve\n");
@@ -339,10 +340,31 @@ soap* initSoap()
 
 void setupXmlrpc()
 {
-    /**** Start up XML-RPC client library. ****/
+	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
+
+	string storm_ua_token("STORM/"+configuration->getXMLRPCToken());
+
     xmlrpc_env env;
     xmlrpc_env_init(&env);
-    xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
+    struct xmlrpc_clientparms client_params;
+    struct xmlrpc_curl_xportparms curl_params;
+
+    // Ugly hack to encode token in User-Agent HTTP header
+    // as xmlrpc doesnt allow us to access CURL object and
+    // set a decent header ourselves.
+    curl_params.user_agent = storm_ua_token.c_str();
+    curl_params.dont_advertise = 0;
+    client_params.transport = "curl";
+    client_params.transportparmsP = &curl_params;
+    client_params.transportparm_size = XMLRPC_CXPSIZE(user_agent);
+
+    xmlrpc_client_init2(&env,
+    		XMLRPC_CLIENT_NO_FLAGS,
+    		NAME,
+    		VERSION,
+    		&client_params,
+    		XMLRPC_CPSIZE(transportparm_size));
+
     xmlrpc_env_clean(&env);
 }
 
@@ -506,7 +528,7 @@ int main(int argc, char** argv) {
     }
     try {
 		storm::ThreadPool::buildInstance(configuration->getNumThreads());
-	} catch (boost::thread_resource_error e) {
+	} catch (boost::thread_resource_error& e) {
 		cout << "Cannot create all the requested threads, not enough resources.\n";
 		return SYERR;
 	}

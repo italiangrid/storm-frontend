@@ -16,13 +16,15 @@
 #include "SuspendRequestRequest.hpp"
 #include "srmlogit.h"
 
-void storm::SuspendRequestRequest::load(ns1__srmSuspendRequestRequest* request) throw (storm::invalid_request)
+void storm::SuspendRequestRequest::load(ns1__srmSuspendRequestRequest* request)
 {
 	if (request->requestToken == NULL)
 	{
 		throw storm::invalid_request("requestToken is NULL");
 	}
+
 	m_requestToken = std::string(request->requestToken);
+	validate_token(m_requestToken);
 }
 
 int storm::SuspendRequestRequest::performXmlRpcCall(ns1__srmSuspendRequestResponse_* response){
@@ -43,7 +45,7 @@ int storm::SuspendRequestRequest::performXmlRpcCall(ns1__srmSuspendRequestRespon
 	return ret;
 }
 
-int storm::SuspendRequestRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::SuspendRequestRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::SuspendRequestRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

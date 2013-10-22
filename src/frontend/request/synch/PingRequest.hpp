@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef PING_REQUEST_HPP
 #define PING_REQUEST_HPP
@@ -21,20 +21,25 @@
 
 namespace storm {
 
-class PingRequest: public SynchRequest<ns1__srmPingRequest, ns1__srmPingResponse,ns1__srmPingResponse_> {
+class PingRequest: public SynchRequest<ns1__srmPingRequest,
+		ns1__srmPingResponse, ns1__srmPingResponse_> {
 public:
-	PingRequest(struct soap* soapRequest, struct ns1__srmPingRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmPingRequest, ns1__srmPingResponse, ns1__srmPingResponse_> (soapRequest, request, requestName, monitorName) {
+	PingRequest(struct soap* soapRequest, struct ns1__srmPingRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmPingRequest, ns1__srmPingResponse,
+					ns1__srmPingResponse_>(soapRequest, request, requestName,
+					monitorName) {
 		this->load(request);
-    }
+	}
 
-	virtual ~PingRequest() {}
+	virtual ~PingRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmPingResponse_* response);
 
-    void load(ns1__srmPingRequest* req) throw (invalid_request);
+	void load(ns1__srmPingRequest* req) ;
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 };
 }
 #endif // PING_REQUEST_HPP

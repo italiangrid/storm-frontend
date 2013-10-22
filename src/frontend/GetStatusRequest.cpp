@@ -28,7 +28,7 @@ void storm::GetStatusRequest::load(ns1__srmStatusOfGetRequestRequest* req)
 	}
 }
 
-void storm::GetStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::TokenNotFound){
+void storm::GetStatusRequest::loadFromDB(struct srm_dbfd* db){
 
     srmlogit(STORM_LOG_DEBUG, "storm::GetStatusRequest::loadFromDB", "R_token: %s\n",  m_requestToken.c_str());
 
@@ -74,13 +74,13 @@ void storm::GetStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 		{
 			srmlogit(STORM_LOG_INFO, "storm::GetStatusRequest::loadFromDB()",
 									 "No tokens found for token %s and the requested SURLs\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No request found for token " + m_requestToken + " and the requested SURLs\n");
+			throw storm::token_not_found("No request found for token " + m_requestToken + " and the requested SURLs\n");
 		}
 		else
 		{
 			srmlogit(STORM_LOG_INFO, "storm::GetStatusRequest::loadFromDB()",
 									 "No tokens found for token %s\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No request found for token " + m_requestToken + "\n");
+			throw storm::token_not_found("No request found for token " + m_requestToken + "\n");
 		}
 
 	}
@@ -136,7 +136,7 @@ void storm::GetStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 	}
 }
 
-ns1__srmStatusOfGetRequestResponse* storm::GetStatusRequest::buildResponse() throw (std::logic_error)
+ns1__srmStatusOfGetRequestResponse* storm::GetStatusRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::GetStatusRequest::buildResponse()", "called.\n");
 
@@ -243,7 +243,7 @@ ns1__srmStatusOfGetRequestResponse* storm::GetStatusRequest::buildResponse() thr
     return m_builtResponse;
 }
 
-void storm::GetStatusRequest::addMissingSurls() throw (std::logic_error)
+void storm::GetStatusRequest::addMissingSurls()
 {
 	int index = (m_turls.empty() ? 0 : m_turls.size() - 1);
 

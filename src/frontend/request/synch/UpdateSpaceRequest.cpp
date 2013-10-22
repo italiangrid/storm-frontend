@@ -16,13 +16,16 @@
 #include "UpdateSpaceRequest.hpp"
 #include "srmlogit.h"
 
-void storm::UpdateSpaceRequest::load(ns1__srmUpdateSpaceRequest* request) throw (storm::invalid_request)
+void storm::UpdateSpaceRequest::load(ns1__srmUpdateSpaceRequest* request)
 {
 	if(request->spaceToken == NULL)
 	{
 		throw storm::invalid_request("Received NULL spaceToken in the request");
 	}
+
 	m_spaceToken = std::string(request->spaceToken);
+	validate_token(m_spaceToken);
+
 	if(request->newSizeOfTotalSpaceDesired != NULL)
 	{
 		m_newSizeOfTotalSpaceDesired = *(request->newSizeOfTotalSpaceDesired);
@@ -63,7 +66,7 @@ int storm::UpdateSpaceRequest::performXmlRpcCall(ns1__srmUpdateSpaceResponse_* r
 	return ret;
 }
 
-int storm::UpdateSpaceRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::UpdateSpaceRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::UpdateSpaceRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

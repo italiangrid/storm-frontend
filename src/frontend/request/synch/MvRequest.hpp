@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef MV_REQUEST_HPP
 #define MV_REQUEST_HPP
@@ -21,21 +21,25 @@
 
 namespace storm {
 
-class MvRequest: public SynchRequest<ns1__srmMvRequest, ns1__srmMvResponse,ns1__srmMvResponse_> {
+class MvRequest: public SynchRequest<ns1__srmMvRequest, ns1__srmMvResponse,
+		ns1__srmMvResponse_> {
 public:
-	MvRequest(struct soap* soapRequest, struct ns1__srmMvRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmMvRequest, ns1__srmMvResponse,ns1__srmMvResponse_>(soapRequest, request, requestName,
-					monitorName){
+	MvRequest(struct soap* soapRequest, struct ns1__srmMvRequest* request,
+			std::string requestName, std::string monitorName):
+			SynchRequest<ns1__srmMvRequest, ns1__srmMvResponse,
+					ns1__srmMvResponse_>(soapRequest, request, requestName,
+					monitorName) {
 		this->load(request);
-    }
+	}
 
-	~MvRequest() {}
+	~MvRequest() {
+	}
 
 	int performXmlRpcCall(ns1__srmMvResponse_* response);
 
-    void load(ns1__srmMvRequest* req) throw (invalid_request);
+	void load(ns1__srmMvRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 private:
 	std::string m_fromSURL;
 	std::string m_toSURL;

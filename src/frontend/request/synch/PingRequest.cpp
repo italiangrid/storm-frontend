@@ -17,7 +17,7 @@
 #include "PingRequest.hpp"
 #include "srmlogit.h"
 
-void storm::PingRequest::load(ns1__srmPingRequest* request) throw (storm::invalid_request)
+void storm::PingRequest::load(ns1__srmPingRequest* request)
 {
 }
 
@@ -28,7 +28,7 @@ int storm::PingRequest::performXmlRpcCall(ns1__srmPingResponse_* response){
 	return ret;
 }
 
-int storm::PingRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::PingRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::PingRequest::buildResponse()", "called.\n");
     m_builtResponse = storm::soap_calloc<struct ns1__srmPingResponse>(m_soapRequest);

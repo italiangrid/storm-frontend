@@ -16,13 +16,15 @@
 #include "StatusReserveSpaceRequest.hpp"
 #include "srmlogit.h"
 
-void storm::StatusReserveSpaceRequest::load(ns1__srmStatusOfReserveSpaceRequestRequest* request) throw (storm::invalid_request)
+void storm::StatusReserveSpaceRequest::load(ns1__srmStatusOfReserveSpaceRequestRequest* request)
 {
 	if(request->requestToken == NULL)
 	{
 		throw storm::invalid_request("Received NULL requestToken in the request");
 	}
+
 	m_requestToken = std::string(request->requestToken);
+	validate_token(m_requestToken);
 }
 
 int storm::StatusReserveSpaceRequest::performXmlRpcCall(ns1__srmStatusOfReserveSpaceRequestResponse_* response){
@@ -43,7 +45,7 @@ int storm::StatusReserveSpaceRequest::performXmlRpcCall(ns1__srmStatusOfReserveS
 	return ret;
 }
 
-int storm::StatusReserveSpaceRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::StatusReserveSpaceRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::StatusReserveSpaceRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

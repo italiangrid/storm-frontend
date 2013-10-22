@@ -30,6 +30,7 @@
 #include <stdsoap2.h>
 #include "soap_util.hpp"
 #include "synch.hpp"
+#include "storm_exception.hpp"
 
 #include "request/synch/MkdirRequest.hpp"
 #include "request/synch/RmdirRequest.hpp"
@@ -70,7 +71,7 @@
  * */
 template<typename soap_in_t, typename soap_out_t, typename soap_out_root_t>
 int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
-		, char* funcName, boost::posix_time::ptime startTime
+		, const char* funcName, boost::posix_time::ptime startTime
 		, soap_out_root_t* response) {
 	bool blacklisted = false;
 	try
@@ -82,16 +83,16 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 		try
 		{
 			request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			storm::MonitoringHelper::registerOperationError(startTime,
-				request->getmonitorName());
+				request->getMonitorName());
 			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(startTime,
-				request->getmonitorName(),
+				request->getMonitorName(),
 				request->getStatus());
 		srmLogResponse(request->getName().c_str(), request->getStatus());
 		return(-1);
@@ -101,16 +102,16 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 		try
 		{
 			request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::InvalidResponse &exc)
+		} catch(storm::storm_error &exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			storm::MonitoringHelper::registerOperationError(startTime,
-				request->getmonitorName());
+				request->getMonitorName());
 			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		storm::MonitoringHelper::registerOperation(startTime,
-				request->getmonitorName(),
+				request->getMonitorName(),
 				request->getStatus());
 		srmLogResponse(request->getName().c_str(), request->getStatus());
 		return(-1);
@@ -123,24 +124,24 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 		try
 		{
 			returnValue = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			storm::MonitoringHelper::registerOperationError(startTime,
-							request->getmonitorName());
+							request->getMonitorName());
 			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
 			return(SOAP_FATAL_ERROR);
 		}
 		if(returnValue != 0)
 		{
 			storm::MonitoringHelper::registerOperationError(startTime,
-											request->getmonitorName());
+											request->getMonitorName());
 			srmLogResponse(request->getName().c_str(), SRM_USCOREFAILURE);
 		}
 		else
 		{
 			storm::MonitoringHelper::registerOperation(startTime,
-								request->getmonitorName(), request->getStatus());
+								request->getMonitorName(), request->getStatus());
 			srmLogResponse(request->getName().c_str(), request->getStatus());
 			returnValue = -1;
 		}
@@ -152,9 +153,32 @@ int process(storm::SynchRequest<soap_in_t, soap_out_t, soap_out_root_t>* request
 	}
 	int ret_val = request->performXmlRpcCall(response);
 	storm::MonitoringHelper::registerOperation(startTime, ret_val,
-				request->getmonitorName(),
+				request->getMonitorName(),
 				request->getStatus());
 	return ret_val;
+}
+
+int handle_req_parse_error(struct soap* soap,
+		const char* func_name,
+		bool client_error,
+		std::string const& log_format_msg,
+		std::string const& request_name,
+		std::string const& request_monitor_name,
+		storm::storm_error& e,
+		boost::posix_time::ptime start_time){
+
+	srmlogit(STORM_LOG_ERROR,func_name, log_format_msg.c_str(), e.what());
+
+	storm::MonitoringHelper::registerOperationError(start_time,
+			request_monitor_name);
+
+	srmLogResponse(request_name.c_str(),
+			SRM_USCOREFAILURE);
+
+	if (client_error)
+		return soap_sender_fault(soap, e.what(), 0);
+	else
+		return soap_receiver_fault(soap, e.what(),0);
 }
 
 //Directory Functions
@@ -169,11 +193,14 @@ int ns1__srmMkdir(struct soap* soap, struct ns1__srmMkdirRequest *req,
 	try{ request = new storm::MkdirRequest(soap, req, requestName, storm::SRM_MKDIR_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_MKDIR_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+				funcName,
+				true,
+				"Invalid request: %s\n",
+				requestName,
+				storm::SRM_MKDIR_MONITOR_NAME,
+				e,
+				startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 	    		request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -204,11 +231,14 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 	try{ request = new storm::RmdirRequest(soap, req, requestName, storm::SRM_RMDIR_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_RMDIR_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_RMDIR_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -232,18 +262,21 @@ int ns1__srmRmdir(struct soap* soap, struct ns1__srmRmdirRequest *req,
 int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 		struct ns1__srmRmResponse_ *rep) {
 
-	char *funcName = "ns1__srmRm()";
-	std::string requestName("Rm");
+	static const char *funcName = "ns1__srmRm()";
+	static const std::string requestName("Rm");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::RmRequest* request;
 	try{ request = new storm::RmRequest(soap, req, requestName, storm::SRM_RM_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_RM_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_RM_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -267,18 +300,21 @@ int ns1__srmRm(struct soap* soap, struct ns1__srmRmRequest *req,
 int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 		struct ns1__srmLsResponse_ *rep) {
 
-	char *funcName = "ns1__srmLs()";
-	std::string requestName("Ls");
+	static const char *funcName = "ns1__srmLs()";
+	static const std::string requestName("Ls");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::LsRequest* request;
 	try{ request = new storm::LsRequest(soap, req, requestName, storm::SRM_LS_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_LS_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_LS_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -302,18 +338,21 @@ int ns1__srmLs(struct soap* soap, struct ns1__srmLsRequest *req,
 int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsRequestRequest *req,
 		struct ns1__srmStatusOfLsRequestResponse_ *rep) {
 
-	char *funcName = "ns1__srmStatusOfLsRequest()";
-	std::string requestName("Ls status");
+	static char *funcName = "ns1__srmStatusOfLsRequest()";
+	static std::string requestName("Ls status");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::StatusLsRequest* request;
 	try{ request = new storm::StatusLsRequest(soap, req, requestName, storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfLsRequestRequest, ns1__srmStatusOfLsRequestResponse,ns1__srmStatusOfLsRequestResponse_>(request, funcName, startTime, rep);
@@ -336,18 +375,21 @@ int ns1__srmStatusOfLsRequest(struct soap* soap, struct ns1__srmStatusOfLsReques
 int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 		struct ns1__srmMvResponse_ *rep) {
 
-	char *funcName = "ns1__srmMv()";
-	std::string requestName("Mv");
+	static const char *funcName = "ns1__srmMv()";
+	static const std::string requestName("Mv");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::MvRequest* request;
 	try{ request = new storm::MvRequest(soap, req, requestName, storm::SRM_MV_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_MV_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_MV_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -373,18 +415,21 @@ int ns1__srmMv(struct soap* soap, struct ns1__srmMvRequest *req,
 int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest *req,
 		struct ns1__srmSetPermissionResponse_ *rep) {
 
-	char *funcName = "ns1__srmSetPermission()";
-	std::string requestName("Set permission");
+	static const char *funcName = "ns1__srmSetPermission()";
+	static const std::string requestName("Set permission");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::SetPermissionRequest* request;
 	try{ request = new storm::SetPermissionRequest(soap, req, requestName, storm::SRM_SET_PERMISSION_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_SET_PERMISSION_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_SET_PERMISSION_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -409,18 +454,21 @@ int ns1__srmSetPermission(struct soap* soap, struct ns1__srmSetPermissionRequest
 int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionRequest *req,
 		struct ns1__srmCheckPermissionResponse_ *rep) {
 
-	char *funcName = "ns1__srmCheckPermission()";
-	std::string requestName("Check permission");
+	static char *funcName = "ns1__srmCheckPermission()";
+	static std::string requestName("Check permission");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::CheckPermissionRequest* request;
 	try{ request = new storm::CheckPermissionRequest(soap, req, requestName, storm::SRM_CHECK_PERMISSION_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_CHECK_PERMISSION_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_CHECK_PERMISSION_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -445,18 +493,21 @@ int ns1__srmCheckPermission(struct soap* soap, struct ns1__srmCheckPermissionReq
 int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest *req,
 		struct ns1__srmGetPermissionResponse_ *rep) {
 
-	char *funcName = "ns1__srmGetPermission()";
-	std::string requestName("Get permission");
+	static const char *funcName = "ns1__srmGetPermission()";
+	static const std::string requestName("Get permission");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::GetPermissionRequest* request;
 	try{ request = new storm::GetPermissionRequest(soap, req, requestName, storm::SRM_GET_PERMISSION_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_GET_PERMISSION_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_GET_PERMISSION_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(),
 				request->getSurlsList().c_str(), request->getSurlsNumber());
@@ -483,18 +534,24 @@ int ns1__srmGetPermission(struct soap* soap, struct ns1__srmGetPermissionRequest
 int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *req,
 		struct ns1__srmReserveSpaceResponse_ *rep) {
 
-	char *funcName = "ns1__srmReserveSpace()";
-	std::string requestName("Reserve space");
+	static const char *funcName = "ns1__srmReserveSpace()";
+	static const std::string requestName("Reserve space");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::ReserveSpaceRequest* request;
-	try{ request = new storm::ReserveSpaceRequest(soap, req, requestName, storm::SRM_RESERVE_SPACE_MONITOR_NAME); }
-	catch(storm::invalid_request& e)
+	try{
+
+		request = new storm::ReserveSpaceRequest(soap, req, requestName, storm::SRM_RESERVE_SPACE_MONITOR_NAME);
+
+	}catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_RESERVE_SPACE_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_RESERVE_SPACE_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequest(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str());
 	int returnValue = process<ns1__srmReserveSpaceRequest,
@@ -518,18 +575,21 @@ int ns1__srmReserveSpace(struct soap* soap, struct ns1__srmReserveSpaceRequest *
 int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatusOfReserveSpaceRequestRequest *req,
 		struct ns1__srmStatusOfReserveSpaceRequestResponse_ *rep) {
 
-	char *funcName = "ns1__srmStatusOfReserveSpaceRequest()";
-	std::string requestName("Reserve space status");
+	static const char *funcName = "ns1__srmStatusOfReserveSpaceRequest()";
+	static const std::string requestName("Reserve space status");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::StatusReserveSpaceRequest* request;
 	try{ request = new storm::StatusReserveSpaceRequest(soap, req, requestName, storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfReserveSpaceRequestRequest, ns1__srmStatusOfReserveSpaceRequestResponse,ns1__srmStatusOfReserveSpaceRequestResponse_>(request, funcName, startTime, rep);
@@ -552,18 +612,21 @@ int ns1__srmStatusOfReserveSpaceRequest(struct soap* soap, struct ns1__srmStatus
 int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *req,
 		struct ns1__srmReleaseSpaceResponse_ *rep) {
 
-	char *funcName = "ns1__srmReleaseSpace()";
-	std::string requestName("Release space");
+	static const char *funcName = "ns1__srmReleaseSpace()";
+	static const std::string requestName("Release space");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::ReleaseSpaceRequest* request;
 	try{ request = new storm::ReleaseSpaceRequest(soap, req, requestName, storm::SRM_RELEASE_SPACE_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_RELEASE_SPACE_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_RELEASE_SPACE_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str());
 	int returnValue = process<ns1__srmReleaseSpaceRequest, ns1__srmReleaseSpaceResponse,ns1__srmReleaseSpaceResponse_>(request, funcName, startTime, rep);
@@ -586,18 +649,21 @@ int ns1__srmReleaseSpace(struct soap* soap, struct ns1__srmReleaseSpaceRequest *
 int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *req,
 		struct ns1__srmUpdateSpaceResponse_ *rep) {
 
-	char *funcName = "ns1__srmUpdateSpace()";
-	std::string requestName("Update space");
+	static const char *funcName = "ns1__srmUpdateSpace()";
+	static const std::string requestName("Update space");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::UpdateSpaceRequest* request;
 	try{ request = new storm::UpdateSpaceRequest(soap, req, requestName, storm::SRM_UPDATE_SPACE_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_UPDATE_SPACE_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_UPDATE_SPACE_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str());
 	int returnValue = process<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse,ns1__srmUpdateSpaceResponse_>(request, funcName, startTime, rep);
@@ -620,18 +686,21 @@ int ns1__srmUpdateSpace(struct soap* soap, struct ns1__srmUpdateSpaceRequest *re
 int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusOfUpdateSpaceRequestRequest *req,
 		struct ns1__srmStatusOfUpdateSpaceRequestResponse_ *rep) {
 
-	char *funcName = "ns1__srmStatusOfUpdateSpaceRequest()";
-	std::string requestName("Update space status");
+	static const char *funcName = "ns1__srmStatusOfUpdateSpaceRequest()";
+	static const std::string requestName("Update space status");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::StatusUpdateSpaceRequest* request;
 	try{ request = new storm::StatusUpdateSpaceRequest(soap, req, requestName, storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfUpdateSpaceRequestRequest, ns1__srmStatusOfUpdateSpaceRequestResponse,ns1__srmStatusOfUpdateSpaceRequestResponse_>(request, funcName, startTime, rep);
@@ -654,18 +723,21 @@ int ns1__srmStatusOfUpdateSpaceRequest(struct soap* soap, struct ns1__srmStatusO
 int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataRequest *req,
 		struct ns1__srmGetSpaceMetaDataResponse_ *rep) {
 
-	char *funcName = "ns1__srmGetSpaceMetaData()";
-	std::string requestName("Get space metadata");
+	static const char *funcName = "ns1__srmGetSpaceMetaData()";
+	static const std::string requestName("Get space metadata");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::GetSpaceMetaDataRequest* request;
 	try{ request = new storm::GetSpaceMetaDataRequest(soap, req, requestName, storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithTokenList(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceTokensList().c_str(), request->getSpaceTokensNumber());
 	int returnValue = process<ns1__srmGetSpaceMetaDataRequest, ns1__srmGetSpaceMetaDataResponse,ns1__srmGetSpaceMetaDataResponse_>(request, funcName, startTime, rep);
@@ -688,18 +760,21 @@ int ns1__srmGetSpaceMetaData(struct soap* soap, struct ns1__srmGetSpaceMetaDataR
 int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensRequest *req,
 		struct ns1__srmGetSpaceTokensResponse_ *rep) {
 
-	char *funcName = "ns1__srmGetSpaceTokens()";
-	std::string requestName("Get space tokens");
+	static const char *funcName = "ns1__srmGetSpaceTokens()";
+	static const std::string requestName("Get space tokens");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::GetSpaceTokensRequest* request;
 	try{ request = new storm::GetSpaceTokensRequest(soap, req, requestName, storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequest(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str());
 	int returnValue = process<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse,ns1__srmGetSpaceTokensResponse_>(request, funcName, startTime, rep);
@@ -722,18 +797,21 @@ int ns1__srmGetSpaceTokens(struct soap* soap, struct ns1__srmGetSpaceTokensReque
 int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceForFilesRequest *req,
 		struct ns1__srmChangeSpaceForFilesResponse_ *rep) {
 
-	char *funcName = "ns1__srmChangeSpaceForFiles()";
-	std::string requestName("Change space for files");
+	static const char *funcName = "ns1__srmChangeSpaceForFiles()";
+	static const std::string requestName("Change space for files");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::ChangeSpaceForFilesRequest* request;
 	try{ request = new storm::ChangeSpaceForFilesRequest(soap, req, requestName, storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithTokenAndSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getTargetSpaceToken().c_str(), request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse,ns1__srmChangeSpaceForFilesResponse_>(request, funcName, startTime, rep);
@@ -756,18 +834,21 @@ int ns1__srmChangeSpaceForFiles(struct soap* soap, struct ns1__srmChangeSpaceFor
 int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__srmStatusOfChangeSpaceForFilesRequestRequest *req,
 		struct ns1__srmStatusOfChangeSpaceForFilesRequestResponse_ *rep) {
 
-	char *funcName = "ns1__srmStatusOfChangeSpaceForFilesRequest()";
-	std::string requestName("Change space for files status");
+	static const char *funcName = "ns1__srmStatusOfChangeSpaceForFilesRequest()";
+	static const std::string requestName("Change space for files status");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::StatusChangeSpaceForFilesRequest* request;
 	try{ request = new storm::StatusChangeSpaceForFilesRequest(soap, req, requestName, storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithToken(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getRequestToken().c_str());
 	int returnValue = process<ns1__srmStatusOfChangeSpaceForFilesRequestRequest, ns1__srmStatusOfChangeSpaceForFilesRequestResponse,ns1__srmStatusOfChangeSpaceForFilesRequestResponse_>(request, funcName, startTime, rep);
@@ -790,18 +871,21 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest(struct soap* soap, struct ns1__sr
 int ns1__srmExtendFileLifeTimeInSpace(struct soap* soap, struct ns1__srmExtendFileLifeTimeInSpaceRequest *req,
 		struct ns1__srmExtendFileLifeTimeInSpaceResponse_ *rep) {
 
-	char *funcName = "ns1__srmExtendFileLifeTimeInSpace()";
-	std::string requestName("Extend file life time in space");
+	static const char *funcName = "ns1__srmExtendFileLifeTimeInSpace()";
+	static const std::string requestName("Extend file life time in space");
 	boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
 	storm::ExtendFileLifeTimeInSpaceRequest* request;
 	try{ request = new storm::ExtendFileLifeTimeInSpaceRequest(soap, req, requestName, storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(startTime,
-						storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME);
-		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return handle_req_parse_error(soap,
+						funcName,
+						true,
+						"Invalid request: %s\n",
+						requestName,
+						storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME,
+						e,
+						startTime);
 	}
 	srmLogRequestWithTokenAndSurls(requestName.c_str(), get_ip(soap).c_str(), request->getClientDN().c_str(), request->getSpaceToken().c_str(), request->getSurlsList().c_str(), request->getSurlsNumber());
 	int returnValue = process<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse,ns1__srmExtendFileLifeTimeInSpaceResponse_>(request, funcName, startTime, rep);
@@ -929,7 +1013,7 @@ int ns1__srmPutDone(struct soap* soap, struct ns1__srmPutDoneRequest *req,
 		storm::MonitoringHelper::registerOperationError(startTime,
 						storm::SRM_PUT_DONE_MONITOR_NAME);
 		srmLogResponse(requestName.c_str(), SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+		return soap_sender_fault(soap, e.what(), NULL);
 	}
 	srmLogRequestWithTokenAndSurls(requestName.c_str(),
 			get_ip(soap).c_str(), request->getClientDN().c_str(),

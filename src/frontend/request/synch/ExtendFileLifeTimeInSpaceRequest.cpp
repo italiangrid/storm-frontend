@@ -15,16 +15,20 @@
 
 #include "ExtendFileLifeTimeInSpaceRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::ExtendFileLifeTimeInSpaceRequest::load(ns1__srmExtendFileLifeTimeInSpaceRequest* request) throw (storm::invalid_request)
+void storm::ExtendFileLifeTimeInSpaceRequest::load(ns1__srmExtendFileLifeTimeInSpaceRequest* request)
 {
 	if (request->spaceToken == NULL) {
 		throw storm::invalid_request("targetSpaceToken is NULL");
 	}
+
 	m_spaceToken = std::string(request->spaceToken);
+	validate_token(m_spaceToken);
+
 	if (request->arrayOfSURLs != NULL && request->arrayOfSURLs->__sizeurlArray > 0 && request->arrayOfSURLs->urlArray != NULL) {
 		for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-			m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+			m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 		}
 	}
 	if (request->newLifeTime != NULL) {
@@ -50,7 +54,7 @@ int storm::ExtendFileLifeTimeInSpaceRequest::performXmlRpcCall(ns1__srmExtendFil
 	return ret;
 }
 
-int storm::ExtendFileLifeTimeInSpaceRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::ExtendFileLifeTimeInSpaceRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::ExtendFileLifeTimeInSpaceRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

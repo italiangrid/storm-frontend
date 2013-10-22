@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <cgsi_plugin.h>
 #include "get_socket_info.h"
+#include "surl_normalizer.h"
 
 /***************************************************************************************************************/
 /***************************************************************************************************************/
@@ -380,6 +381,7 @@ int encode_ArrayOfAnyURI(const char *callerName,
     char **urlArray;
     int i, nbsurls;
     xmlrpc_value *xml_urlArray, *xml_SURL;
+    char* normalized_surl = NULL;
 
     if (arrayOfSURLs == NULL) return(ENCODE_ERR_MISSING_PARAM);
 
@@ -403,7 +405,18 @@ int encode_ArrayOfAnyURI(const char *callerName,
     		xmlrpc_DECREF(xml_urlArray);
     		return(ENCODE_ERR_ENCODING_ERROR);
     	}
-        xml_SURL = xmlrpc_string_new(env_addr, urlArray[i]);
+
+    	normalized_surl = storm_get_normalized_surl(urlArray[i]);
+    	if (normalized_surl == NULL)
+    	{
+    		xml_SURL = xmlrpc_string_new(env_addr, urlArray[i]);
+
+    	}else{
+
+    		xml_SURL = xmlrpc_string_new(env_addr, normalized_surl);
+    		free(normalized_surl);
+    	}
+
         xmlrpc_array_append_item(env_addr, xml_urlArray, xml_SURL);
         xmlrpc_DECREF(xml_SURL);
     }
@@ -490,41 +503,6 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
     return(0);
 }
 
-/*
-int encode_TExtraInfo(const char *callerName, xmlrpc_env *env_addr, xmlrpc_value* infoArray,
-		char* key, char* value)
-{
-    xmlrpc_value* infoElement;
-
-	infoElement = xmlrpc_struct_new(env_addr);
-
-	if (key == NULL) {
-		srmlogit(STORM_LOG_ERROR, callerName, "StorageSystemInfo[%d] is NULL\n", i);
-		return(ENCODE_ERR_GENERAL_ERROR);
-	}
-	if(getXMLRPCCheckAscii() && !isASCII(key))
-	{
-		srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", key);
-		xmlrpc_DECREF(infoElement);
-		return(ENCODE_ERR_ENCODING_ERROR);
-	}
-	xmlrpc_struct_set_value(env_addr, infoElement, "key", xmlrpc_string_new(env_addr, key));
-
-	if (value != NULL)
-	{
-		if(getXMLRPCCheckAscii() && !isASCII(value))
-		{
-			srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", value);
-			xmlrpc_DECREF(infoElement);
-			return(ENCODE_ERR_ENCODING_ERROR);
-		}
-		xmlrpc_struct_set_value(env_addr, infoElement, "value", xmlrpc_string_new(env_addr, value));
-	}
-	xmlrpc_array_append_item(env_addr, infoArray, infoElement);
-	xmlrpc_DECREF(infoElement);
-    return(0);
-}
-*/
 
 /**
  * The encode_charPointer() function encodes the string field (SRM v2.2) into a xml structure
@@ -537,6 +515,7 @@ int encode_TExtraInfo(const char *callerName, xmlrpc_env *env_addr, xmlrpc_value
 int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, char* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_val;
+    const char* normalized_surl = NULL;
 
     if (NULL == value) {
         srmlogit(STORM_LOG_DEBUG, callerName, "Optional parameter %s=NULL\n", fieldName);
@@ -549,7 +528,21 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
     	srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s , it contains non ASCII characters\n", value);
     	return(ENCODE_ERR_ENCODING_ERROR);
     }
-    xml_val = xmlrpc_string_new(env_addr, value);
+
+    if (strcmp(SRM_PARAM_SURL,fieldName) == 0
+    		|| strcmp(SRM_PARAM_fromSURL, fieldName) == 0
+    		|| strcmp(SRM_PARAM_toSURL, fieldName) == 0){
+    	normalized_surl = storm_get_normalized_surl(value);
+    	if (normalized_surl == NULL){
+    		xml_val = xmlrpc_string_new(env_addr, value);
+    	} else {
+    		xml_val = xmlrpc_string_new(env_addr,normalized_surl);
+    		free(normalized_surl);
+    	}
+    } else {
+    	xml_val = xmlrpc_string_new(env_addr, value);
+    }
+
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_val);
     xmlrpc_DECREF(xml_val);
     if (env_addr->fault_occurred) {

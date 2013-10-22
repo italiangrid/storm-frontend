@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef STATUS_UPDATE_SPACE_REQUEST_HPP
 #define STATUS_UPDATE_SPACE_REQUEST_HPP
@@ -21,23 +21,33 @@
 
 namespace storm {
 
-class StatusUpdateSpaceRequest: public SynchRequest<ns1__srmStatusOfUpdateSpaceRequestRequest, ns1__srmStatusOfUpdateSpaceRequestResponse,ns1__srmStatusOfUpdateSpaceRequestResponse_> {
+class StatusUpdateSpaceRequest: public SynchRequest<
+		ns1__srmStatusOfUpdateSpaceRequestRequest,
+		ns1__srmStatusOfUpdateSpaceRequestResponse,
+		ns1__srmStatusOfUpdateSpaceRequestResponse_> {
 public:
-	StatusUpdateSpaceRequest(struct soap* soapRequest, struct ns1__srmStatusOfUpdateSpaceRequestRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmStatusOfUpdateSpaceRequestRequest, ns1__srmStatusOfUpdateSpaceRequestResponse,ns1__srmStatusOfUpdateSpaceRequestResponse_> (soapRequest, request, requestName, monitorName) {
+	StatusUpdateSpaceRequest(struct soap* soapRequest,
+			struct ns1__srmStatusOfUpdateSpaceRequestRequest* request,
+			std::string requestName, std::string monitorName)
+					throw (invalid_request) :
+			SynchRequest<ns1__srmStatusOfUpdateSpaceRequestRequest,
+					ns1__srmStatusOfUpdateSpaceRequestResponse,
+					ns1__srmStatusOfUpdateSpaceRequestResponse_>(soapRequest,
+					request, requestName, monitorName) {
 		this->load(request);
-    }
+	}
 
-	~StatusUpdateSpaceRequest() {}
+	~StatusUpdateSpaceRequest() {
+	}
 
-	int performXmlRpcCall(ns1__srmStatusOfUpdateSpaceRequestResponse_* response);
+	int performXmlRpcCall(
+			ns1__srmStatusOfUpdateSpaceRequestResponse_* response);
 
-    void load(ns1__srmStatusOfUpdateSpaceRequestRequest* req) throw (invalid_request);
+	void load(ns1__srmStatusOfUpdateSpaceRequestRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+	int buildResponse();
 
-	std::string getRequestToken()
-	{
+	std::string getRequestToken() {
 		return m_requestToken;
 	}
 

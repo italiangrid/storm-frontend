@@ -31,11 +31,8 @@ namespace po = boost::program_options;
 #include <iterator>
 #include <string>
 
-//#include "xmlrpc_encode.h"
-
 using namespace std;
 
-// Costants
 static const string DEFAULT_CONFIGURATION_FILE = string("storm-frontend.conf");
 static const string DEFAULT_GRIDMAPFILE = string("/etc/grid-security/grid-mapfile");
 static const string DEFAULT_HOST_CERT_FILE = string("/etc/grid-security/hostcert.pem");
@@ -46,6 +43,7 @@ static const string DEFAULT_WSDL_FILE = "";
 static const string DEFAULT_XMLRPC_HOST = string("localhost");
 static const string DEFAULT_XMLRPC_PORT = string("8080");
 static const string DEFAULT_XMLRPC_PATH = string("/RPC2");
+static const string DEFAULT_XMLRPC_TOKEN = "unsecure_token";
 static const string DEFAULT_DEBUG_LEVEL = string("INFO");
 static const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING = 3;
 static const int DEFAULT_THREADS_NUMBER = 20;
@@ -134,6 +132,9 @@ static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC 
 static const string OPTL_XMLRPC_PATH = string("be.xmlrpc.path");
 static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
 
+static const string OPTL_XMLRPC_TOKEN = "be.xmlrpc.token";
+static const char* OPT_XMLRPC_TOKEN_DESCRIPTION = "The XMLRPC authentication token";
+
 static const string OPTL_WSDL_FILE = string("wsdl.file");
 static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
 
@@ -157,6 +158,8 @@ static const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION = "Full SERVICE ENDPOINT 
 
 static const string OPTL_ARGUS_RESOURCE_ID = string("argus.resource-id");
 static const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION = "the resource identifier for StoRM service in Argus policies";
+
+
 
 // A helper function to simplify printing options stuff
 template<class T>
@@ -182,11 +185,11 @@ public:
     bool requestedVersion();
     bool requestedDebug();
     bool foundConfigurationFile();
-    //bool mappingDisabled();
+
     bool mappingEnabled();
     bool getMonitoringEnabled();
     bool getMonitoringDetailed();
-    //bool vomsCheckDisabled();
+
     bool vomsCheckEnabled();
     int getDebugLevel();
     int getNumThreads();
@@ -200,6 +203,9 @@ public:
     string getProxyDir();
     string getProxyUser();
     string getXMLRPCEndpoint();
+
+    const string& getXMLRPCToken();
+
     string getXmlRpcHost();
     string getUser();
     string getWSDLFilePath();
@@ -264,6 +270,7 @@ private:
     string xmlrpc_host;
     string xmlrpc_port;
     string xmlrpc_path;
+    string xmlrpc_token;
     string dbHost;
     string dbUser;
     string dbUserPassword;

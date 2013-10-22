@@ -15,8 +15,9 @@
 
 #include "PurgeFromSpaceRequest.hpp"
 #include "srmlogit.h"
+#include "Surl.hpp"
 
-void storm::PurgeFromSpaceRequest::load(ns1__srmPurgeFromSpaceRequest* request) throw (storm::invalid_request)
+void storm::PurgeFromSpaceRequest::load(ns1__srmPurgeFromSpaceRequest* request)
 {
 	if (request->spaceToken == NULL) {
 		throw storm::invalid_request("targetSpaceToken is NULL");
@@ -24,9 +25,12 @@ void storm::PurgeFromSpaceRequest::load(ns1__srmPurgeFromSpaceRequest* request) 
 	if (request->arrayOfSURLs == NULL || request->arrayOfSURLs->__sizeurlArray == 0 || request->arrayOfSURLs->urlArray == NULL) {
 		throw storm::invalid_request("SURLs array is NULL");
 	}
+
 	m_spaceToken = std::string(request->spaceToken);
+	validate_token(m_spaceToken);
+
 	for (int i = 0; i < request->arrayOfSURLs->__sizeurlArray; ++i) {
-		m_surls.insert(std::string(request->arrayOfSURLs->urlArray[i]));
+		m_surls.insert(storm::normalize_surl(std::string(request->arrayOfSURLs->urlArray[i])));
 	}
 	if(request->storageSystemInfo != NULL && request->storageSystemInfo->__sizeextraInfoArray > 0 && request->storageSystemInfo->extraInfoArray != NULL)
 	{
@@ -39,7 +43,7 @@ void storm::PurgeFromSpaceRequest::load(ns1__srmPurgeFromSpaceRequest* request) 
 }
 
 int storm::PurgeFromSpaceRequest::performXmlRpcCall(ns1__srmPurgeFromSpaceResponse_* response){
-	char *funcName = "PurgeFromSpaceRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmPurgeFromSpace_impl(m_soapRequest, m_request, response);
 	if(response->srmPurgeFromSpaceResponse != NULL && response->srmPurgeFromSpaceResponse->returnStatus != NULL )
 	{
@@ -56,7 +60,7 @@ int storm::PurgeFromSpaceRequest::performXmlRpcCall(ns1__srmPurgeFromSpaceRespon
 	return ret;
 }
 
-int storm::PurgeFromSpaceRequest::buildResponse() throw (std::logic_error, storm::InvalidResponse)
+int storm::PurgeFromSpaceRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::PurgeFromSpaceRequest::buildResponse()", "called.\n");
 	if(m_builtResponse != NULL)

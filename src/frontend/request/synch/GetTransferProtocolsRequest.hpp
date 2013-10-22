@@ -32,9 +32,9 @@ public:
 
 	int performXmlRpcCall(ns1__srmGetTransferProtocolsResponse_* response);
 
-    void load(ns1__srmGetTransferProtocolsRequest* req) throw (invalid_request);
+    void load(ns1__srmGetTransferProtocolsRequest* req);
 
-    int buildResponse() throw (std::logic_error , InvalidResponse);
+    int buildResponse();
 };
 }
 #endif // GET_TRANSFER_PROTOCOLS_REQUEST_HPP
