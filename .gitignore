@@ -13,7 +13,6 @@ Makefile
 /config.h.in
 *~
 /build*/
-m4
 GIT_REVISION
 SVN_REVISION
 libtool
@@ -31,6 +30,4 @@ app.info
 coverage_report
 /project
 /storm-frontend.spec
-/rpm
-/aux
 /src/frontend/frontend_version.h
