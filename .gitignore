@@ -2,7 +2,6 @@
 /.project
 /.settings/
 /autom4te.cache/
-/src/autogen/
 /INSTALL
 /stamp-h1
 Makefile
