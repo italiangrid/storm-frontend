@@ -10,7 +10,6 @@ Makefile
 /config.log
 /config.h
 /config/
-/config.h.in
 *~
 /build*/
 GIT_REVISION
