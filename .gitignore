@@ -19,7 +19,6 @@ Makefile
 /config.status
 /config.log
 /config.h
-/aclocal.m4
 Makefile.in
 /config/
 /config.h.in
