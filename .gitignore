@@ -2,9 +2,7 @@
 /.project
 /.settings/
 /Makefile.in
-/aclocal.m4
 /autom4te.cache/
-/configure
 /etc/Makefile.in
 /etc/init.d/Makefile.in
 /etc/logrotate/Makefile.in
@@ -25,7 +23,6 @@ Makefile
 Makefile.in
 /config/
 /config.h.in
-/configure
 *~
 /build*/
 m4
