@@ -32,12 +32,17 @@ storm_frontend_server_LDADD = \
     -L/usr/lib64 -lglobus_gssapi_gsi -lglobus_gss_assist \
     @CGSI_GSOAP_VOMS_CPP_PTHR_LIBS@ \
     @GSOAP_SSL_PP_LIBS@ \
-    @BOOST_PO_LIBS@ \
+    @BOOST_PROGRAM_OPTIONS_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     @BOOST_REGEX_LIBS@ \
     $(top_builddir)/src/db/libstormdb.la \
     @ARGUS_LIBS@ \
     -lz -lm -luuid -lidn
+
+storm_frontend_server_LDFLAGS= \
+	@BOOST_THREAD_LDFLAGS@ \
+	@BOOST_PROGRAM_OPTIONS_LDFLAGS@ \
+	@BOOST_REGEX_LDFLAGS@
 
 noinst_INCLUDES = osdep.h \
   srm_server.h \
@@ -128,7 +133,7 @@ stormfrontend_others = storm_exception.hpp \
     $(noinst_INCLUDES)
 
 INCLUDES = \
-    @BOOST_CFLAGS@ \
+    @BOOST_CPPFLAGS@ \
     -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
     @GLOBUS_THR_CFLAGS@ \

@@ -37,4 +37,3 @@ $(FLAG_FILE):
 clean-local:
 	rm -rf $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
 	rm -f $(FLAG_FILE)
-

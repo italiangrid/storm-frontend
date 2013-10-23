@@ -150,17 +150,11 @@ AC_ARGUS([])
 AC_CGSI_GSOAP([])
 AC_GSOAP([])
 
-AC_BOOST([sl$osdist])
-
-if test "xsl$osdist" = "xsl6"; then
-   BOOST_SUFFIX=""
-elif test "xsl$osdist" = "xsl5"; then
-   BOOST_SUFFIX="141"
-else
-   BOOST_SUFFIX=""
-fi
-AC_MSG_RESULT(["BOOST on sl$osdist $BOOST_SUFFIX"])
-AC_SUBST(BOOST_SUFFIX)
+BOOST_REQUIRE([1.41.0])
+BOOST_SMART_PTR
+BOOST_PROGRAM_OPTIONS([mt-g])
+BOOST_THREADS([mt-g])
+BOOST_REGEX([mt-g])
 
 AC_LIBUUID_DEVEL([])
 
