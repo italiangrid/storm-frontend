@@ -56,6 +56,7 @@ void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req) throw (storm::inv
 	}
 
     if (NULL != req->userRequestDescription && m_userToken.size() == 0) {
+    	storm::validate_request_description(req->userRequestDescription);
     	m_userToken = sql_string(req->userRequestDescription);
     }
 

@@ -14,7 +14,9 @@
 namespace storm{
 	namespace token{
 		bool valid(const std::string& token);
-		int valid(const char* c_string);
+		int valid (const char* c_string);
+
+		bool description_valid(const std::string& token_descs);
 	}
 }
 #endif

@@ -50,6 +50,7 @@ void storm::BolRequest::load(struct ns1__srmBringOnlineRequest* req)
 	}
 
     if (NULL != req->userRequestDescription && m_userToken.size() == 0) {
+    	storm::validate_request_description(std::string(req->userRequestDescription));
     	m_userToken = sql_string(req->userRequestDescription);
     }
 

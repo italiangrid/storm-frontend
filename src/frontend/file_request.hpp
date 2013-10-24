@@ -37,11 +37,16 @@ extern "C" {
 #include "Credentials.hpp"
 #include "sql_string.hpp"
 #include "Surl.hpp"
-
+#include "token_validator.hpp"
 
 namespace storm {
 
 typedef boost::shared_ptr<Surl> SurlPtr;
+
+inline void validate_request_description(const std::string& request_description){
+	if (! storm::token::description_valid(request_description))
+		throw storm::invalid_request("invalid request description: "+request_description);
+}
 
 template<typename soap_in_t, typename soap_out_t>
 class file_request {

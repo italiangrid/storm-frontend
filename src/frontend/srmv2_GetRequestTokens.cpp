@@ -32,7 +32,7 @@
 #include "get_socket_info.hpp"
 
 #include <cgsi_plugin.h>
-
+#include "token_validator.hpp"
 using namespace std;
 
 extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
@@ -88,9 +88,10 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         
         // Get userRequestDescription
         std::string u_token;
-        if (req->userRequestDescription != NULL)
+        if (req->userRequestDescription != NULL){
             u_token = std::string(req->userRequestDescription);
-            
+            storm::token::description_valid(u_token);
+        }
         // Create the DB query
         std::string query_sql("SELECT r_token, DATE_FORMAT(timeStamp, '%Y-%m-%dT%H:%i:%S') FROM request_queue WHERE "
                       "client_dn='" + credentials.getDN() + "'");
@@ -134,12 +135,12 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
                                         soap_strdup(soap, results[i]["DATE_FORMAT(timeStamp, '%Y-%m-%dT%H:%i:%S')"].c_str());
         }
     }
-    catch (soap_bad_alloc) {
+    catch (soap_bad_alloc&) {
         srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
         storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
         return SOAP_EOM;
     }
-    catch (std::invalid_argument) {
+    catch (std::invalid_argument&) {
         srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
         storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
         return SOAP_NULL;

@@ -50,6 +50,7 @@ void storm::PtgRequest::load(ns1__srmPrepareToGetRequest *req)
     
     
     if (NULL != req->userRequestDescription && m_userToken.size() == 0) {
+    	storm::validate_request_description(req->userRequestDescription);
     	m_userToken = sql_string(req->userRequestDescription);
     }
 

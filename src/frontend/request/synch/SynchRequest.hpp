@@ -35,6 +35,11 @@
  */
 namespace storm {
 
+inline void validate_token_description(const std::string& token_description){
+	if (! storm::token::description_valid(token_description))
+		throw storm::invalid_request("invalid token description: "+token_description);
+}
+
 template<typename soap_in_t, typename soap_out_t, typename soap_out_root_t>
 class SynchRequest {
 public:
