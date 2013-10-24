@@ -29,3 +29,7 @@ coverage_report
 /project
 /storm-frontend.spec
 /src/frontend/frontend_version.h
+/src/autogen/config.h
+/src/frontend/srmv2C.cc
+/src/frontend/srmv2Server.cc
+/src/autogen/stamp-h1
