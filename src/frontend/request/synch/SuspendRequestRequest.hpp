@@ -23,8 +23,8 @@ namespace storm {
 
 class SuspendRequestRequest: public SynchRequest<ns1__srmSuspendRequestRequest, ns1__srmSuspendRequestResponse,ns1__srmSuspendRequestResponse_> {
 public:
-	SuspendRequestRequest(struct soap* soapRequest, struct ns1__srmSuspendRequestRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmSuspendRequestRequest, ns1__srmSuspendRequestResponse, ns1__srmSuspendRequestResponse_> (soapRequest, request, requestName, monitorName) {
+	SuspendRequestRequest(struct soap* soapRequest, struct ns1__srmSuspendRequestRequest* request) throw (invalid_request) :
+		SynchRequest<ns1__srmSuspendRequestRequest, ns1__srmSuspendRequestResponse, ns1__srmSuspendRequestResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -42,6 +42,10 @@ public:
 	}
 private:
 	std::string m_requestToken;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // SUSPEND_REQUEST_REQUEST_HPP

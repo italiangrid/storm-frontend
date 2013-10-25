@@ -23,8 +23,8 @@ namespace storm {
 
 class ChangeSpaceForFilesRequest: public SynchRequest<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse,ns1__srmChangeSpaceForFilesResponse_> {
 public:
-	ChangeSpaceForFilesRequest(struct soap* soapRequest, struct ns1__srmChangeSpaceForFilesRequest* request, std::string requestName, std::string monitorName):
-		SynchRequest<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse, ns1__srmChangeSpaceForFilesResponse_> (soapRequest, request, requestName, monitorName) {
+	ChangeSpaceForFilesRequest(struct soap* soapRequest, struct ns1__srmChangeSpaceForFilesRequest* request):
+		SynchRequest<ns1__srmChangeSpaceForFilesRequest, ns1__srmChangeSpaceForFilesResponse, ns1__srmChangeSpaceForFilesResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -42,6 +42,10 @@ public:
 	}
 private:
 	std::string m_targetSpaceToken;
+
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // CHANGE_SPACE_FOR_FILES_REQUEST_HPP

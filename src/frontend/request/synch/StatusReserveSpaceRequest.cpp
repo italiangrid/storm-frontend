@@ -16,6 +16,9 @@
 #include "StatusReserveSpaceRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::StatusReserveSpaceRequest::NAME = "Status reserve space";
+const std::string storm::StatusReserveSpaceRequest::MONITOR_NAME = storm::SRM_STATUS_OF_RESERVE_SPACE_REQUEST_MONITOR_NAME;
+
 void storm::StatusReserveSpaceRequest::load(ns1__srmStatusOfReserveSpaceRequestRequest* request)
 {
 	if(request->requestToken == NULL)

@@ -16,6 +16,9 @@
 #include "StatusChangeSpaceForFilesRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::StatusChangeSpaceForFilesRequest::NAME = "Status change space for files";
+const std::string storm::StatusChangeSpaceForFilesRequest::MONITOR_NAME = storm::SRM_STATUS_OF_CHANGE_SPACE_FOR_FILES_REQUEST_MONITOR_NAME;
+
 void storm::StatusChangeSpaceForFilesRequest::load(ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request)
 {
 	if(request->requestToken == NULL)

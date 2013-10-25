@@ -25,12 +25,10 @@ class SetPermissionRequest: public SynchRequest<ns1__srmSetPermissionRequest,
 		ns1__srmSetPermissionResponse, ns1__srmSetPermissionResponse_> {
 public:
 	SetPermissionRequest(struct soap* soapRequest,
-			struct ns1__srmSetPermissionRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmSetPermissionRequest* request):
 			SynchRequest<ns1__srmSetPermissionRequest,
 					ns1__srmSetPermissionResponse,
-					ns1__srmSetPermissionResponse_>(soapRequest, request,
-					requestName, monitorName) {
+					ns1__srmSetPermissionResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -48,6 +46,9 @@ private:
 	ns1__TPermissionMode m_otherPermission;
 	std::set<std::pair<std::string, ns1__TPermissionMode> > m_userPermissions;
 	std::set<std::pair<std::string, ns1__TPermissionMode> > m_groupPermissions;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // SET_PERMISSION_REQUEST_HPP

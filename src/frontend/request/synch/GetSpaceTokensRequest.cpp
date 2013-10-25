@@ -16,6 +16,9 @@
 #include "GetSpaceTokensRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::GetSpaceTokensRequest::NAME = "Get space tokens";
+const std::string storm::GetSpaceTokensRequest::MONITOR_NAME = storm::SRM_GET_SPACE_TOKENS_MONITOR_NAME;
+
 void storm::GetSpaceTokensRequest::load(ns1__srmGetSpaceTokensRequest* request)
 {
 	if(request->userSpaceTokenDescription != NULL)

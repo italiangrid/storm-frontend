@@ -24,10 +24,9 @@ namespace storm {
 class CheckPermissionRequest: public SynchRequest<ns1__srmCheckPermissionRequest,
 		ns1__srmCheckPermissionResponse, ns1__srmCheckPermissionResponse_> {
 public:
-	CheckPermissionRequest(struct soap* soapRequest, struct ns1__srmCheckPermissionRequest* request, std::string requestName,
-			std::string monitorName):
+	CheckPermissionRequest(struct soap* soapRequest, struct ns1__srmCheckPermissionRequest* request):
 			SynchRequest<ns1__srmCheckPermissionRequest, ns1__srmCheckPermissionResponse, ns1__srmCheckPermissionResponse_>
-			(soapRequest, request, requestName, monitorName) {
+			(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -38,6 +37,10 @@ public:
     void load(ns1__srmCheckPermissionRequest* req);
 
     int buildResponse();
+
+    static const std::string NAME;
+    static const std::string MONITOR_NAME;
+
 };
 }
 #endif // CHECK_PERMISSION_REQUEST_HPP

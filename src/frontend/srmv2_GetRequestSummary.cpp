@@ -30,6 +30,8 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "Credentials.hpp"
 #include "get_socket_info.hpp"
+#include "token_validator.hpp"
+#include "storm_exception.hpp"
 
 #include <cgsi_plugin.h>
 
@@ -44,23 +46,19 @@ bool string2num(type_t& x, const string& s)
 }
 
 // Validates 'req->arrayOfRequestTokens'
-bool valid_input(const char* func, struct ns1__ArrayOfString* arrayOfRequestTokens, char** expl_str)
+bool validate_array_of_req_tokens(const char* func, struct ns1__ArrayOfString* arrayOfRequestTokens)
 {
-    char* msg = "Specify a valid 'arrayOfRequestTokens'";
     
     if (arrayOfRequestTokens == NULL) {
          srmlogit(STORM_LOG_ERROR, func, "arrayOfRequestTokens=NULL\n");
-         *expl_str = msg;
         return false;
     }
     if (arrayOfRequestTokens->__sizestringArray == 0) {
         srmlogit(STORM_LOG_ERROR, func, "arrayOfRequestTokens (size)=0\n");
-        *expl_str = msg;
         return false;
     }
     if (arrayOfRequestTokens->stringArray == NULL) {
         srmlogit(STORM_LOG_ERROR, func, "arrayOfRequestTokens->stringArray=NULL (and size != 0)\n");
-        *expl_str = msg;
         return false;
     }
     return true;
@@ -125,22 +123,30 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 		}
         // Check for a valid input
         char* expl_str;
-        if (!valid_input(func, req->arrayOfRequestTokens, &expl_str)) {
+        if (!validate_array_of_req_tokens(func, req->arrayOfRequestTokens)) {
             srmlogit(STORM_LOG_ERROR, func, "Invalid 'arrayOfRequestTokens'\n");
             repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-            repp->returnStatus->explanation = expl_str;
+            repp->returnStatus->explanation = "invalid array of request tokens";
             storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
             return SOAP_OK;
         }
         int numOfRequestTokens = req->arrayOfRequestTokens->__sizestringArray;
         
-        // Log received input
-        for (i=0; i<numOfRequestTokens; i++) {
-            if (req->arrayOfRequestTokens->stringArray[i] == NULL)
-                srmlogit(STORM_LOG_DEBUG, func, "Received token[%d]=NULL\n", i);
-            else
-                srmlogit(STORM_LOG_DEBUG, func, "Received token[%d]=%s\n", i,
-                         req->arrayOfRequestTokens->stringArray[i]);
+        for (i=0; i < numOfRequestTokens; i++){
+
+
+        	if (req->arrayOfRequestTokens->stringArray[i] == NULL){
+        		srmlogit(STORM_LOG_DEBUG, func, "Received token[%d]=NULL\n", i);
+        	}else{
+        		srmlogit(STORM_LOG_DEBUG, func, "Received token[%d]=%s\n", i, req->arrayOfRequestTokens->stringArray[i]);
+        		std::string token(req->arrayOfRequestTokens->stringArray[i]);
+        		if (!storm::token::valid(token)){
+        			repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
+        			repp->returnStatus->explanation = "invalid token";
+        			storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
+        			return SOAP_OK;
+        		}
+        	}
         }
         
         // Connect to the DB, if needed.

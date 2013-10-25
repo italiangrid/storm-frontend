@@ -25,12 +25,10 @@ class StatusLsRequest: public SynchRequest<ns1__srmStatusOfLsRequestRequest,
 		ns1__srmStatusOfLsRequestResponse, ns1__srmStatusOfLsRequestResponse_> {
 public:
 	StatusLsRequest(struct soap* soapRequest,
-			struct ns1__srmStatusOfLsRequestRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmStatusOfLsRequestRequest* request):
 			SynchRequest<ns1__srmStatusOfLsRequestRequest,
 					ns1__srmStatusOfLsRequestResponse,
-					ns1__srmStatusOfLsRequestResponse_>(soapRequest, request,
-					requestName, monitorName) {
+					ns1__srmStatusOfLsRequestResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -51,6 +49,10 @@ private:
 	std::string m_requestToken;
 	int m_offset;
 	int m_count;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // STATUS_LS_REQUEST_HPP

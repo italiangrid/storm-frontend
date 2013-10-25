@@ -25,11 +25,10 @@ class ReleaseFilesRequest: public SynchRequest<ns1__srmReleaseFilesRequest,
 		ns1__srmReleaseFilesResponse, ns1__srmReleaseFilesResponse_> {
 public:
 	ReleaseFilesRequest(struct soap* soapRequest,
-			struct ns1__srmReleaseFilesRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmReleaseFilesRequest* request):
 			SynchRequest<ns1__srmReleaseFilesRequest,
 					ns1__srmReleaseFilesResponse, ns1__srmReleaseFilesResponse_>(
-					soapRequest, request, requestName, monitorName) {
+					soapRequest, request) {
 		this->load(request);
 	}
 
@@ -56,6 +55,10 @@ public:
 private:
 	std::string m_requestToken;
 	bool m_doRemove;
+
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // RELEASE_FILES_REQUEST_HPP

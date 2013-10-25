@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::ReleaseFilesRequest::NAME = "Release files";
+const std::string storm::ReleaseFilesRequest::MONITOR_NAME = storm::SRM_RELEASE_FILES_MONITOR_NAME;
+
 void storm::ReleaseFilesRequest::load(ns1__srmReleaseFilesRequest* request)
 {
 	if (request->requestToken == NULL && (request->arrayOfSURLs == NULL || request->arrayOfSURLs->__sizeurlArray == 0 || request->arrayOfSURLs->urlArray == NULL)) {

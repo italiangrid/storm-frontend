@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::MkdirRequest::NAME = "Mkdir";
+const std::string storm::MkdirRequest::MONITOR_NAME = storm::SRM_MKDIR_MONITOR_NAME;
+
 void storm::MkdirRequest::load(ns1__srmMkdirRequest* request)
 {
 	if(request->SURL == NULL)

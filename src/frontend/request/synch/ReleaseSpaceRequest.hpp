@@ -25,11 +25,10 @@ class ReleaseSpaceRequest: public SynchRequest<ns1__srmReleaseSpaceRequest,
 		ns1__srmReleaseSpaceResponse, ns1__srmReleaseSpaceResponse_> {
 public:
 	ReleaseSpaceRequest(struct soap* soapRequest,
-			struct ns1__srmReleaseSpaceRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmReleaseSpaceRequest* request):
 			SynchRequest<ns1__srmReleaseSpaceRequest,
 					ns1__srmReleaseSpaceResponse, ns1__srmReleaseSpaceResponse_>(
-					soapRequest, request, requestName, monitorName) {
+					soapRequest, request) {
 		this->load(request);
 	}
 
@@ -48,6 +47,9 @@ public:
 private:
 	std::string m_spaceToken;
 	bool m_forceFileRelease;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // RELEASE_SPACE_REQUEST_HPP

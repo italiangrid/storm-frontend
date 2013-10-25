@@ -23,8 +23,8 @@ namespace storm {
 
 class AbortRequestRequest: public SynchRequest<ns1__srmAbortRequestRequest, ns1__srmAbortRequestResponse,ns1__srmAbortRequestResponse_> {
 public:
-	AbortRequestRequest(struct soap* soapRequest, struct ns1__srmAbortRequestRequest* request, std::string requestName, std::string monitorName):
-		SynchRequest<ns1__srmAbortRequestRequest, ns1__srmAbortRequestResponse, ns1__srmAbortRequestResponse_> (soapRequest, request, requestName, monitorName) {
+	AbortRequestRequest(struct soap* soapRequest, struct ns1__srmAbortRequestRequest* request):
+		SynchRequest<ns1__srmAbortRequestRequest, ns1__srmAbortRequestResponse, ns1__srmAbortRequestResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -42,6 +42,11 @@ public:
 	}
 private:
 	std::string m_requestToken;
+
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // ABORT_REQUEST_REQUEST_HPP

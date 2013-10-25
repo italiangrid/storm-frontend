@@ -17,6 +17,9 @@
 #include "ReleaseSpaceRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::ReleaseSpaceRequest::NAME = "Release space";
+const std::string storm::ReleaseSpaceRequest::MONITOR_NAME = storm::SRM_RELEASE_SPACE_MONITOR_NAME;
+
 void storm::ReleaseSpaceRequest::load(ns1__srmReleaseSpaceRequest* request)
 {
 	if(request->spaceToken == NULL)

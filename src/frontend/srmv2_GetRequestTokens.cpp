@@ -90,7 +90,12 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         std::string u_token;
         if (req->userRequestDescription != NULL){
             u_token = std::string(req->userRequestDescription);
-            storm::token::description_valid(u_token);
+            if (!storm::token::description_valid(u_token)){
+            	repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
+            	repp->returnStatus->explanation = "invalid request token description";
+            	storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
+            	return SOAP_OK;
+            }
         }
         // Create the DB query
         std::string query_sql("SELECT r_token, DATE_FORMAT(timeStamp, '%Y-%m-%dT%H:%i:%S') FROM request_queue WHERE "

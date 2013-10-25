@@ -23,10 +23,9 @@ namespace storm {
 
 class LsRequest: public SynchRequest<ns1__srmLsRequest, ns1__srmLsResponse,ns1__srmLsResponse_> {
 public:
-	LsRequest(struct soap* soapRequest, struct ns1__srmLsRequest* request,
-			std::string requestName, std::string monitorName):
+	LsRequest(struct soap* soapRequest, struct ns1__srmLsRequest* request):
 			SynchRequest<ns1__srmLsRequest, ns1__srmLsResponse, ns1__srmLsResponse_>
-					(soapRequest, request, requestName, monitorName) ,
+					(soapRequest, request) ,
 					m_fullDetailedList(false), m_allLevelRecursive(false),
 					m_numOfLevels(-1), m_offset(-1), m_count(-1) {
 		this->load(request);
@@ -45,6 +44,10 @@ private:
 	int m_numOfLevels;
 	int m_offset;
 	int m_count;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // LS_REQUEST_HPP

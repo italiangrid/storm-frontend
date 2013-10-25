@@ -24,11 +24,9 @@ namespace storm {
 class PingRequest: public SynchRequest<ns1__srmPingRequest,
 		ns1__srmPingResponse, ns1__srmPingResponse_> {
 public:
-	PingRequest(struct soap* soapRequest, struct ns1__srmPingRequest* request,
-			std::string requestName, std::string monitorName):
+	PingRequest(struct soap* soapRequest, struct ns1__srmPingRequest* request):
 			SynchRequest<ns1__srmPingRequest, ns1__srmPingResponse,
-					ns1__srmPingResponse_>(soapRequest, request, requestName,
-					monitorName) {
+					ns1__srmPingResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -40,6 +38,10 @@ public:
 	void load(ns1__srmPingRequest* req) ;
 
 	int buildResponse();
+
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // PING_REQUEST_HPP

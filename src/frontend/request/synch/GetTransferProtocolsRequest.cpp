@@ -17,6 +17,10 @@
 #include "GetTransferProtocolsRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::GetTransferProtocolsRequest::NAME = "Get transfer protocols";
+const std::string storm::GetTransferProtocolsRequest::MONITOR_NAME = storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME;
+
+
 void storm::GetTransferProtocolsRequest::load(ns1__srmGetTransferProtocolsRequest* request)
 {
 }

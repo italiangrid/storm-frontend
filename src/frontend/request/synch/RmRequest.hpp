@@ -24,11 +24,9 @@ namespace storm {
 class RmRequest: public SynchRequest<ns1__srmRmRequest, ns1__srmRmResponse,
 		ns1__srmRmResponse_> {
 public:
-	RmRequest(struct soap* soapRequest, struct ns1__srmRmRequest* request,
-			std::string requestName, std::string monitorName):
+	RmRequest(struct soap* soapRequest, struct ns1__srmRmRequest* request):
 			SynchRequest<ns1__srmRmRequest, ns1__srmRmResponse,
-					ns1__srmRmResponse_>(soapRequest, request, requestName,
-					monitorName), m_recursive(false) {
+					ns1__srmRmResponse_>(soapRequest, request), m_recursive(false) {
 		this->load(request);
 	}
 
@@ -42,6 +40,10 @@ public:
 	int buildResponse();
 private:
 	bool m_recursive;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // RM_REQUEST_HPP

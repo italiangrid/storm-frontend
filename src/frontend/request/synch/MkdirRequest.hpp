@@ -23,8 +23,8 @@ namespace storm {
 
 class MkdirRequest: public SynchRequest<ns1__srmMkdirRequest, ns1__srmMkdirResponse,ns1__srmMkdirResponse_> {
 public:
-	MkdirRequest(struct soap* soapRequest, struct ns1__srmMkdirRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmMkdirRequest, ns1__srmMkdirResponse, ns1__srmMkdirResponse_> (soapRequest, request, requestName, monitorName) {
+	MkdirRequest(struct soap* soapRequest, struct ns1__srmMkdirRequest* request) throw (invalid_request) :
+		SynchRequest<ns1__srmMkdirRequest, ns1__srmMkdirResponse, ns1__srmMkdirResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -35,6 +35,9 @@ public:
     void load(ns1__srmMkdirRequest* req);
 
 	int buildResponse();
+
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // MKDIR_REQUEST_HPP

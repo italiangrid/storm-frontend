@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::RmRequest::NAME = "Rm";
+const std::string storm::RmRequest::MONITOR_NAME = storm::SRM_RM_MONITOR_NAME;
+
 void storm::RmRequest::load(ns1__srmRmRequest* request)
 {
 	if (NULL == request->arrayOfSURLs) {

@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::MvRequest::NAME = "Mv";
+const std::string storm::MvRequest::MONITOR_NAME = storm::SRM_MV_MONITOR_NAME;
+
 void storm::MvRequest::load(ns1__srmMvRequest* request)
 {
 	if (request->fromSURL == NULL) {

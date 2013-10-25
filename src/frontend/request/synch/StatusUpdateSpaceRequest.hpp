@@ -27,13 +27,12 @@ class StatusUpdateSpaceRequest: public SynchRequest<
 		ns1__srmStatusOfUpdateSpaceRequestResponse_> {
 public:
 	StatusUpdateSpaceRequest(struct soap* soapRequest,
-			struct ns1__srmStatusOfUpdateSpaceRequestRequest* request,
-			std::string requestName, std::string monitorName)
+			struct ns1__srmStatusOfUpdateSpaceRequestRequest* request)
 					throw (invalid_request) :
 			SynchRequest<ns1__srmStatusOfUpdateSpaceRequestRequest,
 					ns1__srmStatusOfUpdateSpaceRequestResponse,
 					ns1__srmStatusOfUpdateSpaceRequestResponse_>(soapRequest,
-					request, requestName, monitorName) {
+					request) {
 		this->load(request);
 	}
 
@@ -53,6 +52,10 @@ public:
 
 private:
 	std::string m_requestToken;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // STATUS_UPDATE_SPACE_REQUEST_HPP

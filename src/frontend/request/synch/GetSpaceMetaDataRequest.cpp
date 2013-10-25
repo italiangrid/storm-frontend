@@ -16,6 +16,9 @@
 #include "GetSpaceMetaDataRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::GetSpaceMetaDataRequest::NAME = "Get space metadata";
+const std::string storm::GetSpaceMetaDataRequest::MONITOR_NAME = storm::SRM_GET_SPACE_META_DATA_MONITOR_NAME;
+
 void storm::GetSpaceMetaDataRequest::load(ns1__srmGetSpaceMetaDataRequest* request)
 {
 	if (NULL == request->arrayOfSpaceTokens) {

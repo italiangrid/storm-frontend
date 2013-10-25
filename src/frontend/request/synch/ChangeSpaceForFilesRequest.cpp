@@ -17,6 +17,8 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::ChangeSpaceForFilesRequest::NAME = "Change space for files";
+const std::string storm::ChangeSpaceForFilesRequest::MONITOR_NAME = storm::SRM_CHANGE_SPACE_FOR_FILES_MONITOR_NAME;
 
 void storm::ChangeSpaceForFilesRequest::load(ns1__srmChangeSpaceForFilesRequest* request)
 {

@@ -24,11 +24,9 @@ namespace storm {
 class RmdirRequest: public SynchRequest<ns1__srmRmdirRequest,
 		ns1__srmRmdirResponse, ns1__srmRmdirResponse_> {
 public:
-	RmdirRequest(struct soap* soapRequest, struct ns1__srmRmdirRequest* request,
-			std::string requestName, std::string monitorName):
+	RmdirRequest(struct soap* soapRequest, struct ns1__srmRmdirRequest* request):
 			SynchRequest<ns1__srmRmdirRequest, ns1__srmRmdirResponse,
-					ns1__srmRmdirResponse_>(soapRequest, request, requestName,
-					monitorName), m_recursive(false) {
+					ns1__srmRmdirResponse_>(soapRequest, request), m_recursive(false) {
 		this->load(request);
 	}
 
@@ -42,6 +40,10 @@ public:
 	int buildResponse();
 private:
 	bool m_recursive;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // RMDIR_REQUEST_HPP

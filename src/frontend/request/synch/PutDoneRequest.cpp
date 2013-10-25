@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::PutDoneRequest::NAME = "Put done";
+const std::string storm::PutDoneRequest::MONITOR_NAME = storm::SRM_PUT_DONE_MONITOR_NAME;
+
 void storm::PutDoneRequest::load(ns1__srmPutDoneRequest* request)
 {
 	if (request->requestToken == NULL)

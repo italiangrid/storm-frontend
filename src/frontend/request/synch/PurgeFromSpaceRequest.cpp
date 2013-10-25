@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::PurgeFromSpaceRequest::NAME = "Purge from space";
+const std::string storm::PurgeFromSpaceRequest::MONITOR_NAME = storm::SRM_PURGE_FROM_SPACE_MONITOR_NAME;
+
 void storm::PurgeFromSpaceRequest::load(ns1__srmPurgeFromSpaceRequest* request)
 {
 	if (request->spaceToken == NULL) {

@@ -26,11 +26,10 @@ class ReserveSpaceRequest: public SynchRequest<ns1__srmReserveSpaceRequest,
 		ns1__srmReserveSpaceResponse, ns1__srmReserveSpaceResponse_> {
 public:
 	ReserveSpaceRequest(struct soap* soapRequest,
-			struct ns1__srmReserveSpaceRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmReserveSpaceRequest* request):
 			SynchRequest<ns1__srmReserveSpaceRequest,
 					ns1__srmReserveSpaceResponse, ns1__srmReserveSpaceResponse_>(
-					soapRequest, request, requestName, monitorName) {
+					soapRequest, request) {
 		this->load(request);
 	}
 
@@ -54,6 +53,9 @@ private:
 	ns1__TConnectionType m_connectionType;
 	std::vector<std::string> m_arrayOfClientNetworks;
 	std::vector<std::string> m_arrayOfTransferProtocols;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // RESERVE_SPACE_REQUEST_HPP

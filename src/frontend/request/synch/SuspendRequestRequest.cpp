@@ -16,6 +16,9 @@
 #include "SuspendRequestRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::SuspendRequestRequest::NAME = "Suspend request";
+const std::string storm::SuspendRequestRequest::MONITOR_NAME = storm::SRM_SUSPEND_REQUEST_MONITOR_NAME;
+
 void storm::SuspendRequestRequest::load(ns1__srmSuspendRequestRequest* request)
 {
 	if (request->requestToken == NULL)

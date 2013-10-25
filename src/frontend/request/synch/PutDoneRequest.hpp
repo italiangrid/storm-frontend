@@ -25,11 +25,9 @@ class PutDoneRequest: public SynchRequest<ns1__srmPutDoneRequest,
 		ns1__srmPutDoneResponse, ns1__srmPutDoneResponse_> {
 public:
 	PutDoneRequest(struct soap* soapRequest,
-			struct ns1__srmPutDoneRequest* request, std::string requestName,
-			std::string monitorName):
+			struct ns1__srmPutDoneRequest* request):
 			SynchRequest<ns1__srmPutDoneRequest, ns1__srmPutDoneResponse,
-					ns1__srmPutDoneResponse_>(soapRequest, request, requestName,
-					monitorName) {
+					ns1__srmPutDoneResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -47,6 +45,10 @@ public:
 	}
 private:
 	std::string m_requestToken;
+
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // PUT_DONE_REQUEST_HPP

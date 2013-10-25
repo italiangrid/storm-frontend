@@ -24,11 +24,9 @@ namespace storm {
 class MvRequest: public SynchRequest<ns1__srmMvRequest, ns1__srmMvResponse,
 		ns1__srmMvResponse_> {
 public:
-	MvRequest(struct soap* soapRequest, struct ns1__srmMvRequest* request,
-			std::string requestName, std::string monitorName):
+	MvRequest(struct soap* soapRequest, struct ns1__srmMvRequest* request):
 			SynchRequest<ns1__srmMvRequest, ns1__srmMvResponse,
-					ns1__srmMvResponse_>(soapRequest, request, requestName,
-					monitorName) {
+					ns1__srmMvResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -43,6 +41,10 @@ public:
 private:
 	std::string m_fromSURL;
 	std::string m_toSURL;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // MV_REQUEST_HPP

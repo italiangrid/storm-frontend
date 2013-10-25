@@ -23,8 +23,8 @@ namespace storm {
 
 class GetSpaceTokensRequest: public SynchRequest<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse,ns1__srmGetSpaceTokensResponse_> {
 public:
-	GetSpaceTokensRequest(struct soap* soapRequest, struct ns1__srmGetSpaceTokensRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse, ns1__srmGetSpaceTokensResponse_> (soapRequest, request, requestName, monitorName) {
+	GetSpaceTokensRequest(struct soap* soapRequest, struct ns1__srmGetSpaceTokensRequest* request) throw (invalid_request) :
+		SynchRequest<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse, ns1__srmGetSpaceTokensResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -42,6 +42,10 @@ public:
 	}
 private:
 	std::string m_userSpaceTokenDescription;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // GET_SPACE_TOKENS_REQUEST_HPP

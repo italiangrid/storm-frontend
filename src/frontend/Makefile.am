@@ -115,7 +115,7 @@ stormfrontend_others = storm_exception.hpp \
     HttpPostClient.cpp HttpPostClient.h \
     DBConnectionPool.cpp DBConnectionPool.hpp \
     ThreadPool.hpp ThreadPool.cpp \
-    srmlogit.cpp sql_string.hpp soap_util.hpp \
+    srmlogit.cpp sql_string.hpp soap_util.hpp soap_util.cpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
     synch.cpp synch.hpp\

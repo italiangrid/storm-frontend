@@ -27,12 +27,11 @@ class StatusReserveSpaceRequest: public SynchRequest<
 		ns1__srmStatusOfReserveSpaceRequestResponse_> {
 public:
 	StatusReserveSpaceRequest(struct soap* soapRequest,
-			struct ns1__srmStatusOfReserveSpaceRequestRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmStatusOfReserveSpaceRequestRequest* request):
 			SynchRequest<ns1__srmStatusOfReserveSpaceRequestRequest,
 					ns1__srmStatusOfReserveSpaceRequestResponse,
 					ns1__srmStatusOfReserveSpaceRequestResponse_>(soapRequest,
-					request, requestName, monitorName) {
+					request) {
 		this->load(request);
 	}
 
@@ -52,6 +51,10 @@ public:
 
 private:
 	std::string m_requestToken;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // STATUS_RESERVE_SPACE_REQUEST_HPP

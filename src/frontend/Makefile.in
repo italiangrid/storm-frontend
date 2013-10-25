@@ -127,6 +127,7 @@ am__objects_2 = storm_frontend_server-Credentials.$(OBJEXT) \
 	storm_frontend_server-DBConnectionPool.$(OBJEXT) \
 	storm_frontend_server-ThreadPool.$(OBJEXT) \
 	storm_frontend_server-srmlogit.$(OBJEXT) \
+	storm_frontend_server-soap_util.$(OBJEXT) \
 	storm_frontend_server-srmv2_dirreq.$(OBJEXT) \
 	storm_frontend_server-srmv2_xferreq.$(OBJEXT) \
 	storm_frontend_server-srmv2_permreq.$(OBJEXT) \
@@ -517,7 +518,7 @@ stormfrontend_others = storm_exception.hpp \
     HttpPostClient.cpp HttpPostClient.h \
     DBConnectionPool.cpp DBConnectionPool.hpp \
     ThreadPool.hpp ThreadPool.cpp \
-    srmlogit.cpp sql_string.hpp soap_util.hpp \
+    srmlogit.cpp sql_string.hpp soap_util.hpp soap_util.cpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
     synch.cpp synch.hpp\
@@ -693,6 +694,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-asynch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-asynch_status.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-get_socket_info.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-soap_util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-srmlogit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-srmv2C.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-srmv2Server.Po@am__quote@
@@ -1591,6 +1593,20 @@ storm_frontend_server-srmlogit.obj: srmlogit.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='srmlogit.cpp' object='storm_frontend_server-srmlogit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-srmlogit.obj `if test -f 'srmlogit.cpp'; then $(CYGPATH_W) 'srmlogit.cpp'; else $(CYGPATH_W) '$(srcdir)/srmlogit.cpp'; fi`
+
+storm_frontend_server-soap_util.o: soap_util.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-soap_util.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-soap_util.Tpo -c -o storm_frontend_server-soap_util.o `test -f 'soap_util.cpp' || echo '$(srcdir)/'`soap_util.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-soap_util.Tpo $(DEPDIR)/storm_frontend_server-soap_util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='soap_util.cpp' object='storm_frontend_server-soap_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-soap_util.o `test -f 'soap_util.cpp' || echo '$(srcdir)/'`soap_util.cpp
+
+storm_frontend_server-soap_util.obj: soap_util.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-soap_util.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-soap_util.Tpo -c -o storm_frontend_server-soap_util.obj `if test -f 'soap_util.cpp'; then $(CYGPATH_W) 'soap_util.cpp'; else $(CYGPATH_W) '$(srcdir)/soap_util.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-soap_util.Tpo $(DEPDIR)/storm_frontend_server-soap_util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='soap_util.cpp' object='storm_frontend_server-soap_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-soap_util.obj `if test -f 'soap_util.cpp'; then $(CYGPATH_W) 'soap_util.cpp'; else $(CYGPATH_W) '$(srcdir)/soap_util.cpp'; fi`
 
 storm_frontend_server-synch.o: synch.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-synch.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-synch.Tpo -c -o storm_frontend_server-synch.o `test -f 'synch.cpp' || echo '$(srcdir)/'`synch.cpp

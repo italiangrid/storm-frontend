@@ -17,6 +17,8 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::ExtendFileLifeTimeRequest::NAME = "Extend file lifetime";
+const std::string storm::ExtendFileLifeTimeRequest::MONITOR_NAME = storm::SRM_EXTEND_FILE_LIFE_TIME_MONITOR_NAME;
 
 void storm::ExtendFileLifeTimeRequest::load(ns1__srmExtendFileLifeTimeRequest* request)
 {

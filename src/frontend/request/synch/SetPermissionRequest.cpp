@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::SetPermissionRequest::NAME = "Set permission";
+const std::string storm::SetPermissionRequest::MONITOR_NAME = storm::SRM_SET_PERMISSION_MONITOR_NAME;
+
 void storm::SetPermissionRequest::load(ns1__srmSetPermissionRequest* request)
 {
 	if(request->SURL == NULL)

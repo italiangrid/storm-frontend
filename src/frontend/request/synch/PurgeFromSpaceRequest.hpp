@@ -25,12 +25,10 @@ class PurgeFromSpaceRequest: public SynchRequest<ns1__srmPurgeFromSpaceRequest,
 		ns1__srmPurgeFromSpaceResponse, ns1__srmPurgeFromSpaceResponse_> {
 public:
 	PurgeFromSpaceRequest(struct soap* soapRequest,
-			struct ns1__srmPurgeFromSpaceRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmPurgeFromSpaceRequest* request):
 			SynchRequest<ns1__srmPurgeFromSpaceRequest,
 					ns1__srmPurgeFromSpaceResponse,
-					ns1__srmPurgeFromSpaceResponse_>(soapRequest, request,
-					requestName, monitorName) {
+					ns1__srmPurgeFromSpaceResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -48,6 +46,9 @@ public:
 	}
 private:
 	std::string m_spaceToken;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // PURGE_FROM_SPACE_REQUEST_HPP

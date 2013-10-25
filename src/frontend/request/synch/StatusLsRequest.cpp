@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include "token_validator.hpp"
 
+const std::string storm::StatusLsRequest::NAME = "Status ls";
+const std::string storm::StatusLsRequest::MONITOR_NAME = storm::SRM_STATUS_OF_LS_REQUEST_MONITOR_NAME;
+
 void storm::StatusLsRequest::load(ns1__srmStatusOfLsRequestRequest* request)
 {
 	if(request->requestToken == NULL)

@@ -16,6 +16,9 @@
 #include "ResumeRequestRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::ResumeRequestRequest::NAME = "Resume request";
+const std::string storm::ResumeRequestRequest::MONITOR_NAME = storm::SRM_RESUME_REQUEST_MONITOR_NAME;
+
 void storm::ResumeRequestRequest::load(ns1__srmResumeRequestRequest* request)
 {
 	if (request->requestToken == NULL)

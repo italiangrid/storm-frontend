@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::LsRequest::NAME = "Ls";
+const std::string storm::LsRequest::MONITOR_NAME = storm::SRM_LS_MONITOR_NAME;
+
 void storm::LsRequest::load(ns1__srmLsRequest* request)
 {
 	if (NULL == request->arrayOfSURLs) {

@@ -24,10 +24,9 @@ namespace storm {
 class GetPermissionRequest: public SynchRequest<ns1__srmGetPermissionRequest,
 		ns1__srmGetPermissionResponse, ns1__srmGetPermissionResponse_> {
 public:
-	GetPermissionRequest(struct soap* soapRequest, struct ns1__srmGetPermissionRequest* request, std::string requestName,
-			std::string monitorName):
+	GetPermissionRequest(struct soap* soapRequest, struct ns1__srmGetPermissionRequest* request):
 			SynchRequest<ns1__srmGetPermissionRequest, ns1__srmGetPermissionResponse, ns1__srmGetPermissionResponse_>
-			(soapRequest, request, requestName, monitorName) {
+			(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -38,6 +37,11 @@ public:
     void load(ns1__srmGetPermissionRequest* req);
 
     int buildResponse();
+
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
+
 };
 }
 #endif // GET_PERMISSION_REQUEST_HPP

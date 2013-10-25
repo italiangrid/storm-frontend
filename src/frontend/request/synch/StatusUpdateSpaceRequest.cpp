@@ -16,6 +16,9 @@
 #include "StatusUpdateSpaceRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::StatusUpdateSpaceRequest::NAME = "Status update space";
+const std::string storm::StatusUpdateSpaceRequest::MONITOR_NAME = storm::SRM_STATUS_OF_UPDATE_SPACE_REQUEST_MONITOR_NAME;
+
 void storm::StatusUpdateSpaceRequest::load(ns1__srmStatusOfUpdateSpaceRequestRequest* request)
 {
 	if(request->requestToken == NULL)

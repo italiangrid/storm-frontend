@@ -23,8 +23,8 @@ namespace storm {
 
 class ExtendFileLifeTimeInSpaceRequest: public SynchRequest<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse,ns1__srmExtendFileLifeTimeInSpaceResponse_> {
 public:
-	ExtendFileLifeTimeInSpaceRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeInSpaceRequest* request, std::string requestName, std::string monitorName):
-		SynchRequest<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse, ns1__srmExtendFileLifeTimeInSpaceResponse_> (soapRequest, request, requestName, monitorName) {
+	ExtendFileLifeTimeInSpaceRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeInSpaceRequest* request):
+		SynchRequest<ns1__srmExtendFileLifeTimeInSpaceRequest, ns1__srmExtendFileLifeTimeInSpaceResponse, ns1__srmExtendFileLifeTimeInSpaceResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -43,6 +43,12 @@ public:
 private:
 	std::string m_spaceToken;
 	int m_newLifeTime;
+
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
+
 };
 }
 #endif // EXTEND_FILE_LIFE_TIME_IN_SPACE_REQUEST_HPP

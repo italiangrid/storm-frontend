@@ -23,8 +23,8 @@ namespace storm {
 
 class ExtendFileLifeTimeRequest: public SynchRequest<ns1__srmExtendFileLifeTimeRequest, ns1__srmExtendFileLifeTimeResponse,ns1__srmExtendFileLifeTimeResponse_> {
 public:
-	ExtendFileLifeTimeRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmExtendFileLifeTimeRequest, ns1__srmExtendFileLifeTimeResponse, ns1__srmExtendFileLifeTimeResponse_> (soapRequest, request, requestName, monitorName) {
+	ExtendFileLifeTimeRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeRequest* request) throw (invalid_request) :
+		SynchRequest<ns1__srmExtendFileLifeTimeRequest, ns1__srmExtendFileLifeTimeResponse, ns1__srmExtendFileLifeTimeResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -53,6 +53,11 @@ private:
 	std::string m_requestToken;
 	int m_newFileLifeTime;
 	int m_newPinLifeTime;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
+
 };
 }
 #endif // EXTEND_FILE_LIFE_TIME_REQUEST_HPP

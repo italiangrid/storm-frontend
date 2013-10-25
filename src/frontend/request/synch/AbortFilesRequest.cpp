@@ -17,6 +17,8 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::AbortFilesRequest::NAME = "Abort files";
+const std::string storm::AbortFilesRequest::MONITOR_NAME = storm::SRM_ABORT_FILES_MONITOR_NAME;
 
 void storm::AbortFilesRequest::load(ns1__srmAbortFilesRequest* request)
 {

@@ -27,12 +27,11 @@ class StatusChangeSpaceForFilesRequest: public SynchRequest<
 		ns1__srmStatusOfChangeSpaceForFilesRequestResponse_> {
 public:
 	StatusChangeSpaceForFilesRequest(struct soap* soapRequest,
-			struct ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmStatusOfChangeSpaceForFilesRequestRequest* request):
 			SynchRequest<ns1__srmStatusOfChangeSpaceForFilesRequestRequest,
 					ns1__srmStatusOfChangeSpaceForFilesRequestResponse,
 					ns1__srmStatusOfChangeSpaceForFilesRequestResponse_>(
-					soapRequest, request, requestName, monitorName) {
+					soapRequest, request) {
 		this->load(request);
 	}
 
@@ -52,6 +51,9 @@ public:
 
 private:
 	std::string m_requestToken;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // STATUS_CHANGE_SPACE_FOR_FILES_REQUEST_HPP

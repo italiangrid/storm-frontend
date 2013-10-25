@@ -23,8 +23,8 @@ namespace storm {
 
 class GetTransferProtocolsRequest: public SynchRequest<ns1__srmGetTransferProtocolsRequest, ns1__srmGetTransferProtocolsResponse,ns1__srmGetTransferProtocolsResponse_> {
 public:
-	GetTransferProtocolsRequest(struct soap* soapRequest, struct ns1__srmGetTransferProtocolsRequest* request, std::string requestName, std::string monitorName) throw (invalid_request) :
-		SynchRequest<ns1__srmGetTransferProtocolsRequest, ns1__srmGetTransferProtocolsResponse, ns1__srmGetTransferProtocolsResponse_> (soapRequest, request, requestName, monitorName) {
+	GetTransferProtocolsRequest(struct soap* soapRequest, struct ns1__srmGetTransferProtocolsRequest* request) throw (invalid_request) :
+		SynchRequest<ns1__srmGetTransferProtocolsRequest, ns1__srmGetTransferProtocolsResponse, ns1__srmGetTransferProtocolsResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -35,6 +35,11 @@ public:
     void load(ns1__srmGetTransferProtocolsRequest* req);
 
     int buildResponse();
+
+
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // GET_TRANSFER_PROTOCOLS_REQUEST_HPP

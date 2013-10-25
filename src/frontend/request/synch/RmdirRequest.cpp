@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::RmdirRequest::NAME = "Rmdir";
+const std::string storm::RmdirRequest::MONITOR_NAME = storm::SRM_RMDIR_MONITOR_NAME;
+
 void storm::RmdirRequest::load(ns1__srmRmdirRequest* request)
 {
 	if(request->SURL == NULL)

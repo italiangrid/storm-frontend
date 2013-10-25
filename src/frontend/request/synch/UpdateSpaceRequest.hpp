@@ -23,8 +23,8 @@ namespace storm {
 
 class UpdateSpaceRequest: public SynchRequest<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse,ns1__srmUpdateSpaceResponse_> {
 public:
-	UpdateSpaceRequest(struct soap* soapRequest, struct ns1__srmUpdateSpaceRequest* request, std::string requestName, std::string monitorName):
-		SynchRequest<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse, ns1__srmUpdateSpaceResponse_> (soapRequest, request, requestName, monitorName) {
+	UpdateSpaceRequest(struct soap* soapRequest, struct ns1__srmUpdateSpaceRequest* request):
+		SynchRequest<ns1__srmUpdateSpaceRequest, ns1__srmUpdateSpaceResponse, ns1__srmUpdateSpaceResponse_> (soapRequest, request) {
 		this->load(request);
     }
 
@@ -36,6 +36,7 @@ public:
 
     int buildResponse();
 
+
 	std::string getSpaceToken()
 	{
 		return m_spaceToken;
@@ -45,6 +46,10 @@ private:
 	long m_newSizeOfTotalSpaceDesired;
 	long m_newSizeOfGuaranteedSpaceDesired;
 	int m_newLifeTime;
+
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 };
 }
 #endif // UPDATE_SPACE_REQUEST_HPP

@@ -16,6 +16,9 @@
 #include "AbortRequestRequest.hpp"
 #include "srmlogit.h"
 
+const std::string storm::AbortRequestRequest::NAME = "Abort request";
+const std::string storm::AbortRequestRequest::MONITOR_NAME = storm::SRM_ABORT_REQUEST_MONITOR_NAME;
+
 void storm::AbortRequestRequest::load(ns1__srmAbortRequestRequest* request)
 {
 	if (request->requestToken == NULL)

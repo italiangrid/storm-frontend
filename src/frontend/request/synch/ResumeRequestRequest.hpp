@@ -25,12 +25,10 @@ class ResumeRequestRequest: public SynchRequest<ns1__srmResumeRequestRequest,
 		ns1__srmResumeRequestResponse, ns1__srmResumeRequestResponse_> {
 public:
 	ResumeRequestRequest(struct soap* soapRequest,
-			struct ns1__srmResumeRequestRequest* request,
-			std::string requestName, std::string monitorName):
+			struct ns1__srmResumeRequestRequest* request):
 			SynchRequest<ns1__srmResumeRequestRequest,
 					ns1__srmResumeRequestResponse,
-					ns1__srmResumeRequestResponse_>(soapRequest, request,
-					requestName, monitorName) {
+					ns1__srmResumeRequestResponse_>(soapRequest, request) {
 		this->load(request);
 	}
 
@@ -48,6 +46,10 @@ public:
 	}
 private:
 	std::string m_requestToken;
+public:
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 };
 }
 #endif // RESUME_REQUEST_REQUEST_HPP

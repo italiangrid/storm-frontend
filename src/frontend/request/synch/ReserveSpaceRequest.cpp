@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include "token_validator.hpp"
 
+const std::string storm::ReserveSpaceRequest::NAME = "Reserve space";
+const std::string storm::ReserveSpaceRequest::MONITOR_NAME = storm::SRM_RESERVE_SPACE_MONITOR_NAME;
+
 void storm::ReserveSpaceRequest::load(ns1__srmReserveSpaceRequest* request)
 {
 	if (request->retentionPolicyInfo == NULL) {

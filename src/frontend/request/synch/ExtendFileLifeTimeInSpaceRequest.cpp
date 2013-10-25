@@ -17,6 +17,9 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+const std::string storm::ExtendFileLifeTimeInSpaceRequest::NAME = "Extend lifetime in space";
+const std::string storm::ExtendFileLifeTimeInSpaceRequest::MONITOR_NAME = storm::SRM_EXTEND_FILE_LIFE_TIME_IN_SPACE_MONITOR_NAME;
+
 void storm::ExtendFileLifeTimeInSpaceRequest::load(ns1__srmExtendFileLifeTimeInSpaceRequest* request)
 {
 	if (request->spaceToken == NULL) {

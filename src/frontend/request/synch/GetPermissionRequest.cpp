@@ -17,6 +17,10 @@
 #include "srmlogit.h"
 #include "Surl.hpp"
 
+
+const std::string storm::GetPermissionRequest::NAME = "Get permission";
+const std::string storm::GetPermissionRequest::MONITOR_NAME = storm::SRM_GET_PERMISSION_MONITOR_NAME;
+
 void storm::GetPermissionRequest::load(ns1__srmGetPermissionRequest* request)
 {
 	if (NULL == request->arrayOfSURLs) {
