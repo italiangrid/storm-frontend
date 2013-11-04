@@ -35,6 +35,9 @@ public:
 
 	ns1__srmStatusOfBringOnlineRequestResponse* buildResponse();
 
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 protected:
 	void addMissingSurls();
 private:

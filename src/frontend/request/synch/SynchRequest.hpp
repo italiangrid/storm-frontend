@@ -36,6 +36,8 @@
  */
 namespace storm {
 
+
+
 inline void validate_token_description(const std::string& token_description) {
 	if (!storm::token::description_valid(token_description))
 		throw storm::invalid_request(
@@ -77,7 +79,7 @@ public:
 		return m_credentials.getFQANsVector();
 	}
 
-	ns1__TStatusCode getStatus() {
+	ns1__TStatusCode getStatus() const {
 		return m_status;
 	}
 

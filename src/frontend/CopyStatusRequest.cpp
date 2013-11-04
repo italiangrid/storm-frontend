@@ -18,6 +18,9 @@
 #include "CopyTurl.hpp"
 #include "srmlogit.h"
 
+const std::string storm::CopyStatusRequest::NAME = "Copy";
+const std::string storm::CopyStatusRequest::MONITOR_NAME = storm::SRM_COPY_MONITOR_NAME;
+
 void storm::CopyStatusRequest::load(ns1__srmStatusOfCopyRequestRequest* req)
 {
 	if(req->arrayOfSourceSURLs == NULL)

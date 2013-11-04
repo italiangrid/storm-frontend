@@ -17,6 +17,9 @@
 #include "BolTurl.hpp"
 #include "srmlogit.h"
 
+const std::string storm::BolStatusRequest::NAME = "BoL Status";
+const std::string storm::BolStatusRequest::MONITOR_NAME = storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME;
+
 void storm::BolStatusRequest::load(ns1__srmStatusOfBringOnlineRequestRequest* req)
 {
 	if(req->arrayOfSourceSURLs == NULL)

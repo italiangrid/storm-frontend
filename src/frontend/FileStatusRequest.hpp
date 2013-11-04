@@ -41,6 +41,7 @@
 #include "Turl.hpp"
 #include "token_validator.hpp"
 #include "storm_exception.hpp"
+#include "Monitor.hpp"
 
 namespace storm {
 

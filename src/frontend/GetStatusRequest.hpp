@@ -33,6 +33,10 @@ public:
 	void loadFromDB(struct srm_dbfd* db);
 
 	ns1__srmStatusOfGetRequestResponse* buildResponse();
+	
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 
 protected:
 	void addMissingSurls();

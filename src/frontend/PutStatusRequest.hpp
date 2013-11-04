@@ -34,6 +34,9 @@ public:
 
 	ns1__srmStatusOfPutRequestResponse* buildResponse();
 
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 protected:
 	void addMissingSurls();
 };
