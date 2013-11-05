@@ -172,8 +172,6 @@ process_request(struct soap* tsoap) {
 
 int loadConfiguration(int argc, char** argv)
 {
-	char *func = "loadConfiguration()";
-
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 	try {
 		configuration->parseOptions(argc, argv);
@@ -234,63 +232,61 @@ void initLogging()
 
 void logConfiguration()
 {
-	char *func = "printConfiguration()";
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 
-    srmlogit(STORM_LOG_NONE, func, "Starting StoRM frontend as user: %s\n", configuration->getUser().c_str());
-    srmlogit(STORM_LOG_NONE, func, "---------------------- Configuration ------------------\n");
-    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_PORT.c_str(), configuration->getPort());
-    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_NUM_THREADS.c_str(), configuration->getNumThreads());
-    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_THREADPOOL_PENDING.c_str(), configuration->getThreadpoolMaxPending());
-    srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), configuration->getThreadpoolMaxpendingSleepTime());
-    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_MAX_GSOAP_PENDING.c_str(), configuration->getGsoapMaxPending());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_LOG_FILE_NAME.c_str(), configuration->getLogFile().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_ENABLED.c_str(), (configuration->getMonitoringEnabled() ? "true" : "false"));
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_FILE_NAME.c_str(), configuration->getMonitoringFile().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_MONITORING_DETAILED.c_str(), (configuration->getMonitoringDetailed() ? "true" : "false"));
-    srmlogit(STORM_LOG_NONE, func, "%s=%u\n", OPTL_MONITORING_TIME_INTERVAL.c_str(), configuration->getMonitoringTimeInterval());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_PEPD_ENDPOINT.c_str(), configuration->getArgusPepdEndpoint().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ARGUS_RESOURCE_ID.c_str(), configuration->getArgusResourceId().c_str());
-    srmlogit(STORM_LOG_NONE, func, "xmlrpc endpoint=%s\n", configuration->getXMLRPCEndpoint().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(), configuration->getRecalltablePort());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), configuration->getDebugLevelString().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_PROXY_USER.c_str(), configuration->getProxyUser().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_HOST.c_str(), configuration->getDBHost().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_DB_USER.c_str(), configuration->getDBUser().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_WSDL_FILE.c_str(), configuration->getWSDLFilePath().c_str());
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ENABLE_MAPPING.c_str(), (configuration->mappingEnabled() ? "true" : "false"));
-    srmlogit(STORM_LOG_NONE, func, "%s=%s\n", OPTL_ENABLE_VOMSCHECK.c_str(), (configuration->vomsCheckEnabled() ? "true" : "false"));
-    srmlogit(STORM_LOG_NONE, func, "-------------------------------------------------------\n");
+    srmlogit(STORM_LOG_NONE, __func__, "Starting StoRM frontend as user: %s\n", configuration->getUser().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "---------------------- Configuration ------------------\n");
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n", OPTL_PORT.c_str(), configuration->getPort());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n", OPTL_NUM_THREADS.c_str(), configuration->getNumThreads());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n", OPTL_MAX_THREADPOOL_PENDING.c_str(), configuration->getThreadpoolMaxPending());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%u\n", OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), configuration->getThreadpoolMaxpendingSleepTime());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n", OPTL_MAX_GSOAP_PENDING.c_str(), configuration->getGsoapMaxPending());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_LOG_FILE_NAME.c_str(), configuration->getLogFile().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_MONITORING_ENABLED.c_str(), (configuration->getMonitoringEnabled() ? "true" : "false"));
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_MONITORING_FILE_NAME.c_str(), configuration->getMonitoringFile().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_MONITORING_DETAILED.c_str(), (configuration->getMonitoringDetailed() ? "true" : "false"));
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%u\n", OPTL_MONITORING_TIME_INTERVAL.c_str(), configuration->getMonitoringTimeInterval());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_ARGUS_PEPD_ENDPOINT.c_str(), configuration->getArgusPepdEndpoint().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_ARGUS_RESOURCE_ID.c_str(), configuration->getArgusResourceId().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "xmlrpc endpoint=%s\n", configuration->getXMLRPCEndpoint().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(), configuration->getRecalltablePort());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(), configuration->getDebugLevelString().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_PROXY_DIR.c_str(), configuration->getProxyDir().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_PROXY_USER.c_str(), configuration->getProxyUser().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_DB_HOST.c_str(), configuration->getDBHost().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_DB_USER.c_str(), configuration->getDBUser().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_WSDL_FILE.c_str(), configuration->getWSDLFilePath().c_str());
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_ENABLE_MAPPING.c_str(), (configuration->mappingEnabled() ? "true" : "false"));
+    srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_ENABLE_VOMSCHECK.c_str(), (configuration->vomsCheckEnabled() ? "true" : "false"));
+    srmlogit(STORM_LOG_NONE, __func__, "-------------------------------------------------------\n");
 }
 
 int performSanityChecks()
 {
-	char *func = "performSanityChecks()";
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
     try {
         configuration->checkFileReadPerm(configuration->getGridmapfile());
     } catch (exception& e) {
-        srmlogit(STORM_LOG_WARNING, func, "%s\n", e.what());
+        srmlogit(STORM_LOG_WARNING, __func__, "%s\n", e.what());
     }
 
     try {
         configuration->checkFileReadPerm(configuration->getHostCertFile());
     } catch (exception& e) {
-    	srmlogit(STORM_LOG_WARNING, func, "%s\n", e.what());
+    	srmlogit(STORM_LOG_WARNING, __func__, "%s\n", e.what());
         return 1;
     }
 
     try {
         configuration->checkFileReadPerm(configuration->getHostKeyFile());
     } catch (exception& e) {
-    	srmlogit(STORM_LOG_WARNING, func, "%s\n", e.what());
+    	srmlogit(STORM_LOG_WARNING, __func__, "%s\n", e.what());
         return 1;
     }
 
     /**** Get list of supported protocols ****/
     if ((nb_supported_protocols = get_supported_protocols(&supported_protocols)) < 0) {
-    	srmlogit(STORM_LOG_ERROR, func, "Error in get_supported_protocols(): unable to retrieve "
+    	srmlogit(STORM_LOG_ERROR, __func__, "Error in get_supported_protocols(): unable to retrieve "
             "supported protocols from the DB.");
         return 1;
     }
@@ -299,7 +295,6 @@ int performSanityChecks()
 
 soap* initSoap()
 {
-	char *func = "initSoap()";
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 	/**** gSOAP and CGSI_gSOAP plugin initializaion ****/
 	struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
@@ -316,12 +311,12 @@ soap* initSoap()
 
 	if (!configuration->mappingEnabled()) {
 		flags |= CGSI_OPT_DISABLE_MAPPING;
-		srmlogit(STORM_LOG_NONE, func, "Mapping disabled\n");
+		srmlogit(STORM_LOG_NONE, __func__, "Mapping disabled\n");
 	}
 
 	if (!configuration->vomsCheckEnabled()) {
 		flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
-		srmlogit(STORM_LOG_NONE, func, "VOMS check disabled\n");
+		srmlogit(STORM_LOG_NONE, __func__, "VOMS check disabled\n");
 	}
 
 	soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
@@ -338,7 +333,7 @@ soap* initSoap()
 	return soap_data;
 }
 
-void setupXmlrpc()
+void setupXMLRPC()
 {
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 
@@ -349,14 +344,17 @@ void setupXmlrpc()
     struct xmlrpc_clientparms client_params;
     struct xmlrpc_curl_xportparms curl_params;
 
+    memset(&curl_params, 0, sizeof(curl_params));
+
     // Ugly hack to encode token in User-Agent HTTP header
     // as xmlrpc doesnt allow us to access CURL object and
     // set a decent header ourselves.
     curl_params.user_agent = storm_ua_token.c_str();
-    curl_params.dont_advertise = 0;
+    curl_params.dont_advertise = 1;
+
     client_params.transport = "curl";
     client_params.transportparmsP = &curl_params;
-    client_params.transportparm_size = XMLRPC_CXPSIZE(user_agent);
+    client_params.transportparm_size = XMLRPC_CXPSIZE(dont_advertise);
 
     xmlrpc_client_init2(&env,
     		XMLRPC_CLIENT_NO_FLAGS,
@@ -424,7 +422,6 @@ storm::Monitoring* initMonitoring()
 
 int acceptRequest(soap* soap_data)
 {
-	char *func = "acceptRequest()";
 	int fd = soap_accept(soap_data);
 	while (!soap_valid_socket(fd)) {
 
@@ -434,7 +431,7 @@ int acceptRequest(soap* soap_data)
 		 }
 
 		 if (soap_data->errnum) {
-			 srmlogit(STORM_LOG_INFO, func, "Error in soap_socket. Error %ld\n", soap_data->errnum);
+			 srmlogit(STORM_LOG_INFO, __func__, "Error in soap_socket. Error %ld\n", soap_data->errnum);
 			 soap_print_fault(soap_data, stderr);
 		 }
 
@@ -446,7 +443,6 @@ int acceptRequest(soap* soap_data)
 
 int run(soap* soap_data)
 {
-	char *func = "run()";
 	/******************************* main loop ******************************/
 	struct soap *tsoap;
 	int exit_code = 0;
@@ -461,37 +457,36 @@ int run(soap* soap_data)
 		}
 
 		while ((tsoap = soap_copy(soap_data)) == NULL) {
-			srmlogit(STORM_LOG_ERROR, func,
+			srmlogit(STORM_LOG_ERROR, __func__,
 					"Error in soap_copy(), probably system busy retry in 3 seconds. Error message: %s\n",
 					strerror(ENOMEM));
-			srmlogit(STORM_LOG_DEBUG, func, "AUDIT - CP - Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
-			srmlogit(STORM_LOG_DEBUG, func, "AUDIT - CP - Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
+			srmlogit(STORM_LOG_DEBUG, __func__, "AUDIT - CP - Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
+			srmlogit(STORM_LOG_DEBUG, __func__, "AUDIT - CP - Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
 
 			// A memory allocation error here is probably due to system busy so... going to sleep for a while.
 			sleep(3);
 		}
 
 		try {
-			srmlogit(STORM_LOG_DEBUG2, func, "Going to bind to a thread\n");
+			srmlogit(STORM_LOG_DEBUG2, __func__, "Going to bind to a thread\n");
 			storm::ThreadPool::getInstance()->schedule(boost::bind(process_request, tsoap));
-			srmlogit(STORM_LOG_DEBUG2, func, "Bound request to a thread\n");
+			srmlogit(STORM_LOG_DEBUG2, __func__, "Bound request to a thread\n");
 
 		} catch (exception& e) {
-			srmlogit(STORM_LOG_ERROR, func, "Cannot schedule task, request is lost: %s\n", e.what());
+			srmlogit(STORM_LOG_ERROR, __func__, "Cannot schedule task, request is lost: %s\n", e.what());
 
 			soap_destroy(tsoap);
 			soap_end(tsoap);
 			soap_free(tsoap);
 		}
 
-		srmlogit(STORM_LOG_DEBUG, func, "AUDIT - Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
-		srmlogit(STORM_LOG_DEBUG, func, "AUDIT - Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
+		srmlogit(STORM_LOG_DEBUG, __func__, "AUDIT - Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
+		srmlogit(STORM_LOG_DEBUG, __func__, "AUDIT - Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
 	}
 	return exit_code;
 }
 
 int main(int argc, char** argv) {
-    char *func = "main";
 
     int ret = loadConfiguration(argc, argv);
 	if(ret != 0)
@@ -515,9 +510,9 @@ int main(int argc, char** argv) {
 	{
 		return 1;
 	}
-    srmlogit(STORM_LOG_DEBUG, func, "Initializing the ProtocolChecker instance\n");
+    srmlogit(STORM_LOG_DEBUG, __func__, "Initializing the ProtocolChecker instance\n");
     ProtocolChecker::getInstance()->ProtocolChecker::init(&supported_protocols, nb_supported_protocols);
-    srmlogit(STORM_LOG_DEBUG, func, "ProtocolChecker initialization completed\n");
+    srmlogit(STORM_LOG_DEBUG, __func__, "ProtocolChecker initialization completed\n");
     ProtocolChecker::getInstance()->ProtocolChecker::printProtocols();
 
     if (!configuration->requestedDebug()) { // fork and leave the daemon in background
@@ -541,20 +536,22 @@ int main(int argc, char** argv) {
 
     curl_global_init(CURL_GLOBAL_ALL);
 
-    setupXmlrpc();
+    setupXMLRPC();
+
+
     // the size of mysql_connection pool and thread pool MUST be the same
     mysql_connection_pool = new DBConnectionPool(configuration->getNumThreads());
 	storm::Monitoring* monitoring = initMonitoring();
     // SIGINT (kill -2) to stop the frontend
     signal(SIGINT, sigint_handler);
 
-    srmlogit(STORM_LOG_NONE, func, "StoRM frontend successfully started...\n");
+    srmlogit(STORM_LOG_NONE, __func__, "StoRM frontend successfully started...\n");
 
     int exit_code = run(soap_data);
 
-    srmlogit(STORM_LOG_NONE, func, "Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
-    srmlogit(STORM_LOG_NONE, func, "Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
-    srmlogit(STORM_LOG_NONE, func, "Waiting for active and pending tasks to finish...\n");
+    srmlogit(STORM_LOG_NONE, __func__, "Active tasks: %ld\n", storm::ThreadPool::getInstance()->get_active());
+    srmlogit(STORM_LOG_NONE, __func__, "Pending tasks: %ld\n", storm::ThreadPool::getInstance()->get_pending());
+    srmlogit(STORM_LOG_NONE, __func__, "Waiting for active and pending tasks to finish...\n");
 
     soap_destroy(soap_data);
     soap_end(soap_data);
@@ -567,7 +564,7 @@ int main(int argc, char** argv) {
 
     curl_global_cleanup();
 
-    srmlogit(STORM_LOG_NONE, func, "StoRM Frontend shutdown complete.\n");
+    srmlogit(STORM_LOG_NONE, __func__, "StoRM Frontend shutdown complete.\n");
 
     return (exit_code);
 }
