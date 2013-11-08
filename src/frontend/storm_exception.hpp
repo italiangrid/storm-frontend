@@ -55,5 +55,21 @@ struct token_not_found: public invalid_request {
 		return std::runtime_error::what();
 	}
 };
+
+struct invalid_surl : public invalid_request {
+	invalid_surl(std::string const& m) :
+		invalid_request(m){}
+	virtual const char* what() throw() {
+		return std::runtime_error::what();
+	}
+};
+
+struct invalid_turl : public invalid_request {
+	invalid_turl(std::string const& m) :
+		invalid_request(m){}
+	virtual const char* what() throw() {
+		return std::runtime_error::what();
+	}
+};
 }
 #endif /* STORM_EXCEPTION_HPP_ */

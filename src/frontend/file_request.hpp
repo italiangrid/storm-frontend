@@ -38,6 +38,7 @@ extern "C" {
 #include "sql_string.hpp"
 #include "Surl.hpp"
 #include "token_validator.hpp"
+#include "Monitor.hpp"
 
 namespace storm {
 

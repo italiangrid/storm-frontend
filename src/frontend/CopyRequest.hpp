@@ -43,6 +43,9 @@ public:
 
 	std::string getSurlsList();
 
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
+
 private:
     storm_time_t m_fileLifetime; // -1 = not specified --> stands for desiredTargetSURLLifeTime
     char m_overwrite;

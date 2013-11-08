@@ -24,23 +24,19 @@ namespace storm {
 
 class BolTurl : public Turl  {
 public:
-	BolTurl(std::string turl, Surl surl, storm_size_t size)
-			throw (InvalidSurl, InvalidTurl) :
+	BolTurl(std::string turl, Surl surl, storm_size_t size):
 			Turl(turl, surl), m_fileSize(size), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
-	BolTurl(std::string turl, Surl surl)
-			throw (InvalidSurl, InvalidTurl) :
+	BolTurl(std::string turl, Surl surl):
 				Turl(turl, surl), m_fileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
-	BolTurl(Surl surl, storm_size_t size)
-			throw (InvalidSurl, InvalidTurl) :
+	BolTurl(Surl surl, storm_size_t size):
 			Turl(surl), m_fileSize(size), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
-	BolTurl(Surl surl)
-			throw (InvalidSurl, InvalidTurl) :
+	BolTurl(Surl surl):
 				Turl(surl), m_fileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 

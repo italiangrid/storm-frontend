@@ -21,6 +21,9 @@
 
 #include "srmlogit.h"
 
+const std::string storm::CopyRequest::NAME = "Copy";
+const std::string storm::CopyRequest::MONITOR_NAME = storm::SRM_COPY_MONITOR_NAME;
+
 bool storm::CopyRequest::supportsProtocolSpecification()
 {
 	return false;

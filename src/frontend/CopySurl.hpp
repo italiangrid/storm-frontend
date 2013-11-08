@@ -25,21 +25,19 @@
 namespace storm {
 class CopySurl : public PtgSurl  {
 public:
-	CopySurl(std::string sourceSurl, std::string destinationSurl, ns1__TDirOption* dirOption)
-	throw (InvalidSurl) : PtgSurl(sourceSurl, dirOption) {
+	CopySurl(std::string sourceSurl, std::string destinationSurl, ns1__TDirOption* dirOption) : PtgSurl(sourceSurl, dirOption) {
 		this->init(destinationSurl);
 	};
 
-	CopySurl(std::string sourceSurl, ns1__TDirOption* dirOption)
-	throw (InvalidSurl) : PtgSurl(sourceSurl, dirOption) , m_destinationSURL("") {
+	CopySurl(std::string sourceSurl, ns1__TDirOption* dirOption) : PtgSurl(sourceSurl, dirOption) , m_destinationSURL("") {
 	};
 
-	CopySurl(std::string sourceSurl, std::string destinationSurl)  throw (InvalidSurl) :
+	CopySurl(std::string sourceSurl, std::string destinationSurl):
 			PtgSurl(sourceSurl) {
 		this->init(destinationSurl);
 	};
 
-	CopySurl(std::string sourceSurl)  throw (InvalidSurl) :
+	CopySurl(std::string sourceSurl):
 			PtgSurl(sourceSurl) , m_destinationSURL("") {
 	};
 
@@ -75,11 +73,11 @@ public:
 private:
 	sql_string m_destinationSURL; // "" means not initialized
 
-	void init(std::string& destinationSurl) throw (InvalidSurl)
+	void init(std::string& destinationSurl)
 	{
 		if(destinationSurl.empty())
 		{
-			throw InvalidSurl("Unable to create an empty destination SURL");
+			throw invalid_surl("Unable to create an empty destination SURL");
 		}
 		m_destinationSURL = sql_string(destinationSurl);
 	}

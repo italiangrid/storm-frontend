@@ -29,21 +29,35 @@
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "storm_exception.hpp"
+#include <boost/format.hpp>
+#include "base_request.hpp"
 
-extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *req,
+
+
+int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep) {
 
     static const char* funcName = "srmPrepareToPut";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::PtpRequest* request;
+    storm::PtpRequest* request = 0;
     try{ request = new storm::PtpRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
-    	srmLogResponse("PTP", SRM_USCOREFAILURE);
-		return soap_sender_fault(soap,e.what(),0);;
+    	storm::request::register_request_error<storm::PtpRequest>(
+    			__func__,
+    			SRM_USCOREINVALID_USCOREREQUEST,
+    			start_time,
+				boost::str(boost::format("%s\n") % e.what())
+				);
+
+    	rep->srmPrepareToPutResponse =
+    			storm::build_error_message_response<ns1__srmPrepareToPutResponse>(
+    					soap,
+    					SRM_USCOREINVALID_USCOREREQUEST,
+    					e.what());
+
+
+		return SOAP_OK;
     }
     srmLogRequestWithSurls("PTP", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -137,20 +151,30 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
     return soap_status;
 }
 
-extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *req,
+int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *req,
         struct ns1__srmPrepareToGetResponse_ *rep) {
 
     static const char* funcName = "srmPrepareToGet";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::PtgRequest* request;
+    storm::PtgRequest* request = 0;
     try{ request = new storm::PtgRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
-    	srmLogResponse("PTG", SRM_USCOREFAILURE);
-    	return soap_sender_fault(soap,e.what(),0);;
+    	storm::request::register_request_error<storm::PtgRequest>(
+    	    			__func__,
+    	    			SRM_USCOREINVALID_USCOREREQUEST,
+    	    			start_time,
+    					boost::str(boost::format("%s\n") % e.what())
+    					);
+
+    	rep->srmPrepareToGetResponse =
+    	    			storm::build_error_message_response<ns1__srmPrepareToGetResponse>(
+    	    					soap,
+    	    					SRM_USCOREINVALID_USCOREREQUEST,
+    	    					e.what());
+
+
+    	return SOAP_OK;
     }
 	srmLogRequestWithSurls("PTG", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -244,20 +268,30 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
     return soap_status;
 }
 
-extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
+int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
         struct ns1__srmCopyResponse_ *rep) {
 
     static const char* funcName = "srmCopy";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::CopyRequest* request;
+    storm::CopyRequest* request = 0;
     try{ request = new storm::CopyRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_COPY_MONITOR_NAME);
-    	srmLogResponse("CP", SRM_USCOREFAILURE);
-    	return soap_sender_fault(soap,e.what(),0);;
+    	storm::request::register_request_error<storm::CopyRequest>(
+    	    			__func__,
+    	    			SRM_USCOREINVALID_USCOREREQUEST,
+    	    			start_time,
+    					boost::str(boost::format("%s\n") % e.what())
+    					);
+
+    	rep->srmCopyResponse =
+    	    			storm::build_error_message_response<ns1__srmCopyResponse>(
+    	    					soap,
+    	    					SRM_USCOREINVALID_USCOREREQUEST,
+    	    					e.what());
+
+
+    	return SOAP_OK;
     }
 	srmLogRequestWithSurls("CP", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -351,7 +385,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     return soap_status;
 }
 
-extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *req,
+int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *req,
         struct ns1__srmBringOnlineResponse_ *rep) {
 
     static const char* funcName = "srmBringOnline";
@@ -360,11 +394,21 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     try{ request = new storm::BolRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_BRING_ONLINE_MONITOR_NAME);
-    	srmLogResponse("BOL", SRM_USCOREFAILURE);
-    	return soap_sender_fault(soap,e.what(),0);;
+    	delete request;
+    	storm::request::register_request_error<storm::BolRequest>(
+    	    	    			__func__,
+    	    	    			SRM_USCOREINVALID_USCOREREQUEST,
+    	    	    			start_time,
+    	    					boost::str(boost::format("%s\n") % e.what())
+    	    					);
+
+    	rep->srmBringOnlineResponse =
+    			storm::build_error_message_response<ns1__srmBringOnlineResponse>(
+    					soap,
+    					SRM_USCOREINVALID_USCOREREQUEST,
+    					e.what());
+
+    	return SOAP_OK;
     }
 	srmLogRequestWithSurls("BOL", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),

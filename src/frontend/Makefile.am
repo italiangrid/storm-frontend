@@ -64,6 +64,7 @@ stormfrontend_others = storm_exception.hpp \
     FullCredentials.cpp FullCredentials.hpp \
     CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
+    base_request.hpp \
     file_request.hpp filerequest_template.hpp \
     file_status.hpp \
     StatusTemplate.hpp FileStatusRequest.hpp \

@@ -30,19 +30,12 @@
 #include "token_validator.hpp"
 #include "storm_exception.hpp"
 #include "Monitor.hpp"
-
+#include "base_request.hpp"
 /**
  * Abstract class representing a generic file request.
  */
 namespace storm {
 
-
-
-inline void validate_token_description(const std::string& token_description) {
-	if (!storm::token::description_valid(token_description))
-		throw storm::invalid_request(
-				"invalid token description: " + token_description);
-}
 
 template<typename soap_in_t, typename soap_out_t, typename soap_out_root_t>
 class SynchRequest {
@@ -186,9 +179,7 @@ protected:
 	}
 
 	void validate_token(const std::string& token) {
-		if (!storm::token::valid(token)) {
-			throw storm::invalid_request("invalid token: " + token);
-		}
+		storm::request::validate_token(token);
 	}
 
 private:

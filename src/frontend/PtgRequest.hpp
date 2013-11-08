@@ -39,6 +39,9 @@ public:
 
     struct ns1__srmPrepareToGetResponse* buildResponse();
 
+    static const std::string NAME;
+    static const std::string MONITOR_NAME;
+
 private:
     storm_time_t m_pinLifetime; // -1 = not specified
     ns1__TFileStorageType* m_desiredFileStorageType; //ignored

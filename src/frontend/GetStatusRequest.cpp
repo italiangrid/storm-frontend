@@ -17,7 +17,7 @@
 #include "PtgTurl.hpp"
 #include "srmlogit.h"
 
-const std::string storm::GetStatusRequest::NAME = "Status of Get";
+const std::string storm::GetStatusRequest::NAME = "PtG Status";
 const std::string storm::GetStatusRequest::MONITOR_NAME = storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME;
 
 void storm::GetStatusRequest::load(ns1__srmStatusOfGetRequestRequest* req)

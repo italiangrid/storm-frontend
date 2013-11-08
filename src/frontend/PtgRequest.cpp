@@ -21,6 +21,9 @@
 
 #include "PtgRequest.hpp"
 
+const std::string storm::PtgRequest::NAME = "Prepare to get";
+const std::string storm::PtgRequest::MONITOR_NAME = storm::SRM_PREPARE_TO_GET_MONITOR_NAME;
+
 bool storm::PtgRequest::supportsProtocolSpecification()
 {
 	return true;

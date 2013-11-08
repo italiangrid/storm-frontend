@@ -29,17 +29,7 @@
 #include "storm_exception.hpp"
 #include "request/synch/sync_requests.hpp"
 #include "request_logger.hpp"
-
-typedef ns1__TStatusCode srm_request_status;
-
-template<typename request_t>
-void register_request_error(const char* func_name, srm_request_status status,
-		boost::posix_time::ptime start_time, std::string const& msg) {
-	srmlogit(STORM_LOG_ERROR, func_name, msg.c_str());
-	srmLogResponse(request_t::NAME.c_str(), status);
-	storm::MonitoringHelper::registerOperationError(start_time,
-			request_t::MONITOR_NAME.c_str());
-}
+#include "base_request.hpp"
 
 template<typename response_container_t, typename response_t, typename request_t,
 		typename soap_request_t>
@@ -70,7 +60,7 @@ int handle_request(const char* func_name, struct soap* soap,
 					SRM_USCOREAUTHORIZATION_USCOREFAILURE,
 					"Request authorization error: user is blacklisted.");
 
-			register_request_error<request_t>(func_name,
+			storm::request::register_request_error<request_t>(func_name,
 					SRM_USCOREAUTHORIZATION_USCOREFAILURE, start_time,
 					"Request authorization error: user is blacklisted.");
 
@@ -94,7 +84,7 @@ int handle_request(const char* func_name, struct soap* soap,
 		*soap_resp = storm::build_error_message_response<response_t>(soap,
 				SRM_USCOREINVALID_USCOREREQUEST, e.what());
 
-		register_request_error<request_t>(func_name,
+		storm::request::register_request_error<request_t>(func_name,
 				SRM_USCOREINVALID_USCOREREQUEST, start_time,
 				str(format("%s\n") % e.what()));
 
@@ -105,7 +95,7 @@ int handle_request(const char* func_name, struct soap* soap,
 		*soap_resp = storm::build_error_message_response<response_t>(soap,
 				SRM_USCOREFAILURE, e.what());
 
-		register_request_error<request_t>(func_name, SRM_USCOREFAILURE,
+		storm::request::register_request_error<request_t>(func_name, SRM_USCOREFAILURE,
 				start_time,
 				str(format("Error authorizing request: %s\n") % e.what()));
 
@@ -116,7 +106,7 @@ int handle_request(const char* func_name, struct soap* soap,
 		*soap_resp = storm::build_error_message_response<response_t>(soap,
 				SRM_USCOREFAILURE, e.what());
 
-		register_request_error<request_t>(func_name, SRM_USCOREFAILURE,
+		storm::request::register_request_error<request_t>(func_name, SRM_USCOREFAILURE,
 				start_time,
 				str(
 						format(

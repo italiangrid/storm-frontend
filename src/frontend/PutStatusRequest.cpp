@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include <bits/stl_pair.h>
 
+const std::string storm::PutStatusRequest::NAME = "PtP status";
+const std::string storm::PutStatusRequest::MONITOR_NAME = storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME;
+
 void storm::PutStatusRequest::load(ns1__srmStatusOfPutRequestRequest* req)
 {
 	if(req->arrayOfTargetSURLs == NULL)

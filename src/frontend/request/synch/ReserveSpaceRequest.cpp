@@ -34,7 +34,7 @@ void storm::ReserveSpaceRequest::load(ns1__srmReserveSpaceRequest* request)
 		m_accessLatency = *(request->retentionPolicyInfo->accessLatency);
 	}
 	if (request->userSpaceTokenDescription != NULL) {
-		storm::validate_token_description(std::string(request->userSpaceTokenDescription));
+		storm::request::validate_token_description(std::string(request->userSpaceTokenDescription));
 		m_userSpaceTokenDescription = *(request->userSpaceTokenDescription);
 	}
 	m_desiredSizeOfGuaranteedSpace = request->desiredSizeOfGuaranteedSpace;

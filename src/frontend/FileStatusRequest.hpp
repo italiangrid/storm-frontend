@@ -77,7 +77,7 @@ public:
 
     	// Validate request token
     	if (!storm::token::valid(std::string(req->requestToken))){
-    		throw invalid_request("Invalid request token");
+    		throw invalid_request("invalid token");
     	}
 
     	m_requestToken = sql_string(req->requestToken);

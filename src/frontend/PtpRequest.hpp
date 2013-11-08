@@ -23,7 +23,7 @@ namespace storm {
 
 class PtpRequest: public file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse> {
 public:
-	PtpRequest(struct soap* soapRequest, struct ns1__srmPrepareToPutRequest* ptpRequest) throw (invalid_request) :
+	PtpRequest(struct soap* soapRequest, struct ns1__srmPrepareToPutRequest* ptpRequest):
 			file_request<ns1__srmPrepareToPutRequest, ns1__srmPrepareToPutResponse >(soapRequest) {
 		m_requestType = DB_PUT_REQUEST;
 		m_pinLifetime = -1;
@@ -35,7 +35,7 @@ public:
 
     void insertIntoDB(struct srm_dbfd* dbfd) throw (std::logic_error , storm_db::mysql_exception);
 
-    void load(ns1__srmPrepareToPutRequest* req) throw (invalid_request) ;
+    void load(ns1__srmPrepareToPutRequest* req);
     
     /*
      * Returns true if the ptp command supports the option for specify the preferred transfer protocol
@@ -43,6 +43,9 @@ public:
     bool supportsProtocolSpecification();
 
     struct ns1__srmPrepareToPutResponse* buildResponse();
+
+    static const std::string NAME;
+    static const std::string MONITOR_NAME;
 
 private:
     storm_time_t m_pinLifetime; // -1 = not specified

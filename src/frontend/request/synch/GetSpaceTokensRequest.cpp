@@ -23,7 +23,7 @@ void storm::GetSpaceTokensRequest::load(ns1__srmGetSpaceTokensRequest* request)
 {
 	if(request->userSpaceTokenDescription != NULL)
 	{
-		storm::validate_token_description(std::string(request->userSpaceTokenDescription));
+		storm::request::validate_token_description(std::string(request->userSpaceTokenDescription));
 		m_userSpaceTokenDescription = request->userSpaceTokenDescription;
 	}
 }

@@ -29,7 +29,7 @@ void storm::StatusLsRequest::load(ns1__srmStatusOfLsRequestRequest* request)
 	}
 	// Ensure token is a UUID
 	if (!storm::token::valid(std::string(request->requestToken))){
-		throw storm::invalid_request("Invalid request token");
+		throw storm::invalid_request("invalid token");
 	}
 	m_requestToken = std::string(request->requestToken);
 	validate_token(m_requestToken);

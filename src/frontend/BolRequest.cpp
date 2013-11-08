@@ -21,6 +21,8 @@
 
 #include "BolRequest.hpp"
 
+const std::string storm::BolRequest::NAME = "Bring online";
+const std::string storm::BolRequest::MONITOR_NAME = storm::SRM_BRING_ONLINE_MONITOR_NAME;
 
 bool storm::BolRequest::supportsProtocolSpecification()
 {

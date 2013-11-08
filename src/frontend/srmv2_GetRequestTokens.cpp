@@ -92,7 +92,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             u_token = std::string(req->userRequestDescription);
             if (!storm::token::description_valid(u_token)){
             	repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-            	repp->returnStatus->explanation = "invalid request token description";
+            	repp->returnStatus->explanation = "invalid user request description";
             	storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
             	return SOAP_OK;
             }

@@ -34,6 +34,8 @@
 #include "Authorization.hpp"
 
 #include "get_socket_info.hpp"
+#include "base_request.hpp"
+#include <boost/format.hpp>
 
 extern "C"
 int ns1__srmStatusOfPutRequest(struct soap *soap,
@@ -42,15 +44,25 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 {
     static const char* funcName = "srmStatusOfPutRequest";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::PutStatusRequest* request;
+    storm::PutStatusRequest* request = 0;
 	try{ request = new storm::PutStatusRequest(soap, req); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME);
-    	srmLogResponse("PTP status", SRM_USCOREFAILURE);
-		return soap_sender_fault(soap, e.what(), 0);
+		storm::request::register_request_error<storm::PutStatusRequest>(
+		    			__func__,
+		    			SRM_USCOREINVALID_USCOREREQUEST,
+		    			start_time,
+						boost::str(boost::format("%s\n") % e.what())
+						);
+
+		rep->srmStatusOfPutRequestResponse =
+		    			storm::build_error_message_response<ns1__srmStatusOfPutRequestResponse>(
+		    					soap,
+		    					SRM_USCOREINVALID_USCOREREQUEST,
+		    					e.what());
+
+
+		return SOAP_OK;
 	}
 	if(request->hasSurls())
 	{
@@ -107,15 +119,25 @@ int ns1__srmStatusOfGetRequest(struct soap *soap,
 {
     static const char* funcName = "srmStatusOfGetRequest";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::GetStatusRequest* request;
+    storm::GetStatusRequest* request = 0;
 	try{ request = new storm::GetStatusRequest(soap, req); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(start_time,
-						storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME);
-		srmLogResponse("PTG status", SRM_USCOREFAILURE);
-		return soap_sender_fault(soap, e.what(), 0);;
+		storm::request::register_request_error<storm::GetStatusRequest>(
+				    			__func__,
+				    			SRM_USCOREINVALID_USCOREREQUEST,
+				    			start_time,
+								boost::str(boost::format("%s\n") % e.what())
+								);
+
+		rep->srmStatusOfGetRequestResponse =
+				    			storm::build_error_message_response<ns1__srmStatusOfGetRequestResponse>(
+				    					soap,
+				    					SRM_USCOREINVALID_USCOREREQUEST,
+				    					e.what());
+
+
+		return SOAP_OK;
 	}
 	if(request->hasSurls())
 	{
@@ -170,15 +192,25 @@ int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 {
     static const char* funcName = "srmStatusOfBringOnLineRequest";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::BolStatusRequest* request;
+    storm::BolStatusRequest* request = 0;
 	try{ request = new storm::BolStatusRequest(soap, req); }
 	catch(storm::invalid_request& e)
 	{
-		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-		storm::MonitoringHelper::registerOperationError(start_time,
-						storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME);
-		srmLogResponse("BOL status", SRM_USCOREFAILURE);
-		return soap_sender_fault(soap, e.what(), 0);;
+		storm::request::register_request_error<storm::BolStatusRequest>(
+				    			__func__,
+				    			SRM_USCOREINVALID_USCOREREQUEST,
+				    			start_time,
+								boost::str(boost::format("%s\n") % e.what())
+								);
+
+		rep->srmStatusOfBringOnlineRequestResponse =
+				    			storm::build_error_message_response<ns1__srmStatusOfBringOnlineRequestResponse>(
+				    					soap,
+				    					SRM_USCOREINVALID_USCOREREQUEST,
+				    					e.what());
+
+
+		return SOAP_OK;
 	}
 	if(request->hasSurls())
 	{
@@ -234,10 +266,25 @@ int ns1__srmStatusOfCopyRequest(struct soap *soap,
 {
     static const char* funcName = "srmStatusOfCopyRequest";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::CopyStatusRequest* request;
+    storm::CopyStatusRequest* request = 0;
    	try{ request = new storm::CopyStatusRequest(soap, req); }
    	catch(storm::invalid_request& e)
    	{
+   		storm::request::register_request_error<storm::CopyStatusRequest>(
+   						    			__func__,
+   						    			SRM_USCOREINVALID_USCOREREQUEST,
+   						    			start_time,
+   										boost::str(boost::format("%s\n") % e.what())
+   										);
+
+   		rep->srmStatusOfCopyRequestResponse =
+   						    			storm::build_error_message_response<ns1__srmStatusOfCopyRequestResponse>(
+   						    					soap,
+   						    					SRM_USCOREINVALID_USCOREREQUEST,
+   						    					e.what());
+
+
+   		return SOAP_OK;
    		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
    		storm::MonitoringHelper::registerOperationError(start_time,
    						storm::SRM_STATUS_OF_COPY_REQUEST_MONITOR_NAME);

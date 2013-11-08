@@ -22,12 +22,15 @@
 
 #include "PtpRequest.hpp"
 
+const std::string storm::PtpRequest::NAME = "Prepare to put";
+const std::string storm::PtpRequest::MONITOR_NAME = storm::SRM_PREPARE_TO_PUT_MONITOR_NAME;
+
 bool storm::PtpRequest::supportsProtocolSpecification()
 {
 	return true;
 }
 
-void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req) throw (storm::invalid_request)
+void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req)
 {
     if (NULL == req) {
         throw storm::invalid_request("Request is NULL");
@@ -356,12 +359,3 @@ void storm::PtpRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_erro
     // attribute using the requestID
 
 }
-/*
-void storm::PtpRequest::failRequest(std::string explaination) {
-	this->status = SRM_USCOREFAILURE;
-	this->explanation = explaination;
-    for (int i = 0; i < surls.size(); i++) {
-    	((storm::PtpSurl)surls.at(i)).setStatus(SRM_USCOREFAILURE);
-    }
-}
-*/
