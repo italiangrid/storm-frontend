@@ -17,7 +17,7 @@
 
 MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT 
 
-GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
+GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
 
 sbin_PROGRAMS = storm-frontend-server
 
@@ -25,19 +25,19 @@ storm_frontend_server_SOURCES = $(stormfrontend_others) storm-frontend.cpp
 storm_frontend_server_CFLAGS = $(INCLUDES)
 storm_frontend_server_CXXFLAGS = $(INCLUDES)
 storm_frontend_server_LDADD = \
-    @VOMS_LIBS@ \
+    $(top_builddir)/src/db/libstormdb.la \
     @MYSQL_LIBS@ \
-    @STORM_XMLRPC_C_DEVEL_LIBS@ \
-    @CURL_DEVEL_LIBS@ \
-    -L/usr/lib64 -lglobus_gssapi_gsi -lglobus_gss_assist \
-    @CGSI_GSOAP_VOMS_CPP_PTHR_LIBS@ \
+    @XMLRPC_LIBS@ \
+    @LIBCURL_LIBS@ \
+    @GLOBUS_GSI_CREDENTIAL_LIBS@ \
+    @GLOBUS_GSS_ASSIST_LIBS@ \
     @GSOAP_SSL_PP_LIBS@ \
+    @CGSI_GSOAP_PLUGIN_LIBS@ \
     @BOOST_PROGRAM_OPTIONS_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     @BOOST_REGEX_LIBS@ \
-    $(top_builddir)/src/db/libstormdb.la \
-    @ARGUS_LIBS@ \
-    -lz -lm -luuid -lidn
+    @LIBARGUS_PEP_LIBS@ \
+    @UUID_LIBS@
 
 storm_frontend_server_LDFLAGS= \
 	@BOOST_THREAD_LDFLAGS@ \
@@ -60,7 +60,7 @@ noinst_INCLUDES = osdep.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
 
 stormfrontend_others = storm_exception.hpp \
-	Credentials.cpp Credentials.hpp \
+    Credentials.cpp Credentials.hpp \
     FullCredentials.cpp FullCredentials.hpp \
     CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
@@ -72,36 +72,36 @@ stormfrontend_others = storm_exception.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
     PtgRequest.cpp PtgRequest.hpp GetStatusRequest.cpp GetStatusRequest.hpp \
     CopyRequest.cpp CopyRequest.hpp CopyStatusRequest.cpp CopyStatusRequest.hpp \
-    request/synch/SynchRequest.hpp \
-    request/synch/MkdirRequest.cpp request/synch/MkdirRequest.hpp \
-    request/synch/RmdirRequest.cpp request/synch/RmdirRequest.hpp \
-    request/synch/RmRequest.cpp request/synch/RmRequest.hpp \
-    request/synch/LsRequest.cpp request/synch/LsRequest.hpp \
-    request/synch/StatusLsRequest.cpp request/synch/StatusLsRequest.hpp \
-    request/synch/MvRequest.cpp request/synch/MvRequest.hpp \
-    request/synch/SetPermissionRequest.cpp request/synch/SetPermissionRequest.hpp \
-    request/synch/CheckPermissionRequest.cpp request/synch/CheckPermissionRequest.hpp \
-    request/synch/GetPermissionRequest.cpp request/synch/GetPermissionRequest.hpp \
-    request/synch/ReserveSpaceRequest.cpp request/synch/ReserveSpaceRequest.hpp \
-    request/synch/StatusReserveSpaceRequest.cpp request/synch/StatusReserveSpaceRequest.hpp \
-    request/synch/ReleaseSpaceRequest.cpp request/synch/ReleaseSpaceRequest.hpp \
-    request/synch/UpdateSpaceRequest.cpp request/synch/UpdateSpaceRequest.hpp \
-    request/synch/StatusUpdateSpaceRequest.cpp request/synch/StatusUpdateSpaceRequest.hpp \
-    request/synch/GetSpaceMetaDataRequest.cpp request/synch/GetSpaceMetaDataRequest.hpp \
-    request/synch/GetSpaceTokensRequest.cpp request/synch/GetSpaceTokensRequest.hpp \
-    request/synch/ChangeSpaceForFilesRequest.cpp request/synch/ChangeSpaceForFilesRequest.hpp \
-    request/synch/StatusChangeSpaceForFilesRequest.cpp request/synch/StatusChangeSpaceForFilesRequest.hpp \
-    request/synch/ExtendFileLifeTimeInSpaceRequest.cpp request/synch/ExtendFileLifeTimeInSpaceRequest.hpp \
-    request/synch/PurgeFromSpaceRequest.cpp request/synch/PurgeFromSpaceRequest.hpp \
-    request/synch/ReleaseFilesRequest.cpp request/synch/ReleaseFilesRequest.hpp \
-    request/synch/PutDoneRequest.cpp request/synch/PutDoneRequest.hpp \
-    request/synch/AbortRequestRequest.cpp request/synch/AbortRequestRequest.hpp \
-    request/synch/AbortFilesRequest.cpp request/synch/AbortFilesRequest.hpp \
-    request/synch/SuspendRequestRequest.cpp request/synch/SuspendRequestRequest.hpp \
-    request/synch/ResumeRequestRequest.cpp request/synch/ResumeRequestRequest.hpp \
-    request/synch/ExtendFileLifeTimeRequest.cpp request/synch/ExtendFileLifeTimeRequest.hpp \
-    request/synch/GetTransferProtocolsRequest.cpp request/synch/GetTransferProtocolsRequest.hpp \
-    request/synch/PingRequest.cpp request/synch/PingRequest.hpp \
+    SynchRequest.hpp \
+    MkdirRequest.cpp MkdirRequest.hpp \
+    RmdirRequest.cpp RmdirRequest.hpp \
+    RmRequest.cpp RmRequest.hpp \
+    LsRequest.cpp LsRequest.hpp \
+    StatusLsRequest.cpp StatusLsRequest.hpp \
+    MvRequest.cpp MvRequest.hpp \
+    SetPermissionRequest.cpp SetPermissionRequest.hpp \
+    CheckPermissionRequest.cpp CheckPermissionRequest.hpp \
+    GetPermissionRequest.cpp GetPermissionRequest.hpp \
+    ReserveSpaceRequest.cpp ReserveSpaceRequest.hpp \
+    StatusReserveSpaceRequest.cpp StatusReserveSpaceRequest.hpp \
+    ReleaseSpaceRequest.cpp ReleaseSpaceRequest.hpp \
+    UpdateSpaceRequest.cpp UpdateSpaceRequest.hpp \
+    StatusUpdateSpaceRequest.cpp StatusUpdateSpaceRequest.hpp \
+    GetSpaceMetaDataRequest.cpp GetSpaceMetaDataRequest.hpp \
+    GetSpaceTokensRequest.cpp GetSpaceTokensRequest.hpp \
+    ChangeSpaceForFilesRequest.cpp ChangeSpaceForFilesRequest.hpp \
+    StatusChangeSpaceForFilesRequest.cpp StatusChangeSpaceForFilesRequest.hpp \
+    ExtendFileLifeTimeInSpaceRequest.cpp ExtendFileLifeTimeInSpaceRequest.hpp \
+    PurgeFromSpaceRequest.cpp PurgeFromSpaceRequest.hpp \
+    ReleaseFilesRequest.cpp ReleaseFilesRequest.hpp \
+    PutDoneRequest.cpp PutDoneRequest.hpp \
+    AbortRequestRequest.cpp AbortRequestRequest.hpp \
+    AbortFilesRequest.cpp AbortFilesRequest.hpp \
+    SuspendRequestRequest.cpp SuspendRequestRequest.hpp \
+    ResumeRequestRequest.cpp ResumeRequestRequest.hpp \
+    ExtendFileLifeTimeRequest.cpp ExtendFileLifeTimeRequest.hpp \
+    GetTransferProtocolsRequest.cpp GetTransferProtocolsRequest.hpp \
+    PingRequest.cpp PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
     AuthorizationException.hpp ArgusException.hpp \
@@ -134,20 +134,20 @@ stormfrontend_others = storm_exception.hpp \
     $(noinst_INCLUDES)
 
 INCLUDES = \
-    @BOOST_CPPFLAGS@ \
     -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
-    @GLOBUS_THR_CFLAGS@ \
-    @STORM_XMLRPC_C_DEVEL_CFLAGS@ \
-    @CURL_DEVEL_CFLAGS@ \
-    @VOMS_CFLAGS@ \
-    @GSOAP_SSL_PP_CFLAGS@  \
-    @CGSI_GSOAP_CFLAGS@ \
+    @BOOST_CPPFLAGS@ \
+    @LIBCURL_CFLAGS@ \
+    @XMLRPC_CFLAGS@ \
+    @UUID_CFLAGS@ \
+    @GLOBUS_GRIDMAP_CALLOUT_ERROR_CFLAGS@ \
+    @GLOBUS_GSI_CREDENTIAL_CFLAGS@ \
+    @GLOBUS_GSS_ASSIST_CFLAGS@ \
+    @GLOBUS_COMMON_CFLAGS@ \
+    @GSOAP_SSL_PP_CFLAGS@ \
     @MYSQL_CFLAGS@ \
-    @ARGUS_CFLAGS@ \
+    @LIBARGUS_PEP_CFLAGS@ \
     $(MTC_CFLAGS)
-
-#GSOAP_SSL_CFLAGS 
 
 MAINTAINERCLEANFILES = Makefile.in \
     srmv2C.cc \

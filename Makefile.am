@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ACLOCAL_AMFLAGS = -I m4
+
 EXTRA_DIST = \
     bootstrap \
     CREDITS \
@@ -22,6 +24,7 @@ EXTRA_DIST = \
     m4
 
 docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
+
 doc_DATA = LICENSE \
         CREDITS \
         ChangeLog \
@@ -30,9 +33,6 @@ doc_DATA = LICENSE \
 
 ## Subdirectories list
 SUBDIRS = etc wsdl src
-
-## Default flags to run aclocal
-ACLOCAL_AMFLAGS = -I m4
 
 MAINTAINERCLEANFILES = Makefile.in
 

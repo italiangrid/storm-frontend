@@ -27,7 +27,7 @@
 #include "soap_util.hpp"
 #include "synch.hpp"
 #include "storm_exception.hpp"
-#include "request/synch/sync_requests.hpp"
+#include "sync_requests.hpp"
 #include "request_logger.hpp"
 #include "base_request.hpp"
 

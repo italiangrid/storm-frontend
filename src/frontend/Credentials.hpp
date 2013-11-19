@@ -16,15 +16,12 @@
 #ifndef CREDENTIALS_HPP_
 #define CREDENTIALS_HPP_
 
-// C includes
 #include "srmv2H.h"
 
-// STL includes
 #include <string>
 #include <vector>
-// storm_db include
-#include "mysql_query.hpp"
 
+#include "mysql_query.hpp"
 #include "sql_string.hpp"
 
 namespace storm {
@@ -55,7 +52,8 @@ private:
 	struct soap *_soap;
 	std::string _clientDN;
 	std::vector<sql_string> _fqans_vector;
-	};
+	
+};
 
 }
 

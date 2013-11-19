@@ -16,4 +16,3 @@
 SUBDIRS = db frontend
 
 MAINTAINERCLEANFILES = Makefile.in
-

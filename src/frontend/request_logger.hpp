@@ -10,7 +10,7 @@
 
 #include "srmlogit.h"
 #include "get_socket_info.hpp"
-#include "request/synch/sync_requests.hpp"
+#include "sync_requests.hpp"
 
 namespace storm {
 
