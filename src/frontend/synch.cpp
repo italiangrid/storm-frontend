@@ -77,6 +77,8 @@ int handle_request(const char* func_name, struct soap* soap,
 				request.getStatus()
 		);
 
+		storm::log_request_outcome(func_name, request);
+
 		return soap_return_value;
 
 	} catch (storm::invalid_request& e) {
