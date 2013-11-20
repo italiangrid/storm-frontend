@@ -114,6 +114,11 @@ void req_token_logger(const char* func, T & request) {
 }
 
 template<typename T>
+void log_request_outcome(const char* func, T & request) {
+	srmLogResponse(T::NAME.c_str(),request.getStatus());
+}
+
+template<typename T>
 struct logging_traits {
 	void log_request(const char* func, T & request) {
 		simple_logger(func, request);
@@ -158,7 +163,16 @@ struct logging_traits<storm::RmdirRequest> {
 template<>
 struct logging_traits<storm::MvRequest> {
 	void log_request(const char* func, storm::MvRequest & request) {
-		surl_logger(func, request);
+		std::string ip = get_ip(request.getSoapRequest()).c_str();
+
+		srmlogit(STORM_LOG_INFO,
+				func,
+				"Request: %s. IP: %s. Client DN: %s. from_surl: %s to_surl: %s\n",
+				storm::MvRequest::NAME.c_str(),
+				ip.c_str(),
+				request.getClientDN().c_str(),
+				request.from_surl().c_str(),
+				request.to_surl().c_str());
 	}
 };
 

@@ -38,6 +38,10 @@ public:
 	void load(ns1__srmMvRequest* req);
 
 	int buildResponse();
+
+	std::string from_surl() const;
+	std::string to_surl() const;
+
 private:
 	std::string m_fromSURL;
 	std::string m_toSURL;
