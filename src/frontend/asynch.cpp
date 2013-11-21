@@ -394,7 +394,6 @@ int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *re
     try{ request = new storm::BolRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	delete request;
     	storm::request::register_request_error<storm::BolRequest>(
     	    	    			__func__,
     	    	    			SRM_USCOREINVALID_USCOREREQUEST,

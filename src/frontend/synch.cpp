@@ -27,7 +27,7 @@
 #include "soap_util.hpp"
 #include "synch.hpp"
 #include "storm_exception.hpp"
-#include "request/synch/sync_requests.hpp"
+#include "sync_requests.hpp"
 #include "request_logger.hpp"
 #include "base_request.hpp"
 
@@ -76,6 +76,8 @@ int handle_request(const char* func_name, struct soap* soap,
 				request_t::MONITOR_NAME,
 				request.getStatus()
 		);
+
+		storm::log_request_outcome(func_name, request);
 
 		return soap_return_value;
 

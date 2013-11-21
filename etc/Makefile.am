@@ -16,7 +16,7 @@ EXTRA_DIST = storm-frontend-server.conf.template.in
 
 SUBDIRS = logrotate init.d sysconfig
 
-stormetcsysconfdir = $(sysconfdir)/@PACKAGE_PREFIX_NAME@/@PACKAGE_SHORT_NAME@
+stormetcsysconfdir = $(sysconfdir)/storm/frontend-server
 dist_stormetcsysconf_DATA = storm-frontend-server.conf.template
 
 CLEANFILES = storm-frontend-server.conf.template

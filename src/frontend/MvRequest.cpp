@@ -21,6 +21,14 @@
 const std::string storm::MvRequest::NAME = "Mv";
 const std::string storm::MvRequest::MONITOR_NAME = storm::SRM_MV_MONITOR_NAME;
 
+std::string storm::MvRequest::from_surl() const{
+	return m_fromSURL;
+}
+
+std::string storm::MvRequest::to_surl() const {
+	return m_toSURL;
+}
+
 void storm::MvRequest::load(ns1__srmMvRequest* request)
 {
 	if (request->fromSURL == NULL) {

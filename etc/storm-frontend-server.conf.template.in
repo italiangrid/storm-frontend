@@ -4,7 +4,7 @@ fe.threadpool.threads.number = 50
 #fe.gsoap.maxpending = 1000                      # default is 1000
 
 # Log options
-log.filename = @localstatedir@/log/@PACKAGE_PREFIX_NAME@/storm-frontend-server.log
+log.filename = @localstatedir@/log/storm/storm-frontend-server.log
 log.debuglevel = INFO      # Allowed values: ERROR, WARN, INFO, DEBUG, DEBUG2.
 
 # Security settings
@@ -19,7 +19,7 @@ be.xmlrpc.token = token
 be.recalltable.port=9998  # default is 9998
 
 # Proxy information
-proxy.dir = @localstatedir@/tmp/@PACKAGE_PREFIX_NAME@/proxy
+proxy.dir = @localstatedir@/tmp/storm/proxy
 #proxy.user = storm       # default is storm
 
 # Database

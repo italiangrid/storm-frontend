@@ -1,4 +1,4 @@
-@localstatedir@/log/@PACKAGE_PREFIX_NAME@/@PACKAGE@.log {
+@localstatedir@/log/storm/@PACKAGE@.log {
     missingok
     notifempty
 	rotate 26
@@ -9,7 +9,7 @@
 }
 
 
-@localstatedir@/log/@PACKAGE_PREFIX_NAME@/monitoring.log {
+@localstatedir@/log/storm/monitoring.log {
     daily
     missingok
     notifempty

@@ -26,11 +26,11 @@ prog_short=`echo $prog | cut -c1-15`
 PIDDIR=/var/run
 SUBSYSDIR=/var/lock/subsys
 PIDFILE=$PIDDIR/$prog.pid
-RUNDIR=/var/log/@PACKAGE_PREFIX_NAME@
+RUNDIR=/var/log/storm
 ARC=`/bin/uname -m`
 
 FRONTEND_DAEMON=@sbindir@/$prog
-CONFIGURATION_FILE=@sysconfdir@/@PACKAGE_PREFIX_NAME@/@PACKAGE_SHORT_NAME@/@PACKAGE@.conf
+CONFIGURATION_FILE=@sysconfdir@/storm/frontend-server/@PACKAGE@.conf
 
 source /etc/sysconfig/$prog
 
@@ -107,8 +107,8 @@ case "$1" in
     # Make sure the FE can write the logfile and save the proxies
     # and set environment variable
     if [ "root" != $STORM_FE_USER ]; then
-        mkdir -p @localstatedir@/log/@PACKAGE_PREFIX_NAME@
-        chown ${STORM_FE_USER}:${STORM_FE_USER} @localstatedir@/log/@PACKAGE_PREFIX_NAME@
+        mkdir -p @localstatedir@/log/storm
+        chown ${STORM_FE_USER}:${STORM_FE_USER} @localstatedir@/log/storm
         STORM_USER_CERT_DIR=/etc/grid-security/$STORM_FE_USER
         if [ -d $STORM_USER_CERT_DIR ]; then
             export X509_USER_CERT=$STORM_USER_CERT_DIR/hostcert.pem

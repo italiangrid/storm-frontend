@@ -56,16 +56,12 @@ subdir = src/frontend
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/frontend_version.h.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/argus.m4 \
-	$(top_srcdir)/m4/boost.m4 $(top_srcdir)/m4/cgsi-gsoap.m4 \
-	$(top_srcdir)/m4/curl.m4 $(top_srcdir)/m4/globus_pkgconfig.m4 \
-	$(top_srcdir)/m4/gsoap.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libuuid-devel.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/boost.m4 \
+	$(top_srcdir)/m4/cgsi-gsoap.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/mysql.m4 $(top_srcdir)/m4/storm-xmlrpc-c.m4 \
-	$(top_srcdir)/m4/storm.m4 $(top_srcdir)/m4/voms.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/mysql.m4 $(top_srcdir)/m4/wsdl2h.m4 \
+	$(top_srcdir)/m4/xmlrpc-c.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -180,9 +176,6 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AR = @AR@
-ARGUS_CFLAGS = @ARGUS_CFLAGS@
-ARGUS_LIBS = @ARGUS_LIBS@
-ARGUS_LOCATION = @ARGUS_LOCATION@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -205,20 +198,12 @@ BOOST_THREAD_LIBS = @BOOST_THREAD_LIBS@
 BOOST_THREAD_WIN32_LDFLAGS = @BOOST_THREAD_WIN32_LDFLAGS@
 BOOST_THREAD_WIN32_LDPATH = @BOOST_THREAD_WIN32_LDPATH@
 BOOST_THREAD_WIN32_LIBS = @BOOST_THREAD_WIN32_LIBS@
-BUILD_REQUIRES_LIBUUID_DEVEL = @BUILD_REQUIRES_LIBUUID_DEVEL@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CGSI_GSOAP_CFLAGS = @CGSI_GSOAP_CFLAGS@
-CGSI_GSOAP_LOCATION = @CGSI_GSOAP_LOCATION@
-CGSI_GSOAP_VOMS_CPP_PTHR_LIBS = @CGSI_GSOAP_VOMS_CPP_PTHR_LIBS@
+CGSI_GSOAP_PLUGIN_LIBS = @CGSI_GSOAP_PLUGIN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
-CURL_DEVEL_CFLAGS = @CURL_DEVEL_CFLAGS@
-CURL_DEVEL_LIBS = @CURL_DEVEL_LIBS@
-CURL_DEVEL_LOCATION = @CURL_DEVEL_LOCATION@
-CURL_LIBS = @CURL_LIBS@
-CURL_LOCATION = @CURL_LOCATION@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -226,9 +211,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DISTBIN = @DISTBIN@
 DISTCHECK_CONFIGURE_FLAGS = @DISTCHECK_CONFIGURE_FLAGS@
-DISTSOURCE = @DISTSOURCE@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
@@ -237,78 +220,23 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
-GLOBUS_CALLOUT_CFLAGS = @GLOBUS_CALLOUT_CFLAGS@
-GLOBUS_CALLOUT_LIBS = @GLOBUS_CALLOUT_LIBS@
 GLOBUS_COMMON_CFLAGS = @GLOBUS_COMMON_CFLAGS@
 GLOBUS_COMMON_LIBS = @GLOBUS_COMMON_LIBS@
-GLOBUS_COMMON_NOTHR_LIBS = @GLOBUS_COMMON_NOTHR_LIBS@
-GLOBUS_COMMON_THR_LIBS = @GLOBUS_COMMON_THR_LIBS@
-GLOBUS_CORE_CFLAGS = @GLOBUS_CORE_CFLAGS@
-GLOBUS_CORE_LIBS = @GLOBUS_CORE_LIBS@
-GLOBUS_FTP_CLIENT_CFLAGS = @GLOBUS_FTP_CLIENT_CFLAGS@
-GLOBUS_FTP_CLIENT_LIBS = @GLOBUS_FTP_CLIENT_LIBS@
-GLOBUS_FTP_CLIENT_NOTHR_LIBS = @GLOBUS_FTP_CLIENT_NOTHR_LIBS@
-GLOBUS_FTP_CLIENT_THR_LIBS = @GLOBUS_FTP_CLIENT_THR_LIBS@
-GLOBUS_FTP_CONTROL_CFLAGS = @GLOBUS_FTP_CONTROL_CFLAGS@
-GLOBUS_FTP_CONTROL_LIBS = @GLOBUS_FTP_CONTROL_LIBS@
-GLOBUS_GSI_CALLBACK_CFLAGS = @GLOBUS_GSI_CALLBACK_CFLAGS@
-GLOBUS_GSI_CALLBACK_LIBS = @GLOBUS_GSI_CALLBACK_LIBS@
-GLOBUS_GSI_CERT_UTILS_CFLAGS = @GLOBUS_GSI_CERT_UTILS_CFLAGS@
-GLOBUS_GSI_CERT_UTILS_LIBS = @GLOBUS_GSI_CERT_UTILS_LIBS@
+GLOBUS_GRIDMAP_CALLOUT_ERROR_CFLAGS = @GLOBUS_GRIDMAP_CALLOUT_ERROR_CFLAGS@
+GLOBUS_GRIDMAP_CALLOUT_ERROR_LIBS = @GLOBUS_GRIDMAP_CALLOUT_ERROR_LIBS@
 GLOBUS_GSI_CREDENTIAL_CFLAGS = @GLOBUS_GSI_CREDENTIAL_CFLAGS@
 GLOBUS_GSI_CREDENTIAL_LIBS = @GLOBUS_GSI_CREDENTIAL_LIBS@
-GLOBUS_GSI_OPENSSL_ERROR_CFLAGS = @GLOBUS_GSI_OPENSSL_ERROR_CFLAGS@
-GLOBUS_GSI_OPENSSL_ERROR_LIBS = @GLOBUS_GSI_OPENSSL_ERROR_LIBS@
-GLOBUS_GSI_PROXY_CORE_CFLAGS = @GLOBUS_GSI_PROXY_CORE_CFLAGS@
-GLOBUS_GSI_PROXY_CORE_LIBS = @GLOBUS_GSI_PROXY_CORE_LIBS@
-GLOBUS_GSI_PROXY_SSL_CFLAGS = @GLOBUS_GSI_PROXY_SSL_CFLAGS@
-GLOBUS_GSI_PROXY_SSL_LIBS = @GLOBUS_GSI_PROXY_SSL_LIBS@
-GLOBUS_GSI_SYSCONFIG_CFLAGS = @GLOBUS_GSI_SYSCONFIG_CFLAGS@
-GLOBUS_GSI_SYSCONFIG_LIBS = @GLOBUS_GSI_SYSCONFIG_LIBS@
-GLOBUS_GSSAPI_ERROR_CFLAGS = @GLOBUS_GSSAPI_ERROR_CFLAGS@
-GLOBUS_GSSAPI_ERROR_LIBS = @GLOBUS_GSSAPI_ERROR_LIBS@
-GLOBUS_GSSAPI_GSI_CFLAGS = @GLOBUS_GSSAPI_GSI_CFLAGS@
-GLOBUS_GSSAPI_GSI_LIBS = @GLOBUS_GSSAPI_GSI_LIBS@
 GLOBUS_GSS_ASSIST_CFLAGS = @GLOBUS_GSS_ASSIST_CFLAGS@
 GLOBUS_GSS_ASSIST_LIBS = @GLOBUS_GSS_ASSIST_LIBS@
-GLOBUS_GSS_NOTHR_LIBS = @GLOBUS_GSS_NOTHR_LIBS@
-GLOBUS_GSS_THR_LIBS = @GLOBUS_GSS_THR_LIBS@
-GLOBUS_IO_CFLAGS = @GLOBUS_IO_CFLAGS@
-GLOBUS_IO_LIBS = @GLOBUS_IO_LIBS@
-GLOBUS_LDAP_NOTHR_LIBS = @GLOBUS_LDAP_NOTHR_LIBS@
-GLOBUS_LDAP_THR_LIBS = @GLOBUS_LDAP_THR_LIBS@
-GLOBUS_NOTHR_CFLAGS = @GLOBUS_NOTHR_CFLAGS@
-GLOBUS_NOTHR_LIBS = @GLOBUS_NOTHR_LIBS@
-GLOBUS_OPENSSL_CFLAGS = @GLOBUS_OPENSSL_CFLAGS@
-GLOBUS_OPENSSL_LIBS = @GLOBUS_OPENSSL_LIBS@
-GLOBUS_OPENSSL_MODULE_CFLAGS = @GLOBUS_OPENSSL_MODULE_CFLAGS@
-GLOBUS_OPENSSL_MODULE_LIBS = @GLOBUS_OPENSSL_MODULE_LIBS@
-GLOBUS_SSL_NOTHR_LIBS = @GLOBUS_SSL_NOTHR_LIBS@
-GLOBUS_SSL_THR_LIBS = @GLOBUS_SSL_THR_LIBS@
-GLOBUS_THR_CFLAGS = @GLOBUS_THR_CFLAGS@
-GLOBUS_THR_LIBS = @GLOBUS_THR_LIBS@
-GLOBUS_XIO_CFLAGS = @GLOBUS_XIO_CFLAGS@
-GLOBUS_XIO_LIBS = @GLOBUS_XIO_LIBS@
 GREP = @GREP@
 GSOAP_CFLAGS = @GSOAP_CFLAGS@
-GSOAP_CK_CFLAGS = @GSOAP_CK_CFLAGS@
-GSOAP_CK_LIBS = @GSOAP_CK_LIBS@
-GSOAP_CK_PP_CFLAGS = @GSOAP_CK_PP_CFLAGS@
-GSOAP_CK_PP_LIBS = @GSOAP_CK_PP_LIBS@
-GSOAP_GENERATED_CODE_DIR_NAME = @GSOAP_GENERATED_CODE_DIR_NAME@
 GSOAP_LIBS = @GSOAP_LIBS@
-GSOAP_LOCATION = @GSOAP_LOCATION@
 GSOAP_PP_CFLAGS = @GSOAP_PP_CFLAGS@
 GSOAP_PP_LIBS = @GSOAP_PP_LIBS@
 GSOAP_SSL_CFLAGS = @GSOAP_SSL_CFLAGS@
 GSOAP_SSL_LIBS = @GSOAP_SSL_LIBS@
 GSOAP_SSL_PP_CFLAGS = @GSOAP_SSL_PP_CFLAGS@
 GSOAP_SSL_PP_LIBS = @GSOAP_SSL_PP_LIBS@
-GSOAP_VERSION = @GSOAP_VERSION@
-GSOAP_VERSION_NUM = @GSOAP_VERSION_NUM@
-GSOAP_WSDL2H_LOCATION = @GSOAP_WSDL2H_LOCATION@
-GSOAP_WSDL2H_VERSION = @GSOAP_WSDL2H_VERSION@
-GSOAP_WSDL2H_VERSION_NUM = @GSOAP_WSDL2H_VERSION_NUM@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -316,59 +244,49 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LIBARGUS_PEP_CFLAGS = @LIBARGUS_PEP_CFLAGS@
+LIBARGUS_PEP_LIBS = @LIBARGUS_PEP_LIBS@
+LIBCURL_CFLAGS = @LIBCURL_CFLAGS@
+LIBCURL_LIBS = @LIBCURL_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
-LIBTYPE = @LIBTYPE@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
-MODULELOCATION = @MODULELOCATION@
 MYSQL_CFLAGS = @MYSQL_CFLAGS@
-MYSQL_DEVEL_INSTALL_PATH = @MYSQL_DEVEL_INSTALL_PATH@
-MYSQL_INSTALL_PATH = @MYSQL_INSTALL_PATH@
 MYSQL_LIBS = @MYSQL_LIBS@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPENSSL_CFLAGS = @OPENSSL_CFLAGS@
+OPENSSL_LIBS = @OPENSSL_LIBS@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
-PACKAGE_LONG_NAME = @PACKAGE_LONG_NAME@
 PACKAGE_NAME = @PACKAGE_NAME@
-PACKAGE_PREFIX_NAME = @PACKAGE_PREFIX_NAME@
-PACKAGE_SHORT_NAME = @PACKAGE_SHORT_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
-PMYSQL = @PMYSQL@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SOAPCPP2 = @SOAPCPP2@
-SOAPCPP2_FLAGS = @SOAPCPP2_FLAGS@
-STORM_XMLRPC_C_DEVEL_CFLAGS = @STORM_XMLRPC_C_DEVEL_CFLAGS@
-STORM_XMLRPC_C_DEVEL_LIBS = @STORM_XMLRPC_C_DEVEL_LIBS@
-STORM_XMLRPC_C_DEVEL_LOCATION = @STORM_XMLRPC_C_DEVEL_LOCATION@
-STORM_XMLRPC_C_LIBS = @STORM_XMLRPC_C_LIBS@
-STORM_XMLRPC_C_LOCATION = @STORM_XMLRPC_C_LOCATION@
 STRIP = @STRIP@
+UUID_CFLAGS = @UUID_CFLAGS@
+UUID_LIBS = @UUID_LIBS@
 VERSION = @VERSION@
-VOMS_CFLAGS = @VOMS_CFLAGS@
-VOMS_INCLUDE_PATH = @VOMS_INCLUDE_PATH@
-VOMS_INSTALL_PATH = @VOMS_INSTALL_PATH@
-VOMS_LIBS = @VOMS_LIBS@
-WORKDIR = @WORKDIR@
 WSDL2H = @WSDL2H@
-WSDL2H_BACK_COMPATIBILITY = @WSDL2H_BACK_COMPATIBILITY@
 WSDL2H_FLAGS = @WSDL2H_FLAGS@
+XMLRPC_CFLAGS = @XMLRPC_CFLAGS@
+XMLRPC_LIBS = @XMLRPC_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -423,24 +341,24 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT 
-GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
+GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
 storm_frontend_server_SOURCES = $(stormfrontend_others) storm-frontend.cpp
 storm_frontend_server_CFLAGS = $(INCLUDES)
 storm_frontend_server_CXXFLAGS = $(INCLUDES)
 storm_frontend_server_LDADD = \
-    @VOMS_LIBS@ \
+    $(top_builddir)/src/db/libstormdb.la \
     @MYSQL_LIBS@ \
-    @STORM_XMLRPC_C_DEVEL_LIBS@ \
-    @CURL_DEVEL_LIBS@ \
-    -L/usr/lib64 -lglobus_gssapi_gsi -lglobus_gss_assist \
-    @CGSI_GSOAP_VOMS_CPP_PTHR_LIBS@ \
+    @XMLRPC_LIBS@ \
+    @LIBCURL_LIBS@ \
+    @GLOBUS_GSI_CREDENTIAL_LIBS@ \
+    @GLOBUS_GSS_ASSIST_LIBS@ \
     @GSOAP_SSL_PP_LIBS@ \
+    @CGSI_GSOAP_PLUGIN_LIBS@ \
     @BOOST_PROGRAM_OPTIONS_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     @BOOST_REGEX_LIBS@ \
-    $(top_builddir)/src/db/libstormdb.la \
-    @ARGUS_LIBS@ \
-    -lz -lm -luuid -lidn
+    @LIBARGUS_PEP_LIBS@ \
+    @UUID_LIBS@
 
 storm_frontend_server_LDFLAGS = \
 	@BOOST_THREAD_LDFLAGS@ \
@@ -463,7 +381,7 @@ noinst_INCLUDES = osdep.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
 
 stormfrontend_others = storm_exception.hpp \
-	Credentials.cpp Credentials.hpp \
+    Credentials.cpp Credentials.hpp \
     FullCredentials.cpp FullCredentials.hpp \
     CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
@@ -475,36 +393,36 @@ stormfrontend_others = storm_exception.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
     PtgRequest.cpp PtgRequest.hpp GetStatusRequest.cpp GetStatusRequest.hpp \
     CopyRequest.cpp CopyRequest.hpp CopyStatusRequest.cpp CopyStatusRequest.hpp \
-    request/synch/SynchRequest.hpp \
-    request/synch/MkdirRequest.cpp request/synch/MkdirRequest.hpp \
-    request/synch/RmdirRequest.cpp request/synch/RmdirRequest.hpp \
-    request/synch/RmRequest.cpp request/synch/RmRequest.hpp \
-    request/synch/LsRequest.cpp request/synch/LsRequest.hpp \
-    request/synch/StatusLsRequest.cpp request/synch/StatusLsRequest.hpp \
-    request/synch/MvRequest.cpp request/synch/MvRequest.hpp \
-    request/synch/SetPermissionRequest.cpp request/synch/SetPermissionRequest.hpp \
-    request/synch/CheckPermissionRequest.cpp request/synch/CheckPermissionRequest.hpp \
-    request/synch/GetPermissionRequest.cpp request/synch/GetPermissionRequest.hpp \
-    request/synch/ReserveSpaceRequest.cpp request/synch/ReserveSpaceRequest.hpp \
-    request/synch/StatusReserveSpaceRequest.cpp request/synch/StatusReserveSpaceRequest.hpp \
-    request/synch/ReleaseSpaceRequest.cpp request/synch/ReleaseSpaceRequest.hpp \
-    request/synch/UpdateSpaceRequest.cpp request/synch/UpdateSpaceRequest.hpp \
-    request/synch/StatusUpdateSpaceRequest.cpp request/synch/StatusUpdateSpaceRequest.hpp \
-    request/synch/GetSpaceMetaDataRequest.cpp request/synch/GetSpaceMetaDataRequest.hpp \
-    request/synch/GetSpaceTokensRequest.cpp request/synch/GetSpaceTokensRequest.hpp \
-    request/synch/ChangeSpaceForFilesRequest.cpp request/synch/ChangeSpaceForFilesRequest.hpp \
-    request/synch/StatusChangeSpaceForFilesRequest.cpp request/synch/StatusChangeSpaceForFilesRequest.hpp \
-    request/synch/ExtendFileLifeTimeInSpaceRequest.cpp request/synch/ExtendFileLifeTimeInSpaceRequest.hpp \
-    request/synch/PurgeFromSpaceRequest.cpp request/synch/PurgeFromSpaceRequest.hpp \
-    request/synch/ReleaseFilesRequest.cpp request/synch/ReleaseFilesRequest.hpp \
-    request/synch/PutDoneRequest.cpp request/synch/PutDoneRequest.hpp \
-    request/synch/AbortRequestRequest.cpp request/synch/AbortRequestRequest.hpp \
-    request/synch/AbortFilesRequest.cpp request/synch/AbortFilesRequest.hpp \
-    request/synch/SuspendRequestRequest.cpp request/synch/SuspendRequestRequest.hpp \
-    request/synch/ResumeRequestRequest.cpp request/synch/ResumeRequestRequest.hpp \
-    request/synch/ExtendFileLifeTimeRequest.cpp request/synch/ExtendFileLifeTimeRequest.hpp \
-    request/synch/GetTransferProtocolsRequest.cpp request/synch/GetTransferProtocolsRequest.hpp \
-    request/synch/PingRequest.cpp request/synch/PingRequest.hpp \
+    SynchRequest.hpp \
+    MkdirRequest.cpp MkdirRequest.hpp \
+    RmdirRequest.cpp RmdirRequest.hpp \
+    RmRequest.cpp RmRequest.hpp \
+    LsRequest.cpp LsRequest.hpp \
+    StatusLsRequest.cpp StatusLsRequest.hpp \
+    MvRequest.cpp MvRequest.hpp \
+    SetPermissionRequest.cpp SetPermissionRequest.hpp \
+    CheckPermissionRequest.cpp CheckPermissionRequest.hpp \
+    GetPermissionRequest.cpp GetPermissionRequest.hpp \
+    ReserveSpaceRequest.cpp ReserveSpaceRequest.hpp \
+    StatusReserveSpaceRequest.cpp StatusReserveSpaceRequest.hpp \
+    ReleaseSpaceRequest.cpp ReleaseSpaceRequest.hpp \
+    UpdateSpaceRequest.cpp UpdateSpaceRequest.hpp \
+    StatusUpdateSpaceRequest.cpp StatusUpdateSpaceRequest.hpp \
+    GetSpaceMetaDataRequest.cpp GetSpaceMetaDataRequest.hpp \
+    GetSpaceTokensRequest.cpp GetSpaceTokensRequest.hpp \
+    ChangeSpaceForFilesRequest.cpp ChangeSpaceForFilesRequest.hpp \
+    StatusChangeSpaceForFilesRequest.cpp StatusChangeSpaceForFilesRequest.hpp \
+    ExtendFileLifeTimeInSpaceRequest.cpp ExtendFileLifeTimeInSpaceRequest.hpp \
+    PurgeFromSpaceRequest.cpp PurgeFromSpaceRequest.hpp \
+    ReleaseFilesRequest.cpp ReleaseFilesRequest.hpp \
+    PutDoneRequest.cpp PutDoneRequest.hpp \
+    AbortRequestRequest.cpp AbortRequestRequest.hpp \
+    AbortFilesRequest.cpp AbortFilesRequest.hpp \
+    SuspendRequestRequest.cpp SuspendRequestRequest.hpp \
+    ResumeRequestRequest.cpp ResumeRequestRequest.hpp \
+    ExtendFileLifeTimeRequest.cpp ExtendFileLifeTimeRequest.hpp \
+    GetTransferProtocolsRequest.cpp GetTransferProtocolsRequest.hpp \
+    PingRequest.cpp PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
     AuthorizationException.hpp ArgusException.hpp \
@@ -537,21 +455,21 @@ stormfrontend_others = storm_exception.hpp \
     $(noinst_INCLUDES)
 
 INCLUDES = \
-    @BOOST_CPPFLAGS@ \
     -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
-    @GLOBUS_THR_CFLAGS@ \
-    @STORM_XMLRPC_C_DEVEL_CFLAGS@ \
-    @CURL_DEVEL_CFLAGS@ \
-    @VOMS_CFLAGS@ \
-    @GSOAP_SSL_PP_CFLAGS@  \
-    @CGSI_GSOAP_CFLAGS@ \
+    @BOOST_CPPFLAGS@ \
+    @LIBCURL_CFLAGS@ \
+    @XMLRPC_CFLAGS@ \
+    @UUID_CFLAGS@ \
+    @GLOBUS_GRIDMAP_CALLOUT_ERROR_CFLAGS@ \
+    @GLOBUS_GSI_CREDENTIAL_CFLAGS@ \
+    @GLOBUS_GSS_ASSIST_CFLAGS@ \
+    @GLOBUS_COMMON_CFLAGS@ \
+    @GSOAP_SSL_PP_CFLAGS@ \
     @MYSQL_CFLAGS@ \
-    @ARGUS_CFLAGS@ \
+    @LIBARGUS_PEP_CFLAGS@ \
     $(MTC_CFLAGS)
 
-
-#GSOAP_SSL_CFLAGS 
 MAINTAINERCLEANFILES = Makefile.in \
     srmv2C.cc \
     srmv2Server.cc
@@ -1021,411 +939,411 @@ storm_frontend_server-CopyStatusRequest.obj: CopyStatusRequest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-CopyStatusRequest.obj `if test -f 'CopyStatusRequest.cpp'; then $(CYGPATH_W) 'CopyStatusRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/CopyStatusRequest.cpp'; fi`
 
-storm_frontend_server-MkdirRequest.o: request/synch/MkdirRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MkdirRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-MkdirRequest.Tpo -c -o storm_frontend_server-MkdirRequest.o `test -f 'request/synch/MkdirRequest.cpp' || echo '$(srcdir)/'`request/synch/MkdirRequest.cpp
+storm_frontend_server-MkdirRequest.o: MkdirRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MkdirRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-MkdirRequest.Tpo -c -o storm_frontend_server-MkdirRequest.o `test -f 'MkdirRequest.cpp' || echo '$(srcdir)/'`MkdirRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-MkdirRequest.Tpo $(DEPDIR)/storm_frontend_server-MkdirRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/MkdirRequest.cpp' object='storm_frontend_server-MkdirRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MkdirRequest.cpp' object='storm_frontend_server-MkdirRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MkdirRequest.o `test -f 'request/synch/MkdirRequest.cpp' || echo '$(srcdir)/'`request/synch/MkdirRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MkdirRequest.o `test -f 'MkdirRequest.cpp' || echo '$(srcdir)/'`MkdirRequest.cpp
 
-storm_frontend_server-MkdirRequest.obj: request/synch/MkdirRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MkdirRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-MkdirRequest.Tpo -c -o storm_frontend_server-MkdirRequest.obj `if test -f 'request/synch/MkdirRequest.cpp'; then $(CYGPATH_W) 'request/synch/MkdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/MkdirRequest.cpp'; fi`
+storm_frontend_server-MkdirRequest.obj: MkdirRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MkdirRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-MkdirRequest.Tpo -c -o storm_frontend_server-MkdirRequest.obj `if test -f 'MkdirRequest.cpp'; then $(CYGPATH_W) 'MkdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/MkdirRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-MkdirRequest.Tpo $(DEPDIR)/storm_frontend_server-MkdirRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/MkdirRequest.cpp' object='storm_frontend_server-MkdirRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MkdirRequest.cpp' object='storm_frontend_server-MkdirRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MkdirRequest.obj `if test -f 'request/synch/MkdirRequest.cpp'; then $(CYGPATH_W) 'request/synch/MkdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/MkdirRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MkdirRequest.obj `if test -f 'MkdirRequest.cpp'; then $(CYGPATH_W) 'MkdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/MkdirRequest.cpp'; fi`
 
-storm_frontend_server-RmdirRequest.o: request/synch/RmdirRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmdirRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmdirRequest.Tpo -c -o storm_frontend_server-RmdirRequest.o `test -f 'request/synch/RmdirRequest.cpp' || echo '$(srcdir)/'`request/synch/RmdirRequest.cpp
+storm_frontend_server-RmdirRequest.o: RmdirRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmdirRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmdirRequest.Tpo -c -o storm_frontend_server-RmdirRequest.o `test -f 'RmdirRequest.cpp' || echo '$(srcdir)/'`RmdirRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-RmdirRequest.Tpo $(DEPDIR)/storm_frontend_server-RmdirRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/RmdirRequest.cpp' object='storm_frontend_server-RmdirRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RmdirRequest.cpp' object='storm_frontend_server-RmdirRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmdirRequest.o `test -f 'request/synch/RmdirRequest.cpp' || echo '$(srcdir)/'`request/synch/RmdirRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmdirRequest.o `test -f 'RmdirRequest.cpp' || echo '$(srcdir)/'`RmdirRequest.cpp
 
-storm_frontend_server-RmdirRequest.obj: request/synch/RmdirRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmdirRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmdirRequest.Tpo -c -o storm_frontend_server-RmdirRequest.obj `if test -f 'request/synch/RmdirRequest.cpp'; then $(CYGPATH_W) 'request/synch/RmdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/RmdirRequest.cpp'; fi`
+storm_frontend_server-RmdirRequest.obj: RmdirRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmdirRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmdirRequest.Tpo -c -o storm_frontend_server-RmdirRequest.obj `if test -f 'RmdirRequest.cpp'; then $(CYGPATH_W) 'RmdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/RmdirRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-RmdirRequest.Tpo $(DEPDIR)/storm_frontend_server-RmdirRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/RmdirRequest.cpp' object='storm_frontend_server-RmdirRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RmdirRequest.cpp' object='storm_frontend_server-RmdirRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmdirRequest.obj `if test -f 'request/synch/RmdirRequest.cpp'; then $(CYGPATH_W) 'request/synch/RmdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/RmdirRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmdirRequest.obj `if test -f 'RmdirRequest.cpp'; then $(CYGPATH_W) 'RmdirRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/RmdirRequest.cpp'; fi`
 
-storm_frontend_server-RmRequest.o: request/synch/RmRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmRequest.Tpo -c -o storm_frontend_server-RmRequest.o `test -f 'request/synch/RmRequest.cpp' || echo '$(srcdir)/'`request/synch/RmRequest.cpp
+storm_frontend_server-RmRequest.o: RmRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmRequest.Tpo -c -o storm_frontend_server-RmRequest.o `test -f 'RmRequest.cpp' || echo '$(srcdir)/'`RmRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-RmRequest.Tpo $(DEPDIR)/storm_frontend_server-RmRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/RmRequest.cpp' object='storm_frontend_server-RmRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RmRequest.cpp' object='storm_frontend_server-RmRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmRequest.o `test -f 'request/synch/RmRequest.cpp' || echo '$(srcdir)/'`request/synch/RmRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmRequest.o `test -f 'RmRequest.cpp' || echo '$(srcdir)/'`RmRequest.cpp
 
-storm_frontend_server-RmRequest.obj: request/synch/RmRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmRequest.Tpo -c -o storm_frontend_server-RmRequest.obj `if test -f 'request/synch/RmRequest.cpp'; then $(CYGPATH_W) 'request/synch/RmRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/RmRequest.cpp'; fi`
+storm_frontend_server-RmRequest.obj: RmRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-RmRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-RmRequest.Tpo -c -o storm_frontend_server-RmRequest.obj `if test -f 'RmRequest.cpp'; then $(CYGPATH_W) 'RmRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/RmRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-RmRequest.Tpo $(DEPDIR)/storm_frontend_server-RmRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/RmRequest.cpp' object='storm_frontend_server-RmRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RmRequest.cpp' object='storm_frontend_server-RmRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmRequest.obj `if test -f 'request/synch/RmRequest.cpp'; then $(CYGPATH_W) 'request/synch/RmRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/RmRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-RmRequest.obj `if test -f 'RmRequest.cpp'; then $(CYGPATH_W) 'RmRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/RmRequest.cpp'; fi`
 
-storm_frontend_server-LsRequest.o: request/synch/LsRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-LsRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-LsRequest.Tpo -c -o storm_frontend_server-LsRequest.o `test -f 'request/synch/LsRequest.cpp' || echo '$(srcdir)/'`request/synch/LsRequest.cpp
+storm_frontend_server-LsRequest.o: LsRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-LsRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-LsRequest.Tpo -c -o storm_frontend_server-LsRequest.o `test -f 'LsRequest.cpp' || echo '$(srcdir)/'`LsRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-LsRequest.Tpo $(DEPDIR)/storm_frontend_server-LsRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/LsRequest.cpp' object='storm_frontend_server-LsRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LsRequest.cpp' object='storm_frontend_server-LsRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-LsRequest.o `test -f 'request/synch/LsRequest.cpp' || echo '$(srcdir)/'`request/synch/LsRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-LsRequest.o `test -f 'LsRequest.cpp' || echo '$(srcdir)/'`LsRequest.cpp
 
-storm_frontend_server-LsRequest.obj: request/synch/LsRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-LsRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-LsRequest.Tpo -c -o storm_frontend_server-LsRequest.obj `if test -f 'request/synch/LsRequest.cpp'; then $(CYGPATH_W) 'request/synch/LsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/LsRequest.cpp'; fi`
+storm_frontend_server-LsRequest.obj: LsRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-LsRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-LsRequest.Tpo -c -o storm_frontend_server-LsRequest.obj `if test -f 'LsRequest.cpp'; then $(CYGPATH_W) 'LsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/LsRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-LsRequest.Tpo $(DEPDIR)/storm_frontend_server-LsRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/LsRequest.cpp' object='storm_frontend_server-LsRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LsRequest.cpp' object='storm_frontend_server-LsRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-LsRequest.obj `if test -f 'request/synch/LsRequest.cpp'; then $(CYGPATH_W) 'request/synch/LsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/LsRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-LsRequest.obj `if test -f 'LsRequest.cpp'; then $(CYGPATH_W) 'LsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/LsRequest.cpp'; fi`
 
-storm_frontend_server-StatusLsRequest.o: request/synch/StatusLsRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusLsRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusLsRequest.Tpo -c -o storm_frontend_server-StatusLsRequest.o `test -f 'request/synch/StatusLsRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusLsRequest.cpp
+storm_frontend_server-StatusLsRequest.o: StatusLsRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusLsRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusLsRequest.Tpo -c -o storm_frontend_server-StatusLsRequest.o `test -f 'StatusLsRequest.cpp' || echo '$(srcdir)/'`StatusLsRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusLsRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusLsRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusLsRequest.cpp' object='storm_frontend_server-StatusLsRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusLsRequest.cpp' object='storm_frontend_server-StatusLsRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusLsRequest.o `test -f 'request/synch/StatusLsRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusLsRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusLsRequest.o `test -f 'StatusLsRequest.cpp' || echo '$(srcdir)/'`StatusLsRequest.cpp
 
-storm_frontend_server-StatusLsRequest.obj: request/synch/StatusLsRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusLsRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusLsRequest.Tpo -c -o storm_frontend_server-StatusLsRequest.obj `if test -f 'request/synch/StatusLsRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusLsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusLsRequest.cpp'; fi`
+storm_frontend_server-StatusLsRequest.obj: StatusLsRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusLsRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusLsRequest.Tpo -c -o storm_frontend_server-StatusLsRequest.obj `if test -f 'StatusLsRequest.cpp'; then $(CYGPATH_W) 'StatusLsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusLsRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusLsRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusLsRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusLsRequest.cpp' object='storm_frontend_server-StatusLsRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusLsRequest.cpp' object='storm_frontend_server-StatusLsRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusLsRequest.obj `if test -f 'request/synch/StatusLsRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusLsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusLsRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusLsRequest.obj `if test -f 'StatusLsRequest.cpp'; then $(CYGPATH_W) 'StatusLsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusLsRequest.cpp'; fi`
 
-storm_frontend_server-MvRequest.o: request/synch/MvRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MvRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-MvRequest.Tpo -c -o storm_frontend_server-MvRequest.o `test -f 'request/synch/MvRequest.cpp' || echo '$(srcdir)/'`request/synch/MvRequest.cpp
+storm_frontend_server-MvRequest.o: MvRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MvRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-MvRequest.Tpo -c -o storm_frontend_server-MvRequest.o `test -f 'MvRequest.cpp' || echo '$(srcdir)/'`MvRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-MvRequest.Tpo $(DEPDIR)/storm_frontend_server-MvRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/MvRequest.cpp' object='storm_frontend_server-MvRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MvRequest.cpp' object='storm_frontend_server-MvRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MvRequest.o `test -f 'request/synch/MvRequest.cpp' || echo '$(srcdir)/'`request/synch/MvRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MvRequest.o `test -f 'MvRequest.cpp' || echo '$(srcdir)/'`MvRequest.cpp
 
-storm_frontend_server-MvRequest.obj: request/synch/MvRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MvRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-MvRequest.Tpo -c -o storm_frontend_server-MvRequest.obj `if test -f 'request/synch/MvRequest.cpp'; then $(CYGPATH_W) 'request/synch/MvRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/MvRequest.cpp'; fi`
+storm_frontend_server-MvRequest.obj: MvRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-MvRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-MvRequest.Tpo -c -o storm_frontend_server-MvRequest.obj `if test -f 'MvRequest.cpp'; then $(CYGPATH_W) 'MvRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/MvRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-MvRequest.Tpo $(DEPDIR)/storm_frontend_server-MvRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/MvRequest.cpp' object='storm_frontend_server-MvRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MvRequest.cpp' object='storm_frontend_server-MvRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MvRequest.obj `if test -f 'request/synch/MvRequest.cpp'; then $(CYGPATH_W) 'request/synch/MvRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/MvRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-MvRequest.obj `if test -f 'MvRequest.cpp'; then $(CYGPATH_W) 'MvRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/MvRequest.cpp'; fi`
 
-storm_frontend_server-SetPermissionRequest.o: request/synch/SetPermissionRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SetPermissionRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Tpo -c -o storm_frontend_server-SetPermissionRequest.o `test -f 'request/synch/SetPermissionRequest.cpp' || echo '$(srcdir)/'`request/synch/SetPermissionRequest.cpp
+storm_frontend_server-SetPermissionRequest.o: SetPermissionRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SetPermissionRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Tpo -c -o storm_frontend_server-SetPermissionRequest.o `test -f 'SetPermissionRequest.cpp' || echo '$(srcdir)/'`SetPermissionRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Tpo $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/SetPermissionRequest.cpp' object='storm_frontend_server-SetPermissionRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SetPermissionRequest.cpp' object='storm_frontend_server-SetPermissionRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SetPermissionRequest.o `test -f 'request/synch/SetPermissionRequest.cpp' || echo '$(srcdir)/'`request/synch/SetPermissionRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SetPermissionRequest.o `test -f 'SetPermissionRequest.cpp' || echo '$(srcdir)/'`SetPermissionRequest.cpp
 
-storm_frontend_server-SetPermissionRequest.obj: request/synch/SetPermissionRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SetPermissionRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Tpo -c -o storm_frontend_server-SetPermissionRequest.obj `if test -f 'request/synch/SetPermissionRequest.cpp'; then $(CYGPATH_W) 'request/synch/SetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/SetPermissionRequest.cpp'; fi`
+storm_frontend_server-SetPermissionRequest.obj: SetPermissionRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SetPermissionRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Tpo -c -o storm_frontend_server-SetPermissionRequest.obj `if test -f 'SetPermissionRequest.cpp'; then $(CYGPATH_W) 'SetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/SetPermissionRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Tpo $(DEPDIR)/storm_frontend_server-SetPermissionRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/SetPermissionRequest.cpp' object='storm_frontend_server-SetPermissionRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SetPermissionRequest.cpp' object='storm_frontend_server-SetPermissionRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SetPermissionRequest.obj `if test -f 'request/synch/SetPermissionRequest.cpp'; then $(CYGPATH_W) 'request/synch/SetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/SetPermissionRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SetPermissionRequest.obj `if test -f 'SetPermissionRequest.cpp'; then $(CYGPATH_W) 'SetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/SetPermissionRequest.cpp'; fi`
 
-storm_frontend_server-CheckPermissionRequest.o: request/synch/CheckPermissionRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-CheckPermissionRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Tpo -c -o storm_frontend_server-CheckPermissionRequest.o `test -f 'request/synch/CheckPermissionRequest.cpp' || echo '$(srcdir)/'`request/synch/CheckPermissionRequest.cpp
+storm_frontend_server-CheckPermissionRequest.o: CheckPermissionRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-CheckPermissionRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Tpo -c -o storm_frontend_server-CheckPermissionRequest.o `test -f 'CheckPermissionRequest.cpp' || echo '$(srcdir)/'`CheckPermissionRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Tpo $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/CheckPermissionRequest.cpp' object='storm_frontend_server-CheckPermissionRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='CheckPermissionRequest.cpp' object='storm_frontend_server-CheckPermissionRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-CheckPermissionRequest.o `test -f 'request/synch/CheckPermissionRequest.cpp' || echo '$(srcdir)/'`request/synch/CheckPermissionRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-CheckPermissionRequest.o `test -f 'CheckPermissionRequest.cpp' || echo '$(srcdir)/'`CheckPermissionRequest.cpp
 
-storm_frontend_server-CheckPermissionRequest.obj: request/synch/CheckPermissionRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-CheckPermissionRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Tpo -c -o storm_frontend_server-CheckPermissionRequest.obj `if test -f 'request/synch/CheckPermissionRequest.cpp'; then $(CYGPATH_W) 'request/synch/CheckPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/CheckPermissionRequest.cpp'; fi`
+storm_frontend_server-CheckPermissionRequest.obj: CheckPermissionRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-CheckPermissionRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Tpo -c -o storm_frontend_server-CheckPermissionRequest.obj `if test -f 'CheckPermissionRequest.cpp'; then $(CYGPATH_W) 'CheckPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/CheckPermissionRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Tpo $(DEPDIR)/storm_frontend_server-CheckPermissionRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/CheckPermissionRequest.cpp' object='storm_frontend_server-CheckPermissionRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='CheckPermissionRequest.cpp' object='storm_frontend_server-CheckPermissionRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-CheckPermissionRequest.obj `if test -f 'request/synch/CheckPermissionRequest.cpp'; then $(CYGPATH_W) 'request/synch/CheckPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/CheckPermissionRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-CheckPermissionRequest.obj `if test -f 'CheckPermissionRequest.cpp'; then $(CYGPATH_W) 'CheckPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/CheckPermissionRequest.cpp'; fi`
 
-storm_frontend_server-GetPermissionRequest.o: request/synch/GetPermissionRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetPermissionRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Tpo -c -o storm_frontend_server-GetPermissionRequest.o `test -f 'request/synch/GetPermissionRequest.cpp' || echo '$(srcdir)/'`request/synch/GetPermissionRequest.cpp
+storm_frontend_server-GetPermissionRequest.o: GetPermissionRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetPermissionRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Tpo -c -o storm_frontend_server-GetPermissionRequest.o `test -f 'GetPermissionRequest.cpp' || echo '$(srcdir)/'`GetPermissionRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Tpo $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetPermissionRequest.cpp' object='storm_frontend_server-GetPermissionRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetPermissionRequest.cpp' object='storm_frontend_server-GetPermissionRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetPermissionRequest.o `test -f 'request/synch/GetPermissionRequest.cpp' || echo '$(srcdir)/'`request/synch/GetPermissionRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetPermissionRequest.o `test -f 'GetPermissionRequest.cpp' || echo '$(srcdir)/'`GetPermissionRequest.cpp
 
-storm_frontend_server-GetPermissionRequest.obj: request/synch/GetPermissionRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetPermissionRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Tpo -c -o storm_frontend_server-GetPermissionRequest.obj `if test -f 'request/synch/GetPermissionRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetPermissionRequest.cpp'; fi`
+storm_frontend_server-GetPermissionRequest.obj: GetPermissionRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetPermissionRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Tpo -c -o storm_frontend_server-GetPermissionRequest.obj `if test -f 'GetPermissionRequest.cpp'; then $(CYGPATH_W) 'GetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetPermissionRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Tpo $(DEPDIR)/storm_frontend_server-GetPermissionRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetPermissionRequest.cpp' object='storm_frontend_server-GetPermissionRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetPermissionRequest.cpp' object='storm_frontend_server-GetPermissionRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetPermissionRequest.obj `if test -f 'request/synch/GetPermissionRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetPermissionRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetPermissionRequest.obj `if test -f 'GetPermissionRequest.cpp'; then $(CYGPATH_W) 'GetPermissionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetPermissionRequest.cpp'; fi`
 
-storm_frontend_server-ReserveSpaceRequest.o: request/synch/ReserveSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReserveSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Tpo -c -o storm_frontend_server-ReserveSpaceRequest.o `test -f 'request/synch/ReserveSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/ReserveSpaceRequest.cpp
+storm_frontend_server-ReserveSpaceRequest.o: ReserveSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReserveSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Tpo -c -o storm_frontend_server-ReserveSpaceRequest.o `test -f 'ReserveSpaceRequest.cpp' || echo '$(srcdir)/'`ReserveSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ReserveSpaceRequest.cpp' object='storm_frontend_server-ReserveSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReserveSpaceRequest.cpp' object='storm_frontend_server-ReserveSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReserveSpaceRequest.o `test -f 'request/synch/ReserveSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/ReserveSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReserveSpaceRequest.o `test -f 'ReserveSpaceRequest.cpp' || echo '$(srcdir)/'`ReserveSpaceRequest.cpp
 
-storm_frontend_server-ReserveSpaceRequest.obj: request/synch/ReserveSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReserveSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Tpo -c -o storm_frontend_server-ReserveSpaceRequest.obj `if test -f 'request/synch/ReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/ReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ReserveSpaceRequest.cpp'; fi`
+storm_frontend_server-ReserveSpaceRequest.obj: ReserveSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReserveSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Tpo -c -o storm_frontend_server-ReserveSpaceRequest.obj `if test -f 'ReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'ReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ReserveSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-ReserveSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ReserveSpaceRequest.cpp' object='storm_frontend_server-ReserveSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReserveSpaceRequest.cpp' object='storm_frontend_server-ReserveSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReserveSpaceRequest.obj `if test -f 'request/synch/ReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/ReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ReserveSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReserveSpaceRequest.obj `if test -f 'ReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'ReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ReserveSpaceRequest.cpp'; fi`
 
-storm_frontend_server-StatusReserveSpaceRequest.o: request/synch/StatusReserveSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusReserveSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Tpo -c -o storm_frontend_server-StatusReserveSpaceRequest.o `test -f 'request/synch/StatusReserveSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusReserveSpaceRequest.cpp
+storm_frontend_server-StatusReserveSpaceRequest.o: StatusReserveSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusReserveSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Tpo -c -o storm_frontend_server-StatusReserveSpaceRequest.o `test -f 'StatusReserveSpaceRequest.cpp' || echo '$(srcdir)/'`StatusReserveSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusReserveSpaceRequest.cpp' object='storm_frontend_server-StatusReserveSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusReserveSpaceRequest.cpp' object='storm_frontend_server-StatusReserveSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusReserveSpaceRequest.o `test -f 'request/synch/StatusReserveSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusReserveSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusReserveSpaceRequest.o `test -f 'StatusReserveSpaceRequest.cpp' || echo '$(srcdir)/'`StatusReserveSpaceRequest.cpp
 
-storm_frontend_server-StatusReserveSpaceRequest.obj: request/synch/StatusReserveSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusReserveSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Tpo -c -o storm_frontend_server-StatusReserveSpaceRequest.obj `if test -f 'request/synch/StatusReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusReserveSpaceRequest.cpp'; fi`
+storm_frontend_server-StatusReserveSpaceRequest.obj: StatusReserveSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusReserveSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Tpo -c -o storm_frontend_server-StatusReserveSpaceRequest.obj `if test -f 'StatusReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'StatusReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusReserveSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusReserveSpaceRequest.cpp' object='storm_frontend_server-StatusReserveSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusReserveSpaceRequest.cpp' object='storm_frontend_server-StatusReserveSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusReserveSpaceRequest.obj `if test -f 'request/synch/StatusReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusReserveSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusReserveSpaceRequest.obj `if test -f 'StatusReserveSpaceRequest.cpp'; then $(CYGPATH_W) 'StatusReserveSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusReserveSpaceRequest.cpp'; fi`
 
-storm_frontend_server-ReleaseSpaceRequest.o: request/synch/ReleaseSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Tpo -c -o storm_frontend_server-ReleaseSpaceRequest.o `test -f 'request/synch/ReleaseSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/ReleaseSpaceRequest.cpp
+storm_frontend_server-ReleaseSpaceRequest.o: ReleaseSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Tpo -c -o storm_frontend_server-ReleaseSpaceRequest.o `test -f 'ReleaseSpaceRequest.cpp' || echo '$(srcdir)/'`ReleaseSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ReleaseSpaceRequest.cpp' object='storm_frontend_server-ReleaseSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReleaseSpaceRequest.cpp' object='storm_frontend_server-ReleaseSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseSpaceRequest.o `test -f 'request/synch/ReleaseSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/ReleaseSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseSpaceRequest.o `test -f 'ReleaseSpaceRequest.cpp' || echo '$(srcdir)/'`ReleaseSpaceRequest.cpp
 
-storm_frontend_server-ReleaseSpaceRequest.obj: request/synch/ReleaseSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Tpo -c -o storm_frontend_server-ReleaseSpaceRequest.obj `if test -f 'request/synch/ReleaseSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/ReleaseSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ReleaseSpaceRequest.cpp'; fi`
+storm_frontend_server-ReleaseSpaceRequest.obj: ReleaseSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Tpo -c -o storm_frontend_server-ReleaseSpaceRequest.obj `if test -f 'ReleaseSpaceRequest.cpp'; then $(CYGPATH_W) 'ReleaseSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ReleaseSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-ReleaseSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ReleaseSpaceRequest.cpp' object='storm_frontend_server-ReleaseSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReleaseSpaceRequest.cpp' object='storm_frontend_server-ReleaseSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseSpaceRequest.obj `if test -f 'request/synch/ReleaseSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/ReleaseSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ReleaseSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseSpaceRequest.obj `if test -f 'ReleaseSpaceRequest.cpp'; then $(CYGPATH_W) 'ReleaseSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ReleaseSpaceRequest.cpp'; fi`
 
-storm_frontend_server-UpdateSpaceRequest.o: request/synch/UpdateSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-UpdateSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Tpo -c -o storm_frontend_server-UpdateSpaceRequest.o `test -f 'request/synch/UpdateSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/UpdateSpaceRequest.cpp
+storm_frontend_server-UpdateSpaceRequest.o: UpdateSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-UpdateSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Tpo -c -o storm_frontend_server-UpdateSpaceRequest.o `test -f 'UpdateSpaceRequest.cpp' || echo '$(srcdir)/'`UpdateSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/UpdateSpaceRequest.cpp' object='storm_frontend_server-UpdateSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='UpdateSpaceRequest.cpp' object='storm_frontend_server-UpdateSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-UpdateSpaceRequest.o `test -f 'request/synch/UpdateSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/UpdateSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-UpdateSpaceRequest.o `test -f 'UpdateSpaceRequest.cpp' || echo '$(srcdir)/'`UpdateSpaceRequest.cpp
 
-storm_frontend_server-UpdateSpaceRequest.obj: request/synch/UpdateSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-UpdateSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Tpo -c -o storm_frontend_server-UpdateSpaceRequest.obj `if test -f 'request/synch/UpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/UpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/UpdateSpaceRequest.cpp'; fi`
+storm_frontend_server-UpdateSpaceRequest.obj: UpdateSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-UpdateSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Tpo -c -o storm_frontend_server-UpdateSpaceRequest.obj `if test -f 'UpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'UpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/UpdateSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/UpdateSpaceRequest.cpp' object='storm_frontend_server-UpdateSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='UpdateSpaceRequest.cpp' object='storm_frontend_server-UpdateSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-UpdateSpaceRequest.obj `if test -f 'request/synch/UpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/UpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/UpdateSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-UpdateSpaceRequest.obj `if test -f 'UpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'UpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/UpdateSpaceRequest.cpp'; fi`
 
-storm_frontend_server-StatusUpdateSpaceRequest.o: request/synch/StatusUpdateSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusUpdateSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Tpo -c -o storm_frontend_server-StatusUpdateSpaceRequest.o `test -f 'request/synch/StatusUpdateSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusUpdateSpaceRequest.cpp
+storm_frontend_server-StatusUpdateSpaceRequest.o: StatusUpdateSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusUpdateSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Tpo -c -o storm_frontend_server-StatusUpdateSpaceRequest.o `test -f 'StatusUpdateSpaceRequest.cpp' || echo '$(srcdir)/'`StatusUpdateSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusUpdateSpaceRequest.cpp' object='storm_frontend_server-StatusUpdateSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusUpdateSpaceRequest.cpp' object='storm_frontend_server-StatusUpdateSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusUpdateSpaceRequest.o `test -f 'request/synch/StatusUpdateSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusUpdateSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusUpdateSpaceRequest.o `test -f 'StatusUpdateSpaceRequest.cpp' || echo '$(srcdir)/'`StatusUpdateSpaceRequest.cpp
 
-storm_frontend_server-StatusUpdateSpaceRequest.obj: request/synch/StatusUpdateSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusUpdateSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Tpo -c -o storm_frontend_server-StatusUpdateSpaceRequest.obj `if test -f 'request/synch/StatusUpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusUpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusUpdateSpaceRequest.cpp'; fi`
+storm_frontend_server-StatusUpdateSpaceRequest.obj: StatusUpdateSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusUpdateSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Tpo -c -o storm_frontend_server-StatusUpdateSpaceRequest.obj `if test -f 'StatusUpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'StatusUpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusUpdateSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusUpdateSpaceRequest.cpp' object='storm_frontend_server-StatusUpdateSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusUpdateSpaceRequest.cpp' object='storm_frontend_server-StatusUpdateSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusUpdateSpaceRequest.obj `if test -f 'request/synch/StatusUpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusUpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusUpdateSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusUpdateSpaceRequest.obj `if test -f 'StatusUpdateSpaceRequest.cpp'; then $(CYGPATH_W) 'StatusUpdateSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusUpdateSpaceRequest.cpp'; fi`
 
-storm_frontend_server-GetSpaceMetaDataRequest.o: request/synch/GetSpaceMetaDataRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceMetaDataRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Tpo -c -o storm_frontend_server-GetSpaceMetaDataRequest.o `test -f 'request/synch/GetSpaceMetaDataRequest.cpp' || echo '$(srcdir)/'`request/synch/GetSpaceMetaDataRequest.cpp
+storm_frontend_server-GetSpaceMetaDataRequest.o: GetSpaceMetaDataRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceMetaDataRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Tpo -c -o storm_frontend_server-GetSpaceMetaDataRequest.o `test -f 'GetSpaceMetaDataRequest.cpp' || echo '$(srcdir)/'`GetSpaceMetaDataRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Tpo $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetSpaceMetaDataRequest.cpp' object='storm_frontend_server-GetSpaceMetaDataRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetSpaceMetaDataRequest.cpp' object='storm_frontend_server-GetSpaceMetaDataRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceMetaDataRequest.o `test -f 'request/synch/GetSpaceMetaDataRequest.cpp' || echo '$(srcdir)/'`request/synch/GetSpaceMetaDataRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceMetaDataRequest.o `test -f 'GetSpaceMetaDataRequest.cpp' || echo '$(srcdir)/'`GetSpaceMetaDataRequest.cpp
 
-storm_frontend_server-GetSpaceMetaDataRequest.obj: request/synch/GetSpaceMetaDataRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceMetaDataRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Tpo -c -o storm_frontend_server-GetSpaceMetaDataRequest.obj `if test -f 'request/synch/GetSpaceMetaDataRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetSpaceMetaDataRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetSpaceMetaDataRequest.cpp'; fi`
+storm_frontend_server-GetSpaceMetaDataRequest.obj: GetSpaceMetaDataRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceMetaDataRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Tpo -c -o storm_frontend_server-GetSpaceMetaDataRequest.obj `if test -f 'GetSpaceMetaDataRequest.cpp'; then $(CYGPATH_W) 'GetSpaceMetaDataRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetSpaceMetaDataRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Tpo $(DEPDIR)/storm_frontend_server-GetSpaceMetaDataRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetSpaceMetaDataRequest.cpp' object='storm_frontend_server-GetSpaceMetaDataRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetSpaceMetaDataRequest.cpp' object='storm_frontend_server-GetSpaceMetaDataRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceMetaDataRequest.obj `if test -f 'request/synch/GetSpaceMetaDataRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetSpaceMetaDataRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetSpaceMetaDataRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceMetaDataRequest.obj `if test -f 'GetSpaceMetaDataRequest.cpp'; then $(CYGPATH_W) 'GetSpaceMetaDataRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetSpaceMetaDataRequest.cpp'; fi`
 
-storm_frontend_server-GetSpaceTokensRequest.o: request/synch/GetSpaceTokensRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceTokensRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Tpo -c -o storm_frontend_server-GetSpaceTokensRequest.o `test -f 'request/synch/GetSpaceTokensRequest.cpp' || echo '$(srcdir)/'`request/synch/GetSpaceTokensRequest.cpp
+storm_frontend_server-GetSpaceTokensRequest.o: GetSpaceTokensRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceTokensRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Tpo -c -o storm_frontend_server-GetSpaceTokensRequest.o `test -f 'GetSpaceTokensRequest.cpp' || echo '$(srcdir)/'`GetSpaceTokensRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Tpo $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetSpaceTokensRequest.cpp' object='storm_frontend_server-GetSpaceTokensRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetSpaceTokensRequest.cpp' object='storm_frontend_server-GetSpaceTokensRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceTokensRequest.o `test -f 'request/synch/GetSpaceTokensRequest.cpp' || echo '$(srcdir)/'`request/synch/GetSpaceTokensRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceTokensRequest.o `test -f 'GetSpaceTokensRequest.cpp' || echo '$(srcdir)/'`GetSpaceTokensRequest.cpp
 
-storm_frontend_server-GetSpaceTokensRequest.obj: request/synch/GetSpaceTokensRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceTokensRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Tpo -c -o storm_frontend_server-GetSpaceTokensRequest.obj `if test -f 'request/synch/GetSpaceTokensRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetSpaceTokensRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetSpaceTokensRequest.cpp'; fi`
+storm_frontend_server-GetSpaceTokensRequest.obj: GetSpaceTokensRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetSpaceTokensRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Tpo -c -o storm_frontend_server-GetSpaceTokensRequest.obj `if test -f 'GetSpaceTokensRequest.cpp'; then $(CYGPATH_W) 'GetSpaceTokensRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetSpaceTokensRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Tpo $(DEPDIR)/storm_frontend_server-GetSpaceTokensRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetSpaceTokensRequest.cpp' object='storm_frontend_server-GetSpaceTokensRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetSpaceTokensRequest.cpp' object='storm_frontend_server-GetSpaceTokensRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceTokensRequest.obj `if test -f 'request/synch/GetSpaceTokensRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetSpaceTokensRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetSpaceTokensRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetSpaceTokensRequest.obj `if test -f 'GetSpaceTokensRequest.cpp'; then $(CYGPATH_W) 'GetSpaceTokensRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetSpaceTokensRequest.cpp'; fi`
 
-storm_frontend_server-ChangeSpaceForFilesRequest.o: request/synch/ChangeSpaceForFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ChangeSpaceForFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-ChangeSpaceForFilesRequest.o `test -f 'request/synch/ChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/ChangeSpaceForFilesRequest.cpp
+storm_frontend_server-ChangeSpaceForFilesRequest.o: ChangeSpaceForFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ChangeSpaceForFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-ChangeSpaceForFilesRequest.o `test -f 'ChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`ChangeSpaceForFilesRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-ChangeSpaceForFilesRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-ChangeSpaceForFilesRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ChangeSpaceForFilesRequest.o `test -f 'request/synch/ChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/ChangeSpaceForFilesRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ChangeSpaceForFilesRequest.o `test -f 'ChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`ChangeSpaceForFilesRequest.cpp
 
-storm_frontend_server-ChangeSpaceForFilesRequest.obj: request/synch/ChangeSpaceForFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ChangeSpaceForFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-ChangeSpaceForFilesRequest.obj `if test -f 'request/synch/ChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/ChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ChangeSpaceForFilesRequest.cpp'; fi`
+storm_frontend_server-ChangeSpaceForFilesRequest.obj: ChangeSpaceForFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ChangeSpaceForFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-ChangeSpaceForFilesRequest.obj `if test -f 'ChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'ChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ChangeSpaceForFilesRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-ChangeSpaceForFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-ChangeSpaceForFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-ChangeSpaceForFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ChangeSpaceForFilesRequest.obj `if test -f 'request/synch/ChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/ChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ChangeSpaceForFilesRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ChangeSpaceForFilesRequest.obj `if test -f 'ChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'ChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ChangeSpaceForFilesRequest.cpp'; fi`
 
-storm_frontend_server-StatusChangeSpaceForFilesRequest.o: request/synch/StatusChangeSpaceForFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusChangeSpaceForFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.o `test -f 'request/synch/StatusChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusChangeSpaceForFilesRequest.cpp
+storm_frontend_server-StatusChangeSpaceForFilesRequest.o: StatusChangeSpaceForFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusChangeSpaceForFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.o `test -f 'StatusChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`StatusChangeSpaceForFilesRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-StatusChangeSpaceForFilesRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-StatusChangeSpaceForFilesRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.o `test -f 'request/synch/StatusChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/StatusChangeSpaceForFilesRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.o `test -f 'StatusChangeSpaceForFilesRequest.cpp' || echo '$(srcdir)/'`StatusChangeSpaceForFilesRequest.cpp
 
-storm_frontend_server-StatusChangeSpaceForFilesRequest.obj: request/synch/StatusChangeSpaceForFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusChangeSpaceForFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.obj `if test -f 'request/synch/StatusChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusChangeSpaceForFilesRequest.cpp'; fi`
+storm_frontend_server-StatusChangeSpaceForFilesRequest.obj: StatusChangeSpaceForFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-StatusChangeSpaceForFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Tpo -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.obj `if test -f 'StatusChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'StatusChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusChangeSpaceForFilesRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-StatusChangeSpaceForFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/StatusChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-StatusChangeSpaceForFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StatusChangeSpaceForFilesRequest.cpp' object='storm_frontend_server-StatusChangeSpaceForFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.obj `if test -f 'request/synch/StatusChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/StatusChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/StatusChangeSpaceForFilesRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-StatusChangeSpaceForFilesRequest.obj `if test -f 'StatusChangeSpaceForFilesRequest.cpp'; then $(CYGPATH_W) 'StatusChangeSpaceForFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/StatusChangeSpaceForFilesRequest.cpp'; fi`
 
-storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o: request/synch/ExtendFileLifeTimeInSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o `test -f 'request/synch/ExtendFileLifeTimeInSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/ExtendFileLifeTimeInSpaceRequest.cpp
+storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o: ExtendFileLifeTimeInSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o `test -f 'ExtendFileLifeTimeInSpaceRequest.cpp' || echo '$(srcdir)/'`ExtendFileLifeTimeInSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ExtendFileLifeTimeInSpaceRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ExtendFileLifeTimeInSpaceRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o `test -f 'request/synch/ExtendFileLifeTimeInSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/ExtendFileLifeTimeInSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.o `test -f 'ExtendFileLifeTimeInSpaceRequest.cpp' || echo '$(srcdir)/'`ExtendFileLifeTimeInSpaceRequest.cpp
 
-storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj: request/synch/ExtendFileLifeTimeInSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj `if test -f 'request/synch/ExtendFileLifeTimeInSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/ExtendFileLifeTimeInSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ExtendFileLifeTimeInSpaceRequest.cpp'; fi`
+storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj: ExtendFileLifeTimeInSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj `if test -f 'ExtendFileLifeTimeInSpaceRequest.cpp'; then $(CYGPATH_W) 'ExtendFileLifeTimeInSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ExtendFileLifeTimeInSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ExtendFileLifeTimeInSpaceRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ExtendFileLifeTimeInSpaceRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj `if test -f 'request/synch/ExtendFileLifeTimeInSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/ExtendFileLifeTimeInSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ExtendFileLifeTimeInSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeInSpaceRequest.obj `if test -f 'ExtendFileLifeTimeInSpaceRequest.cpp'; then $(CYGPATH_W) 'ExtendFileLifeTimeInSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ExtendFileLifeTimeInSpaceRequest.cpp'; fi`
 
-storm_frontend_server-PurgeFromSpaceRequest.o: request/synch/PurgeFromSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PurgeFromSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Tpo -c -o storm_frontend_server-PurgeFromSpaceRequest.o `test -f 'request/synch/PurgeFromSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/PurgeFromSpaceRequest.cpp
+storm_frontend_server-PurgeFromSpaceRequest.o: PurgeFromSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PurgeFromSpaceRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Tpo -c -o storm_frontend_server-PurgeFromSpaceRequest.o `test -f 'PurgeFromSpaceRequest.cpp' || echo '$(srcdir)/'`PurgeFromSpaceRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/PurgeFromSpaceRequest.cpp' object='storm_frontend_server-PurgeFromSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PurgeFromSpaceRequest.cpp' object='storm_frontend_server-PurgeFromSpaceRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PurgeFromSpaceRequest.o `test -f 'request/synch/PurgeFromSpaceRequest.cpp' || echo '$(srcdir)/'`request/synch/PurgeFromSpaceRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PurgeFromSpaceRequest.o `test -f 'PurgeFromSpaceRequest.cpp' || echo '$(srcdir)/'`PurgeFromSpaceRequest.cpp
 
-storm_frontend_server-PurgeFromSpaceRequest.obj: request/synch/PurgeFromSpaceRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PurgeFromSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Tpo -c -o storm_frontend_server-PurgeFromSpaceRequest.obj `if test -f 'request/synch/PurgeFromSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/PurgeFromSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/PurgeFromSpaceRequest.cpp'; fi`
+storm_frontend_server-PurgeFromSpaceRequest.obj: PurgeFromSpaceRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PurgeFromSpaceRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Tpo -c -o storm_frontend_server-PurgeFromSpaceRequest.obj `if test -f 'PurgeFromSpaceRequest.cpp'; then $(CYGPATH_W) 'PurgeFromSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/PurgeFromSpaceRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Tpo $(DEPDIR)/storm_frontend_server-PurgeFromSpaceRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/PurgeFromSpaceRequest.cpp' object='storm_frontend_server-PurgeFromSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PurgeFromSpaceRequest.cpp' object='storm_frontend_server-PurgeFromSpaceRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PurgeFromSpaceRequest.obj `if test -f 'request/synch/PurgeFromSpaceRequest.cpp'; then $(CYGPATH_W) 'request/synch/PurgeFromSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/PurgeFromSpaceRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PurgeFromSpaceRequest.obj `if test -f 'PurgeFromSpaceRequest.cpp'; then $(CYGPATH_W) 'PurgeFromSpaceRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/PurgeFromSpaceRequest.cpp'; fi`
 
-storm_frontend_server-ReleaseFilesRequest.o: request/synch/ReleaseFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Tpo -c -o storm_frontend_server-ReleaseFilesRequest.o `test -f 'request/synch/ReleaseFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/ReleaseFilesRequest.cpp
+storm_frontend_server-ReleaseFilesRequest.o: ReleaseFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Tpo -c -o storm_frontend_server-ReleaseFilesRequest.o `test -f 'ReleaseFilesRequest.cpp' || echo '$(srcdir)/'`ReleaseFilesRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ReleaseFilesRequest.cpp' object='storm_frontend_server-ReleaseFilesRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReleaseFilesRequest.cpp' object='storm_frontend_server-ReleaseFilesRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseFilesRequest.o `test -f 'request/synch/ReleaseFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/ReleaseFilesRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseFilesRequest.o `test -f 'ReleaseFilesRequest.cpp' || echo '$(srcdir)/'`ReleaseFilesRequest.cpp
 
-storm_frontend_server-ReleaseFilesRequest.obj: request/synch/ReleaseFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Tpo -c -o storm_frontend_server-ReleaseFilesRequest.obj `if test -f 'request/synch/ReleaseFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/ReleaseFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ReleaseFilesRequest.cpp'; fi`
+storm_frontend_server-ReleaseFilesRequest.obj: ReleaseFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ReleaseFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Tpo -c -o storm_frontend_server-ReleaseFilesRequest.obj `if test -f 'ReleaseFilesRequest.cpp'; then $(CYGPATH_W) 'ReleaseFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ReleaseFilesRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-ReleaseFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ReleaseFilesRequest.cpp' object='storm_frontend_server-ReleaseFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReleaseFilesRequest.cpp' object='storm_frontend_server-ReleaseFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseFilesRequest.obj `if test -f 'request/synch/ReleaseFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/ReleaseFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ReleaseFilesRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ReleaseFilesRequest.obj `if test -f 'ReleaseFilesRequest.cpp'; then $(CYGPATH_W) 'ReleaseFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ReleaseFilesRequest.cpp'; fi`
 
-storm_frontend_server-PutDoneRequest.o: request/synch/PutDoneRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PutDoneRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-PutDoneRequest.Tpo -c -o storm_frontend_server-PutDoneRequest.o `test -f 'request/synch/PutDoneRequest.cpp' || echo '$(srcdir)/'`request/synch/PutDoneRequest.cpp
+storm_frontend_server-PutDoneRequest.o: PutDoneRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PutDoneRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-PutDoneRequest.Tpo -c -o storm_frontend_server-PutDoneRequest.o `test -f 'PutDoneRequest.cpp' || echo '$(srcdir)/'`PutDoneRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-PutDoneRequest.Tpo $(DEPDIR)/storm_frontend_server-PutDoneRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/PutDoneRequest.cpp' object='storm_frontend_server-PutDoneRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PutDoneRequest.cpp' object='storm_frontend_server-PutDoneRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PutDoneRequest.o `test -f 'request/synch/PutDoneRequest.cpp' || echo '$(srcdir)/'`request/synch/PutDoneRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PutDoneRequest.o `test -f 'PutDoneRequest.cpp' || echo '$(srcdir)/'`PutDoneRequest.cpp
 
-storm_frontend_server-PutDoneRequest.obj: request/synch/PutDoneRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PutDoneRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-PutDoneRequest.Tpo -c -o storm_frontend_server-PutDoneRequest.obj `if test -f 'request/synch/PutDoneRequest.cpp'; then $(CYGPATH_W) 'request/synch/PutDoneRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/PutDoneRequest.cpp'; fi`
+storm_frontend_server-PutDoneRequest.obj: PutDoneRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PutDoneRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-PutDoneRequest.Tpo -c -o storm_frontend_server-PutDoneRequest.obj `if test -f 'PutDoneRequest.cpp'; then $(CYGPATH_W) 'PutDoneRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/PutDoneRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-PutDoneRequest.Tpo $(DEPDIR)/storm_frontend_server-PutDoneRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/PutDoneRequest.cpp' object='storm_frontend_server-PutDoneRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PutDoneRequest.cpp' object='storm_frontend_server-PutDoneRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PutDoneRequest.obj `if test -f 'request/synch/PutDoneRequest.cpp'; then $(CYGPATH_W) 'request/synch/PutDoneRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/PutDoneRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PutDoneRequest.obj `if test -f 'PutDoneRequest.cpp'; then $(CYGPATH_W) 'PutDoneRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/PutDoneRequest.cpp'; fi`
 
-storm_frontend_server-AbortRequestRequest.o: request/synch/AbortRequestRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortRequestRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Tpo -c -o storm_frontend_server-AbortRequestRequest.o `test -f 'request/synch/AbortRequestRequest.cpp' || echo '$(srcdir)/'`request/synch/AbortRequestRequest.cpp
+storm_frontend_server-AbortRequestRequest.o: AbortRequestRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortRequestRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Tpo -c -o storm_frontend_server-AbortRequestRequest.o `test -f 'AbortRequestRequest.cpp' || echo '$(srcdir)/'`AbortRequestRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Tpo $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/AbortRequestRequest.cpp' object='storm_frontend_server-AbortRequestRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='AbortRequestRequest.cpp' object='storm_frontend_server-AbortRequestRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortRequestRequest.o `test -f 'request/synch/AbortRequestRequest.cpp' || echo '$(srcdir)/'`request/synch/AbortRequestRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortRequestRequest.o `test -f 'AbortRequestRequest.cpp' || echo '$(srcdir)/'`AbortRequestRequest.cpp
 
-storm_frontend_server-AbortRequestRequest.obj: request/synch/AbortRequestRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortRequestRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Tpo -c -o storm_frontend_server-AbortRequestRequest.obj `if test -f 'request/synch/AbortRequestRequest.cpp'; then $(CYGPATH_W) 'request/synch/AbortRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/AbortRequestRequest.cpp'; fi`
+storm_frontend_server-AbortRequestRequest.obj: AbortRequestRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortRequestRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Tpo -c -o storm_frontend_server-AbortRequestRequest.obj `if test -f 'AbortRequestRequest.cpp'; then $(CYGPATH_W) 'AbortRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/AbortRequestRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Tpo $(DEPDIR)/storm_frontend_server-AbortRequestRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/AbortRequestRequest.cpp' object='storm_frontend_server-AbortRequestRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='AbortRequestRequest.cpp' object='storm_frontend_server-AbortRequestRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortRequestRequest.obj `if test -f 'request/synch/AbortRequestRequest.cpp'; then $(CYGPATH_W) 'request/synch/AbortRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/AbortRequestRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortRequestRequest.obj `if test -f 'AbortRequestRequest.cpp'; then $(CYGPATH_W) 'AbortRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/AbortRequestRequest.cpp'; fi`
 
-storm_frontend_server-AbortFilesRequest.o: request/synch/AbortFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Tpo -c -o storm_frontend_server-AbortFilesRequest.o `test -f 'request/synch/AbortFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/AbortFilesRequest.cpp
+storm_frontend_server-AbortFilesRequest.o: AbortFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortFilesRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Tpo -c -o storm_frontend_server-AbortFilesRequest.o `test -f 'AbortFilesRequest.cpp' || echo '$(srcdir)/'`AbortFilesRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/AbortFilesRequest.cpp' object='storm_frontend_server-AbortFilesRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='AbortFilesRequest.cpp' object='storm_frontend_server-AbortFilesRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortFilesRequest.o `test -f 'request/synch/AbortFilesRequest.cpp' || echo '$(srcdir)/'`request/synch/AbortFilesRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortFilesRequest.o `test -f 'AbortFilesRequest.cpp' || echo '$(srcdir)/'`AbortFilesRequest.cpp
 
-storm_frontend_server-AbortFilesRequest.obj: request/synch/AbortFilesRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Tpo -c -o storm_frontend_server-AbortFilesRequest.obj `if test -f 'request/synch/AbortFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/AbortFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/AbortFilesRequest.cpp'; fi`
+storm_frontend_server-AbortFilesRequest.obj: AbortFilesRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-AbortFilesRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Tpo -c -o storm_frontend_server-AbortFilesRequest.obj `if test -f 'AbortFilesRequest.cpp'; then $(CYGPATH_W) 'AbortFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/AbortFilesRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Tpo $(DEPDIR)/storm_frontend_server-AbortFilesRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/AbortFilesRequest.cpp' object='storm_frontend_server-AbortFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='AbortFilesRequest.cpp' object='storm_frontend_server-AbortFilesRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortFilesRequest.obj `if test -f 'request/synch/AbortFilesRequest.cpp'; then $(CYGPATH_W) 'request/synch/AbortFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/AbortFilesRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-AbortFilesRequest.obj `if test -f 'AbortFilesRequest.cpp'; then $(CYGPATH_W) 'AbortFilesRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/AbortFilesRequest.cpp'; fi`
 
-storm_frontend_server-SuspendRequestRequest.o: request/synch/SuspendRequestRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SuspendRequestRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Tpo -c -o storm_frontend_server-SuspendRequestRequest.o `test -f 'request/synch/SuspendRequestRequest.cpp' || echo '$(srcdir)/'`request/synch/SuspendRequestRequest.cpp
+storm_frontend_server-SuspendRequestRequest.o: SuspendRequestRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SuspendRequestRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Tpo -c -o storm_frontend_server-SuspendRequestRequest.o `test -f 'SuspendRequestRequest.cpp' || echo '$(srcdir)/'`SuspendRequestRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Tpo $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/SuspendRequestRequest.cpp' object='storm_frontend_server-SuspendRequestRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SuspendRequestRequest.cpp' object='storm_frontend_server-SuspendRequestRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SuspendRequestRequest.o `test -f 'request/synch/SuspendRequestRequest.cpp' || echo '$(srcdir)/'`request/synch/SuspendRequestRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SuspendRequestRequest.o `test -f 'SuspendRequestRequest.cpp' || echo '$(srcdir)/'`SuspendRequestRequest.cpp
 
-storm_frontend_server-SuspendRequestRequest.obj: request/synch/SuspendRequestRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SuspendRequestRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Tpo -c -o storm_frontend_server-SuspendRequestRequest.obj `if test -f 'request/synch/SuspendRequestRequest.cpp'; then $(CYGPATH_W) 'request/synch/SuspendRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/SuspendRequestRequest.cpp'; fi`
+storm_frontend_server-SuspendRequestRequest.obj: SuspendRequestRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-SuspendRequestRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Tpo -c -o storm_frontend_server-SuspendRequestRequest.obj `if test -f 'SuspendRequestRequest.cpp'; then $(CYGPATH_W) 'SuspendRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/SuspendRequestRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Tpo $(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/SuspendRequestRequest.cpp' object='storm_frontend_server-SuspendRequestRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SuspendRequestRequest.cpp' object='storm_frontend_server-SuspendRequestRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SuspendRequestRequest.obj `if test -f 'request/synch/SuspendRequestRequest.cpp'; then $(CYGPATH_W) 'request/synch/SuspendRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/SuspendRequestRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-SuspendRequestRequest.obj `if test -f 'SuspendRequestRequest.cpp'; then $(CYGPATH_W) 'SuspendRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/SuspendRequestRequest.cpp'; fi`
 
-storm_frontend_server-ResumeRequestRequest.o: request/synch/ResumeRequestRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ResumeRequestRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Tpo -c -o storm_frontend_server-ResumeRequestRequest.o `test -f 'request/synch/ResumeRequestRequest.cpp' || echo '$(srcdir)/'`request/synch/ResumeRequestRequest.cpp
+storm_frontend_server-ResumeRequestRequest.o: ResumeRequestRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ResumeRequestRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Tpo -c -o storm_frontend_server-ResumeRequestRequest.o `test -f 'ResumeRequestRequest.cpp' || echo '$(srcdir)/'`ResumeRequestRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Tpo $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ResumeRequestRequest.cpp' object='storm_frontend_server-ResumeRequestRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ResumeRequestRequest.cpp' object='storm_frontend_server-ResumeRequestRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ResumeRequestRequest.o `test -f 'request/synch/ResumeRequestRequest.cpp' || echo '$(srcdir)/'`request/synch/ResumeRequestRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ResumeRequestRequest.o `test -f 'ResumeRequestRequest.cpp' || echo '$(srcdir)/'`ResumeRequestRequest.cpp
 
-storm_frontend_server-ResumeRequestRequest.obj: request/synch/ResumeRequestRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ResumeRequestRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Tpo -c -o storm_frontend_server-ResumeRequestRequest.obj `if test -f 'request/synch/ResumeRequestRequest.cpp'; then $(CYGPATH_W) 'request/synch/ResumeRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ResumeRequestRequest.cpp'; fi`
+storm_frontend_server-ResumeRequestRequest.obj: ResumeRequestRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ResumeRequestRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Tpo -c -o storm_frontend_server-ResumeRequestRequest.obj `if test -f 'ResumeRequestRequest.cpp'; then $(CYGPATH_W) 'ResumeRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ResumeRequestRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Tpo $(DEPDIR)/storm_frontend_server-ResumeRequestRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ResumeRequestRequest.cpp' object='storm_frontend_server-ResumeRequestRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ResumeRequestRequest.cpp' object='storm_frontend_server-ResumeRequestRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ResumeRequestRequest.obj `if test -f 'request/synch/ResumeRequestRequest.cpp'; then $(CYGPATH_W) 'request/synch/ResumeRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ResumeRequestRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ResumeRequestRequest.obj `if test -f 'ResumeRequestRequest.cpp'; then $(CYGPATH_W) 'ResumeRequestRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ResumeRequestRequest.cpp'; fi`
 
-storm_frontend_server-ExtendFileLifeTimeRequest.o: request/synch/ExtendFileLifeTimeRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeRequest.o `test -f 'request/synch/ExtendFileLifeTimeRequest.cpp' || echo '$(srcdir)/'`request/synch/ExtendFileLifeTimeRequest.cpp
+storm_frontend_server-ExtendFileLifeTimeRequest.o: ExtendFileLifeTimeRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeRequest.o `test -f 'ExtendFileLifeTimeRequest.cpp' || echo '$(srcdir)/'`ExtendFileLifeTimeRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Tpo $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ExtendFileLifeTimeRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ExtendFileLifeTimeRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeRequest.o `test -f 'request/synch/ExtendFileLifeTimeRequest.cpp' || echo '$(srcdir)/'`request/synch/ExtendFileLifeTimeRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeRequest.o `test -f 'ExtendFileLifeTimeRequest.cpp' || echo '$(srcdir)/'`ExtendFileLifeTimeRequest.cpp
 
-storm_frontend_server-ExtendFileLifeTimeRequest.obj: request/synch/ExtendFileLifeTimeRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeRequest.obj `if test -f 'request/synch/ExtendFileLifeTimeRequest.cpp'; then $(CYGPATH_W) 'request/synch/ExtendFileLifeTimeRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ExtendFileLifeTimeRequest.cpp'; fi`
+storm_frontend_server-ExtendFileLifeTimeRequest.obj: ExtendFileLifeTimeRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ExtendFileLifeTimeRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Tpo -c -o storm_frontend_server-ExtendFileLifeTimeRequest.obj `if test -f 'ExtendFileLifeTimeRequest.cpp'; then $(CYGPATH_W) 'ExtendFileLifeTimeRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ExtendFileLifeTimeRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Tpo $(DEPDIR)/storm_frontend_server-ExtendFileLifeTimeRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/ExtendFileLifeTimeRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ExtendFileLifeTimeRequest.cpp' object='storm_frontend_server-ExtendFileLifeTimeRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeRequest.obj `if test -f 'request/synch/ExtendFileLifeTimeRequest.cpp'; then $(CYGPATH_W) 'request/synch/ExtendFileLifeTimeRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/ExtendFileLifeTimeRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-ExtendFileLifeTimeRequest.obj `if test -f 'ExtendFileLifeTimeRequest.cpp'; then $(CYGPATH_W) 'ExtendFileLifeTimeRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/ExtendFileLifeTimeRequest.cpp'; fi`
 
-storm_frontend_server-GetTransferProtocolsRequest.o: request/synch/GetTransferProtocolsRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetTransferProtocolsRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Tpo -c -o storm_frontend_server-GetTransferProtocolsRequest.o `test -f 'request/synch/GetTransferProtocolsRequest.cpp' || echo '$(srcdir)/'`request/synch/GetTransferProtocolsRequest.cpp
+storm_frontend_server-GetTransferProtocolsRequest.o: GetTransferProtocolsRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetTransferProtocolsRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Tpo -c -o storm_frontend_server-GetTransferProtocolsRequest.o `test -f 'GetTransferProtocolsRequest.cpp' || echo '$(srcdir)/'`GetTransferProtocolsRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Tpo $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetTransferProtocolsRequest.cpp' object='storm_frontend_server-GetTransferProtocolsRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetTransferProtocolsRequest.cpp' object='storm_frontend_server-GetTransferProtocolsRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetTransferProtocolsRequest.o `test -f 'request/synch/GetTransferProtocolsRequest.cpp' || echo '$(srcdir)/'`request/synch/GetTransferProtocolsRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetTransferProtocolsRequest.o `test -f 'GetTransferProtocolsRequest.cpp' || echo '$(srcdir)/'`GetTransferProtocolsRequest.cpp
 
-storm_frontend_server-GetTransferProtocolsRequest.obj: request/synch/GetTransferProtocolsRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetTransferProtocolsRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Tpo -c -o storm_frontend_server-GetTransferProtocolsRequest.obj `if test -f 'request/synch/GetTransferProtocolsRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetTransferProtocolsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetTransferProtocolsRequest.cpp'; fi`
+storm_frontend_server-GetTransferProtocolsRequest.obj: GetTransferProtocolsRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-GetTransferProtocolsRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Tpo -c -o storm_frontend_server-GetTransferProtocolsRequest.obj `if test -f 'GetTransferProtocolsRequest.cpp'; then $(CYGPATH_W) 'GetTransferProtocolsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetTransferProtocolsRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Tpo $(DEPDIR)/storm_frontend_server-GetTransferProtocolsRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/GetTransferProtocolsRequest.cpp' object='storm_frontend_server-GetTransferProtocolsRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GetTransferProtocolsRequest.cpp' object='storm_frontend_server-GetTransferProtocolsRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetTransferProtocolsRequest.obj `if test -f 'request/synch/GetTransferProtocolsRequest.cpp'; then $(CYGPATH_W) 'request/synch/GetTransferProtocolsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/GetTransferProtocolsRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-GetTransferProtocolsRequest.obj `if test -f 'GetTransferProtocolsRequest.cpp'; then $(CYGPATH_W) 'GetTransferProtocolsRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/GetTransferProtocolsRequest.cpp'; fi`
 
-storm_frontend_server-PingRequest.o: request/synch/PingRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PingRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-PingRequest.Tpo -c -o storm_frontend_server-PingRequest.o `test -f 'request/synch/PingRequest.cpp' || echo '$(srcdir)/'`request/synch/PingRequest.cpp
+storm_frontend_server-PingRequest.o: PingRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PingRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-PingRequest.Tpo -c -o storm_frontend_server-PingRequest.o `test -f 'PingRequest.cpp' || echo '$(srcdir)/'`PingRequest.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-PingRequest.Tpo $(DEPDIR)/storm_frontend_server-PingRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/PingRequest.cpp' object='storm_frontend_server-PingRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PingRequest.cpp' object='storm_frontend_server-PingRequest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PingRequest.o `test -f 'request/synch/PingRequest.cpp' || echo '$(srcdir)/'`request/synch/PingRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PingRequest.o `test -f 'PingRequest.cpp' || echo '$(srcdir)/'`PingRequest.cpp
 
-storm_frontend_server-PingRequest.obj: request/synch/PingRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PingRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-PingRequest.Tpo -c -o storm_frontend_server-PingRequest.obj `if test -f 'request/synch/PingRequest.cpp'; then $(CYGPATH_W) 'request/synch/PingRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/PingRequest.cpp'; fi`
+storm_frontend_server-PingRequest.obj: PingRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-PingRequest.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-PingRequest.Tpo -c -o storm_frontend_server-PingRequest.obj `if test -f 'PingRequest.cpp'; then $(CYGPATH_W) 'PingRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/PingRequest.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-PingRequest.Tpo $(DEPDIR)/storm_frontend_server-PingRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request/synch/PingRequest.cpp' object='storm_frontend_server-PingRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PingRequest.cpp' object='storm_frontend_server-PingRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PingRequest.obj `if test -f 'request/synch/PingRequest.cpp'; then $(CYGPATH_W) 'request/synch/PingRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/request/synch/PingRequest.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-PingRequest.obj `if test -f 'PingRequest.cpp'; then $(CYGPATH_W) 'PingRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/PingRequest.cpp'; fi`
 
 storm_frontend_server-ProtocolChecker.o: ProtocolChecker.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-ProtocolChecker.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-ProtocolChecker.Tpo -c -o storm_frontend_server-ProtocolChecker.o `test -f 'ProtocolChecker.cpp' || echo '$(srcdir)/'`ProtocolChecker.cpp

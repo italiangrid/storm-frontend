@@ -15,13 +15,16 @@
 
 noinst_LTLIBRARIES = libstormdb.la
 
+
+
 libstormdb_la_SOURCES = \
     storm_mysql_ifce.cpp \
     mysql_query.cpp \
     mysql_query.hpp \
     storm_mysql.h
 
-GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/@GSOAP_GENERATED_CODE_DIR_NAME@
+libstormdb_la_CFLAGS= @MYSQL_CFLAGS@
+GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
 
 INCLUDES = \
     -I$(top_srcdir)/src/frontend \
