@@ -24,7 +24,8 @@
 #define DBCONNECTIONPOOL_HPP_
 
 #include "srm_server.h"
-#include "boost/thread.hpp"
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 class DBConnectionPool {
 public:
@@ -37,7 +38,7 @@ private:
     boost::thread::id* id_map;
     int _pool_size;
     int _curr_size;
-    pthread_mutex_t mtx;
+    boost::mutex mtx;
 };
 
 #endif /* DBCONNECTIONPOOL_HPP_ */
