@@ -13,6 +13,6 @@
 # limitations under the License.
 #
 
-SUBDIRS = db frontend req
+SUBDIRS = db frontend
 
 MAINTAINERCLEANFILES = Makefile.in
