@@ -26,6 +26,7 @@ libtool
 *.gcda
 app.info
 coverage_report
+tags
 /project
 /storm-frontend.spec
 /src/frontend/frontend_version.h
