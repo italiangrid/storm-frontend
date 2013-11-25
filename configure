@@ -20939,8 +20939,6 @@ ac_config_files="$ac_config_files src/frontend/Makefile"
 
 ac_config_files="$ac_config_files src/frontend/frontend_version.h"
 
-ac_config_files="$ac_config_files src/req/Makefile"
-
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -21950,7 +21948,6 @@ do
     "src/db/Makefile") CONFIG_FILES="$CONFIG_FILES src/db/Makefile" ;;
     "src/frontend/Makefile") CONFIG_FILES="$CONFIG_FILES src/frontend/Makefile" ;;
     "src/frontend/frontend_version.h") CONFIG_FILES="$CONFIG_FILES src/frontend/frontend_version.h" ;;
-    "src/req/Makefile") CONFIG_FILES="$CONFIG_FILES src/req/Makefile" ;;
 
   *) { { $as_echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 $as_echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
