@@ -44,7 +44,7 @@ void storm::GetPermissionRequest::load(ns1__srmGetPermissionRequest* request)
 }
 
 int storm::GetPermissionRequest::performXmlRpcCall(ns1__srmGetPermissionResponse_* response){
-	char *funcName = "GetPermissionRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmGetPermission_impl(m_soapRequest, m_request, response);
 	if(response->srmGetPermissionResponse != NULL && response->srmGetPermissionResponse->returnStatus != NULL )
 	{
@@ -56,7 +56,7 @@ int storm::GetPermissionRequest::performXmlRpcCall(ns1__srmGetPermissionResponse
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::GetPermissionRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

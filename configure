@@ -1663,7 +1663,7 @@ Optional Packages:
   --with-boost=DIR        prefix of Boost 1.41.0 [guess]
   --with-xmlrpc_includes=XMLRPC_INCLUDES	Sets a non-standard location for xmlrpc-c includes
   --with-xmlrpc_libs=XMLRPC_LIBS	Sets a non-standard location for xmlrpc-c librarires
-  --with-mysql_config_location=LOCATION		Location of the mysql_config program.
+  --with-mysql_config_location=LOCATION        Location of the mysql_config program.
   --with-gsoap-wsdl2h=CMD     the wsdl2h command that should be used. (/usr)
 
 Some influential environment variables:
@@ -19034,20 +19034,20 @@ else
 fi
 
 
-	if ! test -e "$with_mysql_config_location"; then
-		{ { $as_echo "$as_me:$LINENO: error: \"mysql_config not found at $with_mysql_config_location.\"" >&5
+    if ! test -e "$with_mysql_config_location"; then
+        { { $as_echo "$as_me:$LINENO: error: \"mysql_config not found at $with_mysql_config_location.\"" >&5
 $as_echo "$as_me: error: \"mysql_config not found at $with_mysql_config_location.\"" >&2;}
    { (exit 1); exit 1; }; }
-	fi
+    fi
 
-	MYSQL_CFLAGS=$(${with_mysql_config_location} --cflags)
-	MYSQL_LIBS=$(${with_mysql_config_location} --libs_r)
+    MYSQL_CFLAGS=$(${with_mysql_config_location} --cflags)
+    MYSQL_LIBS=$(${with_mysql_config_location} --libs_r)
 
-	CPPFLAGS_SAVE=$CPPFLAGS
-	CFLAGS_SAVE=$CFLAGS
-	CPPFLAGS=$MYSQL_CFLAGS
-	CFLAGS=$MYSQL_CFLAGS
-	if test "${ac_cv_header_mysql_mysql_h+set}" = set; then
+    CPPFLAGS_SAVE=$CPPFLAGS
+    CFLAGS_SAVE=$CFLAGS
+    CPPFLAGS=$MYSQL_CFLAGS
+    CFLAGS=$MYSQL_CFLAGS
+    if test "${ac_cv_header_mysql_mysql_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for mysql/mysql.h" >&5
 $as_echo_n "checking for mysql/mysql.h... " >&6; }
 if test "${ac_cv_header_mysql_mysql_h+set}" = set; then
@@ -19188,13 +19188,14 @@ $as_echo "$as_me: error: \"Header not found: mysql/mysql.h. Please install the m
 fi
 
 
-	CPPFLAGS=$CPPFLAGS_SAVE
-	CFLAGS=$CFLAGS_SAVE
+    CPPFLAGS=$CPPFLAGS_SAVE
+    CFLAGS=$CFLAGS_SAVE
 
-	CPPFLAGS_SAVE=$CPPFLAGS
-	CFLAGS_SAVE=$CFLAGS
-	CFLAGS=$MYSQL_LIBS
-	CPPFLAGS=$MYSQL_LIBS
+    CPPFLAGS_SAVE=$CPPFLAGS
+    CFLAGS_SAVE=$CFLAGS
+    LIBS_SAVE=$LIBS
+    CFLAGS=$MYSQL_LIBS
+    CPPFLAGS=$MYSQL_LIBS
 
 { $as_echo "$as_me:$LINENO: checking for mysql_send_query in -lmysqlclient_r" >&5
 $as_echo_n "checking for mysql_send_query in -lmysqlclient_r... " >&6; }
@@ -19274,7 +19275,9 @@ $as_echo "$as_me: error: \"mysql library check failed. Please install the mysql 
    { (exit 1); exit 1; }; }
 fi
 
-	CFLAGS=$CFLAGS_SAVE
+    LIBS=$LIBS_SAVE
+    CPPFLAGS=$CPPFLAGS_SAVE
+    CFLAGS=$CFLAGS_SAVE
 
 
 
@@ -20936,6 +20939,8 @@ ac_config_files="$ac_config_files src/frontend/Makefile"
 
 ac_config_files="$ac_config_files src/frontend/frontend_version.h"
 
+ac_config_files="$ac_config_files src/req/Makefile"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -21945,6 +21950,7 @@ do
     "src/db/Makefile") CONFIG_FILES="$CONFIG_FILES src/db/Makefile" ;;
     "src/frontend/Makefile") CONFIG_FILES="$CONFIG_FILES src/frontend/Makefile" ;;
     "src/frontend/frontend_version.h") CONFIG_FILES="$CONFIG_FILES src/frontend/frontend_version.h" ;;
+    "src/req/Makefile") CONFIG_FILES="$CONFIG_FILES src/req/Makefile" ;;
 
   *) { { $as_echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 $as_echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

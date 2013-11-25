@@ -39,7 +39,7 @@ void storm::GetSpaceMetaDataRequest::load(ns1__srmGetSpaceMetaDataRequest* reque
 }
 
 int storm::GetSpaceMetaDataRequest::performXmlRpcCall(ns1__srmGetSpaceMetaDataResponse_* response){
-	char *funcName = "GetSpaceMetaDataRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmGetSpaceMetaData_impl(m_soapRequest, m_request, response);
 	if(response->srmGetSpaceMetaDataResponse != NULL && response->srmGetSpaceMetaDataResponse->returnStatus != NULL )
 	{
@@ -51,7 +51,7 @@ int storm::GetSpaceMetaDataRequest::performXmlRpcCall(ns1__srmGetSpaceMetaDataRe
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::GetSpaceMetaDataRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

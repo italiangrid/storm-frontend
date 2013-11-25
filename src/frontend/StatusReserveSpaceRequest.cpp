@@ -31,7 +31,6 @@ void storm::StatusReserveSpaceRequest::load(ns1__srmStatusOfReserveSpaceRequestR
 }
 
 int storm::StatusReserveSpaceRequest::performXmlRpcCall(ns1__srmStatusOfReserveSpaceRequestResponse_* response){
-	char *funcName = "StatusReserveSpaceRequest::performXmlRpcCall()";
 	int ret = ns1__srmStatusOfReserveSpaceRequest_impl(m_soapRequest, m_request, response);
 	if(response->srmStatusOfReserveSpaceRequestResponse != NULL && response->srmStatusOfReserveSpaceRequestResponse->returnStatus != NULL )
 	{
@@ -43,7 +42,7 @@ int storm::StatusReserveSpaceRequest::performXmlRpcCall(ns1__srmStatusOfReserveS
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::StatusReserveSpaceRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

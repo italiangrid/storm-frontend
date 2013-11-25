@@ -42,7 +42,7 @@ void storm::ReleaseFilesRequest::load(ns1__srmReleaseFilesRequest* request)
 }
 
 int storm::ReleaseFilesRequest::performXmlRpcCall(ns1__srmReleaseFilesResponse_* response){
-	char *funcName = "ReleaseFilesRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmReleaseFiles_impl(m_soapRequest, m_request, response);
 	if(response->srmReleaseFilesResponse != NULL && response->srmReleaseFilesResponse->returnStatus != NULL )
 	{
@@ -54,7 +54,7 @@ int storm::ReleaseFilesRequest::performXmlRpcCall(ns1__srmReleaseFilesResponse_*
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::ReleaseFilesRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

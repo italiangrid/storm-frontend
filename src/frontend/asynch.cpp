@@ -66,9 +66,9 @@ int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch( storm::AuthorizationException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    }catch( storm::authorization_error& e){
+
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		try
 		{
@@ -88,29 +88,8 @@ int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *
 		srmLogResponse("PTP", request->getStatus());
 		delete request;
 		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmPrepareToPutResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::storm_error &exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
-			srmLogResponse("PTP", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap,e.what(),0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("PTP", request->getStatus());
-		delete request;
-		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -183,9 +162,9 @@ int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch( storm::AuthorizationException& e)
+    }catch( storm::authorization_error& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		try
 		{
@@ -205,29 +184,8 @@ int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *
 		srmLogResponse("PTG", request->getStatus());
 		delete request;
 		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmPrepareToGetResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::storm_error& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
-			srmLogResponse("PTG", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap,e.what(),0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("PTG", request->getStatus());
-		delete request;
-		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -300,9 +258,9 @@ int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch(storm::AuthorizationException& e)
+    }catch(storm::authorization_error& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		try
 		{
@@ -322,30 +280,8 @@ int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 		srmLogResponse("CP", request->getStatus());
 		delete request;
 		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		request->setAuthorizationFailureSurls();
-		try
-		{
-			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::storm_error& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_COPY_MONITOR_NAME);
-			srmLogResponse("CP", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap,e.what(),0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_COPY_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("CP", request->getStatus());
-		delete request;
-		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -416,9 +352,9 @@ int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *re
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch( storm::AuthorizationException& e)
+    }catch( storm::authorization_error& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		request->setAuthorizationFailureSurls();
 		try
@@ -439,29 +375,8 @@ int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *re
 		srmLogResponse("BOL", request->getStatus());
 		delete request;
 		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmBringOnlineResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::storm_error& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_BRING_ONLINE_MONITOR_NAME);
-			srmLogResponse("BOL", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap,e.what(),0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_BRING_ONLINE_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("BOL", request->getStatus());
-		delete request;
-		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");

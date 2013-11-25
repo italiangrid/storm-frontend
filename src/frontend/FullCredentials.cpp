@@ -74,9 +74,8 @@ FullCredentials::FullCredentials(struct soap *soap) : Credentials(soap) {
  */
 gss_cred_id_t FullCredentials::get_gss_cred_id(const gss_ctx_id_t gss_context)  throw (std::invalid_argument)
 {
-	static char * funcName = "get_gss_cred_id";
     if (gss_context==NULL) {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Credentials: null parameter\n");
+    	srmlogit(STORM_LOG_ERROR, __func__, "Credentials: null parameter\n");
     	throw std::invalid_argument("Credentials: null parameter\n");
     }
     else {
@@ -86,8 +85,7 @@ gss_cred_id_t FullCredentials::get_gss_cred_id(const gss_ctx_id_t gss_context)  
 
 globus_gsi_cred_handle_t FullCredentials::get_gss_cred_handle(const gss_cred_id_t gss_cred) throw (CredentialException)
 {
-    // function name for error macros
-    static char * funcName = "get_gss_cred_handle";
+
     /* Internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc */
 
     globus_gsi_cred_handle_t gsi_cred;
@@ -107,8 +105,7 @@ globus_gsi_cred_handle_t FullCredentials::get_gss_cred_handle(const gss_cred_id_
 
 X509 * FullCredentials::gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException)
 {
-    // function name for error macros
-    static char * funcName = "gss_cred_extract_cert";
+
     /* Internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc */
 
     X509* cert;
@@ -116,7 +113,7 @@ X509 * FullCredentials::gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi
 		throw CredentialException(
 				"Can not extract cert from GSI credentials\n");
 	}else {
-		srmlogit(STORM_LOG_DEBUG, funcName,
+		srmlogit(STORM_LOG_DEBUG, __func__,
 				"Cert credentials obtained\n");
 	}
     return cert;
@@ -124,8 +121,6 @@ X509 * FullCredentials::gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi
 
 STACK_OF(X509) * FullCredentials::gss_cred_extract_cert_chain(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException)
 {
-    // function name for error macros
-    static char * funcName = "gss_cred_extract_cert_chain";
     STACK_OF(X509) * chain;
 
     // internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc
@@ -134,15 +129,13 @@ STACK_OF(X509) * FullCredentials::gss_cred_extract_cert_chain(const globus_gsi_c
 		throw CredentialException(
 				" globus_gsi_cred_get_cert_chain failure\n");
 	} else {
-		srmlogit(STORM_LOG_DEBUG, funcName,"Cert chain obtained\n");
+		srmlogit(STORM_LOG_DEBUG, __func__,"Cert chain obtained\n");
 	}
     return chain;
 }
 
 char * FullCredentials::x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain) throw (CredentialException)
 {
-    // function name for error macros
-    static char * funcName = "x509_convert_to_PEM";
     char * pem;
 
     BIO * bio = BIO_new(BIO_s_mem());

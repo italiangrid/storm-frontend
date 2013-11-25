@@ -20,23 +20,26 @@ namespace request{
 
 template<typename request_t>
 void register_request_error(const char* func_name, ns1__TStatusCode status,
-		boost::posix_time::ptime start_time, std::string const& msg) {
-	srmlogit(STORM_LOG_ERROR, func_name, msg.c_str());
-	srmLogResponse(request_t::NAME.c_str(), status);
-	storm::MonitoringHelper::registerOperationError(start_time,
-			request_t::MONITOR_NAME.c_str());
+        boost::posix_time::ptime start_time, std::string const& msg) {
+    srmlogit(STORM_LOG_ERROR, func_name, msg.c_str());
+    srmLogResponse(request_t::NAME.c_str(), status);
+    storm::MonitoringHelper::registerOperationError(start_time,
+            request_t::MONITOR_NAME.c_str());
 }
 
+template<typename request_t>
+int execute_request(request_t& request);
+
 inline void validate_token_description(const std::string& token_description) {
-	if (!storm::token::description_valid(token_description))
-		throw storm::invalid_request(
-				"invalid token description: " + token_description);
+    if (!storm::token::description_valid(token_description))
+        throw storm::invalid_request(
+                "invalid token description: " + token_description);
 }
 
 inline void validate_token(const std::string& token) {
-	if (!storm::token::valid(token))
-		throw storm::invalid_request(
-				"invalid token: " + token);
+    if (!storm::token::valid(token))
+        throw storm::invalid_request(
+                "invalid token: " + token);
 }
 }
 }

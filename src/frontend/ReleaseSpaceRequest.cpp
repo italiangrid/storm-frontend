@@ -45,7 +45,7 @@ void storm::ReleaseSpaceRequest::load(ns1__srmReleaseSpaceRequest* request)
 }
 
 int storm::ReleaseSpaceRequest::performXmlRpcCall(ns1__srmReleaseSpaceResponse_* response){
-	char *funcName = "ReleaseSpaceRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmReleaseSpace_impl(m_soapRequest, m_request, response);
 	if(response->srmReleaseSpaceResponse != NULL && response->srmReleaseSpaceResponse->returnStatus != NULL )
 	{
@@ -57,7 +57,7 @@ int storm::ReleaseSpaceRequest::performXmlRpcCall(ns1__srmReleaseSpaceResponse_*
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::ReleaseSpaceRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

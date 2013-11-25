@@ -75,5 +75,6 @@ AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([src/db/Makefile])
 AC_CONFIG_FILES([src/frontend/Makefile])
 AC_CONFIG_FILES([src/frontend/frontend_version.h])
+AC_CONFIG_FILES([src/req/Makefile])
 
 AC_OUTPUT

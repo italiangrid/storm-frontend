@@ -29,7 +29,7 @@ void storm::GetSpaceTokensRequest::load(ns1__srmGetSpaceTokensRequest* request)
 }
 
 int storm::GetSpaceTokensRequest::performXmlRpcCall(ns1__srmGetSpaceTokensResponse_* response){
-	char *funcName = "GetSpaceTokensRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmGetSpaceTokens_impl(m_soapRequest, m_request, response);
 	if(response->srmGetSpaceTokensResponse != NULL && response->srmGetSpaceTokensResponse->returnStatus != NULL )
 	{
@@ -41,7 +41,7 @@ int storm::GetSpaceTokensRequest::performXmlRpcCall(ns1__srmGetSpaceTokensRespon
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::GetSpaceTokensRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

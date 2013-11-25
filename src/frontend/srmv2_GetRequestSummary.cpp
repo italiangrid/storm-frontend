@@ -48,7 +48,7 @@ bool string2num(type_t& x, const string& s)
 // Validates 'req->arrayOfRequestTokens'
 bool validate_array_of_req_tokens(const char* func, struct ns1__ArrayOfString* arrayOfRequestTokens)
 {
-    
+
     if (arrayOfRequestTokens == NULL) {
          srmlogit(STORM_LOG_ERROR, func, "arrayOfRequestTokens=NULL\n");
         return false;
@@ -75,7 +75,7 @@ ns1__TRequestType getRequestType(std::string& r_type)
         return ns1__TRequestType(2);
     if (r_type.compare("BOL") == 0)
         return ns1__TRequestType(3);
-        
+
     srmlogit(STORM_LOG_ERROR, "GetRequestSummary", "BUG: Failed conversion of request type!!!\n");
     return ns1__TRequestType(PREPARE_USCORETO_USCOREPUT);
 }
@@ -92,14 +92,14 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
     struct srm_srv_thread_info *thip = static_cast<srm_srv_thread_info *>(soap->user);
     bool requestSuccess, requestFailure;
     int i;
-    
+
     try {
         /************************ Allocate response structure *******************************/
         repp = storm::soap_calloc<struct ns1__srmGetRequestSummaryResponse>(soap);
         repp->returnStatus = storm::soap_calloc<struct ns1__TReturnStatus>(soap);
         // Assign the repp response structure to the output parameter rep.
         rep->srmGetRequestSummaryResponse = repp;
-              
+
         if (credentials.getDN().empty()) {
             srmlogit(STORM_LOG_ERROR, func, "Client DN not found!\n");
             repp->returnStatus->statusCode = SRM_USCOREAUTHENTICATION_USCOREFAILURE;
@@ -131,7 +131,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
             return SOAP_OK;
         }
         int numOfRequestTokens = req->arrayOfRequestTokens->__sizestringArray;
-        
+
         for (i=0; i < numOfRequestTokens; i++){
 
 
@@ -148,7 +148,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         		}
         	}
         }
-        
+
         // Connect to the DB, if needed.
         if (!(thip->db_open_done)) {
             if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
@@ -160,7 +160,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
             }
             thip->db_open_done = 1;
         }
-        
+
         // Create the DB query
         std::string query_sql = std::string("SELECT ID, r_token, config_RequestTypeID, status, errstring, nbreqfiles "
                                             "FROM request_queue "
@@ -182,18 +182,18 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         storm_start_tr(0, &thip->dbfd);
         vector< map<string, string> > results;
         storm_db::vector_exec_query(&thip->dbfd, query_sql, results);
-        
+
         int resultsSize = results.size();
         srmlogit(STORM_LOG_INFO, func, "Results (size): %d\n", resultsSize);
-        
+
         if (resultsSize < 1) {
             srmlogit(STORM_LOG_INFO, func, "Return status: SRM_FAILURE\n");
             repp->returnStatus->statusCode = SRM_USCOREFAILURE;
             repp->returnStatus->explanation = "None of the requested tokens were found";
             storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
             return SOAP_OK;
-        } 
-        
+        }
+
         // Allocate 'arrayOfRequestSummaries' in the response structure
         repp->arrayOfRequestSummaries = storm::soap_calloc<struct ns1__ArrayOfTRequestSummary>(soap);
         if(numOfRequestTokens > 0)
@@ -347,7 +347,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 		return SOAP_NULL;
 	}
 
-    storm_end_tr(&thip->dbfd);    
+    storm_end_tr(&thip->dbfd);
     if (requestSuccess) {
         srmlogit(STORM_LOG_INFO, func, "Return status: SRM_SUCCESS\n");
         repp->returnStatus->statusCode = SRM_USCORESUCCESS;

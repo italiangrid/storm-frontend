@@ -25,7 +25,6 @@ void storm::PingRequest::load(ns1__srmPingRequest* request)
 }
 
 int storm::PingRequest::performXmlRpcCall(ns1__srmPingResponse_* response){
-	char *funcName = "PingRequest::performXmlRpcCall()";
 	int ret =  ns1__srmPing_impl(m_soapRequest, m_request, response);
 	m_status = SRM_USCORESUCCESS;
 	return ret;

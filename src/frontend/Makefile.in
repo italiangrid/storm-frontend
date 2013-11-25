@@ -425,7 +425,6 @@ stormfrontend_others = storm_exception.hpp \
     PingRequest.cpp PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
     Authorization.cpp Authorization.hpp \
-    AuthorizationException.hpp ArgusException.hpp \
     cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \

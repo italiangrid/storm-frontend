@@ -47,6 +47,23 @@ struct invalid_response: public storm_error {
 	}
 };
 
+struct authorization_error: public storm_error {
+	authorization_error(std::string const& m):
+		storm_error(m) {}
+	virtual const char* what() throw () {
+		return std::runtime_error::what();
+	}
+};
+
+struct argus_error: public storm_error {
+	argus_error(std::string const& m):
+		storm_error(m) {}
+	virtual const char* what() throw () {
+		return std::runtime_error::what();
+	}
+};
+
+
 struct token_not_found: public invalid_request {
 	token_not_found(std::string const& m) :
 			invalid_request(m) {

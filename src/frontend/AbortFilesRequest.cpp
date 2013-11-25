@@ -39,7 +39,7 @@ void storm::AbortFilesRequest::load(ns1__srmAbortFilesRequest* request)
 }
 
 int storm::AbortFilesRequest::performXmlRpcCall(ns1__srmAbortFilesResponse_* response){
-	char *funcName = "AbortFilesRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmAbortFiles_impl(m_soapRequest, m_request, response);
 	if(response->srmAbortFilesResponse != NULL && response->srmAbortFilesResponse->returnStatus != NULL )
 	{
@@ -51,7 +51,7 @@ int storm::AbortFilesRequest::performXmlRpcCall(ns1__srmAbortFilesResponse_* res
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::AbortFilesRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

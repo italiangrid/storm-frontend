@@ -26,7 +26,7 @@ void storm::GetTransferProtocolsRequest::load(ns1__srmGetTransferProtocolsReques
 }
 
 int storm::GetTransferProtocolsRequest::performXmlRpcCall(ns1__srmGetTransferProtocolsResponse_* response){
-	char *funcName = "GetTransferProtocolsRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmGetTransferProtocols_impl(m_soapRequest, m_request, response);
 	if(response->srmGetTransferProtocolsResponse != NULL && response->srmGetTransferProtocolsResponse->returnStatus != NULL )
 	{
@@ -38,7 +38,7 @@ int storm::GetTransferProtocolsRequest::performXmlRpcCall(ns1__srmGetTransferPro
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::GetTransferProtocolsRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

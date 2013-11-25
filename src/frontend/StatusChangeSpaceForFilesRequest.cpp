@@ -33,7 +33,7 @@ void storm::StatusChangeSpaceForFilesRequest::load(ns1__srmStatusOfChangeSpaceFo
 }
 
 int storm::StatusChangeSpaceForFilesRequest::performXmlRpcCall(ns1__srmStatusOfChangeSpaceForFilesRequestResponse_* response){
-	char *funcName = "StatusChangeSpaceForFilesRequest::performXmlRpcCall()";
+
 	int ret =  ns1__srmStatusOfChangeSpaceForFilesRequest_impl(m_soapRequest, m_request, response);
 	if(response->srmStatusOfChangeSpaceForFilesRequestResponse != NULL && response->srmStatusOfChangeSpaceForFilesRequestResponse->returnStatus != NULL )
 	{
@@ -45,7 +45,7 @@ int storm::StatusChangeSpaceForFilesRequest::performXmlRpcCall(ns1__srmStatusOfC
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::StatusChangeSpaceForFilesRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

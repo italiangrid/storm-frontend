@@ -38,7 +38,7 @@ class MonitoringHelper {
     {
     	boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
     	boost::posix_time::time_duration et = (end_time - start_time);
-    	char *func = "registerOperation()";
+
     	if (returnValue != SOAP_OK)
     	{
     		try
@@ -46,7 +46,7 @@ class MonitoringHelper {
     			Monitoring::getInstance()->getMonitor(monitorName)->registerFailure(et.total_milliseconds());
     		}catch(storm::MonitorNotEnabledException& exc)
     		{
-    			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
+    			srmlogit(STORM_LOG_ERROR, __func__, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
     		}
     	}
     	else
@@ -57,7 +57,7 @@ class MonitoringHelper {
     					et.total_milliseconds(),statusCode);
     		}catch(storm::MonitorNotEnabledException& exc)
     		{
-    			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
+    			srmlogit(STORM_LOG_ERROR, __func__, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
     		}
     	}
     }
@@ -66,14 +66,14 @@ class MonitoringHelper {
 	{
 		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
 		boost::posix_time::time_duration et = (end_time - start_time);
-		char *func = "registerOperation()";
+
 		try
 		{
 			((InstrumentedMonitor*) Monitoring::getInstance()->getMonitor(monitorName))->registerCompleted(
 					et.total_milliseconds(),statusCode);
 		}catch(storm::MonitorNotEnabledException& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, __func__, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 		}
 	}
 
@@ -81,14 +81,14 @@ class MonitoringHelper {
 	{
 		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
 		boost::posix_time::time_duration et = (end_time - start_time);
-		char *func = "registerOperationFailure()";
+
 		try
 		{
 			((InstrumentedMonitor*) Monitoring::getInstance()->getMonitor(monitorName))->registerFailure(
 					et.total_milliseconds());
 		}catch(storm::MonitorNotEnabledException& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, __func__, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
 		}
 	}
 
@@ -96,14 +96,14 @@ class MonitoringHelper {
    	{
    		boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
    		boost::posix_time::time_duration et = (end_time - start_time);
-   		char *func = "registerOperationFailure()";
+
    		try
    		{
    			((InstrumentedMonitor*) Monitoring::getInstance()->getMonitor(monitorName))->registerError(
    					et.total_milliseconds());
    		}catch(storm::MonitorNotEnabledException& exc)
    		{
-   			srmlogit(STORM_LOG_ERROR, func, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
+   			srmlogit(STORM_LOG_ERROR, __func__, "Error monitor notification. MonitorNotEnabledException: %s\n" , exc.what());
    		}
    	}
 };

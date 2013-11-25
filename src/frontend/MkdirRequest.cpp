@@ -39,7 +39,7 @@ void storm::MkdirRequest::load(ns1__srmMkdirRequest* request)
 }
 
 int storm::MkdirRequest::performXmlRpcCall(ns1__srmMkdirResponse_* response){
-	char *funcName = "MkdirRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmMkdir_impl(m_soapRequest, m_request, response);
 	if(response->srmMkdirResponse != NULL && response->srmMkdirResponse->returnStatus != NULL )
 	{
@@ -51,7 +51,7 @@ int storm::MkdirRequest::performXmlRpcCall(ns1__srmMkdirResponse_* response){
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::MkdirRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

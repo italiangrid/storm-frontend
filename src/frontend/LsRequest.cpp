@@ -68,7 +68,7 @@ void storm::LsRequest::load(ns1__srmLsRequest* request)
 }
 
 int storm::LsRequest::performXmlRpcCall(ns1__srmLsResponse_* response){
-	char *funcName = "LsdirRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmLs_impl(m_soapRequest, m_request, response);
 	if(response->srmLsResponse != NULL && response->srmLsResponse->returnStatus != NULL )
 	{
@@ -80,7 +80,7 @@ int storm::LsRequest::performXmlRpcCall(ns1__srmLsResponse_* response){
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::LsRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }

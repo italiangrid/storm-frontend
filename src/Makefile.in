@@ -273,7 +273,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = db frontend
+SUBDIRS = db frontend req
 MAINTAINERCLEANFILES = Makefile.in
 all: all-recursive
 

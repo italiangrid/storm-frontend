@@ -67,7 +67,7 @@ void storm::ExtendFileLifeTimeRequest::load(ns1__srmExtendFileLifeTimeRequest* r
 }
 
 int storm::ExtendFileLifeTimeRequest::performXmlRpcCall(ns1__srmExtendFileLifeTimeResponse_* response){
-	char *funcName = "ExtendFileLifeTimeRequest::performXmlRpcCall()";
+
 	int ret = ns1__srmExtendFileLifeTime_impl(m_soapRequest, m_request, response);
 	if(response->srmExtendFileLifeTimeResponse != NULL && response->srmExtendFileLifeTimeResponse->returnStatus != NULL )
 	{
@@ -79,7 +79,7 @@ int storm::ExtendFileLifeTimeRequest::performXmlRpcCall(ns1__srmExtendFileLifeTi
 	}
 	else
 	{
-		srmlogit(STORM_LOG_ERROR, "storm::ExtendFileLifeTimeRequest::performXmlRpcCall()", "Xmlrpc call returned with an empty returnStatus.\n");
+		srmlogit(STORM_LOG_ERROR, __func__, "Xmlrpc call returned with an empty returnStatus.\n");
 	}
 	return ret;
 }
