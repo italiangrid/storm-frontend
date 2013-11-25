@@ -27,9 +27,6 @@ void register_request_error(const char* func_name, ns1__TStatusCode status,
             request_t::MONITOR_NAME.c_str());
 }
 
-template<typename request_t>
-int execute_request(request_t& request);
-
 inline void validate_token_description(const std::string& token_description) {
     if (!storm::token::description_valid(token_description))
         throw storm::invalid_request(
