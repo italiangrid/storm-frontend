@@ -52,6 +52,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 sbin_PROGRAMS = storm-frontend-server$(EXEEXT)
+noinst_PROGRAMS = test_surl$(EXEEXT)
 subdir = src/frontend
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/frontend_version.h.in
@@ -69,11 +70,12 @@ CONFIG_HEADER = $(top_builddir)/src/autogen/config.h
 CONFIG_CLEAN_FILES = frontend_version.h
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(sbindir)"
-PROGRAMS = $(sbin_PROGRAMS)
+PROGRAMS = $(noinst_PROGRAMS) $(sbin_PROGRAMS)
 am__objects_1 =
 am__objects_2 = storm_frontend_server-Credentials.$(OBJEXT) \
 	storm_frontend_server-FullCredentials.$(OBJEXT) \
 	storm_frontend_server-get_socket_info.$(OBJEXT) \
+	storm_frontend_server-surl_normalizer.$(OBJEXT) \
 	storm_frontend_server-BolRequest.$(OBJEXT) \
 	storm_frontend_server-BolStatusRequest.$(OBJEXT) \
 	storm_frontend_server-PtpRequest.$(OBJEXT) \
@@ -115,7 +117,6 @@ am__objects_2 = storm_frontend_server-Credentials.$(OBJEXT) \
 	storm_frontend_server-Authorization.$(OBJEXT) \
 	storm_frontend_server-asynch.$(OBJEXT) \
 	storm_frontend_server-asynch_status.$(OBJEXT) \
-	storm_frontend_server-Surl.$(OBJEXT) \
 	storm_frontend_server-srmv2_GetRequestSummary.$(OBJEXT) \
 	storm_frontend_server-srmv2_GetRequestTokens.$(OBJEXT) \
 	storm_frontend_server-FrontendConfiguration.$(OBJEXT) \
@@ -129,7 +130,6 @@ am__objects_2 = storm_frontend_server-Credentials.$(OBJEXT) \
 	storm_frontend_server-srmv2_permreq.$(OBJEXT) \
 	storm_frontend_server-srmv2_spacereq.$(OBJEXT) \
 	storm_frontend_server-synch.$(OBJEXT) \
-	storm_frontend_server-surl_normalizer.$(OBJEXT) \
 	storm_frontend_server-token_validator.$(OBJEXT) \
 	storm_frontend_server-xmlrpc_decode.$(OBJEXT) \
 	storm_frontend_server-xmlrpc_encode.$(OBJEXT) \
@@ -146,6 +146,13 @@ storm_frontend_server_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) \
 	$(storm_frontend_server_LDFLAGS) $(LDFLAGS) -o $@
+am_test_surl_OBJECTS = test_surl-test_surl.$(OBJEXT) \
+	surl_normalizer.$(OBJEXT)
+test_surl_OBJECTS = $(am_test_surl_OBJECTS)
+test_surl_LDADD = $(LDADD)
+test_surl_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(test_surl_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/autogen
 depcomp = $(SHELL) $(top_srcdir)/./aux/depcomp
 am__depfiles_maybe = depfiles
@@ -168,8 +175,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(storm_frontend_server_SOURCES)
-DIST_SOURCES = $(storm_frontend_server_SOURCES)
+SOURCES = $(storm_frontend_server_SOURCES) $(test_surl_SOURCES)
+DIST_SOURCES = $(storm_frontend_server_SOURCES) $(test_surl_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -342,6 +349,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT 
 GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
+test_surl_SOURCES = test_surl.c surl_normalizer.cc
+test_surl_CFLAGS = $(INCLUDES)
+test_surl_LDFLAGS = @BOOST_REGEX_LIBS@
 storm_frontend_server_SOURCES = $(stormfrontend_others) storm-frontend.cpp
 storm_frontend_server_CFLAGS = $(INCLUDES)
 storm_frontend_server_CXXFLAGS = $(INCLUDES)
@@ -388,6 +398,7 @@ stormfrontend_others = storm_exception.hpp \
     base_request.hpp \
     file_request.hpp filerequest_template.hpp \
     file_status.hpp \
+    surl_normalizer.h surl_normalizer.cc \
     StatusTemplate.hpp FileStatusRequest.hpp \
     BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
@@ -428,7 +439,7 @@ stormfrontend_others = storm_exception.hpp \
     cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
-    Surl.hpp Surl.cpp \
+    Surl.hpp \
     BolSurl.hpp PtgSurl.hpp PtpSurl.hpp CopySurl.hpp \
     Turl.hpp BolTurl.hpp PtgTurl.hpp PtpTurl.hpp CopyTurl.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
@@ -440,7 +451,6 @@ stormfrontend_others = storm_exception.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
     synch.cpp synch.hpp\
-    surl_normalizer.h surl_normalizer.c \
     token_validator.hpp token_validator.cpp \
     xmlrpc_decode.c xmlrpc_encode.c \
     storm_util.c storm_utils.hpp \
@@ -509,6 +519,15 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 $(am__aclocal_m4_deps):
 frontend_version.h: $(top_builddir)/config.status $(srcdir)/frontend_version.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 install-sbinPROGRAMS: $(sbin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(sbindir)" || $(MKDIR_P) "$(DESTDIR)$(sbindir)"
@@ -555,6 +574,9 @@ clean-sbinPROGRAMS:
 storm-frontend-server$(EXEEXT): $(storm_frontend_server_OBJECTS) $(storm_frontend_server_DEPENDENCIES) 
 	@rm -f storm-frontend-server$(EXEEXT)
 	$(storm_frontend_server_LINK) $(storm_frontend_server_OBJECTS) $(storm_frontend_server_LDADD) $(LIBS)
+test_surl$(EXEEXT): $(test_surl_OBJECTS) $(test_surl_DEPENDENCIES) 
+	@rm -f test_surl$(EXEEXT)
+	$(test_surl_LINK) $(test_surl_OBJECTS) $(test_surl_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -605,7 +627,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-StatusLsRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-StatusReserveSpaceRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-StatusUpdateSpaceRequest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-Surl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-SuspendRequestRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-ThreadPool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-UpdateSpaceRequest.Po@am__quote@
@@ -629,6 +650,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-token_validator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-xmlrpc_decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-xmlrpc_encode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surl_normalizer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_surl-test_surl.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -707,20 +730,6 @@ storm_frontend_server-srmv2_spacereq.obj: srmv2_spacereq.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -c -o storm_frontend_server-srmv2_spacereq.obj `if test -f 'srmv2_spacereq.c'; then $(CYGPATH_W) 'srmv2_spacereq.c'; else $(CYGPATH_W) '$(srcdir)/srmv2_spacereq.c'; fi`
 
-storm_frontend_server-surl_normalizer.o: surl_normalizer.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -MT storm_frontend_server-surl_normalizer.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo -c -o storm_frontend_server-surl_normalizer.o `test -f 'surl_normalizer.c' || echo '$(srcdir)/'`surl_normalizer.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo $(DEPDIR)/storm_frontend_server-surl_normalizer.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surl_normalizer.c' object='storm_frontend_server-surl_normalizer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -c -o storm_frontend_server-surl_normalizer.o `test -f 'surl_normalizer.c' || echo '$(srcdir)/'`surl_normalizer.c
-
-storm_frontend_server-surl_normalizer.obj: surl_normalizer.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -MT storm_frontend_server-surl_normalizer.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo -c -o storm_frontend_server-surl_normalizer.obj `if test -f 'surl_normalizer.c'; then $(CYGPATH_W) 'surl_normalizer.c'; else $(CYGPATH_W) '$(srcdir)/surl_normalizer.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo $(DEPDIR)/storm_frontend_server-surl_normalizer.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surl_normalizer.c' object='storm_frontend_server-surl_normalizer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -c -o storm_frontend_server-surl_normalizer.obj `if test -f 'surl_normalizer.c'; then $(CYGPATH_W) 'surl_normalizer.c'; else $(CYGPATH_W) '$(srcdir)/surl_normalizer.c'; fi`
-
 storm_frontend_server-xmlrpc_decode.o: xmlrpc_decode.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -MT storm_frontend_server-xmlrpc_decode.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-xmlrpc_decode.Tpo -c -o storm_frontend_server-xmlrpc_decode.o `test -f 'xmlrpc_decode.c' || echo '$(srcdir)/'`xmlrpc_decode.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-xmlrpc_decode.Tpo $(DEPDIR)/storm_frontend_server-xmlrpc_decode.Po
@@ -762,6 +771,20 @@ storm_frontend_server-storm_util.obj: storm_util.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='storm_util.c' object='storm_frontend_server-storm_util.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CFLAGS) $(CFLAGS) -c -o storm_frontend_server-storm_util.obj `if test -f 'storm_util.c'; then $(CYGPATH_W) 'storm_util.c'; else $(CYGPATH_W) '$(srcdir)/storm_util.c'; fi`
+
+test_surl-test_surl.o: test_surl.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_surl_CFLAGS) $(CFLAGS) -MT test_surl-test_surl.o -MD -MP -MF $(DEPDIR)/test_surl-test_surl.Tpo -c -o test_surl-test_surl.o `test -f 'test_surl.c' || echo '$(srcdir)/'`test_surl.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test_surl-test_surl.Tpo $(DEPDIR)/test_surl-test_surl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='test_surl.c' object='test_surl-test_surl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_surl_CFLAGS) $(CFLAGS) -c -o test_surl-test_surl.o `test -f 'test_surl.c' || echo '$(srcdir)/'`test_surl.c
+
+test_surl-test_surl.obj: test_surl.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_surl_CFLAGS) $(CFLAGS) -MT test_surl-test_surl.obj -MD -MP -MF $(DEPDIR)/test_surl-test_surl.Tpo -c -o test_surl-test_surl.obj `if test -f 'test_surl.c'; then $(CYGPATH_W) 'test_surl.c'; else $(CYGPATH_W) '$(srcdir)/test_surl.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test_surl-test_surl.Tpo $(DEPDIR)/test_surl-test_surl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='test_surl.c' object='test_surl-test_surl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_surl_CFLAGS) $(CFLAGS) -c -o test_surl-test_surl.obj `if test -f 'test_surl.c'; then $(CYGPATH_W) 'test_surl.c'; else $(CYGPATH_W) '$(srcdir)/test_surl.c'; fi`
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -825,6 +848,20 @@ storm_frontend_server-get_socket_info.obj: get_socket_info.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='get_socket_info.cpp' object='storm_frontend_server-get_socket_info.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-get_socket_info.obj `if test -f 'get_socket_info.cpp'; then $(CYGPATH_W) 'get_socket_info.cpp'; else $(CYGPATH_W) '$(srcdir)/get_socket_info.cpp'; fi`
+
+storm_frontend_server-surl_normalizer.o: surl_normalizer.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-surl_normalizer.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo -c -o storm_frontend_server-surl_normalizer.o `test -f 'surl_normalizer.cc' || echo '$(srcdir)/'`surl_normalizer.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo $(DEPDIR)/storm_frontend_server-surl_normalizer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='surl_normalizer.cc' object='storm_frontend_server-surl_normalizer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-surl_normalizer.o `test -f 'surl_normalizer.cc' || echo '$(srcdir)/'`surl_normalizer.cc
+
+storm_frontend_server-surl_normalizer.obj: surl_normalizer.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-surl_normalizer.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo -c -o storm_frontend_server-surl_normalizer.obj `if test -f 'surl_normalizer.cc'; then $(CYGPATH_W) 'surl_normalizer.cc'; else $(CYGPATH_W) '$(srcdir)/surl_normalizer.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-surl_normalizer.Tpo $(DEPDIR)/storm_frontend_server-surl_normalizer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='surl_normalizer.cc' object='storm_frontend_server-surl_normalizer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-surl_normalizer.obj `if test -f 'surl_normalizer.cc'; then $(CYGPATH_W) 'surl_normalizer.cc'; else $(CYGPATH_W) '$(srcdir)/surl_normalizer.cc'; fi`
 
 storm_frontend_server-BolRequest.o: BolRequest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-BolRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-BolRequest.Tpo -c -o storm_frontend_server-BolRequest.o `test -f 'BolRequest.cpp' || echo '$(srcdir)/'`BolRequest.cpp
@@ -1400,20 +1437,6 @@ storm_frontend_server-asynch_status.obj: asynch_status.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-asynch_status.obj `if test -f 'asynch_status.cpp'; then $(CYGPATH_W) 'asynch_status.cpp'; else $(CYGPATH_W) '$(srcdir)/asynch_status.cpp'; fi`
 
-storm_frontend_server-Surl.o: Surl.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-Surl.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-Surl.Tpo -c -o storm_frontend_server-Surl.o `test -f 'Surl.cpp' || echo '$(srcdir)/'`Surl.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-Surl.Tpo $(DEPDIR)/storm_frontend_server-Surl.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Surl.cpp' object='storm_frontend_server-Surl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-Surl.o `test -f 'Surl.cpp' || echo '$(srcdir)/'`Surl.cpp
-
-storm_frontend_server-Surl.obj: Surl.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-Surl.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-Surl.Tpo -c -o storm_frontend_server-Surl.obj `if test -f 'Surl.cpp'; then $(CYGPATH_W) 'Surl.cpp'; else $(CYGPATH_W) '$(srcdir)/Surl.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-Surl.Tpo $(DEPDIR)/storm_frontend_server-Surl.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Surl.cpp' object='storm_frontend_server-Surl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-Surl.obj `if test -f 'Surl.cpp'; then $(CYGPATH_W) 'Surl.cpp'; else $(CYGPATH_W) '$(srcdir)/Surl.cpp'; fi`
-
 storm_frontend_server-srmv2_GetRequestSummary.o: srmv2_GetRequestSummary.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-srmv2_GetRequestSummary.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-srmv2_GetRequestSummary.Tpo -c -o storm_frontend_server-srmv2_GetRequestSummary.o `test -f 'srmv2_GetRequestSummary.cpp' || echo '$(srcdir)/'`srmv2_GetRequestSummary.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-srmv2_GetRequestSummary.Tpo $(DEPDIR)/storm_frontend_server-srmv2_GetRequestSummary.Po
@@ -1754,8 +1777,8 @@ maintainer-clean-generic:
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-sbinPROGRAMS \
-	mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+	clean-sbinPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1826,18 +1849,19 @@ uninstall-am: uninstall-sbinPROGRAMS
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-sbinPROGRAMS ctags distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-local distclean-tags distdir dvi dvi-am html html-am \
-	info info-am install install-am install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-sbinPROGRAMS install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-sbinPROGRAMS
+	clean-libtool clean-noinstPROGRAMS clean-sbinPROGRAMS ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-local distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-sbinPROGRAMS \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-sbinPROGRAMS
 
 
 srmv2C.cc:

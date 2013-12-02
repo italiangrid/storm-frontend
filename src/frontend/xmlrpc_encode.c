@@ -541,7 +541,7 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
 
         } else {
             xml_val = xmlrpc_string_new(env_addr,normalized_surl);
-            free((void*)normalized_surl);
+            free(normalized_surl);
         }
     } else {
         xml_val = xmlrpc_string_new(env_addr, value);

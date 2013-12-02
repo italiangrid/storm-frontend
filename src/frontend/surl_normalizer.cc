@@ -45,9 +45,9 @@ storm_normalize_surl(const char* surl){
             return 0;
 
         std::string s(storm::normalize_surl(std::string(surl)));
-        char * retval = (char*) malloc(s.size());
-        s.copy(retval,s.size());
-        retval[s.size()]='\0';
+        char * retval = (char*) malloc(s.length()+1);
+        memset(retval, 0, s.length()+1);
+        s.copy(retval,s.length());
         return retval;
 
     }catch(storm::invalid_surl& e){
