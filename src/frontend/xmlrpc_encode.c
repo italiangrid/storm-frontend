@@ -406,10 +406,12 @@ int encode_ArrayOfAnyURI(const char *callerName,
             return(ENCODE_ERR_ENCODING_ERROR);
         }
 
-        normalized_surl = storm_get_normalized_surl(urlArray[i]);
+        normalized_surl = storm_normalize_surl(urlArray[i]);
         if (normalized_surl == NULL)
         {
-            xml_SURL = xmlrpc_string_new(env_addr, urlArray[i]);
+            srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s. SURL validation failed\n", urlArray[i]);
+            xmlrpc_DECREF(xml_urlArray);
+            return(ENCODE_ERR_ENCODING_ERROR);
 
         }else{
 
@@ -531,9 +533,12 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
     if (strcmp(SRM_PARAM_SURL,fieldName) == 0
             || strcmp(SRM_PARAM_fromSURL, fieldName) == 0
             || strcmp(SRM_PARAM_toSURL, fieldName) == 0){
-        normalized_surl = storm_get_normalized_surl(value);
+        normalized_surl = storm_normalize_surl(value);
         if (normalized_surl == NULL){
-            xml_val = xmlrpc_string_new(env_addr, value);
+
+            srmlogit(STORM_LOG_ERROR, callerName, "Unable to encode value: %s. SURL validation failed\n", value);
+            return(ENCODE_ERR_ENCODING_ERROR);
+
         } else {
             xml_val = xmlrpc_string_new(env_addr,normalized_surl);
             free((void*)normalized_surl);

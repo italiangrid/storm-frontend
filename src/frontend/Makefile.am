@@ -20,6 +20,12 @@ MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT
 GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
 
 sbin_PROGRAMS = storm-frontend-server
+noinst_PROGRAMS = test_surl
+
+test_surl_SOURCES = test_surl.c surl_normalizer.cc
+test_surl_CFLAGS  = $(INCLUDES)
+test_surl_LDFLAGS = @BOOST_REGEX_LIBS@
+
 
 storm_frontend_server_SOURCES = $(stormfrontend_others) storm-frontend.cpp
 storm_frontend_server_CFLAGS = $(INCLUDES)
@@ -67,6 +73,7 @@ stormfrontend_others = storm_exception.hpp \
     base_request.hpp \
     file_request.hpp filerequest_template.hpp \
     file_status.hpp \
+    surl_normalizer.h surl_normalizer.cc \
     StatusTemplate.hpp FileStatusRequest.hpp \
     BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
@@ -107,7 +114,7 @@ stormfrontend_others = storm_exception.hpp \
     cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
-    Surl.hpp Surl.cpp \
+    Surl.hpp \
     BolSurl.hpp PtgSurl.hpp PtpSurl.hpp CopySurl.hpp \
     Turl.hpp BolTurl.hpp PtgTurl.hpp PtpTurl.hpp CopyTurl.hpp \
     srmv2_GetRequestSummary.cpp srmv2_GetRequestTokens.cpp \
@@ -119,7 +126,6 @@ stormfrontend_others = storm_exception.hpp \
     srmv2_dirreq.c srmv2_xferreq.c \
     srmv2_permreq.c srmv2_spacereq.c \
     synch.cpp synch.hpp\
-    surl_normalizer.h surl_normalizer.c \
     token_validator.hpp token_validator.cpp \
     xmlrpc_decode.c xmlrpc_encode.c \
     storm_util.c storm_utils.hpp \

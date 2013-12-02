@@ -21,10 +21,9 @@
 #include "srmv2H.h"
 #include "sql_string.hpp"
 #include "storm_exception.hpp"
+#include "surl_normalizer.h"
 
 namespace storm {
-
-std::string normalize_surl(std::string surl);
 
 class Surl  {
 public:
