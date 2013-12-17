@@ -2,7 +2,7 @@
 #include <boost/regex.hpp>
 #include "storm_exception.hpp"
 
-static const std::string SRM_URL_REGEXP = "^srm://[A-Za-z0-9\\.\\-]+(:\\d{1,4})?/+(srm/managerv2\\?SFN=)?[A-Za-z0-9\\._\\-/]*$";
+static const std::string SRM_URL_REGEXP = "^srm://[A-Za-z0-9\\.\\-\\[\\]:]+(:\\d{1,4})?/+(srm/managerv2\\?SFN=)?\\S*$";
 
 inline bool srm_url_valid(std::string const& srm_url){
     static boost::regex const e(SRM_URL_REGEXP);

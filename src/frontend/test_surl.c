@@ -9,21 +9,25 @@ int main(int argc, const char *argv[])
         "srm://host.ciccio:8444/test//palla",
         "srm://host.ciccio/manager",
         "srm://host.com:8009//srm/managerv2?SFN=/test//ciccio",
-        "srm://atlasse.lnf.infn.it/dpm/lnf.infn.it/home/atlas/atlasdatadisk/rucio/mc12_8TeV/52/d4/NTUP_TRUTH.01369588._000098.root.1"
+        "srm://atlasse.lnf.infn.it/dpm/lnf.infn.it/home/atlas/atlasdatadisk/rucio/mc12_8TeV/52/d4/NTUP_TRUTH.01369588._000098.root.1",
+        "srm://[2001:720:1210:f023::65]:8444/srm/managerv2?SFN=/lhcp/plus+minus-ciccio,also_with_a_comma.txt",
+        "srm://[2001:720:1210:f023::65]:8444/ciccio+caio_[{}]/horrible.txt"
     };
 
     const char* expected[] = {
-         "srm://host.ciccio:8444/test/palla",
-         "srm://host.ciccio/manager",
-         "srm://host.com:8009/test/ciccio",
-         "srm://atlasse.lnf.infn.it/dpm/lnf.infn.it/home/atlas/atlasdatadisk/rucio/mc12_8TeV/52/d4/NTUP_TRUTH.01369588._000098.root.1"
+        "srm://host.ciccio:8444/test/palla",
+        "srm://host.ciccio/manager",
+        "srm://host.com:8009/test/ciccio",
+        "srm://atlasse.lnf.infn.it/dpm/lnf.infn.it/home/atlas/atlasdatadisk/rucio/mc12_8TeV/52/d4/NTUP_TRUTH.01369588._000098.root.1",
+        "srm://[2001:720:1210:f023::65]:8444/lhcp/plus+minus-ciccio,also_with_a_comma.txt",
+        "srm://[2001:720:1210:f023::65]:8444/ciccio+caio_[{}]/horrible.txt"
     };
 
     const char* invalid_surls[] = {
         "invalid surl",
         "http://www.google.com",
         "https://www.cicciopalla.com",
-        "",
+        "srm://ciccio.srm.org/file with space",
         0
     };
 
