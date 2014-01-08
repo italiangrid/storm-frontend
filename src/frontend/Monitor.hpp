@@ -255,10 +255,10 @@ class Monitor {
 
 		void print()
 		{
-			char* _funcName = "print";
+
 			srmlogit(
 				STORM_LOG_DEBUG,
-				_funcName,
+				__func__,
 				"Name %s Friendly Name %s | Type %s | Current Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f | Aggregated Status: completed %u faileures - %u errors - %u tot time - %f tot square time - %f min time - %f max time - %f\n",
 				this->name.c_str(), this->friendlyName.c_str(),
 				nameOfOperationType(this->type).c_str(),
@@ -374,8 +374,8 @@ class Monitor {
 
 		static float computeStandardDeviation(int count, float total, float total_square)
 		{
-			char* _funcName = "computeStandardDeviation";
-			srmlogit(STORM_LOG_DEBUG, _funcName,
+
+			srmlogit(STORM_LOG_DEBUG, __func__,
 				"Computing standard deviation. completed operations = %u, total time = %f total squares time = %f\n",
 				count, total, total_square);
 			if(count == 0 || count == 1)
@@ -395,7 +395,7 @@ class Monitor {
 
 		static float computeAverage(int count, float total)
 		{
-			char* _funcName = "computeAverage";
+
 			if(count == 0)
 			{
 				return 0;

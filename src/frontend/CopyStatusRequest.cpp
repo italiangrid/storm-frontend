@@ -18,6 +18,9 @@
 #include "CopyTurl.hpp"
 #include "srmlogit.h"
 
+const std::string storm::CopyStatusRequest::NAME = "Copy Status";
+const std::string storm::CopyStatusRequest::MONITOR_NAME = storm::SRM_COPY_MONITOR_NAME;
+
 void storm::CopyStatusRequest::load(ns1__srmStatusOfCopyRequestRequest* req)
 {
 	if(req->arrayOfSourceSURLs == NULL)
@@ -40,7 +43,7 @@ void storm::CopyStatusRequest::load(ns1__srmStatusOfCopyRequestRequest* req)
 	}
 }
 
-void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::TokenNotFound){
+void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db){
 
     srmlogit(STORM_LOG_DEBUG, "storm::CopyStatusRequest::loadFromDB", "R_token: %s\n",  m_requestToken.c_str());
 
@@ -110,13 +113,13 @@ void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Tok
 		{
 			srmlogit(STORM_LOG_INFO, "storm::CopyStatusRequest::loadFromDB()",
 									 "No tokens found for token %s and the requested SURLs\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No request found for token " + m_requestToken + " and the requested SURLs\n");
+			throw storm::token_not_found("No request found for token " + m_requestToken + " and the requested SURLs\n");
 		}
 		else
 		{
 			srmlogit(STORM_LOG_INFO, "storm::CopyStatusRequest::loadFromDB()",
 									 "No tokens found for token %s\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No request found for token " + m_requestToken + "\n");
+			throw storm::token_not_found("No request found for token " + m_requestToken + "\n");
 		}
 
 	}
@@ -157,7 +160,7 @@ void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Tok
 	}
 }
 
-ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse() throw (std::logic_error)
+ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::CopyStatusRequest::buildResponse()", "called.\n");
 
@@ -243,7 +246,7 @@ ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse() t
     return m_builtResponse;
 }
 
-void storm::CopyStatusRequest::addMissingSurls() throw (std::logic_error)
+void storm::CopyStatusRequest::addMissingSurls()
 {
 	int index = (m_turls.empty() ? 0 : m_turls.size() - 1);
 

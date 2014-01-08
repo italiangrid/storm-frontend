@@ -25,7 +25,7 @@
 namespace storm {
 class PtpSurl : public Surl  {
 public:
-	PtpSurl(std::string surl, storm_size_t size) throw (InvalidSurl) : Surl(surl) {
+	PtpSurl(std::string surl, storm_size_t size) : Surl(surl) {
 		this->init(size);
 	};
 

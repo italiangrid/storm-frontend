@@ -32,7 +32,8 @@ extern "C" {
 int srmlogit_set_debuglevel(int level);
 int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled);
 int srmlogit(int level,const char *func, const char *msg, ...);
-//int srmlogitNoThread(int level,const char *func, const char *msg, ...);
+
+
 int srmAudit(const char *msg, ...) ;
 int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN);
 int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const char* clientDN, const char* surls, int surlsNum);

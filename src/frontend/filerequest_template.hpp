@@ -36,6 +36,7 @@
 #include <sstream>
 #include "storm_util.h"
 #include "ProtocolChecker.hpp"
+#include "storm_exception.hpp"
 
 using namespace std;
 
@@ -52,7 +53,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 		{
 			*resp = request.buildSpecificResponse(SRM_USCOREFATAL_USCOREINTERNAL_USCOREERROR,
 					"Cannot get DB connect from the pool");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
 			return(SOAP_FATAL_ERROR);
@@ -76,7 +77,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
         	try {
         		*resp = request.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Cannot get a DB connection.");
-			} catch(storm::InvalidResponse& exc) {
+			} catch(storm::storm_error& exc) {
 				srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
 				return(SOAP_FATAL_ERROR);
 			}
@@ -90,7 +91,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 				try {
 					*resp = request.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR,
 							"Lost connection to the DB.");
-				} catch(storm::InvalidResponse& exc) {
+				} catch(storm::storm_error& exc) {
 					srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
 					return(SOAP_FATAL_ERROR);
 				}
@@ -99,24 +100,12 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 		}
 	}
 
-    // Load data from the soap request struct.
     try {
-        /*try {
 
-            request.load(req);
-
-        } catch (storm::invalid_request x) {
-            srmlogit(STORM_LOG_DEBUG, func, "Error loading data for request token %s: %s\n",
-                    r_token, x.what());
-            request.r_token(""); // We do not want to send the Request token, in case of error.
-            *resp = request.error_response(SRM_USCOREINVALID_USCOREREQUEST, x.what());
-
-            return SOAP_OK;
-        }*/
         if(request.supportsProtocolSpecification())
         {
 			srmlogit(STORM_LOG_DEBUG, func, "Checking provided protocols\n");
-			std::vector<sql_string>* protocols;
+			std::vector<sql_string> protocols;
 			try
 			{
 				protocols = request.getRequestedProtocols();
@@ -129,8 +118,8 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 			if(ProtocolChecker::getInstance()->ProtocolChecker::checkProtocols(protocols) != 0)
 			{
 				srmlogit(STORM_LOG_INFO, func, "Protocol check failed, received some unsupported protocols\n");
-				std::vector<sql_string> newProtocolVector = ProtocolChecker::getInstance()->ProtocolChecker::removeUnsupportedProtocols(request.getRequestedProtocols());
-				int size = protocols->size();
+				std::vector<sql_string> newProtocolVector = ProtocolChecker::getInstance()->removeUnsupportedProtocols(request.getRequestedProtocols());
+				int size = protocols.size();
 				int newSize = newProtocolVector.size();
 				int removedCount = size - newSize;
 
@@ -142,7 +131,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 					try {
 						*resp = request.buildSpecificResponse(SRM_USCORENOT_USCORESUPPORTED,
 												"No supported protocols provided.");
-					} catch(storm::InvalidResponse &exc) {
+					} catch(storm::storm_error &exc) {
 						srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
 						return(SOAP_FATAL_ERROR);
 					}
@@ -151,7 +140,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 				else
 				{
 					srmlogit(STORM_LOG_INFO, func, "Some of the provided protocols are supported, proceeding\n");
-					request.setProtocolVector(&newProtocolVector);
+					request.setProtocolVector(newProtocolVector);
 				}
 			}
 			srmlogit(STORM_LOG_DEBUG, func, "Valid protocols available\n");
@@ -167,7 +156,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         	try {
         		*resp = request.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Database error. "
         				"Might be caused by a high load of the database server... try again later.");
-        	} catch(storm::InvalidResponse& exc) {
+        	} catch(storm::storm_error& exc) {
         		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
         		return(SOAP_FATAL_ERROR);
         	}
@@ -178,7 +167,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         	request.invalidateRequestToken();
         	try {
         		*resp = request.buildSpecificResponse(SRM_USCORENOT_USCORESUPPORTED, x.what());
-        	} catch(storm::InvalidResponse& exc) {
+        	} catch(storm::storm_error& exc) {
         		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
         		return(SOAP_FATAL_ERROR);
         	}
@@ -188,12 +177,12 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
         // Fill SOAP output structure.
         try {
         	*resp = request.buildResponse();
-        } catch(storm::InvalidResponse &exc) {
+        } catch(storm::storm_error &exc) {
 			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
 			return(SOAP_FATAL_ERROR);
 		}
-    } catch (bad_alloc x) {
-        srmlogit(STORM_LOG_ERROR, func, "bad_allc exception.  token: %s, error: %s\n", r_token,
+    } catch (bad_alloc& x) {
+        srmlogit(STORM_LOG_ERROR, func, "bad_alloc exception.  token: %s, error: %s\n", r_token,
                 x.what());
         return SOAP_EOM;
     }

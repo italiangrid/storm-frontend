@@ -23,7 +23,7 @@ namespace storm {
 
 class BolRequest: public file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse> {
 public:
-	BolRequest(struct soap* soapRequest, struct ns1__srmBringOnlineRequest* bolRequest) throw (invalid_request) :
+	BolRequest(struct soap* soapRequest, struct ns1__srmBringOnlineRequest* bolRequest):
 			file_request<ns1__srmBringOnlineRequest, ns1__srmBringOnlineResponse > (soapRequest) {
         m_requestType = DB_BOL_REQUEST;
 		m_deferredStartTime = -1;
@@ -32,16 +32,19 @@ public:
 		this->load(bolRequest);
     }
 
-    void insertIntoDB(struct srm_dbfd* dbfd)  throw (std::logic_error , storm_db::mysql_exception);
+    void insertIntoDB(struct srm_dbfd* dbfd);
 
-    void load(ns1__srmBringOnlineRequest* req) throw (invalid_request) ;
+    void load(ns1__srmBringOnlineRequest* req);
 
     /*
      * Returns true if the bol command supports the option for specify the preferred transfer protocol
      * */
     bool supportsProtocolSpecification();
     
-	struct ns1__srmBringOnlineResponse* buildResponse() throw (std::logic_error , InvalidResponse);
+	struct ns1__srmBringOnlineResponse* buildResponse();
+
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 
 private:
     storm_time_t m_deferredStartTime; // -1 = not specified

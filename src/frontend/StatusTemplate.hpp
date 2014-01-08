@@ -94,16 +94,13 @@ int processRequestStatus(struct soap* soap, const char* funcName,
     	try
     	{
     		statusRequest.loadFromDB(&thip->dbfd);
-    	} catch (storm::TokenNotFound& x)
+    	} catch (storm::token_not_found& x)
     	{
-    		/*srmlogit(STORM_LOG_DEBUG, func,
-					"No request found for token %s . TokenNotFound: %s",
-					statusRequest.getRequestToken().c_str(), x.what());*/
 			try {
 				*resp = statusRequest.buildSpecificResponse(
 						SRM_USCOREINVALID_USCOREREQUEST,
 						"No request by that token");
-			} catch(std::logic_error& exc) {
+			} catch(std::runtime_error& exc) {
 				srmlogit(STORM_LOG_ERROR, funcName,
 						"Unable to build soap response. logic_error: %s\n",
 						exc.what());
@@ -118,7 +115,7 @@ int processRequestStatus(struct soap* soap, const char* funcName,
     		{
     			*resp = statusRequest.buildSpecificResponse(SRM_USCOREFAILURE,
             			"Generic error quering the status for the request");
-            } catch(std::logic_error& exc)
+            } catch(std::runtime_error& exc)
             {
             	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
             	return(SOAP_FATAL_ERROR);
@@ -133,7 +130,7 @@ int processRequestStatus(struct soap* soap, const char* funcName,
         		*resp = statusRequest.buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE,
         				"The request was made from another DN."
         				" You're not authorized to inspect it.");
-        	} catch(std::logic_error& exc)
+        	} catch(std::runtime_error& exc)
         	{
         		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
         		return(SOAP_FATAL_ERROR);
@@ -144,12 +141,12 @@ int processRequestStatus(struct soap* soap, const char* funcName,
         try
         {
         	*resp = statusRequest.buildResponse();
-        } catch(std::logic_error& exc)
+        } catch(std::runtime_error& exc)
         {
         	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
         	return(SOAP_FATAL_ERROR);
         }
-    } catch (std::bad_alloc x) {
+    } catch (std::bad_alloc& x) {
         srmlogit(STORM_LOG_ERROR, func, "bad_alloc exception catched: %s\n", x.what());
         return SOAP_EOM;
     }

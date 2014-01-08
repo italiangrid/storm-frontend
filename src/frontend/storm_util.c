@@ -13,8 +13,6 @@
  * limitations under the License.
 */
 
-#define _GNU_SOURCE
-
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "storm_functions.h"

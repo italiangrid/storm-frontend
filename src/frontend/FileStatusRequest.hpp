@@ -39,205 +39,179 @@
 #include "FrontendConfiguration.hpp"
 #include "Surl.hpp"
 #include "Turl.hpp"
+#include "token_validator.hpp"
+#include "storm_exception.hpp"
+#include "Monitor.hpp"
 
 namespace storm {
 
 typedef std::map<std::string, std::string> file_status_result_t;
 typedef std::vector<file_status_result_t> file_status_results_t;
 
-class TokenNotFound: public std::exception {
-public:
-	TokenNotFound() {
-    }
-
-	TokenNotFound(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-
-private:
-    const char* errmsg;
-};
-
-class invalid_request: public std::exception {
-public:
-    invalid_request() {
-    }
-    ;
-    invalid_request(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-private:
-    const char* errmsg;
-};
 
 template<typename soap_in_t, typename soap_out_t>
 class FileStatusRequest {
 public:
 
-	FileStatusRequest(struct soap* soap, soap_in_t* req) throw (invalid_request) :
-    	m_soapRequest(soap), m_credentials(soap), m_builtResponse(NULL) {
-    	m_be_rest_port = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
-    	m_be_hostname = FrontendConfiguration::getInstance()->getXmlRpcHost();
-    	m_remainingTotalRequestTime = -1;
-    	this->loadCommonFields(req);
+    FileStatusRequest(struct soap* soap, soap_in_t* req):
+        m_soapRequest(soap), m_credentials(soap), m_builtResponse(NULL) {
+        m_be_rest_port = (long) FrontendConfiguration::getInstance()->getRecalltablePort();
+        m_be_hostname = FrontendConfiguration::getInstance()->getXmlRpcHost();
+        m_remainingTotalRequestTime = -1;
+        this->loadCommonFields(req);
     }
 
     virtual ~FileStatusRequest() {
-	}
+    }
 
-    void loadCommonFields(soap_in_t* req) throw (invalid_request)
-	{
-    	if(req == NULL)
-    	{
-    		throw invalid_request("Received NULL request parameter");
-    	}
-    	if(req->requestToken == NULL)
-    	{
-    		throw invalid_request("FileStatusRequest has NULLrequestToken");
-    	}
-    	m_requestToken = sql_string(req->requestToken);
-    	if(req->authorizationID != NULL)
-    	{
-    		m_authorizationID = sql_string(req->authorizationID);
-    	}
-	}
+    void loadCommonFields(soap_in_t* req)
+    {
+        if(req == NULL)
+        {
+            throw invalid_request("Received NULL request parameter");
+        }
+        if(req->requestToken == NULL)
+        {
+            throw invalid_request("FileStatusRequest has NULLrequestToken");
+        }
+
+        // Validate request token
+        if (!storm::token::valid(std::string(req->requestToken))){
+            throw invalid_request("invalid token");
+        }
+
+        m_requestToken = sql_string(req->requestToken);
+        if(req->authorizationID != NULL)
+        {
+            m_authorizationID = sql_string(req->authorizationID);
+        }
+    }
 
     virtual soap_out_t* buildSpecificResponse(const ns1__TStatusCode srmStatusCode,
-            const char* const srmStatusExplanation) throw (std::logic_error) {
+            const char* const srmStatusExplanation){
         m_status = srmStatusCode;
         m_explanation = srmStatusExplanation;
         return buildResponse();
     }
 
-    virtual soap_out_t* buildResponse() throw (std::logic_error) = 0;
+    virtual soap_out_t* buildResponse() = 0;
 
     virtual void load(soap_in_t* req) = 0;
 
-    virtual void loadFromDB(struct srm_dbfd *db) throw (TokenNotFound) = 0;
+    virtual void loadFromDB(struct srm_dbfd *db) = 0;
 
-    virtual void fillCommonFields(file_status_results_t& statusResult) throw (std::logic_error)
-	{
-    	if (statusResult.size() == 0)
-		{
-    		srmlogit(STORM_LOG_ERROR, "storm::file_status::fillCommonFields()",
-					"Received an empty query result\n");
-			throw std::logic_error("Received an empty query result");
-		}
-		file_status_result_t row0(statusResult.at(0));
+    virtual void fillCommonFields(file_status_results_t& statusResult)
+    {
+        if (statusResult.size() == 0)
+        {
+            srmlogit(STORM_LOG_ERROR, "storm::file_status::fillCommonFields()",
+                    "Received an empty query result\n");
+            throw std::logic_error("Received an empty query result");
+        }
+        file_status_result_t row0(statusResult.at(0));
 
-		if (row0["client_dn"].empty())
-		{
-			srmlogit(STORM_LOG_ERROR, "storm::file_status::fillCommonFields()",
-					"No client_dn available in the query result\n");
-			throw std::logic_error("No client_dn available in the query result");
-		}
+        if (row0["client_dn"].empty())
+        {
+            srmlogit(STORM_LOG_ERROR, "storm::file_status::fillCommonFields()",
+                    "No client_dn available in the query result\n");
+            throw std::logic_error("No client_dn available in the query result");
+        }
 
-		m_storedClientDN = row0["client_dn"];
+        m_storedClientDN = row0["client_dn"];
 
-		if(row0["status"].empty())
-		{
-			srmlogit(STORM_LOG_ERROR, "storm::file_status::fillCommonFields()",
-					"No request status available in the query result\n");
-			throw std::logic_error("No request status available in the query result");
-		}
-		m_status = static_cast<ns1__TStatusCode> (atoi(row0["status"].c_str()));
-		m_explanation = row0["errstring"];
-		if(!row0["remainingTotalTime"].empty())
-		{
-			m_remainingTotalRequestTime = atoi(row0["remainingTotalTime"].c_str());
-		}
-	}
+        if(row0["status"].empty())
+        {
+            srmlogit(STORM_LOG_ERROR, "storm::file_status::fillCommonFields()",
+                    "No request status available in the query result\n");
+            throw std::logic_error("No request status available in the query result");
+        }
+        m_status = static_cast<ns1__TStatusCode> (atoi(row0["status"].c_str()));
+        m_explanation = row0["errstring"];
+        if(!row0["remainingTotalTime"].empty())
+        {
+            m_remainingTotalRequestTime = atoi(row0["remainingTotalTime"].c_str());
+        }
+    }
 
     sql_string getRequestToken()
     {
-    	return m_requestToken;
+        return m_requestToken;
     }
 
     ns1__TStatusCode getStatus()
     {
-    	return m_status;
+        return m_status;
     }
 
     bool hasSurls()
     {
-    	return !m_surls.empty();
+        return !m_surls.empty();
     }
 
     bool hasRemainingTotalRequestTime()
     {
-    	return m_remainingTotalRequestTime != -1;
+        return m_remainingTotalRequestTime != -1;
     }
 
     Credentials getCredentials()
     {
-    	return m_credentials;
+        return m_credentials;
     }
 
     bool isAuthorized()
     {
-    	if(m_storedClientDN != m_credentials.getDN())
-		{
-			srmlogit(STORM_LOG_INFO, "storm::file_status::fillCommonFields()",
-					"The provided request token does not belong to the requesting user %s but to %s\n",
-					m_credentials.getDN().c_str(), m_storedClientDN.c_str());
-			return false;
-		}
-    	else
-		{
-    		return true;
-		}
+        if(m_storedClientDN != m_credentials.getDN())
+        {
+            srmlogit(STORM_LOG_INFO, "storm::file_status::fillCommonFields()",
+                    "The provided request token does not belong to the requesting user %s but to %s\n",
+                    m_credentials.getDN().c_str(), m_storedClientDN.c_str());
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     std::string getSurlsList()
     {
-    	std::string builtList;
-    	if(m_surls.empty())
-    	{
-    		return builtList;
-    	}
-		std::set<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
-		bool first = true;
-		for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
-			Surl* current = i->get();
-			if(first)
-			{
-				first = false;
-			}
-			else
-			{
-				builtList += ' ';
-			}
-			builtList += current->getSurl();
-    	}
-    	return builtList;
+        std::string builtList;
+        if(m_surls.empty())
+        {
+            return builtList;
+        }
+        std::set<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
+        bool first = true;
+        for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
+            Surl* current = i->get();
+            if(first)
+            {
+                first = false;
+            }
+            else
+            {
+                builtList += ' ';
+            }
+            builtList += current->getSurl();
+        }
+        return builtList;
     }
 
     int getSurlsNumber()
     {
-    	return m_surls.size();
+        return m_surls.size();
     }
 
 protected:
 
     soap * m_soapRequest;
-    // -------------------------------
-    // --- incoming request parameters
-    //
-    //std::set<Surl> m_surls;
+
     typedef boost::shared_ptr<Surl> SurlPtr;
     std::set<SurlPtr> m_surls;
     sql_string m_requestToken;
     storm::Credentials m_credentials;
     sql_string m_authorizationID; //ignored
-    //
-	// --- parameters end
-	// -------------------------------
+
 
     soap_out_t* m_builtResponse;
     typedef boost::shared_ptr<Turl> TurlPtr;
@@ -247,93 +221,93 @@ protected:
     std::string m_explanation;
     int m_remainingTotalRequestTime;
     std::set<TurlPtr> m_turls;
-	// --- response elements end
+    // --- response elements end
     //--------------------------------
 
     //--------------------------------
     // --- internal use fields
     long m_be_rest_port;
-	std::string m_be_hostname;
-	std::string m_storedClientDN;
+    std::string m_be_hostname;
+    std::string m_storedClientDN;
     // --- internal use fields end
     //--------------------------------
 
-	bool hasMissingSurls()
-	{
-		return m_turls.size() < m_surls.size();
-	}
+    bool hasMissingSurls()
+    {
+        return m_turls.size() < m_surls.size();
+    }
 
-	bool checkSurl(std::string surl) throw (std::logic_error) {
-		std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
-		for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i) {
-			storm::Turl* turl = dynamic_cast<storm::Turl*> (i->get());
-			if(!turl)
-			{
-				throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
-			}
-			if(turl->getSurl().getSurl() == surl)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    bool checkSurl(std::string surl) throw (std::logic_error) {
+        std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
+        for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i) {
+            storm::Turl* turl = dynamic_cast<storm::Turl*> (i->get());
+            if(!turl)
+            {
+                throw std::logic_error("Unable to cast TurlPtr to PtpTurl, cast failure");
+            }
+            if(turl->getSurl().getSurl() == surl)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	virtual void addMissingSurls() throw (std::logic_error) = 0;
+    virtual void addMissingSurls() = 0;
 
-	 std::string sqlFormat(char c) {
-		std::string formattedString("\'");
-		formattedString.append(1, c);
-		formattedString += '\'';
-		return formattedString;
-	}
+     std::string sqlFormat(char c) {
+        std::string formattedString("\'");
+        formattedString.append(1, c);
+        formattedString += '\'';
+        return formattedString;
+    }
 
-	std::string sqlFormat(const std::string s) {
-		std::string formatted_s("\'");
-		formatted_s += s;
-		formatted_s += '\'';
-		return formatted_s;
-	}
+    std::string sqlFormat(const std::string s) {
+        std::string formatted_s("\'");
+        formatted_s += s;
+        formatted_s += '\'';
+        return formatted_s;
+    }
 
-	std::string sqlFormat(bool value) {
-		return value ? "1" : "0";
-	}
+    std::string sqlFormat(bool value) {
+        return value ? "1" : "0";
+    }
 
-	bool isSurlOnDisk(std::string surl) {
+    bool isSurlOnDisk(std::string surl) {
 
-		bool result = false;
-		try {
+        bool result = false;
+        try {
 
-			HttpPostClient client;
-			client.setHostname(m_be_hostname);
-			client.setPort(m_be_rest_port);
-			std::string data = "requestToken=" + m_requestToken + "\nsurl=" + surl;
-			client.callService(data);
+            HttpPostClient client;
+            client.setHostname(m_be_hostname);
+            client.setPort(m_be_rest_port);
+            std::string data = "requestToken=" + m_requestToken + "\nsurl=" + surl;
+            client.callService(data);
 
-			long responseCode = client.getHttpResponseCode();
-			srmlogit(STORM_LOG_DEBUG, "FileStatusRequest::isSurlOnDisk()", "Response code: %d\n", responseCode);
+            long responseCode = client.getHttpResponseCode();
+            srmlogit(STORM_LOG_DEBUG, "FileStatusRequest::isSurlOnDisk()", "Response code: %d\n", responseCode);
 
-			if (responseCode == 200) {
-				std::string response = client.getResponse();
-				if (response.compare("true") == 0) {
+            if (responseCode == 200) {
+                std::string response = client.getResponse();
+                if (response.compare("true") == 0) {
 
-					result = true;
-					srmlogit(STORM_LOG_DEBUG2, "FileStatusRequest::isSurlOnDisk()", "Response=true for surl=%s\n",
-							surl.c_str());
-				} else {
+                    result = true;
+                    srmlogit(STORM_LOG_DEBUG2, "FileStatusRequest::isSurlOnDisk()", "Response=true for surl=%s\n",
+                            surl.c_str());
+                } else {
 
-					result = false;
-					srmlogit(STORM_LOG_DEBUG2, "FileStatusRequest::isSurlOnDisk()", "Response=false for surl=%s\n",
-							surl.c_str());
-				}
-			}
-		} catch (std::exception& e) {
-			srmlogit(STORM_LOG_ERROR, "FileStatusRequest::isSurlOnDisk()",
-					"Curl: cannot create handle for HTTP client.\n");
-			return false;
-		}
-		return result;
-	}
+                    result = false;
+                    srmlogit(STORM_LOG_DEBUG2, "FileStatusRequest::isSurlOnDisk()", "Response=false for surl=%s\n",
+                            surl.c_str());
+                }
+            }
+        } catch (std::exception& e) {
+            srmlogit(STORM_LOG_ERROR, "FileStatusRequest::isSurlOnDisk()",
+                    "Curl: cannot create handle for HTTP client.\n");
+            return false;
+        }
+        return result;
+    }
 };
 }
 #endif //FILE_STATUS_REQUEST_HPP

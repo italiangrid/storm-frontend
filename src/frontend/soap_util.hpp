@@ -18,10 +18,11 @@
 
 #include <stdexcept>
 #include <stdsoap2.h>
+#include "srmv2Stub.h"
 
 class soap_bad_alloc : public std::bad_alloc {
 public: 
-    soap_bad_alloc(){};
+    soap_bad_alloc():errmsg(0){};
     soap_bad_alloc(std::string reason){errmsg=reason.c_str();}
     const char *what() const throw() {return errmsg;}
 private:
@@ -64,6 +65,25 @@ namespace storm {
         memset(ptr, 0, size * sizeof(soap_type_t*));
         return ptr;
     }
+
+    template<typename response_type>
+    response_type* build_error_message_response(struct soap* soap, ns1__TStatusCode error_code, const char* error_msg){
+
+    	response_type* response = soap_calloc<response_type>(soap);
+    	response->returnStatus = soap_calloc<ns1__TReturnStatus>(soap);
+    	response->returnStatus->statusCode = error_code;
+
+    	if (error_msg != 0){
+    		response->returnStatus->explanation = soap_strdup(soap, error_msg);
+    	}
+
+    	return response;
+    }
+	
+	template<> 
+	ns1__srmPingResponse*
+	build_error_message_response(struct soap* soap, ns1__TStatusCode error_code, const char* error_msg);
+		
 }
 
 #endif

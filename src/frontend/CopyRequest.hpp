@@ -23,7 +23,7 @@ namespace storm {
 
 class CopyRequest : public file_request<ns1__srmCopyRequest, ns1__srmCopyResponse> {
 public:
-	CopyRequest(struct soap* soapRequest, struct ns1__srmCopyRequest* copyRequest) throw (invalid_request) :
+	CopyRequest(struct soap* soapRequest, struct ns1__srmCopyRequest* copyRequest):
 			file_request<ns1__srmCopyRequest, ns1__srmCopyResponse >(soapRequest) {
 		m_requestType = DB_COPY_REQUEST;
 		m_fileLifetime = -1;
@@ -33,18 +33,18 @@ public:
 		this->load(copyRequest);
 	};
 
-    void insertIntoDB(struct srm_dbfd *dbfd) throw (std::logic_error , storm_db::mysql_exception);
+    void insertIntoDB(struct srm_dbfd *dbfd);;
 
-    void load(ns1__srmCopyRequest *req) throw (invalid_request) ;
+    void load(ns1__srmCopyRequest *req);
 
-    /*
-     * Returns true if the copy command supports the option for specify the preferred transfer protocol
-     */
     bool supportsProtocolSpecification();
 
-	struct ns1__srmCopyResponse* buildResponse() throw (std::logic_error , storm::InvalidResponse);
+	struct ns1__srmCopyResponse* buildResponse();
 
 	std::string getSurlsList();
+
+	static const std::string NAME;
+	static const std::string MONITOR_NAME;
 
 private:
     storm_time_t m_fileLifetime; // -1 = not specified --> stands for desiredTargetSURLLifeTime

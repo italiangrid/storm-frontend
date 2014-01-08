@@ -28,21 +28,36 @@
 #include "get_socket_info.hpp"
 
 #include "boost/date_time/posix_time/posix_time.hpp"
+#include "storm_exception.hpp"
+#include <boost/format.hpp>
+#include "base_request.hpp"
 
-extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *req,
+
+
+int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *req,
         struct ns1__srmPrepareToPutResponse_ *rep) {
 
     static const char* funcName = "srmPrepareToPut";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::PtpRequest* request;
+    storm::PtpRequest* request = 0;
     try{ request = new storm::PtpRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
-    	srmLogResponse("PTP", SRM_USCOREFAILURE);
-		return(SOAP_FATAL_ERROR);
+    	storm::request::register_request_error<storm::PtpRequest>(
+    			__func__,
+    			SRM_USCOREINVALID_USCOREREQUEST,
+    			start_time,
+				boost::str(boost::format("%s\n") % e.what())
+				);
+
+    	rep->srmPrepareToPutResponse =
+    			storm::build_error_message_response<ns1__srmPrepareToPutResponse>(
+    					soap,
+    					SRM_USCOREINVALID_USCOREREQUEST,
+    					e.what());
+
+
+		return SOAP_OK;
     }
     srmLogRequestWithSurls("PTP", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -51,43 +66,21 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch( storm::AuthorizationException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    }catch( storm::authorization_error& e){
+
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		try
 		{
 			rep->srmPrepareToPutResponse = request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
-		} catch(storm::InvalidResponse &exc)
+		} catch(storm::storm_error &exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 							storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
 			srmLogResponse("PTP", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("PTP", request->getStatus());
-		delete request;
-		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmPrepareToPutResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::InvalidResponse &exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
-			srmLogResponse("PTP", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,e.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
@@ -96,6 +89,7 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 		delete request;
 		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -104,14 +98,14 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
 		try
 		{
 			rep->srmPrepareToPutResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(storm::InvalidResponse &exc)
+		} catch(storm::storm_error &e)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , e.what());
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME);
 	    	srmLogResponse("PTP", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,e.what(),0);
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_PREPARE_TO_PUT_MONITOR_NAME,
@@ -136,20 +130,30 @@ extern "C" int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToP
     return soap_status;
 }
 
-extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *req,
+int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *req,
         struct ns1__srmPrepareToGetResponse_ *rep) {
 
     static const char* funcName = "srmPrepareToGet";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::PtgRequest* request;
+    storm::PtgRequest* request = 0;
     try{ request = new storm::PtgRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
-    	srmLogResponse("PTG", SRM_USCOREFAILURE);
-    	return(SOAP_FATAL_ERROR);
+    	storm::request::register_request_error<storm::PtgRequest>(
+    	    			__func__,
+    	    			SRM_USCOREINVALID_USCOREREQUEST,
+    	    			start_time,
+    					boost::str(boost::format("%s\n") % e.what())
+    					);
+
+    	rep->srmPrepareToGetResponse =
+    	    			storm::build_error_message_response<ns1__srmPrepareToGetResponse>(
+    	    					soap,
+    	    					SRM_USCOREINVALID_USCOREREQUEST,
+    	    					e.what());
+
+
+    	return SOAP_OK;
     }
 	srmLogRequestWithSurls("PTG", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -158,43 +162,21 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch( storm::AuthorizationException& e)
+    }catch( storm::authorization_error& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		try
 		{
 			rep->srmPrepareToGetResponse = request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 							storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
 			srmLogResponse("PTG", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("PTG", request->getStatus());
-		delete request;
-		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmPrepareToGetResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::InvalidResponse& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
-			srmLogResponse("PTG", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,e.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
@@ -203,6 +185,7 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 		delete request;
 		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -211,14 +194,14 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
 		try
 		{
 			rep->srmPrepareToGetResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_PREPARE_TO_GET_MONITOR_NAME);
 	    	srmLogResponse("PTG", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,exc.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_PREPARE_TO_GET_MONITOR_NAME,
@@ -243,20 +226,30 @@ extern "C" int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToG
     return soap_status;
 }
 
-extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
+int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
         struct ns1__srmCopyResponse_ *rep) {
 
     static const char* funcName = "srmCopy";
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    storm::CopyRequest* request;
+    storm::CopyRequest* request = 0;
     try{ request = new storm::CopyRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_COPY_MONITOR_NAME);
-    	srmLogResponse("CP", SRM_USCOREFAILURE);
-    	return(SOAP_FATAL_ERROR);
+    	storm::request::register_request_error<storm::CopyRequest>(
+    	    			__func__,
+    	    			SRM_USCOREINVALID_USCOREREQUEST,
+    	    			start_time,
+    					boost::str(boost::format("%s\n") % e.what())
+    					);
+
+    	rep->srmCopyResponse =
+    	    			storm::build_error_message_response<ns1__srmCopyResponse>(
+    	    					soap,
+    	    					SRM_USCOREINVALID_USCOREREQUEST,
+    	    					e.what());
+
+
+    	return SOAP_OK;
     }
 	srmLogRequestWithSurls("CP", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -265,44 +258,21 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch(storm::AuthorizationException& e)
+    }catch(storm::authorization_error& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		try
 		{
 			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 							storm::SRM_COPY_MONITOR_NAME);
 			srmLogResponse("CP", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_COPY_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("CP", request->getStatus());
-		delete request;
-		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		request->setAuthorizationFailureSurls();
-		try
-		{
-			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::InvalidResponse& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_COPY_MONITOR_NAME);
-			srmLogResponse("CP", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,e.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_COPY_MONITOR_NAME,
@@ -311,6 +281,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 		delete request;
 		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -318,14 +289,14 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 		try
 		{
 			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_COPY_MONITOR_NAME);
 	    	srmLogResponse("CP", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,exc.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_COPY_MONITOR_NAME,
@@ -350,7 +321,7 @@ extern "C" int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     return soap_status;
 }
 
-extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *req,
+int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *req,
         struct ns1__srmBringOnlineResponse_ *rep) {
 
     static const char* funcName = "srmBringOnline";
@@ -359,11 +330,20 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     try{ request = new storm::BolRequest(soap, req); }
     catch(storm::invalid_request& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to build request from soap. Invalid_request: %s\n" , e.what());
-    	storm::MonitoringHelper::registerOperationError(start_time,
-    					storm::SRM_BRING_ONLINE_MONITOR_NAME);
-    	srmLogResponse("BOL", SRM_USCOREFAILURE);
-    	return(SOAP_FATAL_ERROR);
+    	storm::request::register_request_error<storm::BolRequest>(
+    	    	    			__func__,
+    	    	    			SRM_USCOREINVALID_USCOREREQUEST,
+    	    	    			start_time,
+    	    					boost::str(boost::format("%s\n") % e.what())
+    	    					);
+
+    	rep->srmBringOnlineResponse =
+    			storm::build_error_message_response<ns1__srmBringOnlineResponse>(
+    					soap,
+    					SRM_USCOREINVALID_USCOREREQUEST,
+    					e.what());
+
+    	return SOAP_OK;
     }
 	srmLogRequestWithSurls("BOL", get_ip(soap).c_str(),
 			request->getClientDN().c_str(), request->getSurlsList().c_str(),
@@ -372,44 +352,22 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
     try
     {
     	blacklisted = storm::Authorization::checkBlacklist(soap);
-    }catch( storm::AuthorizationException& e)
+    }catch( storm::authorization_error& e)
     {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. AuthorizationException: %s\n" , e.what());
+    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
 		request->invalidateRequestToken();
 		request->setAuthorizationFailureSurls();
 		try
 		{
 			rep->srmBringOnlineResponse = request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 			storm::MonitoringHelper::registerOperationError(start_time,
 							storm::SRM_BRING_ONLINE_MONITOR_NAME);
 			srmLogResponse("BOL", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_BRING_ONLINE_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("BOL", request->getStatus());
-		delete request;
-		return(SOAP_OK);
-    }catch( storm::ArgusException& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. ArgusException: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmBringOnlineResponse = request->buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Unable to check user blacklisting, Argus issues");
-		} catch(storm::InvalidResponse& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_BRING_ONLINE_MONITOR_NAME);
-			srmLogResponse("BOL", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,e.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_BRING_ONLINE_MONITOR_NAME,
@@ -418,6 +376,7 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 		delete request;
 		return(SOAP_OK);
     }
+
     if(blacklisted)
 	{
 		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
@@ -425,14 +384,14 @@ extern "C" int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnline
 		try
 		{
 			rep->srmBringOnlineResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(storm::InvalidResponse& exc)
+		} catch(storm::storm_error& exc)
 		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
 			delete request;
 	    	storm::MonitoringHelper::registerOperationError(start_time,
 	    					storm::SRM_BRING_ONLINE_MONITOR_NAME);
 	    	srmLogResponse("BOL", SRM_USCOREFAILURE);
-			return(SOAP_FATAL_ERROR);
+			return soap_sender_fault(soap,exc.what(),0);;
 		}
 		storm::MonitoringHelper::registerOperation(start_time,
 					storm::SRM_BRING_ONLINE_MONITOR_NAME,

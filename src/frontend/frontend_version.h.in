@@ -16,6 +16,6 @@
 #ifndef _FRONTEND_VERSION_H
 #define _FRONTEND_VERSION_H
 
-static const char* frontend_version = "@VERSION@-@STORM_FRONTEND_AGE_NUMBER@";
+static const char* frontend_version = "@VERSION@";
 
 #endif /* _FRONTEND_VERSION_H */

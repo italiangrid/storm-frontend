@@ -167,35 +167,6 @@ int writeLogPrefix(char* prtbuf, int logLevel, const char* functionName)
 	}
 }
 
-/*
-int writeLogPrefixNoThread(char* prtbuf, int logLevel, const char* functionName)
-{
-	struct tm *tm;
-#if defined(_REENTRANT) || defined(_THREAD_SAFE)
-	struct tm tmstruc;
-#endif
-	time_t current_time;
-
-(void) time(&current_time); // Get current time
-#if (defined(_REENTRANT) || defined(_THREAD_SAFE)) && !defined(_WIN32)
-	(void) localtime_r(&current_time, &tmstruc);
-	tm = &tmstruc;
-#else
-	tm = localtime(&current_time);
-#endif
-
-	if(functionName == NULL)
-	{
-		return snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s : ", tm->tm_mon + 1, tm->tm_mday,
-					tm->tm_hour, tm->tm_min, tm->tm_sec, getLogLevelLable(logLevel).c_str());
-	}
-	else
-	{
-		return snprintf(prtbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d %s : %s : ", tm->tm_mon + 1, tm->tm_mday,
-					tm->tm_hour, tm->tm_min, tm->tm_sec, getLogLevelLable(logLevel).c_str(), functionName);
-	}
-}*/
-
 int writeLogPrefix(char* prtbuf, int logLevel)
 {
 	return writeLogPrefix(prtbuf, logLevel, NULL);
@@ -230,7 +201,11 @@ int loggingError(const char* requestName) {
 		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
 	}
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+		// This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 
@@ -250,17 +225,6 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
         return 0;
     }
 
-    /* Should add this check cicling on al elements in va_list args using va_arg macro to extract each
-     * this cannot be done since we parse msg to find %s macros and their value position in va_list args...
-     * quite difficult!
-     * if(requestName == NULL || ??? == NULL || ...)
-	{
-		loggingError(requestName);
-		errno = save_errno;
-		return 1;
-	}
-     * */
-
     va_start(args, msg);
     writtenChars += writeLogPrefix(prtbuf, level , func);
     if(writtenChars < max_char_to_write)
@@ -278,49 +242,19 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     }
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-    fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    if (written_bytes < strlen(prtbuf)){
+
+    	// TODO: This will likely never happen, but we should print something...
+
+    }
     fflush(log_fd);
     lock.unlock();
 
     errno = save_errno;
     return 0;
 }
-/*
-int srmlogitNoThread(int level, const char *func, const char *msg, ...) {
-    va_list args;
-    int save_errno = errno;
-    char prtbuf[LOGBUFSZ];
-    signed int max_char_to_write = LOGBUFSZ - 1;
-    int writtenChars = 0;
 
-    if (level > loglevel) {
-        return 0;
-    }
-
-    va_start(args, msg);
-    writtenChars += writeLogPrefixNoThread(prtbuf, level , func);
-    if(writtenChars < max_char_to_write)
-    {
-    	writtenChars += vsnprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, msg, args);
-    }
-    va_end(args);
-    if(writtenChars < max_char_to_write)
-    {
-    	prtbuf[writtenChars] = '\0';
-    }
-    else
-    {
-    	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
-
-    boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-    fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
-    fflush(log_fd);
-    lock.unlock();
-
-    errno = save_errno;
-    return 0;
-}*/
 
 int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN) {
 	int save_errno = errno;
@@ -351,7 +285,12 @@ int srmLogRequest(const char* requestName, const char* clientIP, const char* cli
     }
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-    fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    if (written_bytes < strlen(prtbuf)){
+
+        	// TODO: This will likely never happen, but we should print something...
+
+    }
     fflush(log_fd);
     lock.unlock();
 
@@ -404,7 +343,12 @@ int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const 
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+
+	    	// TODO: This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 
@@ -442,7 +386,12 @@ int srmLogRequestWithToken(const char* requestName, const char* clientIP, const 
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+
+	    	// TODO: This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 
@@ -495,7 +444,12 @@ int srmLogRequestWithTokenList(const char* requestName, const char* clientIP, co
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+
+	    	// TODO: This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 
@@ -547,7 +501,12 @@ int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+
+	    	// TODO: This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 
@@ -585,7 +544,12 @@ int srmLogResponseWithToken(const char* requestName, const char* requestToken, c
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+
+		// TODO: This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 
@@ -623,7 +587,12 @@ int srmLogResponse(const char* requestName, const ns1__TStatusCode statusCode)
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
-	fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+	if (written_bytes < strlen(prtbuf)){
+
+	    	// TODO: This will likely never happen, but we should print something...
+
+	}
 	fflush(log_fd);
 	lock.unlock();
 	errno = save_errno;
@@ -671,7 +640,12 @@ int srmAudit(const char *msg, ...) {
 	}
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(audit_mutex);
-    fwrite(prtbuf, sizeof(char), strlen(prtbuf), audit_fd);
+    size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    if (written_bytes < strlen(prtbuf)){
+
+    	// TODO: This will likely never happen, but we should print something...
+
+    }
     fflush(audit_fd);
     lock.unlock();
 

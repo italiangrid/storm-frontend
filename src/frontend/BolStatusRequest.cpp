@@ -17,6 +17,9 @@
 #include "BolTurl.hpp"
 #include "srmlogit.h"
 
+const std::string storm::BolStatusRequest::NAME = "BoL Status";
+const std::string storm::BolStatusRequest::MONITOR_NAME = storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME;
+
 void storm::BolStatusRequest::load(ns1__srmStatusOfBringOnlineRequestRequest* req)
 {
 	if(req->arrayOfSourceSURLs == NULL)
@@ -28,7 +31,7 @@ void storm::BolStatusRequest::load(ns1__srmStatusOfBringOnlineRequestRequest* re
 	}
 }
 
-void storm::BolStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::TokenNotFound){
+void storm::BolStatusRequest::loadFromDB(struct srm_dbfd* db){
 
     srmlogit(STORM_LOG_DEBUG, "storm::BolStatusRequest::loadFromDB", "R_token: %s\n",  m_requestToken.c_str());
 
@@ -74,13 +77,13 @@ void storm::BolStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 		{
 			srmlogit(STORM_LOG_INFO, "storm::BolStatusRequest::loadFromDB()",
 									 "No tokens found for token %s and the requested SURLs\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No request found for token " + m_requestToken + " and the requested SURLs\n");
+			throw storm::token_not_found("No request found for token " + m_requestToken + " and the requested SURLs\n");
 		}
 		else
 		{
 			srmlogit(STORM_LOG_INFO, "storm::BolStatusRequest::loadFromDB()",
 									 "No tokens found for token %s\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No request found for token " + m_requestToken + "\n");
+			throw storm::token_not_found("No request found for token " + m_requestToken + "\n");
 		}
 
 	}
@@ -120,7 +123,7 @@ void storm::BolStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 	}
 }
 
-ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildResponse() throw (std::logic_error)
+ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::BolStatusRequest::buildResponse()", "called.\n");
 
@@ -246,14 +249,15 @@ ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildRespon
     return m_builtResponse;
 }
 
-void storm::BolStatusRequest::addMissingSurls() throw (std::logic_error)
+void storm::BolStatusRequest::addMissingSurls()
 {
 	int index = (m_turls.empty() ? 0 : m_turls.size() - 1);
 
 	std::set<SurlPtr>::const_iterator const surlVectorEnd = m_surls.end();
 	for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != surlVectorEnd; ++i) {
 
-		storm::Surl* current = dynamic_cast<storm::Surl*> (i->get());
+		storm::Surl* current = i->get();
+
 		if(!current)
 		{
 			throw std::logic_error("Unable to cast SurlPtr to Surl, cast failure");

@@ -21,12 +21,15 @@
 
 #include "srmlogit.h"
 
+const std::string storm::CopyRequest::NAME = "Copy";
+const std::string storm::CopyRequest::MONITOR_NAME = storm::SRM_COPY_MONITOR_NAME;
+
 bool storm::CopyRequest::supportsProtocolSpecification()
 {
 	return false;
 }
 
-void storm::CopyRequest::load(struct ns1__srmCopyRequest* req) throw (storm::invalid_request)
+void storm::CopyRequest::load(struct ns1__srmCopyRequest* req)
 {
     if (NULL == req) {
         throw storm::invalid_request("Request is NULL");
@@ -50,6 +53,7 @@ void storm::CopyRequest::load(struct ns1__srmCopyRequest* req) throw (storm::inv
 	}
 
     if (NULL != req->userRequestDescription && m_userToken.size() == 0) {
+    	storm::validate_request_description(std::string(req->userRequestDescription));
     	m_userToken = sql_string(req->userRequestDescription);
     }
 
@@ -57,7 +61,7 @@ void storm::CopyRequest::load(struct ns1__srmCopyRequest* req) throw (storm::inv
     	try
 		{
 			this->setFileStorageType(*req->targetFileStorageType);
-		} catch(std::domain_error& e)
+		} catch(storm::storm_error& e)
 		{
 			throw storm::invalid_request("Unable to load request file storage type. domain_error Exception: " + std::string(e.what()));
 		}
@@ -91,7 +95,7 @@ void storm::CopyRequest::load(struct ns1__srmCopyRequest* req) throw (storm::inv
 }
 
 
-ns1__srmCopyResponse* storm::CopyRequest::buildResponse() throw (std::logic_error , storm::InvalidResponse)
+ns1__srmCopyResponse* storm::CopyRequest::buildResponse()
 {
 
 	if(m_builtResponse != NULL)
@@ -103,7 +107,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse() throw (std::logic_erro
 		m_builtResponse = storm::soap_calloc<ns1__srmCopyResponse>(m_soapRequest);
 		m_builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 	} catch (std::invalid_argument& exc) {
-		throw storm::InvalidResponse("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
+		throw storm::storm_error("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
 	}
     m_builtResponse->returnStatus->statusCode = m_status;
 
@@ -118,7 +122,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse() throw (std::logic_erro
     	m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TCopyRequestFileStatus>(
     			m_soapRequest, m_surls.size());
     } catch (std::invalid_argument& exc) {
-    	throw storm::InvalidResponse("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
+    	throw storm::storm_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
     }
 	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = m_surls.size();
 
@@ -130,7 +134,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse() throw (std::logic_erro
 		{
 			fileStatus = storm::soap_calloc<ns1__TCopyRequestFileStatus>(m_soapRequest);
 		} catch (std::invalid_argument &exc) {
-			throw storm::InvalidResponse("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+			throw storm::storm_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 		storm::CopySurl* surl = dynamic_cast<storm::CopySurl*> (i->get());
@@ -147,7 +151,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse() throw (std::logic_erro
 		{
 			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 		} catch (std::invalid_argument &exc) {
-				throw storm::InvalidResponse("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
+				throw storm::storm_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		fileStatus->status->statusCode = surl->getStatus();
 		fileStatus->status->explanation = soap_strdup(m_soapRequest, surl->getExplanation().c_str());
@@ -161,7 +165,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse() throw (std::logic_erro
     return m_builtResponse;
 }
 
-void storm::CopyRequest::insertIntoDB(struct srm_dbfd *db)  throw (std::logic_error , storm_db::mysql_exception) {
+void storm::CopyRequest::insertIntoDB(struct srm_dbfd *db) {
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
 

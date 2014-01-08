@@ -20,30 +20,20 @@
 
 #include "srmv2H.h"
 #include "sql_string.hpp"
+#include "storm_exception.hpp"
+#include "surl_normalizer.h"
 
 namespace storm {
 
-class InvalidSurl: public std::exception {
-public:
-	InvalidSurl() {}
-
-	InvalidSurl(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char *what() const throw () {
-        return errmsg;
-    }
-private:
-    const char *errmsg;
-};
-
 class Surl  {
 public:
-	Surl(std::string const& surl) throw (InvalidSurl) : m_status(SRM_USCOREREQUEST_USCOREQUEUED) , m_surlString(surl){
+	Surl(std::string const& surl):
+		m_surlString(normalize_surl(surl)),
+		m_status(SRM_USCOREREQUEST_USCOREQUEUED){
 
 		if(surl.empty())
 		{
-			throw InvalidSurl("Unable to create an empty SURL");
+			throw invalid_surl("surl is empty");
 		}
 	};
 
@@ -82,6 +72,8 @@ private:
 	sql_string m_surlString;
 	ns1__TStatusCode m_status;
 	std::string m_explanation;
+
 };
+
 }
 #endif // SURL_HPP

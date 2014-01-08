@@ -18,6 +18,9 @@
 #include "srmlogit.h"
 #include <bits/stl_pair.h>
 
+const std::string storm::PutStatusRequest::NAME = "PtP status";
+const std::string storm::PutStatusRequest::MONITOR_NAME = storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME;
+
 void storm::PutStatusRequest::load(ns1__srmStatusOfPutRequestRequest* req)
 {
 	if(req->arrayOfTargetSURLs == NULL)
@@ -25,14 +28,11 @@ void storm::PutStatusRequest::load(ns1__srmStatusOfPutRequestRequest* req)
 		return;
 	}
 	for (int i = 0; i < req->arrayOfTargetSURLs->__sizeurlArray; ++i) {
-		/*storm::Surl surl(
-					req->arrayOfTargetSURLs->urlArray[i]);
-		m_surls.insert(surl);*/
 		m_surls.insert(SurlPtr(new storm::Surl(req->arrayOfTargetSURLs->urlArray[i])));
 	}
 }
 
-void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::TokenNotFound){
+void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db){
 
     srmlogit(STORM_LOG_DEBUG, "storm::PutStatusRequest::loadFromDB", "R_token: %s\n",  m_requestToken.c_str());
 
@@ -78,13 +78,13 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 		{
 			srmlogit(STORM_LOG_INFO, "storm::PutStatusRequest::loadFromDB()",
 									 "No requests found for token %s and the requested SURLs\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No requests found for token " + m_requestToken + " and the requested SURLs\n");
+			throw storm::token_not_found("No requests found for token " + m_requestToken + " and the requested SURLs\n");
 		}
 		else
 		{
 			srmlogit(STORM_LOG_INFO, "storm::PutStatusRequest::loadFromDB()",
 									 "No requests found for token %s\n", m_requestToken.c_str());
-			throw storm::TokenNotFound("No requests found for token " + m_requestToken + "\n");
+			throw storm::token_not_found("No requests found for token " + m_requestToken + "\n");
 		}
 
 	}
@@ -169,7 +169,7 @@ void storm::PutStatusRequest::loadFromDB(struct srm_dbfd* db) throw (storm::Toke
 	}
 }
 
-ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() throw (std::logic_error)
+ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse()
 {
     srmlogit(STORM_LOG_DEBUG, "storm::PutStatusRequest::buildResponse()", "called.\n");
 
@@ -299,7 +299,7 @@ ns1__srmStatusOfPutRequestResponse* storm::PutStatusRequest::buildResponse() thr
     return m_builtResponse;
 }
 
-void storm::PutStatusRequest::addMissingSurls() throw (std::logic_error)
+void storm::PutStatusRequest::addMissingSurls()
 {
 	int index = (m_turls.empty() ? 0 : m_turls.size() - 1);
 

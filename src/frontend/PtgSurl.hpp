@@ -25,11 +25,11 @@
 namespace storm {
 class PtgSurl : public Surl  {
 public:
-	PtgSurl(std::string surl, ns1__TDirOption* dirOption) throw (InvalidSurl) : Surl(surl){
+	PtgSurl(std::string surl, ns1__TDirOption* dirOption): Surl(surl){
 		this->init(dirOption);
 	};
 
-	PtgSurl(std::string& surl) throw (InvalidSurl) : Surl(surl){
+	PtgSurl(std::string& surl) : Surl(surl){
 		this->init(NULL);
 	};
 

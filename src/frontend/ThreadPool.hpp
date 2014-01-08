@@ -95,14 +95,14 @@ private:
 		_thread_pool = new boost::thread[_nThreads];
 
 		int i = 0;
-		char* func = "ThreadPool()";
+
 		try {
 			for (; i < _nThreads; i++) {
 				_thread_pool[i] = boost::thread(boost::bind(&thread_function, &_sq, &_activeThreads, &_mutex,
 						&_stop));
 				idMap.insert(std::make_pair(_thread_pool[i].get_id(), i));
 			}
-		} catch (boost::thread_resource_error e) {
+		} catch (boost::thread_resource_error& e) {
 			_stop = true;
 			for (; i >= 0; i--) {
 				_thread_pool[i].interrupt();

@@ -20,33 +20,20 @@
 
 #include "srmv2H.h"
 #include "sql_string.hpp"
+#include "storm_exception.hpp"
 
 namespace storm {
 
-class InvalidTurl: public std::exception {
-public:
-	InvalidTurl() {}
-
-	InvalidTurl(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char* what() const throw () {
-        return errmsg;
-    }
-private:
-    const char* errmsg;
-};
-
 class Turl {
 public:
-	Turl(std::string const& turl, Surl& surl) throw (InvalidTurl , InvalidSurl) : m_turlString(turl) , m_surl(surl), m_empty(false) {
+	Turl(std::string const& turl, Surl& surl): m_turlString(turl) , m_surl(surl), m_empty(false) {
 		if(turl.empty())
 		{
-			throw InvalidTurl("Unable to create an empty TURL");
+			throw invalid_turl("TURL is empty");
 		}
 	}
 
-	Turl(Surl& surl) throw (InvalidTurl , InvalidSurl) :m_surl(surl) , m_empty(true){
+	Turl(Surl& surl):m_surl(surl) , m_empty(true){
 
 	}
 

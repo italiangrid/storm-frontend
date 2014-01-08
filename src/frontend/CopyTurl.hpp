@@ -24,39 +24,35 @@ namespace storm {
 
 class CopyTurl : public Turl  {
 public:
-	CopyTurl(std::string turl, Surl sourceSurl, std::string destinationSurl, storm_size_t size)
-			throw (InvalidSurl, InvalidTurl) :
+	CopyTurl(std::string turl, Surl sourceSurl, std::string destinationSurl, storm_size_t size):
 			Turl(turl, sourceSurl), m_destinationSURL(destinationSurl), m_fileSize(size), m_estimatedWaitTime(-1), m_remainingFileLifetime(-1) {
 		if(destinationSurl.empty())
 		{
-			throw InvalidSurl("Unable to create a TURL with an empty destination SURL");
+			throw invalid_surl("Unable to create a TURL with an empty destination SURL");
 		}
 	}
 
-	CopyTurl(std::string turl, Surl sourceSurl, std::string destinationSurl)
-			throw (InvalidSurl, InvalidTurl) :
+	CopyTurl(std::string turl, Surl sourceSurl, std::string destinationSurl):
 				Turl(turl, sourceSurl), m_destinationSURL(destinationSurl), m_fileSize(-1), m_estimatedWaitTime(-1), m_remainingFileLifetime(-1) {
 		if(destinationSurl.empty())
 		{
-			throw InvalidSurl("Unable to create a TURL with an empty destination SURL");
+			throw invalid_surl("Unable to create a TURL with an empty destination SURL");
 		}
 	}
 
-	CopyTurl(Surl sourceSurl, std::string destinationSurl, storm_size_t size)
-			throw (InvalidSurl, InvalidTurl) :
+	CopyTurl(Surl sourceSurl, std::string destinationSurl, storm_size_t size):
 			Turl(sourceSurl), m_destinationSURL(destinationSurl), m_fileSize(size), m_estimatedWaitTime(-1), m_remainingFileLifetime(-1) {
 		if(destinationSurl.empty())
 		{
-			throw InvalidSurl("Unable to create a TURL with an empty destination SURL");
+			throw invalid_surl("Unable to create a TURL with an empty destination SURL");
 		}
 	}
 
-	CopyTurl(Surl sourceSurl, std::string destinationSurl)
-			throw (InvalidSurl, InvalidTurl) :
+	CopyTurl(Surl sourceSurl, std::string destinationSurl):
 				Turl(sourceSurl), m_destinationSURL(destinationSurl), m_fileSize(-1), m_estimatedWaitTime(-1), m_remainingFileLifetime(-1) {
 		if(destinationSurl.empty())
 		{
-			throw InvalidSurl("Unable to create a TURL with an empty destination SURL");
+			throw invalid_surl("Unable to create a TURL with an empty destination SURL");
 		}
 	}
 

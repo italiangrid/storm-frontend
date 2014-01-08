@@ -22,12 +22,15 @@
 
 #include "PtpRequest.hpp"
 
+const std::string storm::PtpRequest::NAME = "Prepare to put";
+const std::string storm::PtpRequest::MONITOR_NAME = storm::SRM_PREPARE_TO_PUT_MONITOR_NAME;
+
 bool storm::PtpRequest::supportsProtocolSpecification()
 {
 	return true;
 }
 
-void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req) throw (storm::invalid_request)
+void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req)
 {
     if (NULL == req) {
         throw storm::invalid_request("Request is NULL");
@@ -56,6 +59,7 @@ void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req) throw (storm::inv
 	}
 
     if (NULL != req->userRequestDescription && m_userToken.size() == 0) {
+    	storm::validate_request_description(req->userRequestDescription);
     	m_userToken = sql_string(req->userRequestDescription);
     }
 
@@ -106,7 +110,7 @@ void storm::PtpRequest::load(ns1__srmPrepareToPutRequest* req) throw (storm::inv
     }
 }
 
-ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse() throw (std::logic_error , storm::InvalidResponse) {
+ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse(){
 
 	if(m_builtResponse != NULL)
 	{
@@ -117,7 +121,7 @@ ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse() throw (std::lo
     	m_builtResponse = storm::soap_calloc<ns1__srmPrepareToPutResponse>(m_soapRequest);
     	m_builtResponse->returnStatus = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 	} catch (std::invalid_argument& exc) {
-		throw storm::InvalidResponse("Unable to allocate memory for the response. invalid_argument Exception: "
+		throw storm::invalid_response("Unable to allocate memory for the response. invalid_argument Exception: "
 				+ std::string(exc.what()));
 	}
     m_builtResponse->returnStatus->statusCode = m_status;
@@ -132,7 +136,7 @@ ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse() throw (std::lo
         m_builtResponse->arrayOfFileStatuses->statusArray = storm::soap_calloc<ns1__TPutRequestFileStatus>(
         		m_soapRequest, m_surls.size());
     } catch (std::invalid_argument& exc) {
-		throw storm::InvalidResponse("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
+		throw storm::storm_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
 	}
 	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = m_surls.size();
 
@@ -145,7 +149,7 @@ ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse() throw (std::lo
 		{
 			fileStatus = storm::soap_calloc<ns1__TPutRequestFileStatus>(m_soapRequest);
 		} catch (std::invalid_argument& exc) {
-				throw storm::InvalidResponse("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
+				throw storm::storm_error("Unable to allocate memory for a file status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		m_builtResponse->arrayOfFileStatuses->statusArray[index] = fileStatus;
 		storm::PtpSurl* surl = dynamic_cast<storm::PtpSurl*> (i->get());
@@ -164,7 +168,7 @@ ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse() throw (std::lo
 		{
 			fileStatus->status = storm::soap_calloc<ns1__TReturnStatus>(m_soapRequest);
 		} catch (std::invalid_argument& exc) {
-				throw storm::InvalidResponse("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
+				throw storm::storm_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
 		}
 		fileStatus->status->statusCode = surl->getStatus();
 		fileStatus->status->explanation = soap_strdup(m_soapRequest, surl->getExplanation().c_str());
@@ -355,12 +359,3 @@ void storm::PtpRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_erro
     // attribute using the requestID
 
 }
-/*
-void storm::PtpRequest::failRequest(std::string explaination) {
-	this->status = SRM_USCOREFAILURE;
-	this->explanation = explaination;
-    for (int i = 0; i < surls.size(); i++) {
-    	((storm::PtpSurl)surls.at(i)).setStatus(SRM_USCOREFAILURE);
-    }
-}
-*/

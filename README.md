@@ -54,9 +54,6 @@ Install the following required packages:
 * gcc
 * gcc-c++
 * make
-* automake
-* autoconf
-* libtool
 * gsoap-devel
 * curl-devel
 * mysql-devel
@@ -69,7 +66,6 @@ Install the following required packages:
 * storm-xmlrpc-c-devel
 * argus-pep-api-c
 * argus-pep-api-c-devel
-* rpm-build
 
 SL6 only:
 
@@ -82,12 +78,21 @@ SL5 only:
 
 #### Build commands
 
+##### SL5 
+
 ```bash
-./bootstrap
-./configure 
+LDFLAGS=-L/usr/lib64/boost141 ./configure --with-boost=/usr/include/boost141 
 make
-make rpm
 ```
+
+#### SL6
+
+```bash
+./configure
+make
+```
+Use the `--enable-debug` configure flag to include debugging symbols and turn
+off optimization during development.
 
 # Contact info
 

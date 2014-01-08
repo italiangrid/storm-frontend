@@ -39,13 +39,13 @@ unsigned int ProtocolChecker::init(char*** protocolList, unsigned int protocolLi
 	srmlogit(STORM_LOG_DEBUG, func, "ProtocolChecker initialization completed\n");
 }
 
-int ProtocolChecker::checkProtocols(std::vector<sql_string>* protocolVector)
+int ProtocolChecker::checkProtocols(std::vector<sql_string> const & protocolVector)
 {
 	const char* func = "ProtocolChecker::checkProtocols<>";
 	srmlogit(STORM_LOG_DEBUG, func, "Checking the provided protocols against supported ones\n");
 
-	for (std::vector<sql_string>::iterator it = protocolVector->begin(); it
-				!= protocolVector->end(); ++it) {
+	for (std::vector<sql_string>::const_iterator it = protocolVector.begin(); it
+				!= protocolVector.end(); ++it) {
 
 		std::ostringstream oss;
 		oss << *it;
@@ -63,13 +63,13 @@ int ProtocolChecker::checkProtocols(std::vector<sql_string>* protocolVector)
 	return 0;
 }
 
-std::vector<sql_string> ProtocolChecker::removeUnsupportedProtocols(std::vector<sql_string>* protocolVector)
+std::vector<sql_string> ProtocolChecker::removeUnsupportedProtocols(std::vector<sql_string> const & protocolVector)
 {
 	const char* func = "ProtocolChecker::removeUnsupportedProtocols<>";
 	srmlogit(STORM_LOG_DEBUG, func, "Removing unsupported protocols from the provided list\n");
 	std::vector<sql_string> filteredProtocolVector;
-	for (std::vector<sql_string>::iterator it = protocolVector->begin(); it
-				!= protocolVector->end(); ++it)
+	for (std::vector<sql_string>::const_iterator it = protocolVector.begin(); it
+				!= protocolVector.end(); ++it)
 	{
 		std::ostringstream oss;
 		oss << *it;
