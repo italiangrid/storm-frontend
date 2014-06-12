@@ -640,7 +640,7 @@ int srmAudit(const char *msg, ...) {
 	}
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(audit_mutex);
-    size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
+    size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), audit_fd);
     if (written_bytes < strlen(prtbuf)){
 
     	// TODO: This will likely never happen, but we should print something...
