@@ -47,7 +47,8 @@ using namespace storm::authz;
 
 static std::string const DEFAULT_AUTHORIZATION_RESOURCE = "StoRM";
 static std::string const DEFAULT_AUTHORIZATION_ACTION = "access";
-static std::string const DEFAULT_AUTHORIZATION_PROFILE = "http://glite.org/xacml/profile/grid-wn/1.0";
+static std::string const DEFAULT_AUTHORIZATION_PROFILE =
+    "http://glite.org/xacml/profile/grid-wn/1.0";
 
 static boost::thread_specific_ptr<PEP> pep_handle(pep_destroy);
 
@@ -104,7 +105,9 @@ void printXACMLObligation(xacml_obligation_t * obligation) {
   srmlogit(STORM_LOG_DEBUG, __func__, "Obligation id: %s\n",
            xacml_obligation_getid(obligation));
   srmlogit(STORM_LOG_DEBUG, __func__, "Obligation fulfillOn: %s\n",
-           fulfillon_tostring(xacml_obligation_getfulfillon(obligation)).c_str());
+           fulfillon_tostring(
+               xacml_obligation_getfulfillon(obligation)
+           ).c_str());
 
   size_t attrsLength = xacml_obligation_attributeassignments_length(
       obligation);
@@ -159,7 +162,8 @@ static void printXACMLResult(xacml_result_t * result) {
   for (int i = 0; i < obligationsLength; i++) {
     //we do not manage obligations
     srmlogit(STORM_LOG_DEBUG, __func__,
-             "Printing the content of an Obligation received. It will not be considered\n");
+             "Printing the content of an Obligation received. "
+             "It will not be considered\n");
     printXACMLObligation(xacml_result_getobligation(result, i));
   }
   srmlogit(STORM_LOG_DEBUG, __func__, "----Result END----\n");
@@ -179,7 +183,8 @@ create_xacml_subject(std::string const& subjectid) {
   AttributePtr subject_attr_id = make_attribute(XACML_SUBJECT_KEY_INFO);
 
   if (!subject_attr_id) {
-    authz_failure(boost::format("Error creating XACML subject attribute: %s") % XACML_SUBJECT_KEY_INFO);
+    authz_failure(boost::format("Error creating XACML subject attribute: %s")
+                  % XACML_SUBJECT_KEY_INFO);
   }
 
   if (xacml_attribute_setdatatype(subject_attr_id.get(),
@@ -188,13 +193,19 @@ create_xacml_subject(std::string const& subjectid) {
                   % XACML_DATATYPE_STRING);
   }
 
-  if (xacml_attribute_addvalue(subject_attr_id.get(), subjectid.c_str()) != PEP_XACML_OK) {
+  if (xacml_attribute_addvalue(
+          subject_attr_id.get(),
+          subjectid.c_str()
+      ) != PEP_XACML_OK) {
     authz_failure(
         boost::format("Error setting XACML subject attribute value: %s")
         % subjectid);
   }
 
-  if (xacml_subject_addattribute(subject.get(), release_raw_pointer(subject_attr_id)) != PEP_XACML_OK) {
+  if (xacml_subject_addattribute(
+          subject.get(),
+          release_raw_pointer(subject_attr_id)
+      ) != PEP_XACML_OK) {
     authz_failure("Error setting XACML subject attribute");
   }
 
@@ -220,14 +231,20 @@ create_xacml_resource(std::string const& resourceid) {
         % XACML_RESOURCE_ID);
   }
 
-  if (xacml_attribute_addvalue(resource_attr_id.get(), resourceid.c_str()) != PEP_XACML_OK) {
+  if (xacml_attribute_addvalue(
+          resource_attr_id.get(),
+          resourceid.c_str()
+      ) != PEP_XACML_OK) {
     authz_failure(
         boost::format("Error setting XACML resource attribute value: %s")
         % resourceid
     );
   }
 
-  if (xacml_resource_addattribute(resource.get(), release_raw_pointer(resource_attr_id)) != PEP_XACML_OK) {
+  if (xacml_resource_addattribute(
+          resource.get(),
+          release_raw_pointer(resource_attr_id)
+      ) != PEP_XACML_OK) {
     authz_failure("Error adding XACML resource attribute.");
   }
 
@@ -253,13 +270,19 @@ create_xacml_action(std::string const& actionid) {
         % XACML_ACTION_ID);
   }
 
-  if (xacml_attribute_addvalue(action_attr_id.get(), actionid.c_str()) != PEP_XACML_OK) {
+  if (xacml_attribute_addvalue(
+          action_attr_id.get(),
+          actionid.c_str()
+      ) != PEP_XACML_OK) {
     authz_failure(
         boost::format("Error setting XACML action attribute value: %s")
         % actionid);
   }
 
-  if (xacml_action_addattribute(action.get(), release_raw_pointer(action_attr_id)) != PEP_XACML_OK) {
+  if (xacml_action_addattribute(
+          action.get(),
+          release_raw_pointer(action_attr_id)
+      ) != PEP_XACML_OK) {
     authz_failure("Error adding XACML action attribute");
   }
 
@@ -276,19 +299,25 @@ create_xacml_environment_profile(std::string const& profileid) {
   if (!environment) {
     authz_failure("Cannot create XACML Environment.");
   }
-  AttributePtr profile_attr_id = make_attribute(XACML_GRIDWN_ATTRIBUTE_PROFILE_ID);
+  AttributePtr profile_attr_id =
+      make_attribute(XACML_GRIDWN_ATTRIBUTE_PROFILE_ID);
 
   if (!profile_attr_id) {
     authz_failure("Cannot create XACML Profile.");
   }
 
-  if (xacml_attribute_addvalue(profile_attr_id.get(), profileid.c_str()) != PEP_XACML_OK) {
+  if (xacml_attribute_addvalue(
+          profile_attr_id.get(),
+          profileid.c_str()
+      ) != PEP_XACML_OK) {
     authz_failure(boost::format("Error creating XACML profile object. %s") %
                   profileid);
   }
 
-  if (xacml_environment_addattribute(environment.get(),
-                                     release_raw_pointer(profile_attr_id)) != PEP_XACML_OK) {
+  if (xacml_environment_addattribute(
+          environment.get(),
+          release_raw_pointer(profile_attr_id)
+      ) != PEP_XACML_OK) {
     authz_failure("Error setting XACML profile attribute.");
   }
 
@@ -307,19 +336,31 @@ assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
     authz_failure("Error creating XACML request.");
   }
 
-  if (xacml_request_addsubject(request.get(), release_raw_pointer(subject)) != PEP_XACML_OK) {
+  if (xacml_request_addsubject(
+          request.get(),
+          release_raw_pointer(subject)
+      ) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request subject.");
   }
 
-  if (xacml_request_addresource(request.get(), release_raw_pointer(resource)) != PEP_XACML_OK) {
+  if (xacml_request_addresource(
+          request.get(),
+          release_raw_pointer(resource)
+      ) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request resource.");
   }
 
-  if (xacml_request_setaction(request.get(), release_raw_pointer(action)) != PEP_XACML_OK) {
+  if (xacml_request_setaction(
+          request.get(),
+          release_raw_pointer(action)
+      ) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request action.");
   }
 
-  if (xacml_request_setenvironment(request.get(), release_raw_pointer(environment)) != PEP_XACML_OK) {
+  if (xacml_request_setenvironment(
+          request.get(),
+          release_raw_pointer(environment)
+      ) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request environment.");
   }
 
@@ -328,17 +369,19 @@ assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
 
 static 
 RequestPtr
-create_xacml_request(std::string const& subject_value, std::string const& resourceid,
-                     std::string const& actionid) {
+create_xacml_request(
+    std::string const& subject_value,
+    std::string const& resourceid,
+    std::string const& actionid
+) {
 
   SubjectPtr subject = create_xacml_subject(subject_value);
   ResourcePtr resource = create_xacml_resource(resourceid);
   ActionPtr action = create_xacml_action(actionid);
-  EnvironmentPtr environment = create_xacml_environment_profile(DEFAULT_AUTHORIZATION_PROFILE);
+  EnvironmentPtr environment =
+      create_xacml_environment_profile(DEFAULT_AUTHORIZATION_PROFILE);
 
-  RequestPtr request = assemble_xacml_request(subject, resource, action, environment);
-
-  return request;
+  return assemble_xacml_request(subject, resource, action, environment);
 }
 
 static xacml_decision_t process_xacml_response(
@@ -382,7 +425,8 @@ static xacml_decision_t process_xacml_response(
 
     } else {
       srmlogit(STORM_LOG_DEBUG, __func__,
-               "Printing the content of a further response. It will not be considered\n");
+               "Printing the content of a further response. "
+               "It will not be considered\n");
 
       printXACMLResult(result);
     }
@@ -407,8 +451,10 @@ get_gsi_credential_from_soap(soap* soap){
 
   gss_ctx_id_t gss_context = data->context_handle;
   if (! gss_context ){
-    srmlogit(STORM_LOG_ERROR, __func__,"Error extracting context from CGSI plugin: null context!\n");
-    throw storm::authorization_error("Error extracting context from CGSI plugin: null context!\n");
+    srmlogit(STORM_LOG_ERROR, __func__,
+             "Error extracting context from CGSI plugin: null context!\n");
+    throw storm::authorization_error(
+        "Error extracting context from CGSI plugin: null context!\n");
   }
 
   gss_cred_id_t gss_cred = (gss_cred_id_t) gss_context->peer_cred_handle;
@@ -491,7 +537,8 @@ static void
 set_pep_option(pep_option opt, std::string const& value){
   pep_error_t pep_rc = pep_setoption(pep_handle.get(), opt, value.c_str());
   if (pep_rc != PEP_OK){
-    authz_failure(boost::format("Error setting pep option: %s") % pep_strerror(pep_rc));
+    authz_failure(boost::format("Error setting pep option: %s")
+                  % pep_strerror(pep_rc));
   }
 }
 
@@ -562,15 +609,15 @@ bool is_blacklisted(soap* soap){
     make_pep();
   }
 
-  RequestPtr request_tmp = create_xacml_request(pem_chain, 
-                                            resource_id,
-                                            DEFAULT_AUTHORIZATION_ACTION);
+  RequestPtr request_tmp =
+      create_xacml_request(pem_chain, resource_id, DEFAULT_AUTHORIZATION_ACTION);
 
   xacml_response_t* response_ptr = 0;
 
   xacml_request_t* request_ptr = release_raw_pointer(request_tmp);
 
-  pep_error_t pep_rc = pep_authorize(pep_handle.get(), &request_ptr, &response_ptr);
+  pep_error_t pep_rc =
+      pep_authorize(pep_handle.get(), &request_ptr, &response_ptr);
 
   boost::shared_ptr<xacml_request_t> request(request_ptr,
                                              xacml_request_delete);
