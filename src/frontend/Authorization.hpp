@@ -16,28 +16,16 @@
 #ifndef AUTHORIZATION_HPP_
 #define AUTHORIZATION_HPP_
 
-#include <argus/pep.h>
-#include <string>
-#include <boost/thread/tss.hpp>
-
-#include "FrontendConfiguration.hpp"
-#include "srmlogit.h"
-#include "storm_exception.hpp"
-#include "srmv2H.h"
+class soap;
 
 namespace storm {
 
   namespace authz {
-
-    const std::string DEFAULT_AUTHORIZATION_RESOURCE = "StoRM";
-    const std::string DEFAULT_AUTHORIZATION_ACTION = "access";
-    const std::string DEFAULT_AUTHORIZATION_PROFILE = "http://glite.org/xacml/profile/grid-wn/1.0";
-
 
     bool is_blacklisted(soap* soap);
 
   }
 
 }
-#endif /*AUTHORIZATION_HPP_*/
 
+#endif /*AUTHORIZATION_HPP_*/
