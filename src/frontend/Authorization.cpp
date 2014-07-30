@@ -242,15 +242,16 @@ create_xacml_resource(std::string const& resourceid) {
   return resource;
 }
 
+typedef boost::shared_ptr<xacml_action_t> ActionPtr;
 
-static xacml_action_t*
+static ActionPtr
 create_xacml_action(std::string const& actionid) {
 
   assert(!actionid.empty());
 
-  xacml_action_t * action = xacml_action_create();
+  ActionPtr action(xacml_action_create(), xacml_action_delete);
 
-  if (action == NULL) {
+  if (!action) {
     authz_failure("Error creating XAMCL action.");
   }
 
@@ -258,7 +259,6 @@ create_xacml_action(std::string const& actionid) {
       XACML_ACTION_ID);
 
   if (action_attr_id == NULL) {
-    xacml_action_delete(action);
     authz_failure(
         boost::format("Error creating XACML action attribute: %s")
         % XACML_ACTION_ID);
@@ -266,17 +266,16 @@ create_xacml_action(std::string const& actionid) {
 
   if (xacml_attribute_addvalue(action_attr_id, actionid.c_str()) != PEP_XACML_OK) {
     xacml_attribute_delete(action_attr_id);
-    xacml_action_delete(action);
     authz_failure(
         boost::format("Error setting XACML action attribute value: %s")
         % actionid);
   }
 
-  if (xacml_action_addattribute(action, action_attr_id) != PEP_XACML_OK) {
+  if (xacml_action_addattribute(action.get(), action_attr_id) != PEP_XACML_OK) {
     xacml_attribute_delete(action_attr_id);
-    xacml_action_delete(action);
     authz_failure("Error adding XACML action attribute");
   }
+
   return action;
 }
 
@@ -316,7 +315,7 @@ create_xacml_environment_profile(std::string const& profileid) {
 
 static xacml_request_t*
 assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
-                       xacml_action_t * action, xacml_environment_t * environment) {
+                       ActionPtr action, xacml_environment_t * environment) {
 
   assert(subject && resource && action && environment);
 
@@ -336,7 +335,7 @@ assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
     authz_failure("Error adding XACML request resource.");
   }
 
-  if (xacml_request_setaction(request, action) != PEP_XACML_OK) {
+  if (xacml_request_setaction(request, action.get()) != PEP_XACML_OK) {
     xacml_request_delete(request);
     authz_failure("Error adding XACML request action.");
   }
@@ -356,14 +355,7 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
 
   SubjectPtr subject = create_xacml_subject(subject_value);
   ResourcePtr resource = create_xacml_resource(resourceid);
-
-  xacml_action_t * action;
-  try {
-    action = create_xacml_action(actionid);
-
-  } catch (storm::authorization_error &e) {
-    throw e;
-  }
+  ActionPtr action = create_xacml_action(actionid);
 
   xacml_environment_t * environment;
   try {
@@ -371,7 +363,6 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
         DEFAULT_AUTHORIZATION_PROFILE);
 
   } catch (storm::authorization_error &e) {
-    xacml_action_delete(action);
     throw e;
   }
 
@@ -382,7 +373,6 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
 
   } catch (storm::authorization_error &e) {
     xacml_environment_delete(environment);
-    xacml_action_delete(action);
     throw e;
   }
 
