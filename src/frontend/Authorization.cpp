@@ -295,35 +295,31 @@ create_xacml_environment_profile(std::string const& profileid) {
   return environment;
 }
 
-static xacml_request_t*
+static RequestPtr
 assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
                        ActionPtr action, EnvironmentPtr environment) {
 
   assert(subject && resource && action && environment);
 
-  xacml_request_t * request = xacml_request_create();
+  RequestPtr request = make_request();
 
-  if (request == NULL) {
+  if (!request) {
     authz_failure("Error creating XACML request.");
   }
 
-  if (xacml_request_addsubject(request, subject.get()) != PEP_XACML_OK) {
-    xacml_request_delete(request);
+  if (xacml_request_addsubject(request.get(), release_raw_pointer(subject)) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request subject.");
   }
 
-  if (xacml_request_addresource(request, resource.get()) != PEP_XACML_OK) {
-    xacml_request_delete(request);
+  if (xacml_request_addresource(request.get(), release_raw_pointer(resource)) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request resource.");
   }
 
-  if (xacml_request_setaction(request, action.get()) != PEP_XACML_OK) {
-    xacml_request_delete(request);
+  if (xacml_request_setaction(request.get(), release_raw_pointer(action)) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request action.");
   }
 
-  if (xacml_request_setenvironment(request, environment.get()) != PEP_XACML_OK) {
-    xacml_request_delete(request);
+  if (xacml_request_setenvironment(request.get(), release_raw_pointer(environment)) != PEP_XACML_OK) {
     authz_failure("Error adding XACML request environment.");
   }
 
@@ -331,7 +327,7 @@ assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
 }
 
 static 
-xacml_request_t*
+RequestPtr
 create_xacml_request(std::string const& subject_value, std::string const& resourceid,
                      std::string const& actionid) {
 
@@ -340,7 +336,7 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
   ActionPtr action = create_xacml_action(actionid);
   EnvironmentPtr environment = create_xacml_environment_profile(DEFAULT_AUTHORIZATION_PROFILE);
 
-  xacml_request_t* request = assemble_xacml_request(subject, resource, action, environment);
+  RequestPtr request = assemble_xacml_request(subject, resource, action, environment);
 
   return request;
 }
@@ -566,15 +562,17 @@ bool is_blacklisted(soap* soap){
     make_pep();
   }
 
-  xacml_request_t * request_ptr = create_xacml_request(pem_chain, 
-                                                       resource_id,
-                                                       DEFAULT_AUTHORIZATION_ACTION);
+  RequestPtr request_tmp = create_xacml_request(pem_chain, 
+                                            resource_id,
+                                            DEFAULT_AUTHORIZATION_ACTION);
 
-  xacml_response_t *response_ptr = 0;
+  xacml_response_t* response_ptr = 0;
+
+  xacml_request_t* request_ptr = release_raw_pointer(request_tmp);
 
   pep_error_t pep_rc = pep_authorize(pep_handle.get(), &request_ptr, &response_ptr);
 
-  boost::shared_ptr<xacml_request_t> request(request_ptr, 
+  boost::shared_ptr<xacml_request_t> request(request_ptr,
                                              xacml_request_delete);
 
   boost::shared_ptr<xacml_response_t> response(response_ptr,

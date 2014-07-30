@@ -61,6 +61,7 @@ typedef boost::shared_ptr<xacml_action_t> ActionPtr;
 typedef boost::shared_ptr<xacml_resource_t> ResourcePtr;
 typedef boost::shared_ptr<xacml_environment_t> EnvironmentPtr;
 typedef boost::shared_ptr<xacml_attribute_t> AttributePtr;
+typedef boost::shared_ptr<xacml_request_t> RequestPtr;
 
 inline SubjectPtr make_subject()
 {
@@ -85,6 +86,11 @@ inline EnvironmentPtr make_environment()
 inline AttributePtr make_attribute(char const* attribute_id)
 {
   return AttributePtr(xacml_attribute_create(attribute_id), make_deleter(xacml_attribute_delete));
+}
+
+inline RequestPtr make_request()
+{
+  return RequestPtr(xacml_request_create(), make_deleter(xacml_request_delete));
 }
 
 }}
