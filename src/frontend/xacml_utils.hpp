@@ -75,17 +75,26 @@ inline ActionPtr make_action()
 
 inline ResourcePtr make_resource()
 {
-  return ResourcePtr(xacml_resource_create(), make_deleter(xacml_resource_delete));
+  return
+      ResourcePtr(xacml_resource_create(), make_deleter(xacml_resource_delete));
 }
 
 inline EnvironmentPtr make_environment()
 {
-  return EnvironmentPtr(xacml_environment_create(), make_deleter(xacml_environment_delete));
+  return
+      EnvironmentPtr(
+          xacml_environment_create(),
+          make_deleter(xacml_environment_delete)
+      );
 }
 
 inline AttributePtr make_attribute(char const* attribute_id)
 {
-  return AttributePtr(xacml_attribute_create(attribute_id), make_deleter(xacml_attribute_delete));
+  return
+      AttributePtr(
+          xacml_attribute_create(attribute_id),
+          make_deleter(xacml_attribute_delete)
+      );
 }
 
 inline RequestPtr make_request()
