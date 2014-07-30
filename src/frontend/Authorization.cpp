@@ -204,14 +204,16 @@ create_xacml_subject(std::string const& subjectid) {
   return subject;
 }
 
-static xacml_resource_t*
+typedef boost::shared_ptr<xacml_resource_t> ResourcePtr;
+
+static ResourcePtr
 create_xacml_resource(std::string const& resourceid) {
 
   assert(!resourceid.empty());
 
-  xacml_resource_t* resource = xacml_resource_create();
+  ResourcePtr resource(xacml_resource_create(), xacml_resource_delete);
 
-  if (resource == NULL) {
+  if (!resource) {
     authz_failure("Error creating XACML resource.");
   }
 
@@ -219,7 +221,6 @@ create_xacml_resource(std::string const& resourceid) {
       XACML_RESOURCE_ID);
 
   if (resource_attr_id == NULL) {
-    xacml_resource_delete(resource);
     authz_failure(
         boost::format("Error creating XACML resource attribute: %s")
         % XACML_RESOURCE_ID);
@@ -227,16 +228,14 @@ create_xacml_resource(std::string const& resourceid) {
 
   if (xacml_attribute_addvalue(resource_attr_id, resourceid.c_str()) != PEP_XACML_OK) {
     xacml_attribute_delete(resource_attr_id);
-    xacml_resource_delete(resource);
     authz_failure(
         boost::format("Error setting XACML resource attribute value: %s")
         % resourceid
     );
   }
 
-  if (xacml_resource_addattribute(resource, resource_attr_id) != PEP_XACML_OK) {
+  if (xacml_resource_addattribute(resource.get(), resource_attr_id) != PEP_XACML_OK) {
     xacml_attribute_delete(resource_attr_id);
-    xacml_resource_delete(resource);
     authz_failure("Error adding XACML resource attribute.");
   }
 
@@ -316,7 +315,7 @@ create_xacml_environment_profile(std::string const& profileid) {
 }
 
 static xacml_request_t*
-assemble_xacml_request(SubjectPtr subject, xacml_resource_t * resource,
+assemble_xacml_request(SubjectPtr subject, ResourcePtr resource,
                        xacml_action_t * action, xacml_environment_t * environment) {
 
   assert(subject && resource && action && environment);
@@ -332,7 +331,7 @@ assemble_xacml_request(SubjectPtr subject, xacml_resource_t * resource,
     authz_failure("Error adding XACML request subject.");
   }
 
-  if (xacml_request_addresource(request, resource) != PEP_XACML_OK) {
+  if (xacml_request_addresource(request, resource.get()) != PEP_XACML_OK) {
     xacml_request_delete(request);
     authz_failure("Error adding XACML request resource.");
   }
@@ -356,19 +355,13 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
                      std::string const& actionid) {
 
   SubjectPtr subject = create_xacml_subject(subject_value);
-  xacml_resource_t * resource = 0;
+  ResourcePtr resource = create_xacml_resource(resourceid);
 
-  try {
-    resource = create_xacml_resource(resourceid);
-  } catch (storm::authorization_error& e) {
-    throw e;
-  }
   xacml_action_t * action;
   try {
     action = create_xacml_action(actionid);
 
   } catch (storm::authorization_error &e) {
-    xacml_resource_delete(resource);
     throw e;
   }
 
@@ -379,7 +372,6 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
 
   } catch (storm::authorization_error &e) {
     xacml_action_delete(action);
-    xacml_resource_delete(resource);
     throw e;
   }
 
@@ -391,7 +383,6 @@ create_xacml_request(std::string const& subject_value, std::string const& resour
   } catch (storm::authorization_error &e) {
     xacml_environment_delete(environment);
     xacml_action_delete(action);
-    xacml_resource_delete(resource);
     throw e;
   }
 
