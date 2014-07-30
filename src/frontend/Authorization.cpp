@@ -13,18 +13,31 @@
  * limitations under the License.
  */
 
-#include <cgsi_plugin.h>
-#include <argus/pep.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "Authorization.hpp"
-
-#include "srmlogit.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <boost/format.hpp>
 
+#include <globus_common.h>
+#include <gssapi.h>
+#include <globus_gsi_credential.h>
+#include <globus_gss_assist.h>
+#include <globus_gss_assist.h>
+#include <globus_gridmap_callout_error.h>
+
+#include "gssapi_openssl.h"
+#include "cgsi_plugin_int.h"
+
+#include <argus/pep.h>
+
+#include "Authorization.hpp"
+#include "srmlogit.h"
+
 #define authz_failure(msg)  log_failure_and_throw_authz_error( __func__ , msg )
+
+using boost::format;
+
+static boost::thread_specific_ptr<PEP> pep_handle(pep_destroy);
 
 static void log_failure_and_throw_authz_error(const char* func,
 		const std::string& msg) {
@@ -71,6 +84,7 @@ static std::string fulfillon_tostring(xacml_fulfillon_t fulfillon) {
 		authz_failure("Unsupported xacml_fulfillon_t received.");
 	}
 }
+
 static
 void printXACMLObligation(xacml_obligation_t * obligation) {
 
@@ -138,6 +152,7 @@ static void printXACMLResult(xacml_result_t * result) {
 	}
 	srmlogit(STORM_LOG_DEBUG, __func__, "----Result END----\n");
 }
+
 static xacml_subject_t*
 create_xacml_subject(const char * subjectid) {
 
@@ -343,7 +358,8 @@ assemble_xacml_request(xacml_subject_t * subject, xacml_resource_t * resource,
 	return request;
 }
 
-static xacml_request_t*
+static 
+xacml_request_t*
 create_xacml_request(const char * subject_value, const char * resourceid,
 		const char * actionid) {
 
@@ -369,7 +385,7 @@ create_xacml_request(const char * subject_value, const char * resourceid,
 	xacml_environment_t * environment;
 	try {
 		environment = create_xacml_environment_profile(
-				storm::DEFAULT_AUTHORIZATION_PROFILE.c_str());
+				storm::authz::DEFAULT_AUTHORIZATION_PROFILE.c_str());
 
 	} catch (storm::authorization_error &e) {
 		xacml_action_delete(action);
@@ -390,18 +406,19 @@ create_xacml_request(const char * subject_value, const char * resourceid,
 		xacml_subject_delete(subject);
 		throw e;
 	}
+
 	return request;
 }
 
 static xacml_decision_t process_xacml_response(
-		const xacml_response_t * response) {
+    boost::shared_ptr<xacml_response_t> response) {
 
-	if (response == NULL) {
+	if (!response) {
 		authz_failure("Cannot process a NULL xacml response.");
 	}
 
 	xacml_decision_t decision;
-	size_t results_length = xacml_response_results_length(response);
+	size_t results_length = xacml_response_results_length(response.get());
 	srmlogit(STORM_LOG_DEBUG, __func__, "Response: %d results\n",
 			static_cast<int>(results_length));
 
@@ -421,7 +438,7 @@ static xacml_decision_t process_xacml_response(
 		xacml_status_t * status = 0;
 		xacml_statuscode_t * statuscode = 0, *subcode = 0;
 
-		result = xacml_response_getresult(response, i);
+		result = xacml_response_getresult(response.get(), i);
 
 		if (i == 0) {
 			decision = xacml_result_getdecision(result);
@@ -443,167 +460,203 @@ static xacml_decision_t process_xacml_response(
 	return decision;
 }
 
-bool storm::Authorization::checkBlacklist(struct soap* soap) {
+static
+globus_gsi_cred_handle_t 
+get_gsi_credential_from_soap(soap* soap){
 
-	bool response = false;
-	if (FrontendConfiguration::getInstance()->getUserCheckBlacklist()) {
-		FullCredentials cred(soap);
-		Authorization auth((FullCredentials*) &cred);
-		response = auth.isBlacklisted();
-	}
+  static const char* CGSI_PLUGIN_ID = "CGSI_PLUGIN_SERVER_1.0";
 
-	return response;
+  struct cgsi_plugin_data *data =
+    (struct cgsi_plugin_data*) soap_lookup_plugin(soap, CGSI_PLUGIN_ID);
+
+  if (! data ){
+    srmlogit(STORM_LOG_ERROR, __func__,"CGSI plugin not found!\n");
+    throw storm::authorization_error("CGSI plugin not found!");
+  }
+
+  gss_ctx_id_t gss_context = data->context_handle;
+  if (! gss_context ){
+    srmlogit(STORM_LOG_ERROR, __func__,"Error extracting context from CGSI plugin: null context!\n");
+    throw storm::authorization_error("Error extracting context from CGSI plugin: null context!\n");
+  }
+
+  gss_cred_id_t gss_cred = (gss_cred_id_t) gss_context->peer_cred_handle;
+
+  if ( gss_cred == GSS_C_NO_CREDENTIAL ) {
+    throw storm::authorization_error("No GSS credential found!");
+  }
+
+  return gss_cred->cred_handle;
 }
 
-storm::Authorization::~Authorization() {
-	pep_destroy(pep);
+static void
+release_chain(STACK_OF(X509) *chain){
+  sk_X509_pop_free(chain,X509_free);
 }
 
-storm::Authorization::Authorization(FullCredentials *cred) :
-		m_argusResourceId(DEFAULT_AUTHORIZATION_RESOURCE), credentials(cred) {
+static
+std::string 
+get_pem_from_cred_handle(const globus_gsi_cred_handle_t cred){
 
-	using boost::format;
-	using boost::str;
-	blacklistRequested =
-			FrontendConfiguration::getInstance()->getUserCheckBlacklist();
+  STACK_OF(X509) *chain_ptr = 0;
 
-	if (blacklistRequested) {
-		srmlogit(STORM_LOG_DEBUG, __func__, "Using %s\n", pep_version());
-		pep = pep_initialize();
+  if (globus_gsi_cred_get_cert_chain(cred, &chain_ptr)) {
+    throw storm::authorization_error("globus_gsi_cred_get_cert_chain failed!");
+  }
 
-		if (pep == NULL) {
-			authz_failure("Failed to create PEP client.");
-		}
+  boost::shared_ptr<STACK_OF(X509)> chain(chain_ptr,release_chain);
 
-		std::string argusPepdEndpoint =
-				FrontendConfiguration::getInstance()->getArgusPepdEndpoint();
-		if (argusPepdEndpoint.empty()) {
-			authz_failure("No ARGUS PEPD endpoint configured.");
-		}
+  X509 *cert_ptr = 0;
 
-		pep_error_t pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_URL,
-				argusPepdEndpoint.c_str());
+  if (globus_gsi_cred_get_cert(cred, &cert_ptr)) {
+    throw storm::authorization_error("globus_gsi_cred_get_cert failed!");
+  }
+  
+  boost::shared_ptr<X509> cert(cert_ptr,X509_free);
 
-		if (pep_rc != PEP_OK) {
-			authz_failure(
-					format("Error initializing Argus PEPD endpoint: %s. %s")
-							% argusPepdEndpoint % pep_strerror(pep_rc));
-		}
+  boost::shared_ptr<BIO> bio(BIO_new(BIO_s_mem()), BIO_free);
 
-		std::string hostKey =
-				FrontendConfiguration::getInstance()->getHostKeyFile();
-		if (hostKey.empty()) {
-			authz_failure("host certificate private key misconfigured.");
-		}
+  if (!bio) {
+    throw storm::authorization_error("BIO_new() failed!");
+  }
 
-		pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_CLIENT_KEY,
-				hostKey.c_str());
-		if (pep_rc != PEP_OK) {
-			authz_failure(
-					format("Error setting client key: %s. %s") % hostKey
-							% pep_strerror(pep_rc));
-		}
+  if (!PEM_write_bio_X509(bio.get(),cert.get())) {
+    throw storm::authorization_error("PEM_write_bio_X509() failed!");
+  }
 
-		std::string hostCert =
-				FrontendConfiguration::getInstance()->getHostCertFile();
+  const int chain_size = sk_X509_num(chain.get());
 
-		if (hostCert.empty()) {
-			authz_failure("host certificate is misconfigured.");
-		}
+  for (int i=0; i < chain_size; i++){
+    X509 *chain_ele = sk_X509_value(chain.get(),i);
 
-		pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_CLIENT_CERT,
-				hostCert.c_str());
+    if (!chain_ele) break;
 
-		if (pep_rc != PEP_OK) {
-			authz_failure(
-					format("Error setting host certificate: %s. %s") % hostCert
-							% pep_strerror(pep_rc));
-		}
+    if (!PEM_write_bio_X509(bio.get(), chain_ele)){
+      throw storm::authorization_error("PEM_write_bio_X509() failed!");
+    }
+  }
+  
+  char* pem_chain_buf = 0;
+  long pem_chain_buf_len = BIO_get_mem_data(bio.get(),&pem_chain_buf);
 
-		std::string caCertFolder =
-				FrontendConfiguration::getInstance()->getCaCertificatesFolder();
+  if (pem_chain_buf_len <= 0){
+    throw storm::authorization_error("BIO_get_mem_data() failed!");
+  }
 
-		if (caCertFolder.empty()) {
-			authz_failure("CA folder misconfigured.");
-		}
-
-		// server certificate CA path for validation
-		pep_rc = pep_setoption(pep, PEP_OPTION_ENDPOINT_SERVER_CAPATH,
-				caCertFolder.c_str());
-
-		if (pep_rc != PEP_OK) {
-			authz_failure(
-					format("Error setting CA folder: %s. %s") % caCertFolder
-							% pep_strerror(pep_rc));
-		}
-		// debugging options
-		pep_rc = pep_setoption(pep, PEP_OPTION_LOG_STDERR, stderr);
-
-		if (pep_rc != PEP_OK) {
-			authz_failure(
-					format("PEP log initialization error: %s.")
-							% pep_strerror(pep_rc));
-		}
-
-		pep_rc = pep_setoption(pep, PEP_OPTION_LOG_LEVEL, PEP_LOGLEVEL_WARN);
-
-		if (pep_rc != PEP_OK) {
-			authz_failure(
-					format("Error setting PEP log level: %s.")
-							% pep_strerror(pep_rc));
-		}
-
-		std::string argusResourceId =
-				FrontendConfiguration::getInstance()->getArgusResourceId();
-		if (!argusResourceId.empty()) {
-			m_argusResourceId = argusResourceId;
-		}
-	}
+  return std::string(pem_chain_buf, pem_chain_buf_len);
 }
 
-/**
- * Return true if the user is blacklisted, false otherwise
- * */
-bool storm::Authorization::isBlacklisted() {
-
-	bool blacklisted = false;
-
-	if (blacklistRequested) {
-
-		xacml_response_t * response = NULL;
-
-		xacml_request_t * request = create_xacml_request(
-				credentials->getCertChain(),
-				m_argusResourceId.c_str(),
-				storm::DEFAULT_AUTHORIZATION_ACTION.c_str());
-
-		pep_error_t pep_rc = pep_authorize(pep, &request, &response);
-
-		if (pep_rc != PEP_OK) {
-			xacml_request_delete(request);
-			xacml_response_delete(response);
-
-			authz_failure(
-					boost::format("Failed to authorize XACML request: %s.")
-							% pep_strerror(pep_rc));
-		}
-
-		xacml_decision_t decision;
-
-		try {
-
-			decision = process_xacml_response(response);
-
-		} catch (storm::authorization_error& e) {
-			xacml_request_delete(request);
-			xacml_response_delete(response);
-			throw e;
-		}
-
-		blacklisted = (decision != XACML_DECISION_PERMIT);
-		xacml_request_delete(request);
-		xacml_response_delete(response);
-	}
-
-	return blacklisted;
+static 
+std::string
+get_pem_from_soap(soap *soap){
+  return get_pem_from_cred_handle(get_gsi_credential_from_soap(soap));
 }
+
+static bool argus_check_enabled(){
+  return FrontendConfiguration::getInstance()->getUserCheckBlacklist();
+}
+
+static void
+set_pep_option(pep_option opt, const char* value){
+  pep_error_t pep_rc = pep_setoption(pep_handle.get(),opt,value);
+  if (pep_rc != PEP_OK){
+    authz_failure(format("Error setting pep option: %s") % pep_strerror(pep_rc));
+  }
+}
+
+static void
+make_pep(){
+
+  pep_handle.reset(pep_initialize());
+
+  if (!pep_handle.get()){
+    authz_failure("Error building PEP client");
+  }
+
+  std::string pepd_endpoint =
+    FrontendConfiguration::getInstance()->getArgusPepdEndpoint();
+
+  if (pepd_endpoint.empty()) {
+    authz_failure("No ARGUS PEPD endpoint configured.");
+  }
+  
+  set_pep_option(PEP_OPTION_ENDPOINT_URL, pepd_endpoint.c_str());
+
+  std::string key =
+    FrontendConfiguration::getInstance()->getHostKeyFile();
+
+  if (key.empty()) {
+    authz_failure("Empty private key.");
+  }
+
+  set_pep_option(PEP_OPTION_ENDPOINT_CLIENT_KEY, key.c_str());
+
+  std::string cert =
+    FrontendConfiguration::getInstance()->getHostCertFile();
+
+  if (cert.empty()) {
+    authz_failure("certificate is misconfigured.");
+  }
+
+  set_pep_option(PEP_OPTION_ENDPOINT_CLIENT_CERT, cert.c_str());
+
+  std::string ca_path = 
+    FrontendConfiguration::getInstance()->getCaCertificatesFolder();
+
+  if (ca_path.empty()){
+    authz_failure("ca path is misconfigured.");
+  }
+
+  set_pep_option(PEP_OPTION_ENDPOINT_SERVER_CAPATH, ca_path.c_str());
+}
+
+namespace storm{
+namespace authz{
+
+  bool is_blacklisted(soap* soap){
+
+    if (!argus_check_enabled()) return false;
+
+    std::string pem_chain = get_pem_from_soap(soap);
+
+    std::string resource_id = 
+      FrontendConfiguration::getInstance()->getArgusResourceId();
+
+    if (resource_id.empty()){
+      resource_id = storm::authz::DEFAULT_AUTHORIZATION_RESOURCE;
+    }
+
+    // Initialize thread local PEP handle, if not already done
+    if (!pep_handle.get()){
+      make_pep();
+    }
+
+    xacml_request_t * request_ptr = create_xacml_request(pem_chain.c_str(), 
+        resource_id.c_str(),
+        storm::authz::DEFAULT_AUTHORIZATION_ACTION.c_str());
+
+    xacml_response_t *response_ptr = 0;
+
+    pep_error_t pep_rc = pep_authorize(pep_handle.get(), &request_ptr, &response_ptr);
+
+    boost::shared_ptr<xacml_request_t> request(request_ptr, 
+      xacml_request_delete);
+
+    boost::shared_ptr<xacml_response_t> response(response_ptr,
+      xacml_response_delete);
+
+    if (pep_rc != PEP_OK){
+      authz_failure(boost::format("Failed to authorize XACML request: %s.")
+          % pep_strerror(pep_rc));
+    }
+
+    xacml_decision_t decision = process_xacml_response(response);
+
+    return (decision != XACML_DECISION_PERMIT);
+
+    return false;
+
+  }
+}
+}
+

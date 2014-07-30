@@ -11,44 +11,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 #ifndef AUTHORIZATION_HPP_
 #define AUTHORIZATION_HPP_
 
 #include <argus/pep.h>
 #include <string>
+#include <boost/thread/tss.hpp>
 
-#include "FullCredentials.hpp"
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 #include "storm_exception.hpp"
+#include "srmv2H.h"
 
 namespace storm {
 
-const std::string DEFAULT_AUTHORIZATION_RESOURCE = "StoRM";
-const std::string DEFAULT_AUTHORIZATION_ACTION = "access";
-const std::string DEFAULT_AUTHORIZATION_PROFILE = "http://glite.org/xacml/profile/grid-wn/1.0";
+  namespace authz {
 
-class Authorization {
-public:
-	Authorization(FullCredentials *cred);
-	~Authorization();
+    const std::string DEFAULT_AUTHORIZATION_RESOURCE = "StoRM";
+    const std::string DEFAULT_AUTHORIZATION_ACTION = "access";
+    const std::string DEFAULT_AUTHORIZATION_PROFILE = "http://glite.org/xacml/profile/grid-wn/1.0";
 
-	static bool checkBlacklist(struct soap *soap);
 
-    bool isAuthorized(std::string resource, std::string action);
-    bool isBlacklisted();
+    bool is_blacklisted(soap* soap);
 
-private:
-    FullCredentials * credentials;
-    PEP * pep;
-
-    bool blacklistRequested;
-    std::string m_argusResourceId;
-
-};
+  }
 
 }
-
 #endif /*AUTHORIZATION_HPP_*/
+
