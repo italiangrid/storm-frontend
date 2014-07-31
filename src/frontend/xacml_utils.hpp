@@ -62,6 +62,7 @@ typedef boost::shared_ptr<xacml_resource_t> ResourcePtr;
 typedef boost::shared_ptr<xacml_environment_t> EnvironmentPtr;
 typedef boost::shared_ptr<xacml_attribute_t> AttributePtr;
 typedef boost::shared_ptr<xacml_request_t> RequestPtr;
+typedef boost::shared_ptr<xacml_response_t> ResponsePtr;
 
 inline SubjectPtr make_subject()
 {

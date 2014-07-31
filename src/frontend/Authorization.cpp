@@ -384,8 +384,7 @@ create_xacml_request(
   return assemble_xacml_request(subject, resource, action, environment);
 }
 
-static xacml_decision_t process_xacml_response(
-    boost::shared_ptr<xacml_response_t> response) {
+static xacml_decision_t process_xacml_response(ResponsePtr response) {
 
   if (!response) {
     authz_failure("Cannot process a NULL xacml response.");
@@ -619,11 +618,8 @@ bool is_blacklisted(soap* soap){
   pep_error_t pep_rc =
       pep_authorize(pep_handle.get(), &request_ptr, &response_ptr);
 
-  boost::shared_ptr<xacml_request_t> request(request_ptr,
-                                             xacml_request_delete);
-
-  boost::shared_ptr<xacml_response_t> response(response_ptr,
-                                               xacml_response_delete);
+  RequestPtr request(request_ptr, xacml_request_delete);
+  ResponsePtr response(response_ptr, xacml_response_delete);
 
   if (pep_rc != PEP_OK){
     authz_failure(boost::format("Failed to authorize XACML request: %s.")
@@ -633,8 +629,6 @@ bool is_blacklisted(soap* soap){
   xacml_decision_t decision = process_xacml_response(response);
 
   return (decision != XACML_DECISION_PERMIT);
-
-  return false;
 
 }
 }
