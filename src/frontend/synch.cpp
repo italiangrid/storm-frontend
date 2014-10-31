@@ -53,7 +53,7 @@ int handle_request(const char* func_name, struct soap* soap,
         logger.log_request(func_name, request);
 
         bool const request_is_blacklisted =
-                storm::Authorization::checkBlacklist(request.getSoapRequest());
+                storm::authz::is_blacklisted(request.getSoapRequest());
 
         if (request_is_blacklisted) {
 

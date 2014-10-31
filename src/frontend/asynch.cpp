@@ -65,7 +65,7 @@ int ns1__srmPrepareToPut(struct soap *soap, struct ns1__srmPrepareToPutRequest *
     bool blacklisted = false;
     try
     {
-    	blacklisted = storm::Authorization::checkBlacklist(soap);
+    	blacklisted = storm::authz::is_blacklisted(soap);
     }catch( storm::authorization_error& e){
 
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
@@ -161,7 +161,7 @@ int ns1__srmPrepareToGet(struct soap *soap, struct ns1__srmPrepareToGetRequest *
     bool blacklisted = false;
     try
     {
-    	blacklisted = storm::Authorization::checkBlacklist(soap);
+    	blacklisted = storm::authz::is_blacklisted(soap);
     }catch( storm::authorization_error& e)
     {
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
@@ -257,7 +257,7 @@ int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     bool blacklisted = false;
     try
     {
-    	blacklisted = storm::Authorization::checkBlacklist(soap);
+    	blacklisted = storm::authz::is_blacklisted(soap);
     }catch(storm::authorization_error& e)
     {
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
@@ -351,7 +351,7 @@ int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *re
     bool blacklisted = false;
     try
     {
-    	blacklisted = storm::Authorization::checkBlacklist(soap);
+    	blacklisted = storm::authz::is_blacklisted(soap);
     }catch( storm::authorization_error& e)
     {
     	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());

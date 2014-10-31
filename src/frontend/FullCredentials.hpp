@@ -33,7 +33,7 @@ namespace storm {
 
 class FullCredentials : public Credentials{
 public:
-	FullCredentials(struct soap *soap);// : Credentials(soap){};
+	FullCredentials(struct soap *soap);
 
 	~FullCredentials(){
 		if(m_cert_chain != NULL)
