@@ -72,7 +72,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 	bool is_blacklisted;
 	
 	try {
-		is_blacklisted = storm::Authorization::checkBlacklist(soap);
+		is_blacklisted = storm::authz::is_blacklisted(soap);
 
 	} catch ( storm::authorization_error& e ){
 
@@ -162,7 +162,7 @@ extern "C" int ns1__srmStatusOfGetRequest(struct soap *soap,
 	bool is_blacklisted;
 
 	try {
-		is_blacklisted = storm::Authorization::checkBlacklist(soap);
+		is_blacklisted = storm::authz::is_blacklisted(soap);
 
 	} catch ( storm::authorization_error& e ){
 
@@ -250,7 +250,7 @@ extern "C" int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 	bool is_blacklisted;
 
 	try {
-		is_blacklisted = storm::Authorization::checkBlacklist(soap);
+		is_blacklisted = storm::authz::is_blacklisted(soap);
 
 	} catch ( storm::authorization_error& e ){
 
@@ -348,7 +348,7 @@ extern "C" int ns1__srmStatusOfCopyRequest(struct soap *soap,
 	bool is_blacklisted;
 
 	try {
-		is_blacklisted = storm::Authorization::checkBlacklist(soap);
+		is_blacklisted = storm::authz::is_blacklisted(soap);
 
 	} catch ( storm::authorization_error& e ){
 

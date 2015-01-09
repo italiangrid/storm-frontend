@@ -109,7 +109,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         }
         srmlogit(STORM_LOG_INFO, func, "UserDN=%s\n", credentials.getDN().c_str());
 
-        if(storm::Authorization::checkBlacklist(soap))
+        if(storm::authz::is_blacklisted(soap))
 		{
 			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
 			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;

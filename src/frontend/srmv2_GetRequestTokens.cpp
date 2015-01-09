@@ -61,7 +61,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             return SOAP_OK;
         }
         
-        if(storm::Authorization::checkBlacklist(soap))
+        if(storm::authz::is_blacklisted(soap))
 		{
 			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
 			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;

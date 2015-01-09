@@ -603,14 +603,15 @@ int main(int argc, char** argv) {
 		return SYERR;
 	}
 
+	curl_global_init(CURL_GLOBAL_ALL);
+	setupXMLRPC();
+
 	soap* soap_data = initSoap();
 	if (soap_data == NULL) {
 		return SYERR;
 	}
 
-	curl_global_init(CURL_GLOBAL_ALL);
 
-	setupXMLRPC();
 
 	// the size of mysql_connection pool and thread pool MUST be the same
 	mysql_connection_pool = new DBConnectionPool(
