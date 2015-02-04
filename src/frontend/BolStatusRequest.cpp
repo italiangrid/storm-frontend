@@ -156,8 +156,8 @@ ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildRespon
     		throw std::logic_error("Unable to allocate memory for the file status array. invalid_argument Exception: " + std::string(exc.what()));
     	}
     	m_builtResponse->arrayOfFileStatuses->__sizestatusArray = fileStatusArraySize;
-    	bool atLeastOneSuccess = false;
-    	bool atLeastOneFailure = false;
+    	int countSuccess = 0;
+    	int countFailure = 0;
     	int index = 0;
     	std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
     	for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i, ++index) {
@@ -184,7 +184,7 @@ ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildRespon
     			{
     				turl->setStatus(SRM_USCORESUCCESS);
     				turl->setExplanation("File recalled from tape");
-    				atLeastOneSuccess = true;
+    				countSuccess++;
     			}
     		}
     		else
@@ -193,13 +193,13 @@ ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildRespon
     					|| turl->getSurl().getStatus() == SRM_USCOREFILE_USCOREIN_USCORECACHE
     					|| turl->getSurl().getStatus() == SRM_USCORERELEASED)
     			{
-    				atLeastOneSuccess = true;
+    				countSuccess++;
     			}
     			else
     			{
     				if(turl->getSurl().getStatus() != SRM_USCOREREQUEST_USCOREQUEUED)
     				{
-    					atLeastOneFailure = true;
+    					countFailure++;
     				}
     			}
     		}
@@ -230,13 +230,13 @@ ns1__srmStatusOfBringOnlineRequestResponse* storm::BolStatusRequest::buildRespon
     		this->addMissingSurls();
     	}
 
-    	if (m_status == SRM_USCOREREQUEST_USCOREINPROGRESS) {
-    		if (atLeastOneFailure && atLeastOneSuccess) {
+        if ((countSuccess + countFailure) == fileStatusArraySize) {
+            if (countFailure == 0) {
+                m_status = SRM_USCORESUCCESS;
+            } else if (countSuccess == 0) {
+                m_status = SRM_USCOREFAILURE;
+            } else {
     			m_status = SRM_USCOREPARTIAL_USCORESUCCESS;
-    		} else if (atLeastOneSuccess) {
-    			m_status = SRM_USCORESUCCESS;
-    		} else if (atLeastOneFailure) {
-    			m_status = SRM_USCOREFAILURE;
     		}
     	}
     }
