@@ -27,6 +27,7 @@ extern "C" {
 #include <vector>
 #include <string>
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 #include "storm_exception.hpp"
 #include "srmv2H.h"
@@ -152,11 +153,10 @@ public:
     std::string sqlFormat(bool b){
     	return b ? "1" : "0";
     }
+
     std::string sqlFormat(std::string const& s){
-    	std::string formatted_s("\'");
-    	formatted_s += s;
-    	formatted_s += '\'';
-    	return formatted_s;
+    	std::string formatted_s = boost::replace_all_copy(s, "'", "''");
+    	return '\'' + formatted_s + '\'';
     }
 
 	void setFileStorageType(ns1__TFileStorageType type) {
