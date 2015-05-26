@@ -153,8 +153,8 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse()
 		} catch (std::invalid_argument &exc) {
 				throw storm::storm_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
 		}
-		fileStatus->status->statusCode = surl->getStatus();
-		fileStatus->status->explanation = soap_strdup(m_soapRequest, surl->getExplanation().c_str());
+		fileStatus->status->statusCode = SRM_USCORENOT_USCORESUPPORTED;
+		fileStatus->status->explanation = "srmCopy operation is not supported";
 	}
     if (m_requestToken.size() > 0) {
     	m_builtResponse->requestToken = soap_strdup(m_soapRequest, m_requestToken.c_str());
