@@ -251,13 +251,10 @@ int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 
     	return SOAP_OK;
     }
-	srmLogRequestWithSurls("CP", get_ip(soap).c_str(),
-			request->getClientDN().c_str(), request->getSurlsList().c_str(),
-			request->getSurlsNumber());
 
     request->invalidateRequestToken();
     try {
-        rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCORENOT_USCORESUPPORTED, "srmCopy operation is not supported");
+        rep->srmCopyResponse = request->buildResponse();
 	} catch (storm::storm_error& exc) {
         srmlogit(STORM_LOG_ERROR, funcName,"Unable to build soap response.  %s\n", exc.what());
         delete request;
