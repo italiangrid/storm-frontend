@@ -348,7 +348,7 @@ extern "C" int ns1__srmStatusOfCopyRequest(struct soap *soap,
 	try {
 		rep->srmStatusOfCopyRequestResponse =
 				request->buildSpecificResponse(
-						SRM_USCORENOT_USSUPPORTED,
+						SRM_USCORENOT_USCORESUPPORTED,
 						"srmStatusOfCopy operation is not supported");
 	} catch (std::runtime_error& exc) {
 		srmlogit(STORM_LOG_ERROR, funcName,
