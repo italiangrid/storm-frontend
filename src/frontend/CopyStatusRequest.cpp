@@ -45,119 +45,8 @@ void storm::CopyStatusRequest::load(ns1__srmStatusOfCopyRequestRequest* req)
 
 void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db){
 
-    srmlogit(STORM_LOG_DEBUG, "storm::CopyStatusRequest::loadFromDB", "R_token: %s\n",  m_requestToken.c_str());
+    srmlogit(STORM_LOG_DEBUG, "storm::CopyStatusRequest::loadFromDB", "disabled");
 
-    std::string query("");
-    if(m_surls.size() > 0)
-    {
-    	query += "SELECT r.client_dn, r.status, r.errstring, r.remainingTotalTime, "
-    			" c.sourceSURL, c.targetSURL , s.fileSize , s.estimatedWaitTime , "
-    			" s.remainingFileTime , s.statusCode , s.explanation"
-    			" FROM request_queue r JOIN (request_Copy c, status_Copy s) ON "
-                 "(c.request_queueID=r.ID AND s.request_CopyID=c.ID)  "
-    			"WHERE r.r_token=" + sqlFormat(m_requestToken) + " and c.sourceSURL in (";
-		bool first = true;
-		std::set<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
-		for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
-			Surl* current = i->get();
-			if(first)
-			{
-				first = false;
-			}
-			else
-			{
-				query += " , ";
-			}
-			query += sqlFormat(current->getSurl());
-		}
-		query += ")";
-		if(m_allTargetSurlSpecified)
-		{
-			query += " and c.targetSURL in (";
-			first = true;
-			std::set<SurlPtr>::const_iterator const vectorEnd = m_surls.end();
-			for (std::set<SurlPtr>::const_iterator i = m_surls.begin(); i != vectorEnd; ++i) {
-				storm::CopySurl* current = dynamic_cast<storm::CopySurl*> (i->get());
-				if(!current)
-				{
-					throw std::logic_error("Unable to cast SurlPtr to CopySurl, cast failure");
-				}
-				if(first)
-				{
-					first = false;
-				}
-				else
-				{
-					query += " , ";
-				}
-				query += sqlFormat(current->getDestinationSurl());
-			}
-			query += ")";
-		}
-
-    }
-    else
-    {
-		query += "SELECT r.client_dn, r.status, r.errstring, r.remainingTotalTime, "
-    			" c.sourceSURL, c.targetSURL , s.fileSize , s.estimatedWaitTime , "
-    			" s.remainingFileTime , s.statusCode , s.explanation"
-    			" FROM request_queue r JOIN (request_Copy c, status_Copy s) ON "
-                 "(c.request_queueID=r.ID AND s.request_CopyID=c.ID)  "
-    			"WHERE r.r_token=" + sqlFormat(m_requestToken);
-    }
-    file_status_results_t results;
-    storm_db::vector_exec_query(db, query, results);
-	if (results.size() == 0)
-	{
-		if(m_surls.size() > 0)
-		{
-			srmlogit(STORM_LOG_INFO, "storm::CopyStatusRequest::loadFromDB()",
-									 "No tokens found for token %s and the requested SURLs\n", m_requestToken.c_str());
-			throw storm::token_not_found("No request found for token " + m_requestToken + " and the requested SURLs\n");
-		}
-		else
-		{
-			srmlogit(STORM_LOG_INFO, "storm::CopyStatusRequest::loadFromDB()",
-									 "No tokens found for token %s\n", m_requestToken.c_str());
-			throw storm::token_not_found("No request found for token " + m_requestToken + "\n");
-		}
-
-	}
-	fillCommonFields(results);
-
-	std::vector<file_status_result_t>::const_iterator const vectorEnd = results.end();
-	for (std::vector<file_status_result_t>::const_iterator i = results.begin(); i != vectorEnd; ++i) {
-		file_status_result_t currentResutl = *i;
-		storm::Surl surl(currentResutl["sourceSURL"].c_str());
-		sql_string destinationSURL(currentResutl["targetSURL"].c_str());
-		CopyTurl* turl;
-		if(currentResutl["fileSize"].empty())
-		{
-			turl = new CopyTurl(surl, destinationSURL);
-		}
-		else
-		{
-			turl = new CopyTurl(surl, destinationSURL, strtoull(currentResutl["fileSize"].c_str(),(char**)NULL,10));
-		}
-		if(currentResutl["statusCode"].empty())
-		{
-			srmlogit(STORM_LOG_ERROR, "storm::CopyStatusRequest::loadFromDB()",
-			                 "Error,status code for SURL %s is empty. Continuing without filling SURLs informations.\n", currentResutl["targetSURL"].c_str());
-			delete turl;
-			continue;
-		}
-		turl->setStatus(static_cast<ns1__TStatusCode>(atoi(currentResutl["statusCode"].c_str())));
-		turl->setExplanation(currentResutl["explanation"]);
-		if(!currentResutl["estimatedWaitTime"].empty())
-		{
-			turl->setEstimatedWaitTime(atoi(currentResutl["estimatedWaitTime"].c_str()));
-		}
-		if(!currentResutl["remainingFileTime"].empty())
-		{
-			turl->setRemainingFileLifetime(atoi(currentResutl["remainingFileTime"].c_str()));
-		}
-		m_turls.insert(TurlPtr(turl));
-	}
 }
 
 ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse()
@@ -177,14 +66,9 @@ ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse()
 				+ std::string(exc.what()));
 	}
 
-	m_builtResponse->returnStatus->statusCode = m_status;
-	if (!m_explanation.empty()) {
-		m_builtResponse->returnStatus->explanation = soap_strdup(m_soapRequest, m_explanation.c_str());
-	}
-    if (this->hasRemainingTotalRequestTime()) {
-    	m_builtResponse->remainingTotalRequestTime = storm::soap_calloc<int>(m_soapRequest);
-        *m_builtResponse->remainingTotalRequestTime = m_remainingTotalRequestTime;
-    }
+	m_builtResponse->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
+	m_builtResponse->returnStatus->explanation = "srmStatusCopy operation is not supported";
+
     // Fill status for each surl.
     int fileStatusArraySize = (m_surls.size() >  m_turls.size() ? m_surls.size() : m_turls.size());
     if(fileStatusArraySize > 0)
@@ -223,20 +107,8 @@ ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse()
 			} catch (std::invalid_argument& exc) {
 					throw std::logic_error("Unable to allocate memory for a return status. invalid_argument Exception: " + std::string(exc.what()));
 			}
-			if (turl->hasFileSize()) {
-				fileStatus->fileSize = storm::soap_calloc<ULONG64>(m_soapRequest);
-				*fileStatus->fileSize = turl->getFileSize();
-			}
-			if (turl->hasEstimatedWaitTime()) {
-				fileStatus->estimatedWaitTime = storm::soap_calloc<int>(m_soapRequest);
-				*fileStatus->estimatedWaitTime = turl->getEstimatedWaitTime();
-			}
-			if (turl->hasRemainingFileLifetime()) {
-				fileStatus->remainingFileLifetime= storm::soap_calloc<int>(m_soapRequest);
-				*fileStatus->remainingFileLifetime = turl->hasRemainingFileLifetime();
-			}
-			fileStatus->status->statusCode = turl->getStatus();
-			fileStatus->status->explanation = soap_strdup(m_soapRequest, turl->getExplanation().c_str());
+			fileStatus->status->statusCode = SRM_USCORENOT_USCORESUPPORTED;
+			fileStatus->status->explanation = "srmStatusCopy operation is not supported";
 		}
 		if(this->hasMissingSurls())
 		{
