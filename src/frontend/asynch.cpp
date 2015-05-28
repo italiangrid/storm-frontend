@@ -252,7 +252,6 @@ int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
     	return SOAP_OK;
     }
 
-    request->invalidateRequestToken();
     try {
         rep->srmCopyResponse = request->buildResponse();
 	} catch (storm::storm_error& exc) {
