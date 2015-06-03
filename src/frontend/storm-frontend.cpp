@@ -332,7 +332,7 @@ soap* initSoap() {
 	soap_data->accept_timeout = 5;
 	// supporting HTTP GET in order to reply the wsdl
 	soap_data->fget = http_get;
-	//    soap_data->bind_flags |= SO_REUSEADDR;
+	soap_data->bind_flags = SO_REUSEADDR;
 
 	int flags = CGSI_OPT_DELEG_FLAG;
 	// Renamed disable with enable and changed checks accordingly
