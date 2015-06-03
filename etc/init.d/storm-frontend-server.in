@@ -65,7 +65,7 @@ check_if_running() {
     if [ $? -ne $SUCCESS ]; then
         return $FALSE # not running
     fi
-    IS_UP=`netstat -lp | grep $PID`
+    IS_UP=`netstat -lnp | grep $PID`
     if [ -z "$IS_UP" ]; then
         return $FALSE  # not running
     fi
