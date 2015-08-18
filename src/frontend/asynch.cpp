@@ -251,74 +251,20 @@ int ns1__srmCopy(struct soap *soap, struct ns1__srmCopyRequest *req,
 
     	return SOAP_OK;
     }
-	srmLogRequestWithSurls("CP", get_ip(soap).c_str(),
-			request->getClientDN().c_str(), request->getSurlsList().c_str(),
-			request->getSurlsNumber());
-    bool blacklisted = false;
-    try
-    {
-    	blacklisted = storm::authz::is_blacklisted(soap);
-    }catch(storm::authorization_error& e)
-    {
-    	srmlogit(STORM_LOG_ERROR, funcName, "Unable to check user blacklisting. Error: %s\n" , e.what());
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREFAILURE, "Unable to check user blacklisting");
-		} catch(storm::storm_error& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
-			delete request;
-			storm::MonitoringHelper::registerOperationError(start_time,
-							storm::SRM_COPY_MONITOR_NAME);
-			srmLogResponse("CP", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap,e.what(),0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_COPY_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("CP", request->getStatus());
-		delete request;
-		return(SOAP_OK);
+
+    try {
+        rep->srmCopyResponse = request->buildResponse();
+	} catch (storm::storm_error& exc) {
+        srmlogit(STORM_LOG_ERROR, funcName,"Unable to build soap response.  %s\n", exc.what());
+        delete request;
+        storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_COPY_MONITOR_NAME);
+        srmLogResponse("CP", SRM_USCOREFAILURE);
+        return soap_sender_fault(soap, exc.what(), 0);;
     }
-
-    if(blacklisted)
-	{
-		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		request->invalidateRequestToken();
-		try
-		{
-			rep->srmCopyResponse = request->buildSpecificResponse(SRM_USCOREAUTHORIZATION_USCOREFAILURE, "User not authorized");
-		} catch(storm::storm_error& exc)
-		{
-			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response.  %s\n" , exc.what());
-			delete request;
-	    	storm::MonitoringHelper::registerOperationError(start_time,
-	    					storm::SRM_COPY_MONITOR_NAME);
-	    	srmLogResponse("CP", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap,exc.what(),0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_COPY_MONITOR_NAME,
-					request->getStatus());
-		srmLogResponse("CP", request->getStatus());
-		delete request;
-		return(SOAP_OK);
-	}
-	else
-	{
-		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
-	}
-
-    int soap_status = __process_file_request<ns1__srmCopyRequest, ns1__srmCopyResponse> (soap, *request,
-            funcName, req, &rep->srmCopyResponse);
-	storm::MonitoringHelper::registerOperation(start_time, soap_status,
-				storm::SRM_COPY_MONITOR_NAME,
-				rep->srmCopyResponse->returnStatus->statusCode);
-	srmLogResponseWithToken("CP", request->getRequestToken().c_str(),
-	    			request->getStatus());
-	delete request;
-    return soap_status;
+    storm::MonitoringHelper::registerOperation(start_time, storm::SRM_COPY_MONITOR_NAME, request->getStatus());
+    srmLogResponse("CP", request->getStatus());
+    delete request;
+    return (SOAP_OK);
 }
 
 int ns1__srmBringOnline(struct soap *soap, struct ns1__srmBringOnlineRequest *req,

@@ -65,7 +65,7 @@ check_if_running() {
     if [ $? -ne $SUCCESS ]; then
         return $FALSE # not running
     fi
-    IS_UP=`netstat -lp | grep $PID`
+    IS_UP=`netstat -tlnp | grep $PID`
     if [ -z "$IS_UP" ]; then
         return $FALSE  # not running
     fi
@@ -156,7 +156,7 @@ case "$1" in
             check_if_running
             while [ $? -eq $TRUE ]; do
                 echo -n "."
-                sleep 1
+                sleep .1
                 check_if_running
             done
             rm -f $PIDFILE
