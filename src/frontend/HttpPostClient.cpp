@@ -24,6 +24,8 @@
 
 HttpPostClient::HttpPostClient() {
 
+    FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
+
     _path = std::string("/recalltable/task");
     _url = NULL;
     _response = NULL;
@@ -43,6 +45,7 @@ HttpPostClient::HttpPostClient() {
     _slist = NULL;
     _slist = curl_slist_append(_slist, "Expect:");
     _slist = curl_slist_append(_slist, "Content-Type: text/plain");
+    _slist = curl_slist_append(_slist, "Token: " + configuration->getXMLRPCToken());
     curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, _slist);
 
 }
