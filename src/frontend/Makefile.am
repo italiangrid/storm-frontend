@@ -35,6 +35,7 @@ storm_frontend_server_LDADD = \
     @MYSQL_LIBS@ \
     @XMLRPC_LIBS@ \
     @LIBCURL_LIBS@ \
+    @GLOBUS_COMMON_LIBS@ \
     @GLOBUS_GSI_CREDENTIAL_LIBS@ \
     @GLOBUS_GSS_ASSIST_LIBS@ \
     @GSOAP_SSL_PP_LIBS@ \

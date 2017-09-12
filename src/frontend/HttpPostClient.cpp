@@ -24,6 +24,8 @@
 
 HttpPostClient::HttpPostClient() {
 
+    FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
+
     _path = std::string("/recalltable/task");
     _url = NULL;
     _response = NULL;
@@ -43,6 +45,8 @@ HttpPostClient::HttpPostClient() {
     _slist = NULL;
     _slist = curl_slist_append(_slist, "Expect:");
     _slist = curl_slist_append(_slist, "Content-Type: text/plain");
+    string storm_ua_token("Token: " + configuration->getXMLRPCToken());
+    _slist = curl_slist_append(_slist, storm_ua_token.c_str());
     curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, _slist);
 
 }
