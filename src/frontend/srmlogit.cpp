@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <time.h>
 #include <stdarg.h>
 #include "srm_server.h"
@@ -130,6 +131,50 @@ std::string getLogLevelLable(int logLevel)
 }
 
 
+int logPrefix(char* ptrbuf, int log_level, const char* function_name) {
+
+    struct timeval tv;
+    struct tm* tm_p;
+    struct tm tm;
+
+    if (gettimeofday(&tv, NULL) == -1){
+	// error handling
+    }
+
+    suseconds_t msecs = tv.tv_usec / 1000;
+
+    tm_p = localtime_r(&tv.tv_sec,&tm);
+    if (tm_p == NULL) {
+	// error handling
+    }
+
+    std::string  tid;
+    if(storm::ThreadPool::isInstanceAvailable())
+    {
+	    tid = storm::ThreadPool::getInstance()->getThreadIdLable(boost::this_thread::get_id());
+    }
+    if(tid.empty())
+    {
+	    tid = std::string("Main - ");
+    }
+
+    if(function_name == NULL)
+    {
+	    return snprintf(ptrbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d.%03d %s %s : ", tm_p->tm_mon + 1, tm_p->tm_mday,
+				    tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec, msecs, tid.c_str(), getLogLevelLable(log_level).c_str());
+    }
+    else
+    {
+	    return snprintf(ptrbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d.%03d %s %s : %s : ", tm_p->tm_mon + 1, tm_p->tm_mday,
+				    tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec, msecs, tid.c_str(), getLogLevelLable(log_level).c_str(), function_name);
+    }
+}
+
+int logPrefix(char* ptrbuf, int log_level){
+
+    return logPrefix(ptrbuf, log_level, NULL);
+}
+
 int writeLogPrefix(char* prtbuf, int logLevel, const char* functionName)
 {
 	struct tm *tm;
@@ -177,7 +222,7 @@ int loggingError(const char* requestName) {
 	char prtbuf[LOGBUFSZ];
 	signed int max_char_to_write = LOGBUFSZ - 1;
 	int writtenChars = 0;
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_ERROR);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_ERROR);
 	if(writtenChars < max_char_to_write)
 	{
 		if(requestName != NULL)
@@ -226,7 +271,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     }
 
     va_start(args, msg);
-    writtenChars += writeLogPrefix(prtbuf, level , func);
+    writtenChars += logPrefix(prtbuf, level , func);
     if(writtenChars < max_char_to_write)
     {
     	writtenChars += vsnprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, msg, args);
@@ -268,7 +313,7 @@ int srmLogRequest(const char* requestName, const char* clientIP, const char* cli
 		return 1;
 	}
 
-    writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+    writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
     if(writtenChars < max_char_to_write)
 	{
     	writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
@@ -311,7 +356,7 @@ int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const 
 		errno = save_errno;
 		return 1;
 	}
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
 	if(writtenChars < max_char_to_write)
 	{
 		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
@@ -369,7 +414,7 @@ int srmLogRequestWithToken(const char* requestName, const char* clientIP, const 
 		return 1;
 	}
 
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
 	if(writtenChars < max_char_to_write)
 	{
 		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
@@ -412,7 +457,7 @@ int srmLogRequestWithTokenList(const char* requestName, const char* clientIP, co
 		errno = save_errno;
 		return 1;
 	}
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
 	if(writtenChars < max_char_to_write)
 	{
 		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
@@ -469,7 +514,7 @@ int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP
 		errno = save_errno;
 		return 1;
 	}
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
 	if(writtenChars < max_char_to_write)
 	{
 		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
@@ -527,7 +572,7 @@ int srmLogResponseWithToken(const char* requestName, const char* requestToken, c
 		return 1;
 	}
 
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
 	if(writtenChars < max_char_to_write)
 	{
 		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
@@ -570,7 +615,7 @@ int srmLogResponse(const char* requestName, const ns1__TStatusCode statusCode)
 		return 1;
 	}
 
-	writtenChars += writeLogPrefix(prtbuf, STORM_LOG_INFO);
+	writtenChars += logPrefix(prtbuf, STORM_LOG_INFO);
 	if(writtenChars < max_char_to_write)
 	{
 		writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars,
