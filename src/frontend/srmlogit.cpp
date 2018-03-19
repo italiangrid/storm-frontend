@@ -22,17 +22,16 @@
 #include "srm_server.h"
 #include <stdio.h>
 #include <string.h>
-//#include <boost/thread/mutex.hpp>
 
 #include "boost/thread.hpp"
 #include "ThreadPool.hpp"
 #include <sstream>
 #include "srmlogit.h"
 #include "storm_util.h"
+#include "request_id.hpp"
 
 extern int jid;
 
-//static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 boost::mutex log_mutex;
 boost::mutex audit_mutex;
 
@@ -158,15 +157,19 @@ int logPrefix(char* ptrbuf, int log_level, const char* function_name) {
 	    tid = std::string("Main - ");
     }
 
+    const char * request_id = storm::get_request_id();
+
     if(function_name == NULL)
     {
-	    return snprintf(ptrbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d.%03d %s %s : ", tm_p->tm_mon + 1, tm_p->tm_mday,
-				    tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec, msecs, tid.c_str(), getLogLevelLable(log_level).c_str());
+	    return snprintf(ptrbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d.%03d %s %s [%s]: ", tm_p->tm_mon + 1, tm_p->tm_mday,
+				    tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec, msecs, tid.c_str(), getLogLevelLable(log_level).c_str(),
+				    request_id == NULL ? "?" : request_id);
     }
     else
     {
-	    return snprintf(ptrbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d.%03d %s %s : %s : ", tm_p->tm_mon + 1, tm_p->tm_mday,
-				    tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec, msecs, tid.c_str(), getLogLevelLable(log_level).c_str(), function_name);
+	    return snprintf(ptrbuf, LOGBUFSZ -1, "%02d/%02d %02d:%02d:%02d.%03d %s %s [%s]: %s : ", tm_p->tm_mon + 1, tm_p->tm_mday,
+				    tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec, msecs, tid.c_str(), getLogLevelLable(log_level).c_str(), 
+				    request_id == NULL ? "?" : request_id, function_name);
     }
 }
 

@@ -76,6 +76,7 @@ am__objects_2 = storm_frontend_server-Credentials.$(OBJEXT) \
 	storm_frontend_server-FullCredentials.$(OBJEXT) \
 	storm_frontend_server-get_socket_info.$(OBJEXT) \
 	storm_frontend_server-surl_normalizer.$(OBJEXT) \
+	storm_frontend_server-request_id.$(OBJEXT) \
 	storm_frontend_server-BolRequest.$(OBJEXT) \
 	storm_frontend_server-BolStatusRequest.$(OBJEXT) \
 	storm_frontend_server-PtpRequest.$(OBJEXT) \
@@ -400,6 +401,7 @@ stormfrontend_others = storm_exception.hpp \
     file_request.hpp filerequest_template.hpp \
     file_status.hpp \
     surl_normalizer.h surl_normalizer.cc \
+    request_id.cpp request_id.hpp \
     StatusTemplate.hpp FileStatusRequest.hpp \
     BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
@@ -634,6 +636,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-asynch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-asynch_status.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-get_socket_info.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-request_id.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-soap_util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-srmlogit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storm_frontend_server-srmv2C.Po@am__quote@
@@ -863,6 +866,20 @@ storm_frontend_server-surl_normalizer.obj: surl_normalizer.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='surl_normalizer.cc' object='storm_frontend_server-surl_normalizer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-surl_normalizer.obj `if test -f 'surl_normalizer.cc'; then $(CYGPATH_W) 'surl_normalizer.cc'; else $(CYGPATH_W) '$(srcdir)/surl_normalizer.cc'; fi`
+
+storm_frontend_server-request_id.o: request_id.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-request_id.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-request_id.Tpo -c -o storm_frontend_server-request_id.o `test -f 'request_id.cpp' || echo '$(srcdir)/'`request_id.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-request_id.Tpo $(DEPDIR)/storm_frontend_server-request_id.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request_id.cpp' object='storm_frontend_server-request_id.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-request_id.o `test -f 'request_id.cpp' || echo '$(srcdir)/'`request_id.cpp
+
+storm_frontend_server-request_id.obj: request_id.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-request_id.obj -MD -MP -MF $(DEPDIR)/storm_frontend_server-request_id.Tpo -c -o storm_frontend_server-request_id.obj `if test -f 'request_id.cpp'; then $(CYGPATH_W) 'request_id.cpp'; else $(CYGPATH_W) '$(srcdir)/request_id.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/storm_frontend_server-request_id.Tpo $(DEPDIR)/storm_frontend_server-request_id.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='request_id.cpp' object='storm_frontend_server-request_id.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -c -o storm_frontend_server-request_id.obj `if test -f 'request_id.cpp'; then $(CYGPATH_W) 'request_id.cpp'; else $(CYGPATH_W) '$(srcdir)/request_id.cpp'; fi`
 
 storm_frontend_server-BolRequest.o: BolRequest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(storm_frontend_server_CXXFLAGS) $(CXXFLAGS) -MT storm_frontend_server-BolRequest.o -MD -MP -MF $(DEPDIR)/storm_frontend_server-BolRequest.Tpo -c -o storm_frontend_server-BolRequest.o `test -f 'BolRequest.cpp' || echo '$(srcdir)/'`BolRequest.cpp

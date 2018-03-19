@@ -49,6 +49,7 @@
 
 #include <globus_thread.h>
 #include "storm_exception.hpp"
+#include "request_id.hpp"
 
 #define NAME "StoRM SRM v2.2"
 
@@ -133,9 +134,13 @@ int setProxyUserGlobalVariables(string proxy_user) {
 void *
 process_request(struct soap* tsoap) {
 
+	storm::set_request_id();
+
 	srmlogit(STORM_LOG_DEBUG, "process_request", "-- START process_request\n");
 	srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection(
 			boost::this_thread::get_id());
+
+	thread_info->request_id = storm::get_request_id();
 	tsoap->user = thread_info;
 
 	tsoap->recv_timeout = SOAP_RECV_TIMEOUT;
@@ -149,6 +154,10 @@ process_request(struct soap* tsoap) {
 							&& !(tsoap->omode & SOAP_IO_KEEPALIVE)))) {
 		soap_print_fault(tsoap, stderr);
 	}
+
+	thread_info->request_id = NULL;
+	storm::clear_request_id();
+
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_serve\n");
 
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_destroy\n");
