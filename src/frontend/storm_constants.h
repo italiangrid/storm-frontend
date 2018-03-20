@@ -19,8 +19,8 @@
 #include "storm_limits.h"
 
 /* SOAP constants */
-#define SOAP_RECV_TIMEOUT   300
-#define SOAP_SEND_TIMEOUT    50
+#define SOAP_RECV_TIMEOUT   10
+#define SOAP_SEND_TIMEOUT   10
 #define SOAP_MAX_KEEPALIVE  100
 #define SOAP_ACCEPT_TIMEOUT  60
 

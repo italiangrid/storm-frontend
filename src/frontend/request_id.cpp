@@ -3,7 +3,7 @@
 #include <boost/thread/tss.hpp>
 #include <uuid/uuid.h>
 
-boost::thread_specific_ptr<std::string> request_id;
+static boost::thread_specific_ptr<std::string> request_id;
 
 const char*
 storm::get_request_id() {
@@ -12,16 +12,16 @@ storm::get_request_id() {
 	return NULL;
     }
 
-    return request_id.get()->c_str();
+    return request_id->c_str();
 }
 
 void 
 storm::set_request_id() {
-    char buf[50];
+    char buf[37];
 
     uuid_t id;
     uuid_generate(id);
-    uuid_unparse(id,buf);
+    uuid_unparse_lower(id,buf);
 
     std::string* req_id_p = new std::string(buf);
     request_id.reset(req_id_p);
@@ -30,8 +30,5 @@ storm::set_request_id() {
 void 
 storm::clear_request_id() {
     std::string* s_p = request_id.release();
-
-    if (s_p != NULL) {
-	delete s_p;
-    }
+    delete s_p;
 }
