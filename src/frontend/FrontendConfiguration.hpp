@@ -48,7 +48,11 @@ static const string DEFAULT_DEBUG_LEVEL = string("INFO");
 static const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING = 3;
 static const int DEFAULT_THREADS_NUMBER = 20;
 static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
+
 static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
+static const int DEFAULT_GSOAP_SEND_TIMEOUT = 10; // seconds
+static const int DEFAULT_GSOAP_RECV_TIMEOUT = 10; // seconds
+
 static const int DEFAULT_PORT = 8444;
 static const bool DEFAULT_MONITORING_ENABLED = true;
 static const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
@@ -115,6 +119,9 @@ static const string OPTL_MAX_THREADPOOL_PENDING = string("fe.threadpool.maxpendi
 static const string OPTL_SLEEP_THREADPOOL_MAX_PENDING = string("fe.threadpool.maxpending.sleep");
 
 static const string OPTL_MAX_GSOAP_PENDING = string("fe.gsoap.maxpending");
+
+static const string OPTL_GSOAP_SEND_TIMEOUT = string("fe.gsoap.send_timeout");
+static const string OPTL_GSOAP_RECV_TIMEOUT = string("fe.gsoap.recv_timeout");
 
 static const string OPTL_PROXY_DIR = string("proxy.dir");
 static const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
@@ -195,6 +202,9 @@ public:
     int getNumThreads();
     int getThreadpoolMaxPending();
     int getGsoapMaxPending();
+    int getGsoapSendTimeout();
+    int getGsoapRecvTimeout();
+
     int getPort();
     int getRecalltablePort();
     int getMonitoringTimeInterval();
@@ -256,6 +266,8 @@ private:
     int threadpool_max_pending;
     unsigned int threadpool_max_pending_sleeptime;
     int gsoap_max_pending;
+    int gsoap_send_timeout;
+    int gsoap_recv_timeout;
     int debugLevel;
     int port;
     int recalltablePort;

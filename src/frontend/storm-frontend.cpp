@@ -73,6 +73,9 @@ gid_t proxy_gid = 0;
 
 static const char* STORM_GLOBUS_THREADING_MODEL = "pthread";
 
+static int gsoap_send_timeout = 10;
+static int gsoap_recv_timeout = 10;
+
 void sigint_handler(int sig) {
 	srmlogit(STORM_LOG_INFO, __func__,
 			"Signal SIGINT received: shutting down...\n");
@@ -146,8 +149,8 @@ process_request(struct soap* tsoap) {
 	thread_info->request_id = storm::get_request_id();
 	tsoap->user = thread_info;
 
-	tsoap->recv_timeout = SOAP_RECV_TIMEOUT;
-	tsoap->send_timeout = SOAP_SEND_TIMEOUT;
+	tsoap->recv_timeout = gsoap_recv_timeout;
+	tsoap->send_timeout = gsoap_send_timeout;
 
 	std::string peer_ip = get_ip(tsoap);
 
@@ -224,6 +227,8 @@ void fillGlobalVars() {
 	db_srvr = strdup(configuration->getDBHost().c_str());
 	wsdl_file = strdup(configuration->getWSDLFilePath().c_str());
 	xmlrpc_endpoint = strdup(configuration->getXMLRPCEndpoint().c_str());
+	gsoap_send_timeout = configuration->getGsoapSendTimeout();
+	gsoap_recv_timeout = configuration->getGsoapRecvTimeout();
 }
 
 void initLogging() {
@@ -260,6 +265,15 @@ void logConfiguration() {
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n",
 			OPTL_MAX_GSOAP_PENDING.c_str(),
 			configuration->getGsoapMaxPending());
+
+	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n",
+			OPTL_GSOAP_SEND_TIMEOUT.c_str(),
+			configuration->getGsoapSendTimeout());
+
+	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n",
+			OPTL_GSOAP_RECV_TIMEOUT.c_str(),
+			configuration->getGsoapRecvTimeout());
+
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_LOG_FILE_NAME.c_str(),
 			configuration->getLogFile().c_str());
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n",

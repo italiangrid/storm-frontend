@@ -188,6 +188,14 @@ int FrontendConfiguration::getGsoapMaxPending() {
     return gsoap_max_pending;
 }
 
+int FrontendConfiguration::getGsoapSendTimeout() {
+    return gsoap_send_timeout;
+}
+
+int FrontendConfiguration::getGsoapRecvTimeout() {
+    return gsoap_recv_timeout;
+}
+
 int FrontendConfiguration::getPort() {
     return port;
 }
@@ -294,11 +302,13 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
 
     po::options_description configurationFileOptions("Configuration file options");
 
-    configurationFileOptions.add_options()(OPTL_NUM_THREADS.c_str(), po::value<int>()->default_value(
-            DEFAULT_THREADS_NUMBER), EMPTY_DESCRIPTION)
+    configurationFileOptions.add_options()
+            (OPTL_NUM_THREADS.c_str(), po::value<int>()->default_value(DEFAULT_THREADS_NUMBER), EMPTY_DESCRIPTION)
             (OPTL_MAX_THREADPOOL_PENDING.c_str(), po::value<int>()->default_value(DEFAULT_THREADPOOL_MAX_PENDING), EMPTY_DESCRIPTION)
             (OPTL_SLEEP_THREADPOOL_MAX_PENDING.c_str(), po::value<unsigned int>()->default_value(DEFAULT_SLEEP_THREADPOOL_MAX_PENDING), EMPTY_DESCRIPTION)
             (OPTL_MAX_GSOAP_PENDING.c_str(), po::value<int>()->default_value(DEFAULT_GSOAP_MAX_PENDING), EMPTY_DESCRIPTION)
+            (OPTL_GSOAP_SEND_TIMEOUT.c_str(), po::value<int>()->default_value(DEFAULT_GSOAP_SEND_TIMEOUT), EMPTY_DESCRIPTION)
+            (OPTL_GSOAP_RECV_TIMEOUT.c_str(), po::value<int>()->default_value(DEFAULT_GSOAP_RECV_TIMEOUT), EMPTY_DESCRIPTION)
             (OPTL_LOG_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_LOG_FILE_NAME), EMPTY_DESCRIPTION)
             (OPTL_MONITORING_ENABLED.c_str(), po::value<bool>()->default_value(DEFAULT_MONITORING_ENABLED), EMPTY_DESCRIPTION)
             (OPTL_MONITORING_DETAILED.c_str(), po::value<bool>()->default_value(DEFAULT_MONITORING_DETAILED), OPT_MONITORING_DETAILED_DESCRIPTION)
@@ -366,7 +376,11 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     numberOfThreads = vm[OPTL_NUM_THREADS].as<int> ();
     threadpool_max_pending = vm[OPTL_MAX_THREADPOOL_PENDING].as<int> ();
     threadpool_max_pending_sleeptime = vm[OPTL_SLEEP_THREADPOOL_MAX_PENDING].as<unsigned int> ();
+
     gsoap_max_pending = vm[OPTL_MAX_GSOAP_PENDING].as<int> ();
+
+    gsoap_send_timeout = vm[OPTL_GSOAP_SEND_TIMEOUT].as<int> ();
+    gsoap_recv_timeout = vm[OPTL_GSOAP_RECV_TIMEOUT].as<int> ();
 
     debugLevelString = vm[OPTL_DEBUG_LEVEL].as<string> ();
     debugLevel = decodeDebugLevelOption(debugLevelString);
