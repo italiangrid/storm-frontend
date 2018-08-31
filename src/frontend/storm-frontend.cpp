@@ -49,6 +49,8 @@
 
 #include <globus_thread.h>
 #include "storm_exception.hpp"
+#include "request_id.hpp"
+#include "get_socket_info.hpp"
 
 #define NAME "StoRM SRM v2.2"
 
@@ -70,6 +72,9 @@ uid_t proxy_uid = 0;
 gid_t proxy_gid = 0;
 
 static const char* STORM_GLOBUS_THREADING_MODEL = "pthread";
+
+static int gsoap_send_timeout = 10;
+static int gsoap_recv_timeout = 10;
 
 void sigint_handler(int sig) {
 	srmlogit(STORM_LOG_INFO, __func__,
@@ -133,37 +138,50 @@ int setProxyUserGlobalVariables(string proxy_user) {
 void *
 process_request(struct soap* tsoap) {
 
+	storm::set_request_id();
+
 	srmlogit(STORM_LOG_DEBUG, "process_request", "-- START process_request\n");
 	srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection(
 			boost::this_thread::get_id());
+
+	// explicitly manage the request id here since threadinfo is not
+	// destroyed for each request but kept in the database connection pool
+	thread_info->request_id = storm::get_request_id();
 	tsoap->user = thread_info;
 
-	tsoap->recv_timeout = SOAP_RECV_TIMEOUT;
-	tsoap->send_timeout = SOAP_SEND_TIMEOUT;
+	tsoap->recv_timeout = gsoap_recv_timeout;
+	tsoap->send_timeout = gsoap_send_timeout;
 
+	std::string peer_ip = get_ip(tsoap);
+
+	srmlogit(STORM_LOG_INFO, __func__, "Connection from %s\n", peer_ip.c_str());
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "-- Start soap_serve\n");
 
-	if (soap_serve((struct soap*) tsoap)
+	if (soap_serve(tsoap)
 			&& (tsoap->error != SOAP_EOF
 					|| (tsoap->errnum != 0
 							&& !(tsoap->omode & SOAP_IO_KEEPALIVE)))) {
 		soap_print_fault(tsoap, stderr);
 	}
+
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_serve\n");
 
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_destroy\n");
-	soap_destroy((struct soap* )tsoap); // cleanup class instances (C++)
+	soap_destroy(tsoap); // cleanup class instances (C++)
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_destroy\n");
 
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_end\n");
-	soap_end((struct soap*) tsoap); // dealloc data and clean up
+	soap_end(tsoap); // dealloc data and clean up
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_end\n");
 
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "Start soap_free\n");
-	soap_free((struct soap*) tsoap); // detach and free thread's copy of soap environment
+	soap_free(tsoap); // detach and free thread's copy of soap environment
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_free\n");
 
 	srmlogit(STORM_LOG_DEBUG, "process_request", "-- END process_request\n");
+	
+	thread_info->request_id = NULL;
+	storm::clear_request_id();
 	return NULL;
 }
 
@@ -209,6 +227,8 @@ void fillGlobalVars() {
 	db_srvr = strdup(configuration->getDBHost().c_str());
 	wsdl_file = strdup(configuration->getWSDLFilePath().c_str());
 	xmlrpc_endpoint = strdup(configuration->getXMLRPCEndpoint().c_str());
+	gsoap_send_timeout = configuration->getGsoapSendTimeout();
+	gsoap_recv_timeout = configuration->getGsoapRecvTimeout();
 }
 
 void initLogging() {
@@ -245,6 +265,15 @@ void logConfiguration() {
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n",
 			OPTL_MAX_GSOAP_PENDING.c_str(),
 			configuration->getGsoapMaxPending());
+
+	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n",
+			OPTL_GSOAP_SEND_TIMEOUT.c_str(),
+			configuration->getGsoapSendTimeout());
+
+	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n",
+			OPTL_GSOAP_RECV_TIMEOUT.c_str(),
+			configuration->getGsoapRecvTimeout());
+
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_LOG_FILE_NAME.c_str(),
 			configuration->getLogFile().c_str());
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n",

@@ -45,6 +45,7 @@ struct srm_srv_thread_info {
     int              db_open_done;
     struct srm_dbfd  dbfd;
     char             errbuf[PRTBUFSZ];
+    const char*      request_id;
 };
 
 /* srm server exit codes */

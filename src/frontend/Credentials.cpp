@@ -65,7 +65,7 @@ Credentials::Credentials(struct soap *soap)
 
 sql_string Credentials::getFQANsOneString()
 {
-    static const char* const funcName = "file_request::getFQANsOneString()";
+    static const char* const funcName = "Credentials::getFQANsOneString()";
     std::string returnString;
 
     for (int i=0; i<_fqans_vector.size(); i++) {
