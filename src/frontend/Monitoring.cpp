@@ -24,7 +24,7 @@ int storm::Monitoring::M_DEFAULT_SLEEP_INTERVALL = 60;
 void storm::Monitoring::thread_function(Monitoring* m) {
     try {
         for (;;) {
-        	m->newRound();
+            m->newRound();
             boost::this_thread::sleep(boost::posix_time::seconds(m->m_sleep_interval));
 
             if (!m->m_running) {
@@ -33,19 +33,19 @@ void storm::Monitoring::thread_function(Monitoring* m) {
 
             //print by round
             if (m->m_detailed) {
-            	m->printRoundDetails();
+                m->printRoundDetails();
             }
 
 
-			//print all history
-			m->printSummary();
-			if (m->m_detailed) {
-				m->printDetails();
-			}
+            //print all history
+            m->printSummary();
+            if (m->m_detailed) {
+                m->printDetails();
+            }
 
         }
     } catch (boost::thread_interrupted &e) {
-    	srmlogit(STORM_LOG_ERROR, m->m_funcName, "Received thread_interrupted exception\n");
+        srmlogit(STORM_LOG_ERROR, m->m_funcName, "Received thread_interrupted exception\n");
     }
 }
 
