@@ -252,6 +252,7 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
     
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -546,7 +547,7 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
-    
+    ASSERT_ENV_OK(&env);
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -816,6 +817,7 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
     
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -994,6 +996,7 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
     
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);

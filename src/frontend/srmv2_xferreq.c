@@ -132,6 +132,7 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -337,6 +338,7 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -514,6 +516,7 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -695,6 +698,7 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -891,6 +895,7 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -1189,6 +1194,7 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
+    ASSERT_ENV_OK(&env);
 
     if (req->authorizationID != NULL) {
         // Pass it to the BE and see what happen...
