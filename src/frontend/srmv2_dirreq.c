@@ -28,7 +28,7 @@
 #include "srmlogit.h"
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
-
+#include <xmlrpc-c/util.h>
 
 /* Defines for XML-RPM calls for FE-BE communication */
 
@@ -143,7 +143,7 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 /*
     if (env.fault_occurred) {
         repp->returnStatus->explanation = "Internal error";
@@ -184,7 +184,7 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
         xmlrpc_env_init(&env);
     }
 
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     /** MANDATORY ************ (2) Encode SURL ***************************************************/
     error = encode_string(func, &env, req->SURL, SRM_PARAM_SURL, inputParam);
@@ -203,7 +203,7 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
 
     if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
     {
-        ASSERT_ENV_OK(&env);
+        XMLRPC_ASSERT_ENV_OK((&env));
 
 		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
 		if (error) {
@@ -336,7 +336,7 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -354,7 +354,7 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
     /******************************************************************************/      
     
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -370,7 +370,7 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
     }
     
     /** MANDATORY ************ (2) Encode SURL ***************************************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env, req->SURL, SRM_PARAM_SURL, inputParam);
     if (error) {  
@@ -391,7 +391,7 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
     /** OPTIONAL ************* (3) Encode storageSystemInfo **************************************/
     if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
 	{
-        ASSERT_ENV_OK(&env);
+        XMLRPC_ASSERT_ENV_OK((&env));
 
 		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
 		if (error) {
@@ -408,7 +408,7 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
 	}
     
     /** OPTIONAL ************* (4) Encode recurisve **************************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_bool(func, &env, req->recursive, "recursive", inputParam);
     if (error) {
@@ -503,7 +503,7 @@ void rpcResponseHandler_Rm(const char          *serverUrl,
     }
     
     /** OPTIONAL ************* (2) Decode arrayOfFileStatuses (in ArrayOfTSURLReturnStatus *) **********/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = decode_ArrayOfTSURLReturnStatus(func, &env, soap, &(repp->arrayOfFileStatuses), SRM_PARAM_arrayOfFileStatuses, result);
     if (error != 0) {
@@ -554,7 +554,7 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
 
     /*Initialize xmlrpc input structure*/
     inputParam = xmlrpc_struct_new(&env);
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
     
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -571,7 +571,7 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
     /********          Encode parameters for Rm    (SRM v2.2)              ********/  
     /******************************************************************************/
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -587,7 +587,7 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
     }
     
     /** MANDATORY *********** (2) Encode arrayOfSURLs (TSurlInfo[]) ****************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_ArrayOfAnyURI(func, &env, req->arrayOfSURLs, SRM_PARAM_arrayOfSURLs, inputParam);
     if (error) {  
@@ -607,7 +607,7 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
     /** OPTIONAL ************* (3) Encode storageSystemInfo **************************************/
     if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
 	{
-        ASSERT_ENV_OK(&env);
+        XMLRPC_ASSERT_ENV_OK((&env));
 
 		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
 		if (error) {
@@ -711,7 +711,7 @@ void rpcResponseHandler_Ls(const char          *serverUrl,
     }
 
     /** OPTIONAL ************* (2) Decode requestToken (in char *) ***************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = decode_string(func, &env, soap, &(repp->requestToken), "requestToken", result);
 	if (error != 0) {
@@ -732,7 +732,7 @@ void rpcResponseHandler_Ls(const char          *serverUrl,
     }
     
 	/** OPTIONAL ************* (3) Decode details (in TMetaDataPathDetail *) *************************/    
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error =  decode_ArrayOfTMetaDataPathDetail(func, &env, soap, &(repp->details), SRM_PARAM_details, result);
     if (error != 0) {
@@ -785,7 +785,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     xmlrpc_env_init(&env);
                                                                             
     inputParam = xmlrpc_struct_new(&env);
-    ASSERT_ENV_OK(&env);    
+    XMLRPC_ASSERT_ENV_OK((&env));    
     
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -806,7 +806,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
      *  we  prefere to abort the request execution.                               */
       
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -822,7 +822,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     }
 
     /** MANDATORY *********** (2) Encode arrayOfSURLs ***************************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_ArrayOfAnyURI(func, &env, req->arrayOfSURLs, SRM_PARAM_arrayOfSURLs, inputParam);
     if (error) {  
@@ -842,7 +842,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     /** OPTINAL ************** (3) Encode storageSystemInfo **************************************/
     if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
 	{
-        ASSERT_ENV_OK(&env);
+        XMLRPC_ASSERT_ENV_OK((&env));
 
 		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
 		if (error) {
@@ -859,7 +859,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
 	}
 
     /** OPTINAL ************** (4) Encode fileStorageType **************************************/   
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_int(func, &env, (int*)req->fileStorageType, SRM_PARAM_fileStorageType, inputParam);
     if (error) {
@@ -875,7 +875,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     }
     
     /** OPTIONAL ************* (5) Encode fullDetailedList **************************************/   
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_bool(func, &env, req->fullDetailedList, SRM_PARAM_fullDetailedList, inputParam);
     if (error) {
@@ -891,7 +891,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     }
   
     /** OPTIONAL ************* (6) Encode allLevelRecursive **************************************/   
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_bool(func, &env, req->allLevelRecursive, SRM_PARAM_allLevelRecursive, inputParam);
     if (error) {
@@ -907,7 +907,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     }
     
     /** OPTIONAL ************* (7) Encode numOfLevels **************************************/   
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_int(func, &env, req->numOfLevels, SRM_PARAM_numOfLevels, inputParam);
     if (error) {
@@ -923,7 +923,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     }
     
     /** OPTIONAL ************* (8) Encode offset **************************************/   
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_int(func, &env, req->offset, SRM_PARAM_offset, inputParam);
     if (error) {
@@ -939,7 +939,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     }
     
     /** OPTIONAL ************* (9) Encode count **************************************/   
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_int(func, &env, req->count, SRM_PARAM_count, inputParam);
     if (error) {
@@ -1113,7 +1113,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     
     /* Initialize xmlrpc input structure */
     inputParam = xmlrpc_struct_new(&env);
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     /**************************** Encode VOMS attibutes ***************************/
     error = encode_VOMSAttributes(func, &env, soap, req->authorizationID, inputParam);
@@ -1131,7 +1131,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     /******************************************************************************/      
     
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
@@ -1147,7 +1147,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     }
     
     /** MANDATORY ************ (2) Encode fromSURL ***************************************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env, req->fromSURL, SRM_PARAM_fromSURL, inputParam);
     if (error) {  
@@ -1166,7 +1166,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
    
    
     /** MANDATORY ************ (3) Encode toSURL ***************************************************/
-    ASSERT_ENV_OK(&env);
+    XMLRPC_ASSERT_ENV_OK((&env));
 
     error = encode_string(func, &env, req->toSURL, SRM_PARAM_toSURL, inputParam);
     if (error) {  
@@ -1187,7 +1187,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     /** OPTIONAL ************* (4) Encode storageSystemInfo **************************************/if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
 	if(req->storageSystemInfo != NULL && req->storageSystemInfo->__sizeextraInfoArray >= 1)
 	{
-        ASSERT_ENV_OK(&env);
+        XMLRPC_ASSERT_ENV_OK((&env));
 
 		error = encode_ArrayOfTExtraInfo(func, &env, req->storageSystemInfo, SRM_PARAM_storageSystemInfo, inputParam);
 		if (error) {
