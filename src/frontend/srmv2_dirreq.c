@@ -970,7 +970,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(xmlrpc_endpoint, methodName_ls, "(S)", inputParam);
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_ls, "(S)", inputParam);
 
     rpcResponseHandler_Ls(xmlrpc_endpoint, methodName_ls, NULL,
                           &LsResponseHandlerInput, &env, result);
