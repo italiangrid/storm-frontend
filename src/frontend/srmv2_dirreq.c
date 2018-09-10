@@ -232,17 +232,11 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
     MkdirResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
     result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_mkdir, "(S)", inputParam);
                               
     rpcResponseHandler_Mkdir(xmlrpc_endpoint, methodName_mkdir, NULL /*input parameters*/,
 		             &MkdirResponseHandlerInput, &env, result);
-
-/*
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started\n");
-
-    while (MkdirResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-*/
 
     xmlrpc_DECREF(inputParam);
     xmlrpc_DECREF(result);
@@ -327,6 +321,7 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value *result;
   
     /* Allocate the response structure */
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmRmdirResponse))) == NULL)
@@ -439,15 +434,13 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
     RmdirResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, calling Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_rmdir, (void *) &rpcResponseHandler_Rmdir,
-                              &RmdirResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started\n");
-
-    while (RmdirResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_rmdir, "(S)", inputParam);
+    rpcResponseHandler_Rmdir(xmlrpc_endpoint, methodName_rmdir, NULL,
+                             &RmdirResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
 	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 	
@@ -542,6 +535,7 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
     int error = 0;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value *result;
     
     /************************ Allocate response structure *******************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmRmResponse))) == NULL)
@@ -640,15 +634,13 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
     RmResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_rm, (void *) &rpcResponseHandler_Rm,
-                              &RmResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
-
-    while (RmResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_rm, "(S)", inputParam);
+    rpcResponseHandler_Rm(xmlrpc_endpoint, methodName_rm, NULL,
+                          &RmResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
     if (RmResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
@@ -772,6 +764,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value* result;
 
     /************************** Allocate response structure ***************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmLsResponse))) == NULL)
@@ -976,16 +969,15 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
     LsResponseHandlerInput.RPCTerminated = 0;
 
     /* Make remote procedure call, i.e. call Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_ls, (void *) rpcResponseHandler_Ls,
-                              &LsResponseHandlerInput, "(S)", inputParam);
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(xmlrpc_endpoint, methodName_ls, "(S)", inputParam);
 
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
+    rpcResponseHandler_Ls(xmlrpc_endpoint, methodName_ls, NULL,
+                          &LsResponseHandlerInput, &env, result);
 
-    while (LsResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
     /* Free memory for xmlrpc_value* pointers */
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
     
     if (LsResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
@@ -1104,6 +1096,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value *result;
   
     /* Allocate the response structure */
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmMvResponse))) == NULL)
@@ -1219,15 +1212,13 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     MvResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, calling Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_mv, (void *) &rpcResponseHandler_Mv,
-                              &MvResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started: %s\n", req->fromSURL);
-
-    while (MvResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC: %s\n", req->fromSURL);
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_mv, "(S)", inputParam);
+    rpcResponseHandler_Mv(xmlrpc_endpoint, methodName_mv, NULL,
+                          &MvResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     

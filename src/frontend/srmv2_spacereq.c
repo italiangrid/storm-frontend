@@ -228,10 +228,11 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     static const char *methodName_ReserveSpace = "synchcall.reserveSpace";
     struct ns1__srmReserveSpaceResponse *repp;
     struct RPC_ResponseHandlerInput_ReserveSpace ReserveSpaceResponseHandlerInput;
-    int i, error;
+    int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    
+    xmlrpc_value *result;
+
     /******************************* Allocate response structure *********************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmReserveSpaceResponse))) == NULL) return(SOAP_EOM);
     /* Initialization of the struct ns1__srmReserveSpaceResponse fields*/
@@ -400,16 +401,13 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     ReserveSpaceResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_ReserveSpace, (void *) &rpcResponseHandler_ReserveSpace,
-                              &ReserveSpaceResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
-
-    while (ReserveSpaceResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_ReserveSpace, "(S)", inputParam);
+    rpcResponseHandler_ReserveSpace(xmlrpc_endpoint, methodName_ReserveSpace, NULL,
+                              &ReserveSpaceResponseHandlerInput, &env, result);
        
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
     if (ReserveSpaceResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
@@ -527,12 +525,11 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
     static const char *func = "ReleaseSpace";
     static const char *methodName_RSpace = "synchcall.ReleaseSpace";
     struct ns1__srmReleaseSpaceResponse *repp;
-    int i, error;
+    int error;
     struct RPC_ResponseHandlerInput_ReleaseSpace ReleaseSpaceResponseHandlerInput;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
-    xmlrpc_value *authID, *xmlrpcString, *forceFileRelease;
-    xmlrpc_value *userDN, *fqansArray, *fqansItem;
+    xmlrpc_value *result;
     
     /* Allocate response structure */
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmReleaseSpaceResponse))) == NULL)
@@ -629,15 +626,13 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
     ReleaseSpaceResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, calling Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_RSpace, (void *) &rpcResponseHandler_ReleaseSpace,
-                              &ReleaseSpaceResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_RSpace, "(S)", inputParam);
+    rpcResponseHandler_ReleaseSpace(xmlrpc_endpoint, methodName_RSpace, NULL,
+                              &ReleaseSpaceResponseHandlerInput, &env, result);
 
-    while (ReleaseSpaceResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
 	if (ReleaseSpaceResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
@@ -733,7 +728,6 @@ void rpcResponseHandler_GetSpaceMetaData(const char         *serverUrl,
     static const char *func = "rpcResponseHandler_GetSpaceMetaData";
     struct ns1__srmGetSpaceMetaDataRequest *req;
     struct ns1__srmGetSpaceMetaDataResponse *repp;
-    struct ns1__TMetaDataSpace *repfilep;
     struct RPC_ResponseHandlerInput_GetSpaceMetaData *input;
     struct soap *soap;
     int error;
@@ -801,6 +795,7 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value *result;
   
     /******************************* Allocate response structure *********************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetSpaceMetaDataResponse))) == NULL)
@@ -869,16 +864,13 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
     GetSpaceMetaDataResponseHandlerInput.RPCTerminated = 0;
  
     /* Make remote procedure call, i.e. call Backend server */
-
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_getSpace, (void *) &rpcResponseHandler_GetSpaceMetaData,
-                              &GetSpaceMetaDataResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
-
-    while (GetSpaceMetaDataResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_getSpace, "(S)", inputParam);
+    rpcResponseHandler_GetSpaceMetaData(xmlrpc_endpoint, methodName_getSpace, NULL,
+                              &GetSpaceMetaDataResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
     if (GetSpaceMetaDataResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
@@ -911,7 +903,6 @@ void rpcResponseHandler_GetSpaceTokens(const char         *serverUrl,
     static const char *func = "rpcResponseHandler_GetSpaceTokens";
     struct ns1__srmGetSpaceTokensRequest *req;
     struct ns1__srmGetSpaceTokensResponse *repp;
-    struct ns1__TTokensSpace *repfilep;
     struct RPC_ResponseHandlerInput_GetSpaceTokens *input;
     struct soap *soap;
     int error;
@@ -980,6 +971,7 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
     int error;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value *result;
   
     /******************************* Allocate response structure *********************************/
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetSpaceTokensResponse))) == NULL)
@@ -1051,16 +1043,13 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
     GetSpaceTokensResponseHandlerInput.RPCTerminated = 0;
  
     /* Make remote procedure call, i.e. call Backend server */
-
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName, (void *) &rpcResponseHandler_GetSpaceTokens,
-                              &GetSpaceTokensResponseHandlerInput, "(S)", inputParam);
-                              
-    srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started.\n");
-
-    while (GetSpaceTokensResponseHandlerInput.RPCTerminated == 0) 
-        xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
+    srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+    rpcResponseHandler_GetSpaceTokens(xmlrpc_endpoint, methodName, NULL,
+                              &GetSpaceTokensResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
 
     if (GetSpaceTokensResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
