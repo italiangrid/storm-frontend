@@ -128,6 +128,7 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
     struct RPC_ResponseHandlerInput_Mkdir MkdirResponseHandlerInput;
     xmlrpc_env env;
     xmlrpc_value *inputParam;
+    xmlrpc_value* result;
 
     /* Allocate response structure */
     if ((repp = soap_malloc(soap, sizeof(struct ns1__srmMkdirResponse))) == NULL)
@@ -231,17 +232,22 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
     MkdirResponseHandlerInput.RPCTerminated = 0;
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
-    xmlrpc_client_call_asynch(xmlrpc_endpoint, methodName_mkdir, (void *) &rpcResponseHandler_Mkdir,
-                              &MkdirResponseHandlerInput, "(S)", inputParam);
+    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_mkdir, "(S)", inputParam);
                               
+    rpcResponseHandler_Mkdir(xmlrpc_endpoint, methodName_mkdir, NULL /*input parameters*/,
+		             &MkdirResponseHandlerInput, &env, result);
+
+/*
     srmlogit(STORM_LOG_DEBUG, func, "Asynchronous RPC started\n");
 
     while (MkdirResponseHandlerInput.RPCTerminated == 0) 
         xmlrpc_client_event_loop_finish_asynch_timeout(RPC_ASYNCH_TIMEOUT);
-    
-    xmlrpc_DECREF(inputParam);
+*/
 
-	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    xmlrpc_DECREF(inputParam);
+    xmlrpc_DECREF(result);
+
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 	    
     return(SOAP_OK);
 }
