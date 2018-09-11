@@ -54,6 +54,8 @@
 
 #define NAME "StoRM SRM v2.2"
 
+using namespace std;
+
 static bool stay_running = true;
 
 char *db_pwd;
@@ -109,11 +111,11 @@ static int http_get(struct soap *soap) {
 	return SOAP_OK;
 }
 
-int setProxyUserGlobalVariables(string proxy_user) {
+int setProxyUserGlobalVariables(std::string proxy_user) {
 
 	struct passwd *pwd;
 
-	string proxy_user_name;
+	std::string proxy_user_name;
 	if (proxy_user.empty()) {
 
 		// Get current user name
@@ -394,7 +396,7 @@ soap* initSoap() {
 void setupXMLRPC() {
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 
-	string storm_ua_token("STORM/" + configuration->getXMLRPCToken());
+	std::string storm_ua_token("STORM/" + configuration->getXMLRPCToken());
 
 	xmlrpc_env env;
 	xmlrpc_env_init(&env);
