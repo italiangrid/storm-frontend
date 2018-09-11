@@ -625,7 +625,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	try {
-		storm::ThreadPool::buildInstance(configuration->getNumThreads());
+		storm::ThreadPool::buildInstance(configuration->getNumThreads(), configuration->getThreadpoolMaxPending());
 	} catch (boost::thread_resource_error& e) {
 		cout
 				<< "Cannot create all the requested threads, not enough resources.\n";
