@@ -29,6 +29,7 @@
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #include <xmlrpc-c/util.h>
+#include "xmlrpc_client.hpp"
 
 /* Defines for XML-RPM calls for FE-BE communication */
 
@@ -121,7 +122,7 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
                   struct ns1__srmMkdirResponse_ *rep)
 {
     static const char *func = "Mkdir";
-    static const char *methodName_mkdir = "synchcall.mkdir";
+    static const char *methodName = "synchcall.mkdir";
     char clientdn[256], **fqans;
     int i, error, nbfqans;
     struct ns1__srmMkdirResponse *repp;
@@ -233,9 +234,10 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_mkdir, "(S)", inputParam);
+    xmlrpc_client* client;
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
                               
-    rpcResponseHandler_Mkdir(xmlrpc_endpoint, methodName_mkdir, NULL /*input parameters*/,
+    rpcResponseHandler_Mkdir(xmlrpc_endpoint, methodName, NULL /*input parameters*/,
 		             &MkdirResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
@@ -758,7 +760,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
                 struct ns1__srmLsResponse_ *rep)
 {
     static const char *func = "Ls";
-    static const char *methodName_ls = "synchcall.ls";
+    static const char *methodName = "synchcall.ls";
     struct RPC_ResponseHandlerInput_Ls LsResponseHandlerInput;
     struct ns1__srmLsResponse *repp;
     int error;
@@ -961,6 +963,7 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
    
     /* Clean up our error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     LsResponseHandlerInput.soap = soap;
@@ -970,15 +973,21 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_ls, "(S)", inputParam);
 
-    rpcResponseHandler_Ls(xmlrpc_endpoint, methodName_ls, NULL,
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
+    rpcResponseHandler_Ls(xmlrpc_endpoint, methodName, NULL,
                           &LsResponseHandlerInput, &env, result);
 
     /* Free memory for xmlrpc_value* pointers */
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
-    
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
+    }
+
+    xmlrpc_env_clean(&env);
+
     if (LsResponseHandlerInput.RPCTerminated == 2) {
     	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
     	return(SOAP_EOM);

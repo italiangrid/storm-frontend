@@ -153,6 +153,7 @@ process_request(struct soap* tsoap) {
 	// explicitly manage the request id here since threadinfo is not
 	// destroyed for each request but kept in the database connection pool
 	thread_info->request_id = storm::get_request_id();
+
 	tsoap->user = thread_info;
 
 	tsoap->recv_timeout = gsoap_recv_timeout;
@@ -190,6 +191,8 @@ process_request(struct soap* tsoap) {
 	
 	thread_info->request_id = NULL;
 	storm::clear_request_id();
+	thread_info->rpc_client = NULL;
+
 	return NULL;
 }
 
@@ -397,36 +400,6 @@ soap* initSoap() {
 		return NULL;
 	}
 	return soap_data;
-}
-
-void setupXMLRPC() {
-	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
-
-	std::string storm_ua_token("STORM/" + configuration->getXMLRPCToken());
-
-	xmlrpc_env env;
-	xmlrpc_env_init(&env);
-	struct xmlrpc_clientparms client_params;
-	struct xmlrpc_curl_xportparms curl_params;
-
-	memset(&curl_params, 0, sizeof(curl_params));
-
-	// Ugly hack to encode token in User-Agent HTTP header
-	// as xmlrpc doesnt allow us to access CURL object and
-	// set a decent header ourselves.
-	curl_params.user_agent = storm_ua_token.c_str();
-	curl_params.dont_advertise = 1;
-
-	client_params.transport = "curl";
-	client_params.transportparmsP = &curl_params;
-	client_params.transportparm_size = XMLRPC_CXPSIZE(dont_advertise);
-
-	xmlrpc_client_init2(&env,
-	XMLRPC_CLIENT_NO_FLAGS,
-	NAME,
-	VERSION, &client_params, XMLRPC_CPSIZE(transportparm_size));
-
-	xmlrpc_env_clean(&env);
 }
 
 storm::Monitoring* initMonitoring() {
@@ -641,8 +614,15 @@ int main(int argc, char** argv) {
 	}
 
 	curl_global_init(CURL_GLOBAL_ALL);
-	setupXMLRPC();
-
+	xmlrpc_env env;
+	xmlrpc_env_init(&env);
+    xmlrpc_client_setup_global_const(&env);
+	if (env.fault_occurred) {
+		srmlogit(STORM_LOG_DEBUG, __func__, env.fault_string);
+		xmlrpc_env_clean(&env);
+		return SYERR;
+	}
+	xmlrpc_env_clean(&env);
 	soap* soap_data = initSoap();
 	if (soap_data == NULL) {
 		return SYERR;

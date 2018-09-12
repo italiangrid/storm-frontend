@@ -51,7 +51,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse()
 		throw storm::storm_error("Unable to allocate memory for the response. invalid_argument Exception: " + std::string(exc.what()));
 	}
     m_builtResponse->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-    m_builtResponse->returnStatus->explanation = "srmCopy operation is not supported";
+    m_builtResponse->returnStatus->explanation = const_cast<char*>("srmCopy operation is not supported");
 
     return m_builtResponse;
 }

@@ -76,6 +76,7 @@ stormfrontend_others = storm_exception.hpp \
     file_status.hpp \
     surl_normalizer.h surl_normalizer.cc \
     request_id.cpp request_id.hpp \
+    xmlrpc_client.cpp xmlrpc_client.hpp \
     StatusTemplate.hpp FileStatusRequest.hpp \
     BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
