@@ -56,7 +56,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         if (credentials.getDN().empty()) {
             srmlogit(STORM_LOG_ERROR, func, "Client DN not found!\n");
             repp->returnStatus->statusCode = SRM_USCOREAUTHENTICATION_USCOREFAILURE;
-            repp->returnStatus->explanation = "Unable to retrieve client DN";
+            repp->returnStatus->explanation = const_cast<char*>("Unable to retrieve client DN");
             storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
             return SOAP_OK;
         }
@@ -65,7 +65,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
 		{
 			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
 			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
-			repp->returnStatus->explanation = "User not authorized";
+			repp->returnStatus->explanation = const_cast<char*>("User not authorized");
             storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
 			return SOAP_OK;
 		}
@@ -79,7 +79,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
                 srmlogit(STORM_LOG_ERROR, func, "DB open error!\n");
                 repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-                repp->returnStatus->explanation = "DB open error";
+                repp->returnStatus->explanation = const_cast<char*>("DB open error");
                 storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
                 return SOAP_OK;
             }
@@ -92,7 +92,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             u_token = std::string(req->userRequestDescription);
             if (!storm::token::description_valid(u_token)){
             	repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-            	repp->returnStatus->explanation = "invalid user request description";
+            	repp->returnStatus->explanation = const_cast<char*>("invalid user request description");
             	storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
             	return SOAP_OK;
             }
@@ -116,12 +116,12 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             if (u_token.empty()) {
                 srmlogit(STORM_LOG_ERROR, func, "Return status: SRM_FAILURE\n");
                 repp->returnStatus->statusCode = SRM_USCOREFAILURE;
-                repp->returnStatus->explanation = "No request tokens owned by this user";
+                repp->returnStatus->explanation = const_cast<char*>("No request tokens owned by this user");
             }
             else {
                 srmlogit(STORM_LOG_ERROR, func, "Return status: SRM_INVALID_REQUEST\n");
                 repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-                repp->returnStatus->explanation = "'userRequestDescription' does not refer to any existing known requests";
+                repp->returnStatus->explanation = const_cast<char*>("'userRequestDescription' does not refer to any existing known requests");
             }
             storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
             return SOAP_OK;
@@ -132,8 +132,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         repp->arrayOfRequestTokens->__sizetokenArray = resultsSize;
         repp->arrayOfRequestTokens->tokenArray = storm::soap_calloc<struct ns1__TRequestTokenReturn>(soap, resultsSize);
         
-        int i;
-        for (i=0; i<results.size(); i++) {
+        for (size_t i = 0; i<results.size(); i++) {
             repp->arrayOfRequestTokens->tokenArray[i] = storm::soap_calloc<struct ns1__TRequestTokenReturn>(soap);
             repp->arrayOfRequestTokens->tokenArray[i]->requestToken = soap_strdup(soap, results[i]["r_token"].c_str());
             repp->arrayOfRequestTokens->tokenArray[i]->createdAtTime =
@@ -153,7 +152,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
     
     srmlogit(STORM_LOG_ERROR, func, "Return status: SRM_SUCCESS\n");
     repp->returnStatus->statusCode = SRM_USCORESUCCESS;
-    repp->returnStatus->explanation = "Request successfully completed";
+    repp->returnStatus->explanation = const_cast<char*>("Request successfully completed");
     storm::MonitoringHelper::registerOperation(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME, SRM_USCORESUCCESS);
     return(SOAP_OK);
 }
