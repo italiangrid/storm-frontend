@@ -45,7 +45,6 @@ struct srm_srv_thread_info {
     struct srm_dbfd  dbfd;
     char             errbuf[PRTBUFSZ];
     const char*      request_id;
-    struct xmlrpc_client*   rpc_client;
 };
 
 /* srm server exit codes */

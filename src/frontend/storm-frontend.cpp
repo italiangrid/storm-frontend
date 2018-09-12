@@ -190,7 +190,6 @@ process_request(struct soap* tsoap) {
 	
 	thread_info->request_id = NULL;
 	storm::clear_request_id();
-	thread_info->rpc_client = NULL;
 
 	return NULL;
 }

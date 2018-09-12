@@ -22,6 +22,7 @@
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #include <xmlrpc-c/util.h>
+#include "xmlrpc_client.hpp"
 
 /*************************************************************************************/
 /*                           Space Management Functions                              */
@@ -393,6 +394,7 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     ReserveSpaceResponseHandlerInput.soap = soap;
@@ -402,17 +404,20 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_ReserveSpace, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName_ReserveSpace, &result, "(S)", inputParam);
+
     rpcResponseHandler_ReserveSpace(xmlrpc_endpoint, methodName_ReserveSpace, NULL,
                               &ReserveSpaceResponseHandlerInput, &env, result);
        
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (ReserveSpaceResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-    	return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
     
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
@@ -618,7 +623,8 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
-    
+    xmlrpc_env_init(&env);
+
     /* Define the structure to give as input to the RPC response handler */
     ReleaseSpaceResponseHandlerInput.soap = soap;
     ReleaseSpaceResponseHandlerInput.req  = req;
@@ -627,17 +633,20 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
                                                                         
     /* Make remote procedure call, calling Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_RSpace, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName_RSpace, &result, "(S)", inputParam);
+
     rpcResponseHandler_ReleaseSpace(xmlrpc_endpoint, methodName_RSpace, NULL,
                               &ReleaseSpaceResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-	if (ReleaseSpaceResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
     
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
@@ -856,7 +865,8 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
- 
+    xmlrpc_env_init(&env);
+
     /* Define the structure to give as input to the RPC response handler */
     GetSpaceMetaDataResponseHandlerInput.soap = soap;
     GetSpaceMetaDataResponseHandlerInput.req  = req;
@@ -865,17 +875,20 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
  
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_getSpace, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName_getSpace, &result, "(S)", inputParam);
+
     rpcResponseHandler_GetSpaceMetaData(xmlrpc_endpoint, methodName_getSpace, NULL,
                               &GetSpaceMetaDataResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (GetSpaceMetaDataResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-    	return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
     
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
@@ -1035,7 +1048,8 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
- 
+    xmlrpc_env_init(&env);
+
     /* Define the structure to give as input to the RPC response handler */
     GetSpaceTokensResponseHandlerInput.soap = soap;
     GetSpaceTokensResponseHandlerInput.req  = req;
@@ -1044,17 +1058,20 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
  
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_GetSpaceTokens(xmlrpc_endpoint, methodName, NULL,
                               &GetSpaceTokensResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (GetSpaceTokensResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-    	return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
     
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     

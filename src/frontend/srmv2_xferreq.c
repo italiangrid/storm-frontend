@@ -22,6 +22,7 @@
 #include "xmlrpc_encode.h"
 #include "frontend_version.h"
 #include <xmlrpc-c/util.h>
+#include "xmlrpc_client.hpp"
 
 extern int nb_supported_protocols;
 extern char **supported_protocols;
@@ -208,6 +209,7 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     ReleaseFilesResponseHandlerInput.soap = soap;
@@ -217,17 +219,20 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_ReleaseFiles(xmlrpc_endpoint, methodName, NULL,
                               &ReleaseFilesResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (ReleaseFilesResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     return(SOAP_OK);
@@ -400,6 +405,7 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     PutDoneResponseHandlerInput.soap = soap;
@@ -409,17 +415,20 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_PutDone(xmlrpc_endpoint, methodName, NULL,
                               &PutDoneResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (PutDoneResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
@@ -563,6 +572,7 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     AbortRequestResponseHandlerInput.soap = soap;
@@ -572,17 +582,20 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_AbortRequest(xmlrpc_endpoint, methodName, NULL,
                               &AbortRequestResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (AbortRequestResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
@@ -759,6 +772,7 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     AbortFilesResponseHandlerInput.soap = soap;
@@ -768,17 +782,20 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_AbortFiles(xmlrpc_endpoint, methodName, NULL,
                               &AbortFilesResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (AbortFilesResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
@@ -982,6 +999,7 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     ExtendFileLifeTimeResponseHandlerInput.soap = soap;
@@ -991,17 +1009,21 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName, "(S)", inputParam);
+
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_ExtendFileLifeTime(xmlrpc_endpoint, methodName, NULL,
                               &ExtendFileLifeTimeResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (ExtendFileLifeTimeResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
@@ -1231,6 +1253,7 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     PingResponseHandlerInput.soap = soap;
@@ -1240,18 +1263,20 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
 
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName,
-                                "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
+
     rpcResponseHandler_Ping(xmlrpc_endpoint, methodName, NULL,
                             &PingResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (PingResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-        return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
+
+    xmlrpc_env_clean(&env);
 
     if (return_version_info) {
         error = set_version_info(soap, repp);

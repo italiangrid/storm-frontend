@@ -38,7 +38,6 @@ DBConnectionPool::DBConnectionPool(int pool_size): mtx(){
         mysql_connection_pool[i] = new struct srm_srv_thread_info();
         mysql_connection_pool[i]->is_used = 0;          // i.e. = false
         mysql_connection_pool[i]->db_open_done = 0;     // i.e. = false
-        mysql_connection_pool[i]->rpc_client = 0;
     }
     mtx.unlock();
 }

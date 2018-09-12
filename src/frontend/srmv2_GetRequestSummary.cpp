@@ -32,6 +32,7 @@
 #include "get_socket_info.hpp"
 #include "token_validator.hpp"
 #include "storm_exception.hpp"
+#include "xmlrpc_client.hpp"
 
 #include <cgsi_plugin.h>
 

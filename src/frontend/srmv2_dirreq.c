@@ -225,6 +225,7 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
 
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
         
     /* Define the structure to give as input to the RPC response handler */
     MkdirResponseHandlerInput.soap = soap;
@@ -234,14 +235,20 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    xmlrpc_client* client;
+
+    xmlrpc_client* client = get_xmlrpc_client();
     xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName, &result, "(S)", inputParam);
                               
     rpcResponseHandler_Mkdir(xmlrpc_endpoint, methodName, NULL /*input parameters*/,
 		             &MkdirResponseHandlerInput, &env, result);
 
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
+
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
+    }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 	    
@@ -428,7 +435,8 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
         
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
-    
+    xmlrpc_env_init(&env);
+
     /* Define the structure to give as input to the RPC response handler */
     RmdirResponseHandlerInput.soap = soap;
     RmdirResponseHandlerInput.req  = req;
@@ -437,12 +445,20 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
                                                                         
     /* Make remote procedure call, calling Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_rmdir, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName_rmdir, &result, "(S)", inputParam);
+
     rpcResponseHandler_Rmdir(xmlrpc_endpoint, methodName_rmdir, NULL,
                              &RmdirResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
+
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
+    }
+
+    xmlrpc_env_clean(&env);
 
 	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 	
@@ -628,6 +644,7 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
 
     /* Define the structure to give as input to the RPC response handler */
     RmResponseHandlerInput.soap = soap;
@@ -637,18 +654,22 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
                                                                         
     /* Make remote procedure call, i.e. call Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC.\n");
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_rm, "(S)", inputParam);
+
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName_rm, &result, "(S)", inputParam);
+
     rpcResponseHandler_Rm(xmlrpc_endpoint, methodName_rm, NULL,
                           &RmResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
 
-    if (RmResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-    	return(SOAP_EOM);
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
     }
-    
+
+    xmlrpc_env_clean(&env);
+
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
     return(SOAP_OK);
@@ -982,18 +1003,15 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
 
     /* Free memory for xmlrpc_value* pointers */
     xmlrpc_DECREF(inputParam);
+
     if (!env.fault_occurred) {
       xmlrpc_DECREF(result);
     }
 
     xmlrpc_env_clean(&env);
 
-    if (LsResponseHandlerInput.RPCTerminated == 2) {
-    	srmlogit(STORM_LOG_ERROR, func, "Request done. Error: out of memory.\n");
-    	return(SOAP_EOM);
-    }
-    
-	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", 
+            reconvertStatusCode(repp->returnStatus->statusCode));
 	    
     return(SOAP_OK);
 }
@@ -1022,7 +1040,7 @@ int ns1__srmStatusOfLsRequest_impl(struct soap *soap,
     /* Assign the repp response structure to the output parameter rep */
     rep->srmStatusOfLsRequestResponse = repp;
     
-	srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
+    srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
 
     return (SOAP_OK);
 }
@@ -1213,6 +1231,7 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
     
     /* Clean up xmlrpc error-handling environment. */
     xmlrpc_env_clean(&env);
+    xmlrpc_env_init(&env);
     
     /* Define the structure to give as input to the RPC response handler */
     MvResponseHandlerInput.soap = soap;
@@ -1222,12 +1241,20 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
                                                                         
     /* Make remote procedure call, calling Backend server */
     srmlogit(STORM_LOG_DEBUG, func, "Making RPC: %s\n", req->fromSURL);
-    result = xmlrpc_client_call(&env, xmlrpc_endpoint, methodName_mv, "(S)", inputParam);
+
+    xmlrpc_client* client = get_xmlrpc_client();
+    xmlrpc_client_call2f(&env, client, xmlrpc_endpoint, methodName_mv, &result, "(S)", inputParam);
+
     rpcResponseHandler_Mv(xmlrpc_endpoint, methodName_mv, NULL,
                           &MvResponseHandlerInput, &env, result);
     
     xmlrpc_DECREF(inputParam);
-    xmlrpc_DECREF(result);
+
+    if (!env.fault_occurred) {
+      xmlrpc_DECREF(result);
+    }
+
+    xmlrpc_env_clean(&env);
 
     srmlogit(STORM_LOG_DEBUG, func, "Request done. Status: %s\n", reconvertStatusCode(repp->returnStatus->statusCode));
     
