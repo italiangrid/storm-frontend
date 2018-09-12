@@ -29,7 +29,7 @@ doc_DATA = LICENSE \
         CREDITS \
         ChangeLog \
         README.md \
-	README
+	      README
 
 ## Subdirectories list
 SUBDIRS = etc wsdl src
