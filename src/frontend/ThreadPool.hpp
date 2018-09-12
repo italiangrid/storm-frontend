@@ -30,6 +30,8 @@
 
 #include <sstream>
 
+#include "FrontendConfiguration.hpp"
+
 namespace storm{
 
 typedef boost::function0<void> task_func;
@@ -38,11 +40,16 @@ class SynchronizedQueue {
 
    private:
       std::queue<task_func> _q;
+      size_t _max_size;
       boost::condition _queue_not_empty;
+      boost::condition _queue_not_full;
       boost::mutex monitor;
 
    public:
-      SynchronizedQueue() {
+      SynchronizedQueue(int size)
+      : _max_size(size)
+      {
+        assert(size > 0);
       }
 
       ~SynchronizedQueue() {
@@ -56,11 +63,15 @@ class SynchronizedQueue {
          }
          task_func func = _q.front();
          _q.pop();
+         _queue_not_full.notify_one();
          return func;
       }
 
       void push(task_func func) {
          boost::mutex::scoped_lock lk(monitor);
+         while (_q.size() == _max_size) {
+           _queue_not_full.wait(lk);
+         }
          _q.push(func);
          _queue_not_empty.notify_one();
       }
@@ -70,13 +81,11 @@ class SynchronizedQueue {
       }
 };
 
-static const int DEFAULT_POOL_SIZE  = 10;
-
 class ThreadPool {
    private:
 
       static ThreadPool* instance;
-      //static boost::mutex initLock;
+
       int _nThreads;
       int _queueSize;
       int _activeThreads;
@@ -87,13 +96,14 @@ class ThreadPool {
 
       std::map<boost::thread::id, int> idMap;
 
-      ThreadPool(int nThreads) {
-         _nThreads = nThreads;
-         _queueSize = nThreads * 2;
-         _activeThreads = 0;
-         _stop = false;
-         _thread_pool = new boost::thread[_nThreads];
-
+      ThreadPool(int nThreads, int max_pending)
+      :  _nThreads(nThreads),
+         _queueSize(max_pending),
+         _activeThreads(0),
+         _stop(false),
+         _thread_pool(new boost::thread[_nThreads]),
+         _sq(max_pending)
+      {
          int i = 0;
 
          try {
@@ -133,7 +143,7 @@ class ThreadPool {
                (*activeThreads)--;
                lk.unlock();
             }
-         } catch (boost::thread_interrupted e) {
+         } catch (boost::thread_interrupted& e) {
          }
 
       }
@@ -153,19 +163,21 @@ class ThreadPool {
          }
 
          delete[] _thread_pool;
+
+         instance = NULL;
       }
 
       static ThreadPool* getInstance(){
          if(instance == NULL)
          {
-            buildInstance(DEFAULT_POOL_SIZE);
+            buildInstance(DEFAULT_THREADS_NUMBER, DEFAULT_THREADPOOL_MAX_PENDING);
          }
          return instance;
       }
 
-      static void buildInstance(int size)
+      static void buildInstance(int size, int max_pending)
       {
-         instance = new ThreadPool(size);
+         instance = new ThreadPool(size, max_pending);
       }
 
       static bool isInstanceAvailable()

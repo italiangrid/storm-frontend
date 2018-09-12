@@ -35,6 +35,8 @@
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #include <exception>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+namespace dt = boost::posix_time;
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
 #include "boost/bind.hpp"
@@ -53,6 +55,8 @@
 #include "get_socket_info.hpp"
 
 #define NAME "StoRM SRM v2.2"
+
+using namespace std;
 
 static bool stay_running = true;
 
@@ -109,11 +113,11 @@ static int http_get(struct soap *soap) {
 	return SOAP_OK;
 }
 
-int setProxyUserGlobalVariables(string proxy_user) {
+int setProxyUserGlobalVariables(std::string proxy_user) {
 
 	struct passwd *pwd;
 
-	string proxy_user_name;
+	std::string proxy_user_name;
 	if (proxy_user.empty()) {
 
 		// Get current user name
@@ -137,6 +141,8 @@ int setProxyUserGlobalVariables(string proxy_user) {
 
 void *
 process_request(struct soap* tsoap) {
+
+    dt::ptime t0 = dt::microsec_clock::local_time();
 
 	storm::set_request_id();
 
@@ -178,7 +184,9 @@ process_request(struct soap* tsoap) {
 	soap_free(tsoap); // detach and free thread's copy of soap environment
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_free\n");
 
-	srmlogit(STORM_LOG_DEBUG, "process_request", "-- END process_request\n");
+    dt::ptime t1 = dt::microsec_clock::local_time();
+
+	srmlogit(STORM_LOG_DEBUG, "process_request", "-- END process_request [took %d us]\n", (t1 - t0).total_microseconds());
 	
 	thread_info->request_id = NULL;
 	storm::clear_request_id();
@@ -394,7 +402,7 @@ soap* initSoap() {
 void setupXMLRPC() {
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
 
-	string storm_ua_token("STORM/" + configuration->getXMLRPCToken());
+	std::string storm_ua_token("STORM/" + configuration->getXMLRPCToken());
 
 	xmlrpc_env env;
 	xmlrpc_env_init(&env);
@@ -625,7 +633,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	try {
-		storm::ThreadPool::buildInstance(configuration->getNumThreads());
+		storm::ThreadPool::buildInstance(configuration->getNumThreads(), configuration->getThreadpoolMaxPending());
 	} catch (boost::thread_resource_error& e) {
 		cout
 				<< "Cannot create all the requested threads, not enough resources.\n";
