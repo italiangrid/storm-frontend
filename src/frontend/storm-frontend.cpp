@@ -35,6 +35,8 @@
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #include <exception>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+namespace dt = boost::posix_time;
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
 #include "boost/bind.hpp"
@@ -140,6 +142,8 @@ int setProxyUserGlobalVariables(std::string proxy_user) {
 void *
 process_request(struct soap* tsoap) {
 
+    dt::ptime t0 = dt::microsec_clock::local_time();
+
 	storm::set_request_id();
 
 	srmlogit(STORM_LOG_DEBUG, "process_request", "-- START process_request\n");
@@ -180,7 +184,9 @@ process_request(struct soap* tsoap) {
 	soap_free(tsoap); // detach and free thread's copy of soap environment
 	srmlogit(STORM_LOG_DEBUG2, "process_request", "End soap_free\n");
 
-	srmlogit(STORM_LOG_DEBUG, "process_request", "-- END process_request\n");
+    dt::ptime t1 = dt::microsec_clock::local_time();
+
+	srmlogit(STORM_LOG_DEBUG, "process_request", "-- END process_request [took %d us]\n", (t1 - t0).total_microseconds());
 	
 	thread_info->request_id = NULL;
 	storm::clear_request_id();
