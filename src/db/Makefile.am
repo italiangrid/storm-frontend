@@ -28,6 +28,6 @@ GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
 
 INCLUDES = \
     -I$(top_srcdir)/src/frontend \
-    -I$(GENERATED_GSOAP_INCLUDES) 
+    -I$(GENERATED_GSOAP_INCLUDES)
 
 MAINTAINERCLEANFILES = Makefile.in

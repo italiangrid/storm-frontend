@@ -19,7 +19,6 @@
 
 #include <mysql/mysql.h>
 
-            /* srm server constants */
 #define MAXRETRY 2
 #define RETRYI  5
 #define BACKLOG (100) // Max. request backlog
@@ -46,6 +45,7 @@ struct srm_srv_thread_info {
     struct srm_dbfd  dbfd;
     char             errbuf[PRTBUFSZ];
     const char*      request_id;
+    struct xmlrpc_client*   rpc_client;
 };
 
 /* srm server exit codes */
