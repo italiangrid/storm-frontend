@@ -22,12 +22,12 @@ int ns1__srmSetPermission_impl(struct soap *soap,
 {
     struct ns1__srmSetPermissionResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmSetPermissionResponse))) == NULL)
-        return (SOAP_EOM);
-    
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmSetPermissionResponse*>(soap_malloc(soap,sizeof(ns1__srmSetPermissionResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -43,13 +43,11 @@ int ns1__srmCheckPermission_impl(struct soap *soap,
 {
     struct ns1__srmCheckPermissionResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmCheckPermissionResponse))) == NULL)
-        return (SOAP_EOM);
-    repp->arrayOfPermissions = NULL;
-    
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmCheckPermissionResponse*>(soap_malloc(soap,sizeof(ns1__srmCheckPermissionResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -65,13 +63,11 @@ int ns1__srmGetPermission_impl(struct soap *soap,
 {
     struct ns1__srmGetPermissionResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetPermissionResponse))) == NULL)
-        return (SOAP_EOM);
-    repp->arrayOfPermissionReturns = NULL;
-    
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmGetPermissionResponse*>(soap_malloc(soap,sizeof(ns1__srmGetPermissionResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 

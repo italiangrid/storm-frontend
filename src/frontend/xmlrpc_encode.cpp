@@ -20,7 +20,7 @@
  * that encode a specified type into an xml structure.
  */
 
-#include "xmlrpc_encode.h"
+#include "xmlrpc_encode.hpp"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdio.h>
@@ -28,6 +28,26 @@
 #include "get_socket_info.h"
 #include "surl_normalizer.h"
 #include <xmlrpc-c/util.h>
+#include "FrontendConfiguration.hpp"
+
+static bool getXMLRPCCheckAscii() 
+{
+    return FrontendConfiguration::getInstance()->getXMLRPCCheckAscii(); 
+}
+
+static int isASCII(const char *data)
+{
+    const unsigned char *str = (const unsigned char*)data;
+    int i;
+    for (i = 0; str[i] != '\0'; i++) {
+        if (str[i] & 0x80)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 
 /***************************************************************************************************************/
 /***************************************************************************************************************/
@@ -570,7 +590,7 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
         } else {
             xml_val = xmlrpc_string_new(env_addr,normalized_surl);
             XMLRPC_ASSERT_ENV_OK(env_addr);
-            free(normalized_surl);
+            free(const_cast<char*>(normalized_surl));
         }
     } else {
         xml_val = xmlrpc_string_new(env_addr, value);
@@ -588,27 +608,6 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
     return(0);
 }
 
-int getXMLRPCCheckAscii() /* now you can call M::foo */
-{
-    return call_FrontendConfiguration_getXMLRPCCheckAscii(); }
-
-
-    /*
-     * Returns 1 if the string contains only ASCII characters, 0 otherwise
-     *
-     */
-int isASCII(const char *data)
-{
-    const unsigned char *str = (const unsigned char*)data;
-    int i;
-    for (i = 0; str[i] != '\0'; i++) {
-        if (str[i] & 0x80)
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
 
 
 /**

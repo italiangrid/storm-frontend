@@ -18,8 +18,8 @@
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"
-#include "xmlrpc_decode.h"
-#include "xmlrpc_encode.h"
+#include "xmlrpc_decode.hpp"
+#include "xmlrpc_encode.hpp"
 #include "frontend_version.h"
 #include <xmlrpc-c/util.h>
 #include "xmlrpc_client.hpp"
@@ -27,11 +27,6 @@
 extern int nb_supported_protocols;
 extern char **supported_protocols;
 
-/***************************************************************************************/
-/*************************         SRM v2.2 ReleaseFiles       *************************/
-/***************************************************************************************/
-
-/* Data structure needed to give input parameters to the response handler function */
 struct RPC_ResponseHandlerInput_ReleaseFiles {
     struct soap *soap;
     struct ns1__srmReleaseFilesRequest *req;
@@ -39,7 +34,6 @@ struct RPC_ResponseHandlerInput_ReleaseFiles {
     int RPCTerminated;
 };
 
-/* Response handler for the RPC asynchronous call of the ReleaseFiles function */
 void rpcResponseHandler_ReleaseFiles(const char          *serverUrl,
                                      const char          *method_name,
                                      const xmlrpc_value  *param_array,
@@ -118,14 +112,14 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
 
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmReleaseFilesResponse))) == NULL)
-        return (SOAP_EOM);
-    /* Initialize the other filed of the repp structure */
-    repp->arrayOfFileStatuses = NULL;
 
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmReleaseFilesResponse*>(soap_malloc(soap,sizeof(ns1__srmReleaseFilesResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
+    repp->arrayOfFileStatuses = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
     rep->srmReleaseFilesResponse = repp;
@@ -194,7 +188,7 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
     }
 
     /** OPTIONAL ************ (4) Encode doRemove    ***************************************/
-    error = encode_bool(func, &env, req->doRemove, "recursive", inputParam);
+    error = encode_bool(func, &env, reinterpret_cast<unsigned int*>(req->doRemove), "recursive", inputParam);
     if (error) {
         if (error != ENCODE_ERR_MISSING_PARAM) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
@@ -327,16 +321,14 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
 
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmPutDoneResponse))) == NULL)
-        return (SOAP_EOM);
-    /* Initialize the other filed of the repp structure */
+    repp = static_cast<ns1__srmPutDoneResponse*>(soap_malloc(soap,sizeof(ns1__srmPutDoneResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->arrayOfFileStatuses = NULL;
 
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
-
-    /* Assign the repp response structure to the output parameter rep */
     rep->srmPutDoneResponse = repp;
 
     /* Initialize xmlrpc error-handling environment. */
@@ -509,15 +501,14 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
 
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmAbortRequestResponse))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmAbortRequestResponse*>(soap_malloc(soap,sizeof(ns1__srmAbortRequestResponse)));
+    if (repp == NULL) return SOAP_EOM;
 
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->returnStatus->explanation = NULL;
 
-    /* Assign the repp response structure to the output parameter rep */
     rep->srmAbortRequestResponse = repp;
 
     /* Initialize xmlrpc error-handling environment. */
@@ -693,13 +684,14 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
 
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmAbortFilesResponse))) == NULL)
-        return (SOAP_EOM);
-    repp->arrayOfFileStatuses = NULL;
 
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmAbortFilesResponse*>(soap_malloc(soap,sizeof(ns1__srmAbortFilesResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
+    repp->arrayOfFileStatuses = NULL;
     repp->returnStatus->explanation = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
@@ -893,16 +885,16 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
 
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmExtendFileLifeTimeResponse))) == NULL)
-        return (SOAP_EOM);
-    repp->arrayOfFileStatuses = NULL;
 
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmExtendFileLifeTimeResponse*>(soap_malloc(soap,sizeof(ns1__srmExtendFileLifeTimeResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
+    repp->arrayOfFileStatuses = NULL;
     repp->returnStatus->explanation = NULL;
 
-    /* Assign the repp response structure to the output parameter rep */
     rep->srmExtendFileLifeTimeResponse = repp;
 
     /* Initialize xmlrpc error-handling environment. */
@@ -1043,12 +1035,11 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
     char **supported_protocols;
     int i, nb_supported_protocols;
 
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetTransferProtocolsResponse))) == NULL)
-        return(SOAP_EOM);
+    repp = static_cast<ns1__srmGetTransferProtocolsResponse*>(soap_malloc(soap,sizeof(ns1__srmGetTransferProtocolsResponse)));
+    if (repp == NULL) return SOAP_EOM;
 
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return(SOAP_EOM);
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
 
     rep->srmGetTransferProtocolsResponse = repp;
 
@@ -1062,11 +1053,11 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
     }
 
     /* Allocate the response structure for the list of protocols */
-    repp->protocolInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTSupportedTransferProtocol));
+    repp->protocolInfo = static_cast<ns1__ArrayOfTSupportedTransferProtocol*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTSupportedTransferProtocol)));
     if (NULL == repp->protocolInfo)
         return(SOAP_EOM);
 
-    repp->protocolInfo->protocolArray = soap_malloc(soap, nb_supported_protocols * sizeof(struct ns1__TSupportedTransferProtocol *));
+    repp->protocolInfo->protocolArray = static_cast<ns1__TSupportedTransferProtocol**>(soap_malloc(soap, nb_supported_protocols * sizeof(struct ns1__TSupportedTransferProtocol *)));
     if (NULL == repp->protocolInfo->protocolArray)
         return(SOAP_EOM);
     repp->protocolInfo->__sizeprotocolArray = nb_supported_protocols;
@@ -1074,7 +1065,7 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
 
     /* Set the protocol list to return */
     for (i=0; i<nb_supported_protocols; i++) {
-        protocolArray[i] = soap_malloc(soap, sizeof(struct ns1__TSupportedTransferProtocol));
+        protocolArray[i] = static_cast<ns1__TSupportedTransferProtocol*>(soap_malloc(soap, sizeof(struct ns1__TSupportedTransferProtocol)));
         protocolArray[i]->transferProtocol = soap_strdup(soap, supported_protocols[i]);
         protocolArray[i]->attributes = NULL;
     }
@@ -1200,10 +1191,9 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
     xmlrpc_value *inputParam;
     xmlrpc_value* result;
 
-    /************************ Allocate response structure *******************************/
-    if (NULL == (repp = soap_malloc(soap, sizeof(struct ns1__srmPingResponse)))) {
-        return (SOAP_EOM);
-    }
+    repp = static_cast<ns1__srmPingResponse*>(soap_malloc(soap,sizeof(ns1__srmPingResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
     repp->versionInfo = NULL;
     repp->otherInfo = NULL;
 
@@ -1326,11 +1316,11 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     repp->versionInfo = "v2.2";
 
     // Allocate memory for the response structure
-    repp->otherInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo));
+    repp->otherInfo = static_cast<ns1__ArrayOfTExtraInfo*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo)));
     if (NULL == repp->otherInfo) {
         return(SOAP_EOM);
     }
-    repp->otherInfo->extraInfoArray = soap_malloc(soap, 3*sizeof(struct ns1__TExtraInfo));
+    repp->otherInfo->extraInfoArray = static_cast<ns1__TExtraInfo**>(soap_malloc(soap, 3*sizeof(struct ns1__TExtraInfo)));
     if (NULL == repp->otherInfo->extraInfoArray) {
         return(SOAP_EOM);
     }
@@ -1339,16 +1329,16 @@ int set_version_info(struct soap* soap, struct ns1__srmPingResponse *repp) {
     extraInfoArray = repp->otherInfo->extraInfoArray;
 
     // Set backend type
-    extraInfoArray[0] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
+    extraInfoArray[0] = static_cast<ns1__TExtraInfo*>(soap_malloc(soap, sizeof(struct ns1__TExtraInfo)));
     extraInfoArray[0]->key = "backend_type";
     extraInfoArray[0]->value = "StoRM";
     // Set backend version
-    extraInfoArray[1] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
+    extraInfoArray[1] = static_cast<ns1__TExtraInfo*>(soap_malloc(soap, sizeof(struct ns1__TExtraInfo)));
     extraInfoArray[1]->key = "backend_version";
     sprintf(version, version_temp, frontend_version, be_version);
     extraInfoArray[1]->value = soap_strdup(soap, version);
     // Set backend os distribution
-    extraInfoArray[2] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
+    extraInfoArray[2] = static_cast<ns1__TExtraInfo*>(soap_malloc(soap, sizeof(struct ns1__TExtraInfo)));
     extraInfoArray[2]->key = "backend_os_distribution";
     extraInfoArray[2]->value = soap_strdup(soap, be_os_distribution);
 
@@ -1363,10 +1353,12 @@ int ns1__srmSuspendRequest_impl(struct soap *soap,
     static const char *func = "SuspendRequest";
     struct ns1__srmSuspendRequestResponse *repp;
 
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmSuspendRequestResponse))) == NULL ||
-        (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
-        return(SOAP_EOM);
-    }
+
+    repp = static_cast<ns1__srmSuspendRequestResponse*>(soap_malloc(soap,sizeof(ns1__srmSuspendRequestResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
 
     repp->returnStatus->explanation = NULL;
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
@@ -1385,10 +1377,12 @@ int ns1__srmResumeRequest_impl(struct soap *soap,
     static const char *func = "ResumeRequest";
     struct ns1__srmResumeRequestResponse *repp;
 
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmResumeRequestResponse))) == NULL ||
-        (repp->returnStatus = soap_malloc (soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
-        return(SOAP_EOM);
-    }
+
+    repp = static_cast<ns1__srmResumeRequestResponse*>(soap_malloc(soap,sizeof(ns1__srmResumeRequestResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
 
     repp->returnStatus->explanation = NULL;
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
@@ -1398,42 +1392,3 @@ int ns1__srmResumeRequest_impl(struct soap *soap,
 
     return(SOAP_OK);
 }
-
-/* uncomment this to try using this cpp code from c code
-struct Credentials;
-struct Authorization;
-int isBlacklisted(struct soap *soap)
-{
-	struct Credentials* c;
-	struct Authorization* a;
-	int* blacklisted;
-	char *func = "isBlacklisted";
-	srmlogit(STORM_LOG_ERROR, func, "calling call_create_credentials\n");
-	if(call_create_credentials(soap, c) == 0)
-	{
-		srmlogit(STORM_LOG_ERROR, func, "calling call_create_authorization\n");
-		int lalla = call_create_authorization(c, a);
-		if(lalla == 0)
-		{
-			srmlogit(STORM_LOG_ERROR, func, "calling call_isBlacklisted\n");
-			if (call_isBlacklisted(a, blacklisted) == 0)
-			{
-				srmlogit(STORM_LOG_ERROR, func, "fine is black\n");
-				return *blacklisted;
-			} else
-			{
-				srmlogit(STORM_LOG_ERROR, func, "fine is NOT black\n");
-				return 0;
-			}
-		}
-		else
-		{
-			return 0;
-		}
-	}
-	else
-	{
-		return 0;
-	}
-}
-*/

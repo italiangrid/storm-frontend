@@ -17,18 +17,12 @@
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "srmlogit.h"
-#include "xmlrpc_encode.h"
-#include "xmlrpc_decode.h"
+#include "xmlrpc_encode.hpp"
+#include "xmlrpc_decode.hpp"
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #include <xmlrpc-c/util.h>
 #include "xmlrpc_client.hpp"
-
-/*************************************************************************************/
-/*                           Space Management Functions                              */
-/*************************************************************************************/
-
-/**********************       SRM v2.2   Reserve Space       *************************/
 
 struct RPC_ResponseHandlerInput_ReserveSpace {
     struct soap *soap;
@@ -37,7 +31,6 @@ struct RPC_ResponseHandlerInput_ReserveSpace {
     int RPCTerminated;
 };
 
-/* Response handler for the RPC asynchronous call of the ReserveSpace function */
 void rpcResponseHandler_ReserveSpace(const char         *serverUrl, 
                                      const char         *method_name, 
                                      const xmlrpc_value *param_array, 
@@ -234,9 +227,12 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
 
-    /******************************* Allocate response structure *********************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmReserveSpaceResponse))) == NULL) return(SOAP_EOM);
-    /* Initialization of the struct ns1__srmReserveSpaceResponse fields*/
+    repp = static_cast<ns1__srmReserveSpaceResponse*>(soap_malloc(soap,sizeof(ns1__srmReserveSpaceResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->requestToken = NULL;
     repp->estimatedProcessingTime = NULL;
     repp->retentionPolicyInfo = NULL;
@@ -244,7 +240,6 @@ int ns1__srmReserveSpace_impl(struct soap *soap,
     repp->sizeOfGuaranteedReservedSpace = NULL;
     repp->lifetimeOfReservedSpace = NULL;
     repp->spaceToken = NULL;
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL) return(SOAP_EOM);
     repp->returnStatus->explanation = NULL;
 
     /* Assign the repp response structure to the output parameter rep */
@@ -435,25 +430,15 @@ int ns1__srmStatusOfReserveSpaceRequest_impl(struct soap *soap,
     static const char *func = "StatusOfReserveSpace";
     struct ns1__srmStatusOfReserveSpaceRequestResponse *repp;
     
-    if (soap == NULL) {
-        srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");
-        return SOAP_NULL;
-    }
-    /******************************* Allocate response structure *********************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmStatusOfReserveSpaceRequestResponse))) == NULL) {
-        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error\n");
-        return(SOAP_EOM);
-    }
-    memset(repp, 0, sizeof(struct ns1__srmStatusOfReserveSpaceRequestResponse));
-    
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL) {
-        srmlogit(STORM_LOG_ERROR, func, "Memory allocation error\n");
-         return(SOAP_EOM);
-    }
+    repp = static_cast<ns1__srmStatusOfReserveSpaceRequestResponse*>(soap_malloc(soap,sizeof(ns1__srmStatusOfReserveSpaceRequestResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     repp->returnStatus->explanation = "srmReserveSpace implementation is synchronous";
     rep->srmStatusOfReserveSpaceRequestResponse = repp;
-    srmlogit(STORM_LOG_DEBUG, func, "Returning status: SRM_NOT_SUPPORTED\n");
     return(SOAP_OK);
 }
 
@@ -536,13 +521,13 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
     
-    /* Allocate response structure */
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmReleaseSpaceResponse))) == NULL)
-        return(SOAP_EOM);
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL) 
-        return(SOAP_EOM);
 
-    /* Assign the repp response structure to the output parameter rep */
+    repp = static_cast<ns1__srmReleaseSpaceResponse*>(soap_malloc(soap,sizeof(ns1__srmReleaseSpaceResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     rep->srmReleaseSpaceResponse = repp;
     
     /* Initialize xmlrpc error-handling environment. */
@@ -610,7 +595,7 @@ int ns1__srmReleaseSpace_impl(struct soap *soap,
 	}
     
     /** OPTIONAL ************ (4) Encode forceFileRelease (enum xsd__boolean *) ************/
-    error = encode_bool(func, &env, req->forceFileRelease , "forceFileRelease", inputParam);
+    error = encode_bool(func, &env, reinterpret_cast<unsigned int*>(req->forceFileRelease), "forceFileRelease", inputParam);
     if (error) {
         if (error != ENCODE_ERR_MISSING_PARAM) {
             repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
@@ -664,16 +649,17 @@ int ns1__srmUpdateSpace_impl(struct soap *soap,
     static const char *func = "UpdateSpace";
     struct ns1__srmUpdateSpaceResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmUpdateSpaceResponse))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmUpdateSpaceResponse*>(soap_malloc(soap,sizeof(ns1__srmUpdateSpaceResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->lifetimeGranted = NULL;
     repp->requestToken = NULL;
     repp->sizeOfGuaranteedSpace = NULL;
     repp->sizeOfTotalSpace = NULL;
     
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -696,15 +682,15 @@ int ns1__srmStatusOfUpdateSpaceRequest_impl(struct soap *soap,
     static const char *func = "StatusOfUpdateSpace";
     struct ns1__srmStatusOfUpdateSpaceRequestResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmStatusOfUpdateSpaceRequestResponse))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmStatusOfUpdateSpaceRequestResponse*>(soap_malloc(soap,sizeof(ns1__srmStatusOfUpdateSpaceRequestResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->lifetimeGranted = NULL;
     repp->sizeOfGuaranteedSpace = NULL;
     repp->sizeOfTotalSpace = NULL;
     
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -806,15 +792,13 @@ int ns1__srmGetSpaceMetaData_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
   
-    /******************************* Allocate response structure *********************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetSpaceMetaDataResponse))) == NULL)
-        return(SOAP_EOM);
-    /* Initialization of the struct ns1__srmReserveSpaceResponse fields*/
+    repp = static_cast<ns1__srmGetSpaceMetaDataResponse*>(soap_malloc(soap,sizeof(ns1__srmGetSpaceMetaDataResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->arrayOfSpaceDetails = NULL;
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return(SOAP_EOM);
-    
-    /* Assign the repp response structure to the output parameter rep */
     rep->srmGetSpaceMetaDataResponse = repp;
     
     /* Initialize xmlrpc error-handling environment. */     
@@ -986,15 +970,13 @@ int ns1__srmGetSpaceTokens_impl(struct soap *soap,
     xmlrpc_value *inputParam;
     xmlrpc_value *result;
   
-    /******************************* Allocate response structure *********************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmGetSpaceTokensResponse))) == NULL)
-        return(SOAP_EOM);
-    /* Initialization of the struct ns1__srmReserveSpaceResponse fields*/
+    repp = static_cast<ns1__srmGetSpaceTokensResponse*>(soap_malloc(soap,sizeof(ns1__srmGetSpaceTokensResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
+
     repp->arrayOfSpaceTokens = NULL;
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return(SOAP_EOM);
-    
-    /* Assign the repp response structure to the output parameter rep */
     rep->srmGetSpaceTokensResponse = repp;
     
     /* Initialize xmlrpc error-handling environment. */     
@@ -1089,15 +1071,16 @@ int ns1__srmChangeSpaceForFiles_impl(struct soap *soap,
     static const char *func = "ChangeSpaceForFiles";
     struct ns1__srmChangeSpaceForFilesResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmChangeSpaceForFilesResponse))) == NULL)
-        return (SOAP_EOM);
+
+    repp = static_cast<ns1__srmChangeSpaceForFilesResponse*>(soap_malloc(soap,sizeof(ns1__srmChangeSpaceForFilesResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->arrayOfFileStatuses = NULL;
     repp->estimatedProcessingTime = NULL;
     repp->requestToken = NULL;
     
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -1120,14 +1103,14 @@ int ns1__srmStatusOfChangeSpaceForFilesRequest_impl(struct soap *soap,
     static const char *func = "StatusOfChangeSpaceForFiles";
     struct ns1__srmStatusOfChangeSpaceForFilesRequestResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmStatusOfChangeSpaceForFilesRequestResponse))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmStatusOfChangeSpaceForFilesRequestResponse*>(soap_malloc(soap,sizeof(ns1__srmStatusOfChangeSpaceForFilesRequestResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->arrayOfFileStatuses = NULL;
     repp->estimatedProcessingTime = NULL;
     
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -1150,13 +1133,13 @@ int ns1__srmExtendFileLifeTimeInSpace_impl(struct soap *soap,
     static const char *func = "ExtendFileLifeTimeInSpace";
     struct ns1__srmExtendFileLifeTimeInSpaceResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmExtendFileLifeTimeInSpaceResponse))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmExtendFileLifeTimeInSpaceResponse*>(soap_malloc(soap,sizeof(ns1__srmExtendFileLifeTimeInSpaceResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->arrayOfFileStatuses = NULL;
     
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -1179,13 +1162,13 @@ int ns1__srmPurgeFromSpace_impl(struct soap *soap,
     static const char *func = "PurgeFromSpace";
     struct ns1__srmPurgeFromSpaceResponse *repp;
     
-    /************************ Allocate response structure *******************************/
-    if ((repp = soap_malloc(soap, sizeof(struct ns1__srmPurgeFromSpaceResponse))) == NULL)
-        return (SOAP_EOM);
+    repp = static_cast<ns1__srmPurgeFromSpaceResponse*>(soap_malloc(soap,sizeof(ns1__srmPurgeFromSpaceResponse)));
+    if (repp == NULL) return SOAP_EOM;
+
+    repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
+    if (repp->returnStatus == NULL) return SOAP_EOM;
     repp->arrayOfFileStatuses = NULL;
     
-    if ((repp->returnStatus = soap_malloc(soap, sizeof(struct ns1__TReturnStatus))) == NULL)
-        return (SOAP_EOM);
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 

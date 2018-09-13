@@ -26,6 +26,7 @@
 #include <pwd.h>
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
+#include "xmlrpc_encode.hpp"
 
 using namespace std;
 namespace po = boost::program_options;
@@ -676,34 +677,4 @@ string FrontendConfiguration::getParentPath(string path) {
 
     return parentPath;
 
-}
-
-
-extern "C" {
-	#include "xmlrpc_encode.h"
-	}
-
-
-
-extern "C" int call_FrontendConfiguration_getXMLRPCCheckAscii() {
-	if(getInstanceXMLRPCCheckAscii() > 0)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-int getInstanceXMLRPCCheckAscii()
-{
-	if(FrontendConfiguration::getInstance()->getXMLRPCCheckAscii())
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
 }

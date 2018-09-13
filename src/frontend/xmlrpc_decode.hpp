@@ -32,7 +32,7 @@
 #define DECODE_ERR_DECODING_ERROR -3
 
 /* Parameters names */
-/* see also file: xmlrpc_encode.h */
+/* see also file: xmlrpc_encode.hpp */
 #define SRM_PARAM_arrayOfFileStatuses "arrayOfFileStatuses"
 #define SRM_PARAM_requestToken "requestToken"
 #define SRM_PARAM_retentionPolicyInfo "retentionPolicyInfo"
