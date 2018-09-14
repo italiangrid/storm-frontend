@@ -436,6 +436,8 @@ int ns1__srmStatusOfReserveSpaceRequest_impl(struct soap *soap,
     repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
     if (repp->returnStatus == NULL) return SOAP_EOM;
 
+    memset(repp, 0, sizeof(struct ns1__srmStatusOfReserveSpaceRequestResponse));
+
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
     repp->returnStatus->explanation = "srmReserveSpace implementation is synchronous";
     rep->srmStatusOfReserveSpaceRequestResponse = repp;

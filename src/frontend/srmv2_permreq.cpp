@@ -42,12 +42,15 @@ int ns1__srmCheckPermission_impl(struct soap *soap,
                             struct ns1__srmCheckPermissionResponse_ *rep)
 {
     struct ns1__srmCheckPermissionResponse *repp;
-    
+
+
     repp = static_cast<ns1__srmCheckPermissionResponse*>(soap_malloc(soap,sizeof(ns1__srmCheckPermissionResponse)));
     if (repp == NULL) return SOAP_EOM;
 
     repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
     if (repp->returnStatus == NULL) return SOAP_EOM;
+
+    repp->arrayOfPermissions = NULL;
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
@@ -68,6 +71,8 @@ int ns1__srmGetPermission_impl(struct soap *soap,
 
     repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
     if (repp->returnStatus == NULL) return SOAP_EOM;
+    
+    repp->arrayOfPermissionReturns = NULL;
     repp->returnStatus->explanation = "Not supported";
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
