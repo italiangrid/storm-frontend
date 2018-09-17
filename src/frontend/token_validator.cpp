@@ -6,7 +6,7 @@
  */
 
 #include "token_validator.hpp"
-#include "boost/regex.hpp"
+#include <boost/regex.hpp>
 
 namespace storm {
 

@@ -39,7 +39,7 @@
 namespace dt = boost::posix_time;
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
-#include "boost/bind.hpp"
+#include <boost/bind.hpp>
 #include "DBConnectionPool.hpp"
 #include <signal.h>
 #include "frontend_version.h"
