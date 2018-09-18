@@ -1451,10 +1451,10 @@ AC_CACHE_CHECK([for the flags needed to use pthreads], [boost_cv_pthread_flag],
                            -pthreads -mthreads -lpthread --thread-safe -mt";;
   esac
   # Generate the test file.
-  AC_LANG_CONFTEST([AC_LANG_PROGRAM([[#include <pthread.h>
-static void * f(void *){ return NULL;}]],
-    [pthread_attr_t attr; pthread_attr_init(&attr); pthread_t th; pthread_create(&th,0,&f,0); pthread_join(th, 0);
-    pthread_cleanup_push(0, 0); pthread_cleanup_pop(0);])])
+  AC_LANG_CONFTEST([AC_LANG_PROGRAM([#include <pthread.h>],
+    [pthread_t th; pthread_join(th, 0);
+    pthread_attr_init(0); pthread_cleanup_push(0, 0);
+    pthread_create(0,0,0,0); pthread_cleanup_pop(0);])])
   for boost_pthread_flag in '' $boost_pthread_flags; do
     boost_pthread_ok=false
 dnl Re-use the test file already generated.
