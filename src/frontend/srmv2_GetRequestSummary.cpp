@@ -103,7 +103,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         if (credentials.getDN().empty()) {
             srmlogit(STORM_LOG_ERROR, func, "Client DN not found!\n");
             repp->returnStatus->statusCode = SRM_USCOREAUTHENTICATION_USCOREFAILURE;
-            repp->returnStatus->explanation = "Unable to retrieve client DN";
+            repp->returnStatus->explanation = const_cast<char*>("Unable to retrieve client DN");
             storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
             return SOAP_OK;
         }
@@ -113,7 +113,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 		{
 			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
 			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
-			repp->returnStatus->explanation = "User not authorized";
+			repp->returnStatus->explanation = const_cast<char*>("User not authorized");
 			storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
 			return SOAP_OK;
 		}
@@ -122,11 +122,10 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 			srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
 		}
         // Check for a valid input
-        char* expl_str;
         if (!validate_array_of_req_tokens(func, req->arrayOfRequestTokens)) {
             srmlogit(STORM_LOG_ERROR, func, "Invalid 'arrayOfRequestTokens'\n");
             repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-            repp->returnStatus->explanation = "invalid array of request tokens";
+            repp->returnStatus->explanation = const_cast<char*>("invalid array of request tokens");
             storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
             return SOAP_OK;
         }
@@ -142,7 +141,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         		std::string token(req->arrayOfRequestTokens->stringArray[i]);
         		if (!storm::token::valid(token)){
         			repp->returnStatus->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-        			repp->returnStatus->explanation = "invalid token";
+        			repp->returnStatus->explanation = const_cast<char*>("invalid token");
         			storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
         			return SOAP_OK;
         		}
@@ -154,7 +153,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
             if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
                 srmlogit(STORM_LOG_ERROR, func, "DB open error!\n");
                 repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-                repp->returnStatus->explanation = "DB open error";
+                repp->returnStatus->explanation = const_cast<char*>("DB open error");
                 storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
                 return SOAP_OK;
             }
@@ -189,7 +188,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         if (resultsSize < 1) {
             srmlogit(STORM_LOG_INFO, func, "Return status: SRM_FAILURE\n");
             repp->returnStatus->statusCode = SRM_USCOREFAILURE;
-            repp->returnStatus->explanation = "None of the requested tokens were found";
+            repp->returnStatus->explanation = const_cast<char*>("None of the requested tokens were found");
             storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
             return SOAP_OK;
         }
@@ -284,9 +283,9 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 						vector< map<string, string> > results_status;
 						storm_db::vector_exec_query(&thip->dbfd, query_sql, results_status);
 
-						if (results_status.size() != r_nbreqfiles) {
+						if (results_status.size() != static_cast<size_t>(r_nbreqfiles)) {
 							reqSummary->status->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-							reqSummary->status->explanation = soap_strdup(soap, "BUG! In DB wrong nbreqfiles");
+							reqSummary->status->explanation = const_cast<char*>("BUG! In DB wrong nbreqfiles");
 						} else {
 							int numOfCompleted = 0;
 							int numOfWaiting = 0;
@@ -327,7 +326,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 				} else {
 					requestSuccess = false;
 					reqSummary->status->statusCode = SRM_USCOREINVALID_USCOREREQUEST;
-					reqSummary->status->explanation = "Invalid request token";
+					reqSummary->status->explanation = const_cast<char*>("Invalid request token");
 				}
 			}
 		}
@@ -351,18 +350,18 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
     if (requestSuccess) {
         srmlogit(STORM_LOG_INFO, func, "Return status: SRM_SUCCESS\n");
         repp->returnStatus->statusCode = SRM_USCORESUCCESS;
-        repp->returnStatus->explanation = "All tokens retrieved";
+        repp->returnStatus->explanation = const_cast<char*>("All tokens retrieved");
     } else if (requestFailure) {
         // This means that the first DB query found some of the user requested tokens in the DB but
         // (in the following for loop) none of the user requested tokens matched any of the tokens
         // retrieved in the DB. This cannot happen, unless there is a bug.
         srmlogit(STORM_LOG_INFO, func, "Return status: SRM_INTERNAL_ERROR (that's a BUG)\n");
         repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-        repp->returnStatus->explanation = "Failure due to a bug";
+        repp->returnStatus->explanation = const_cast<char*>("Failure due to a bug");
     } else {
         srmlogit(STORM_LOG_INFO, func, "Return status: SRM_PARTIAL_SUCCESS\n");
         repp->returnStatus->statusCode = SRM_USCOREPARTIAL_USCORESUCCESS;
-        repp->returnStatus->explanation = "Some request summaries are failed";
+        repp->returnStatus->explanation = const_cast<char*>("Some request summaries are failed");
     }
     storm::MonitoringHelper::registerOperation(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME, SRM_USCORESUCCESS);
     return(SOAP_OK);

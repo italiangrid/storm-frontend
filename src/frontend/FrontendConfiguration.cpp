@@ -27,6 +27,143 @@
 #include "FrontendConfiguration.hpp"
 #include "srmlogit.h"
 
+using namespace std;
+namespace po = boost::program_options;
+
+const string DEFAULT_CONFIGURATION_FILE = string("storm-frontend.conf");
+const string DEFAULT_GRIDMAPFILE = string("/etc/grid-security/grid-mapfile");
+const string DEFAULT_HOST_CERT_FILE = string("/etc/grid-security/hostcert.pem");
+const string DEFAULT_HOST_KEY_FILE = string("/etc/grid-security/hostkey.pem");
+const string DEFAULT_LOG_FILE_NAME = string("storm-frontend.log");
+const string DEFAULT_MONITORING_FILE_NAME = string("monitoring.log");
+const string DEFAULT_WSDL_FILE = "";
+const string DEFAULT_XMLRPC_HOST = string("localhost");
+const string DEFAULT_XMLRPC_PORT = string("8080");
+const string DEFAULT_XMLRPC_PATH = string("/RPC2");
+const string DEFAULT_XMLRPC_TOKEN = "unsecure_token";
+const string DEFAULT_DEBUG_LEVEL = string("INFO");
+const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING = 3;
+const int DEFAULT_THREADS_NUMBER = 20;
+const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
+
+const int DEFAULT_GSOAP_MAX_PENDING = 2000;
+const int DEFAULT_GSOAP_SEND_TIMEOUT = 10; // seconds
+const int DEFAULT_GSOAP_RECV_TIMEOUT = 10; // seconds
+
+const int DEFAULT_PORT = 8444;
+const bool DEFAULT_MONITORING_ENABLED = true;
+const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
+const bool DEFAULT_MONITORING_DETAILED = false;
+const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
+const bool DEFAULT_USER_CHECK_BLACKLIST = false;
+const string DEFAULT_CA_CERTIFICATES_FOLDER = string("/etc/grid-security/certificates");
+const string DEFAULT_ARGUS_RESOURCE_ID = "storm";
+
+const char* EMPTY_DESCRIPTION = "";
+
+const char* ENVVAR_GRIDMAP = "GRIDMAP";
+const char* ENVVAR_X509_USER_CERT = "X509_USER_CERT";
+const char* ENVVAR_X509_USER_KEY = "X509_USER_KEY";
+const char* ENVVAR_X509_CERT_DIR = "X509_CERT_DIR";
+
+const string OPT_HELP = string("h");
+const string OPTL_HELP = string("help");
+const char* OPT_HELP_DESCRIPTION = "Print this message";
+
+const string OPT_VERSION = string("v");
+const string OPTL_VERSION = string("version");
+const char* OPT_VERSION_DESCRIPTION = "Print version";
+
+const string OPT_CONFIG_FILE = string("c");
+const string OPTL_CONFIG_FILE = string("config-file");
+const char* OPT_CONFIG_FILE_DESCRIPTION = "Configuration file";
+
+const string OPT_DEBUG = string("d");
+const string OPTL_DEBUG = string("debug-mode");
+const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
+
+// Renamed disable with enable and changed checks accordingly
+const string OPTL_ENABLE_MAPPING = string("security.enable.mapping");
+const char* OPT_ENABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
+
+const string OPTL_ENABLE_VOMSCHECK = string("security.enable.vomscheck");
+const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
+
+const string OPTL_MONITORING_ENABLED = string("monitoring.enabled");
+
+const string OPTL_MONITORING_FILE_NAME = string("monitoring.filename");
+const char* OPT_MONITORING_FILE_NAME_DESCRIPTION = "Use <arg> as monitoring file";
+
+const string OPTL_MONITORING_DETAILED = string("monitoring.detailed");
+const char* OPT_MONITORING_DETAILED_DESCRIPTION = "Enable detailed monitoring for each operation";
+
+const string OPTL_MONITORING_TIME_INTERVAL = string("monitoring.timeInterval");
+const char* OPT_MONITORING_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print monitoring information.";
+
+const string OPTL_LOG_FILE_NAME = string("log.filename");
+const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
+
+const string OPTL_DEBUG_LEVEL = string("log.debuglevel");
+const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2";
+
+const string OPTL_PORT = string("fe.port");
+const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
+
+const string OPTL_NUM_THREADS = string("fe.threadpool.threads.number");
+
+const string OPTL_MAX_THREADPOOL_PENDING = string("fe.threadpool.maxpending");
+
+const string OPTL_SLEEP_THREADPOOL_MAX_PENDING = string("fe.threadpool.maxpending.sleep");
+
+const string OPTL_MAX_GSOAP_PENDING = string("fe.gsoap.maxpending");
+
+const string OPTL_GSOAP_SEND_TIMEOUT = string("fe.gsoap.send_timeout");
+const string OPTL_GSOAP_RECV_TIMEOUT = string("fe.gsoap.recv_timeout");
+
+const string OPTL_PROXY_DIR = string("proxy.dir");
+const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
+
+const string OPTL_PROXY_USER = string("proxy.user");
+const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
+
+const string OPTL_XMLRPC_HOST = string("be.xmlrpc.host");
+const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
+
+const string OPTL_RECALLTABLE_PORT = string("be.recalltable.port");
+const string OPTL_XMLRPC_PORT = string("be.xmlrpc.port");
+const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
+
+const string OPTL_XMLRPC_PATH = string("be.xmlrpc.path");
+const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
+
+const string OPTL_XMLRPC_TOKEN = "be.xmlrpc.token";
+const char* OPT_XMLRPC_TOKEN_DESCRIPTION = "The XMLRPC authentication token";
+
+const string OPTL_WSDL_FILE = string("wsdl.file");
+const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
+
+const string OPTL_DB_HOST = string("db.host");
+const char* OPT_DB_HOST_DESCRIPTION = "Machine hosting the DB";
+
+const string OPTL_DB_USER = string("db.user");
+const char* OPT_DB_USER_DESCRIPTION = "Database user";
+
+const string OPTL_DB_USER_PASSWORD = string("db.passwd");
+const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
+
+const string OPTL_XMLRPC_CHECK_ASCII = string("be.xmlrpc.check.ascii");
+const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not strings to be sent via xmlrpc to the BE";
+
+const string OPTL_USER_CHECK_BLACKLIST = string("check.user.blacklisting");
+const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
+
+const string OPTL_ARGUS_PEPD_ENDPOINT = string("argus-pepd-endpoint");
+const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION = "Full SERVICE ENDPOINT of the Argus PEP Daemon";
+
+const string OPTL_ARGUS_RESOURCE_ID = string("argus.resource-id");
+const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION = "the resource identifier for StoRM service in Argus policies";
+
+
 FrontendConfiguration* FrontendConfiguration::instance = NULL;
 
 FrontendConfiguration* FrontendConfiguration::getInstance() {

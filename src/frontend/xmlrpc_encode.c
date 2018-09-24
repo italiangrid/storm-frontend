@@ -27,6 +27,7 @@
 #include <cgsi_plugin.h>
 #include "get_socket_info.h"
 #include "surl_normalizer.h"
+#include <xmlrpc-c/util.h>
 
 /***************************************************************************************************************/
 /***************************************************************************************************************/
@@ -56,6 +57,7 @@ int encode_lifetimeValue(const char *callerName,
     }
 
     longValue = *lifetimeVal;
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     return encode_ULONG64(callerName, env_addr, &longValue, fieldName, xmlStruct);
 }
 /**
@@ -93,7 +95,10 @@ int encode_arrayOfString(const char *callerName,
         return(ENCODE_ERR_ENCODING_ERROR);
     }
 
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xml_arrayOfString = xmlrpc_array_new(env_addr);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
+
     for (i=0; i<nbItems; i++) {
         if (stringArray[i] == NULL) {
             srmlogit(STORM_LOG_DEBUG, callerName, "string[%d] is NULL\n", i);
@@ -106,6 +111,7 @@ int encode_arrayOfString(const char *callerName,
                 return(ENCODE_ERR_ENCODING_ERROR);
             }
             xml_string = xmlrpc_string_new(env_addr, stringArray[i]);
+            XMLRPC_ASSERT_ENV_OK(env_addr);
             xmlrpc_array_append_item(env_addr, xml_arrayOfString, xml_string);
             xmlrpc_DECREF(xml_string);
         }
@@ -149,9 +155,11 @@ int encode_arrayOfUnsignedLong(const char *callerName,
 
     unsignedLongArray = arrayOfUnsignedLong->unsignedLongArray;
     xml_arrayOfLong = xmlrpc_array_new(env_addr);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     for (i=0; i<nbItems; i++) {
         snprintf(long64Str, NUM_OF_LONG_CHR, "%lld", unsignedLongArray[i]);
         xml_string = xmlrpc_string_new(env_addr, long64Str);
+        XMLRPC_ASSERT_ENV_OK(env_addr);
         xmlrpc_array_append_item(env_addr, xml_arrayOfLong, xml_string);
         xmlrpc_DECREF(xml_string);
     }
@@ -180,6 +188,7 @@ int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *
     }
 
     xml_intVal = xmlrpc_int_new(env_addr, *intVal);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_intVal);
     xmlrpc_DECREF(xml_intVal);
 
@@ -204,6 +213,7 @@ int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *bool
     }
 
     xml_boolVal = xmlrpc_bool_new(env_addr, *boolVal);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_boolVal);
     xmlrpc_DECREF(xml_boolVal);
 
@@ -232,6 +242,7 @@ int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64
     /* Convert LONG64 value into string */
     snprintf(long64Str, NUM_OF_LONG_CHR, "%lld", *long64Val);
     xml_string = xmlrpc_string_new(env_addr, long64Str);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_string);
     xmlrpc_DECREF(xml_string);
 
@@ -259,13 +270,16 @@ int encode_retentionPolicyInfo(const char *callerName,
     }
 
     xml_retentionPolicyInfo = xmlrpc_struct_new(env_addr);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     // Encode retentionPolicy field
     xml_intVal = xmlrpc_int_new(env_addr, retentionPolicyInfo->retentionPolicy);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xml_retentionPolicyInfo, "retentionPolicy", xml_intVal);
     xmlrpc_DECREF(xml_intVal);
     // Encode accessLatency field
     if (retentionPolicyInfo->accessLatency != NULL) {
         xml_intVal = xmlrpc_int_new(env_addr, *(retentionPolicyInfo->accessLatency));
+        XMLRPC_ASSERT_ENV_OK(env_addr);
         xmlrpc_struct_set_value(env_addr, xml_retentionPolicyInfo, "accessLatency", xml_intVal);
         xmlrpc_DECREF(xml_intVal);
     }
@@ -295,6 +309,7 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
         return(ENCODE_ERR_ENCODING_ERROR);
     }
     xml_spaceToken = xmlrpc_string_new(env_addr, spaceToken);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userSpaceTokenDescription", xml_spaceToken);
     xmlrpc_DECREF(xml_spaceToken);
 
@@ -336,6 +351,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
 
     /* Encode the userDN field */
     userDN = xmlrpc_string_new(env_addr, clientdn);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
 
     srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
@@ -347,6 +363,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
 
     if (nbfqans > 0) {
         fqansArray = xmlrpc_array_new(env_addr);
+        XMLRPC_ASSERT_ENV_OK(env_addr);
         /* Encode FQANS (fqans is an array of strings) into fqansArray */
         error = 1;  // variable for paranoic error check
         for (i=0; i<nbfqans; i++) {
@@ -354,6 +371,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
                 srmlogit(STORM_LOG_DEBUG, callerName, "FQAN[%d]: %s\n", i, fqans[i]);
                 error = 0;
                 fqansItem = xmlrpc_string_new(env_addr, fqans[i]);
+                XMLRPC_ASSERT_ENV_OK(env_addr);
                 xmlrpc_array_append_item(env_addr, fqansArray, fqansItem);
                 xmlrpc_DECREF(fqansItem);
             }
@@ -392,6 +410,7 @@ int encode_ArrayOfAnyURI(const char *callerName,
     if (urlArray == NULL) return(ENCODE_ERR_MISSING_PARAM);
 
     xml_urlArray = xmlrpc_array_new(env_addr);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
 
     for (i=0; i<nbsurls; i++) {
         if (urlArray[i] == NULL) {
@@ -416,6 +435,7 @@ int encode_ArrayOfAnyURI(const char *callerName,
         }else{
 
             xml_SURL = xmlrpc_string_new(env_addr, normalized_surl);
+            XMLRPC_ASSERT_ENV_OK(env_addr);
             free(normalized_surl);
         }
 
@@ -460,6 +480,7 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
 
     extraInfoArray = extraInfo->extraInfoArray;
     infoArray = xmlrpc_array_new(env_addr);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
 
     for (i=0; i<arraySize; i++) {
 
@@ -469,6 +490,7 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
         }
 
         infoElement = xmlrpc_struct_new(env_addr);
+        XMLRPC_ASSERT_ENV_OK(env_addr);
 
         if (extraInfoArray[i]->key == NULL) {
             srmlogit(STORM_LOG_DEBUG, callerName, "StorageSystemInfo[%d] is NULL\n", i);
@@ -481,7 +503,10 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
             xmlrpc_DECREF(infoArray);
             return(ENCODE_ERR_ENCODING_ERROR);
         }
-        xmlrpc_struct_set_value(env_addr, infoElement, "key", xmlrpc_string_new(env_addr, extraInfoArray[i]->key));
+        xmlrpc_value* key = xmlrpc_string_new(env_addr, extraInfoArray[i]->key);
+        XMLRPC_ASSERT_ENV_OK(env_addr);
+        xmlrpc_struct_set_value(env_addr, infoElement, "key", key);
+        xmlrpc_DECREF(key);
 
         if (extraInfoArray[i]->value != NULL)
         {
@@ -492,7 +517,10 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
                 xmlrpc_DECREF(infoArray);
                 return(ENCODE_ERR_ENCODING_ERROR);
             }
-            xmlrpc_struct_set_value(env_addr, infoElement, "value", xmlrpc_string_new(env_addr, extraInfoArray[i]->value));
+            xmlrpc_value* value = xmlrpc_string_new(env_addr, extraInfoArray[i]->value);
+            XMLRPC_ASSERT_ENV_OK(env_addr);
+            xmlrpc_struct_set_value(env_addr, infoElement, "value", value);
+            xmlrpc_DECREF(value);
         }
         xmlrpc_array_append_item(env_addr, infoArray, infoElement);
         xmlrpc_DECREF(infoElement);
@@ -541,10 +569,12 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
 
         } else {
             xml_val = xmlrpc_string_new(env_addr,normalized_surl);
+            XMLRPC_ASSERT_ENV_OK(env_addr);
             free(normalized_surl);
         }
     } else {
         xml_val = xmlrpc_string_new(env_addr, value);
+        XMLRPC_ASSERT_ENV_OK(env_addr);
     }
 
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_val);
@@ -603,6 +633,7 @@ int encode_TTransferParameters(const char *callerName,
     }
 
     xml_transferParametersStruct = xmlrpc_struct_new(env_addr);
+    XMLRPC_ASSERT_ENV_OK(env_addr);
 
     if (transferParameters->accessPattern != NULL)
         encode_int(callerName, env_addr, (int *) transferParameters->accessPattern, "accessPattern", xml_transferParametersStruct);
