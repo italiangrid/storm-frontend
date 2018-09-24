@@ -57,6 +57,10 @@ get_pid() {
    else
        return $ERROR
    fi
+   if [ -z "$PID" ]; then
+     rm $PIDFILE
+     return $ERROR
+   fi
    return $SUCCESS
 }
 
@@ -131,11 +135,14 @@ case "$1" in
       export LD_LIBRARY_PATH="/usr/lib/storm:${LD_LIBRARY_PATH}"
     fi
 
+    FE_OUT="$RUNDIR/storm-frontend-server.out"
+    FE_ERR="$RUNDIR/storm-frontend-server.err"
+
     # Launch the frontend
-    su -m -s "/bin/bash" -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE" $STORM_FE_USER
+    su -m -s "/bin/bash" -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE 1>$FE_OUT 2>$FE_ERR" $STORM_FE_USER
 
     if [ $? -eq 0 ]; then
-        pid=`ps -eo pid,ppid,comm | grep " 1 $prog_short$" | awk '{print $1}'`
+      pid=$(ps -eo pid,ppid,comm | grep " [0-9] ${prog_short}$" | awk '{print $1}')
         echo $pid > $PIDFILE
         RETVAL=0
         echo "ok."

@@ -75,6 +75,4 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *anyURI, ch
 int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char *fieldName, xmlrpc_value *xmlStruct);
 int encode_TTransferParameters(const char *callerName, xmlrpc_env *env_addr, struct ns1__TTransferParameters *transferParameters, char *fieldName, xmlrpc_value *xmlStruct);
 
-//struct FrontendConfiguration;
-//int call_FrontendConfiguration_getXMLRPCCheckAscii(FrontendConfiguration* wrapping); /* declare the wrapper function */
-int call_FrontendConfiguration_getXMLRPCCheckAscii(); /* declare the wrapper function */
+int call_FrontendConfiguration_getXMLRPCCheckAscii(); 

@@ -32,7 +32,7 @@
 #define DECODE_ERR_DECODING_ERROR -3
 
 /* Parameters names */
-/* see also file: xmlrpc_encode.h */
+/* see also file: xmlrpc_encode.hpp */
 #define SRM_PARAM_arrayOfFileStatuses "arrayOfFileStatuses"
 #define SRM_PARAM_requestToken "requestToken"
 #define SRM_PARAM_retentionPolicyInfo "retentionPolicyInfo"
@@ -72,6 +72,7 @@
 /* Prototype definitions */
 int decode_lifetimeValue(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, int **lifetimeVal, char *fieldName, xmlrpc_value *xmlStruct);
 int decode_ArrayOfTSURLReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTSURLReturnStatus **arrayOfFileStatuses, char *fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfTSURLLifetimeReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTSURLLifetimeReturnStatus **arrayOfFileStatuses, char *fieldName, xmlrpc_value *xmlStruct);
 int decode_ArrayOfTExtraInfo(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTExtraInfo **arrayOfTExtraInfo, char *fieldName, xmlrpc_value *xmlStruct);
 int decode_TRetentionPolicyInfo(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TRetentionPolicyInfo **retentionPolicyInfo, char *fieldName, xmlrpc_value *xmlStruct);
 int decode_string(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char **outputString, char *fieldName, xmlrpc_value *xmlStruct);

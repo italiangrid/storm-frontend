@@ -23,156 +23,153 @@
 #ifndef FRONTENDOPTIONS_HPP_
 #define FRONTENDOPTIONS_HPP_
 
-#include "boost/program_options.hpp"
-namespace po = boost::program_options;
+#include <boost/program_options.hpp>
 
 #include <iostream>
 #include <fstream>
 #include <iterator>
 #include <string>
 
-using namespace std;
+extern const std::string DEFAULT_CONFIGURATION_FILE;
+extern const std::string DEFAULT_GRIDMAPFILE;
+extern const std::string DEFAULT_HOST_CERT_FILE;
+extern const std::string DEFAULT_HOST_KEY_FILE;
+extern const std::string DEFAULT_LOG_FILE_NAME;
+extern const std::string DEFAULT_MONITORING_FILE_NAME;
+extern const std::string DEFAULT_WSDL_FILE;
+extern const std::string DEFAULT_XMLRPC_HOST;
+extern const std::string DEFAULT_XMLRPC_PORT;
+extern const std::string DEFAULT_XMLRPC_PATH;
+extern const std::string DEFAULT_XMLRPC_TOKEN;
+extern const std::string DEFAULT_DEBUG_LEVEL;
+extern const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING;
+extern const int DEFAULT_THREADS_NUMBER;
+extern const int DEFAULT_THREADPOOL_MAX_PENDING;
 
-static const string DEFAULT_CONFIGURATION_FILE = string("storm-frontend.conf");
-static const string DEFAULT_GRIDMAPFILE = string("/etc/grid-security/grid-mapfile");
-static const string DEFAULT_HOST_CERT_FILE = string("/etc/grid-security/hostcert.pem");
-static const string DEFAULT_HOST_KEY_FILE = string("/etc/grid-security/hostkey.pem");
-static const string DEFAULT_LOG_FILE_NAME = string("storm-frontend.log");
-static const string DEFAULT_MONITORING_FILE_NAME = string("monitoring.log");
-static const string DEFAULT_WSDL_FILE = "";
-static const string DEFAULT_XMLRPC_HOST = string("localhost");
-static const string DEFAULT_XMLRPC_PORT = string("8080");
-static const string DEFAULT_XMLRPC_PATH = string("/RPC2");
-static const string DEFAULT_XMLRPC_TOKEN = "unsecure_token";
-static const string DEFAULT_DEBUG_LEVEL = string("INFO");
-static const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING = 3;
-static const int DEFAULT_THREADS_NUMBER = 20;
-static const int DEFAULT_THREADPOOL_MAX_PENDING = 200;
+extern const int DEFAULT_GSOAP_MAX_PENDING;
+extern const int DEFAULT_GSOAP_SEND_TIMEOUT; // seconds
+extern const int DEFAULT_GSOAP_RECV_TIMEOUT; // seconds
 
-static const int DEFAULT_GSOAP_MAX_PENDING = 2000;
-static const int DEFAULT_GSOAP_SEND_TIMEOUT = 10; // seconds
-static const int DEFAULT_GSOAP_RECV_TIMEOUT = 10; // seconds
+extern const int DEFAULT_PORT;
+extern const bool DEFAULT_MONITORING_ENABLED;
+extern const int DEFAULT_MONITORING_TIME_INTERVAL;
+extern const bool DEFAULT_MONITORING_DETAILED;
+extern const bool DEFAULT_XMLRPC_CHECK_ASCII;
+extern const bool DEFAULT_USER_CHECK_BLACKLIST;
+extern const std::string DEFAULT_CA_CERTIFICATES_FOLDER;
+extern const std::string DEFAULT_ARGUS_RESOURCE_ID;
 
-static const int DEFAULT_PORT = 8444;
-static const bool DEFAULT_MONITORING_ENABLED = true;
-static const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
-static const bool DEFAULT_MONITORING_DETAILED = false;
-static const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
-static const bool DEFAULT_USER_CHECK_BLACKLIST = false;
-static const string DEFAULT_CA_CERTIFICATES_FOLDER = string("/etc/grid-security/certificates");
-static const string DEFAULT_ARGUS_RESOURCE_ID = "storm";
+extern const char* EMPTY_DESCRIPTION;
 
-static const char* EMPTY_DESCRIPTION = "";
+extern const char* ENVVAR_GRIDMAP;
+extern const char* ENVVAR_X509_USER_CERT;
+extern const char* ENVVAR_X509_USER_KEY;
+extern const char* ENVVAR_X509_CERT_DIR;
 
-static const char* ENVVAR_GRIDMAP = "GRIDMAP";
-static const char* ENVVAR_X509_USER_CERT = "X509_USER_CERT";
-static const char* ENVVAR_X509_USER_KEY = "X509_USER_KEY";
-static const char* ENVVAR_X509_CERT_DIR = "X509_CERT_DIR";
+extern const std::string OPT_HELP;
+extern const std::string OPTL_HELP;
+extern const char* OPT_HELP_DESCRIPTION;
 
-static const string OPT_HELP = string("h");
-static const string OPTL_HELP = string("help");
-static const char* OPT_HELP_DESCRIPTION = "Print this message";
+extern const std::string OPT_VERSION;
+extern const std::string OPTL_VERSION;
+extern const char* OPT_VERSION_DESCRIPTION;
 
-static const string OPT_VERSION = string("v");
-static const string OPTL_VERSION = string("version");
-static const char* OPT_VERSION_DESCRIPTION = "Print version";
+extern const std::string OPT_CONFIG_FILE;
+extern const std::string OPTL_CONFIG_FILE;
+extern const char* OPT_CONFIG_FILE_DESCRIPTION;
 
-static const string OPT_CONFIG_FILE = string("c");
-static const string OPTL_CONFIG_FILE = string("config-file");
-static const char* OPT_CONFIG_FILE_DESCRIPTION = "Configuration file";
-
-static const string OPT_DEBUG = string("d");
-static const string OPTL_DEBUG = string("debug-mode");
-static const char* OPT_DEBUG_DESCRIPTION = "Start in debug-mode: do not exec fork() and stay in foreground";
+extern const std::string OPT_DEBUG;
+extern const std::string OPTL_DEBUG;
+extern const char* OPT_DEBUG_DESCRIPTION;
 
 // Renamed disable with enable and changed checks accordingly
-static const string OPTL_ENABLE_MAPPING = string("security.enable.mapping");
-static const char* OPT_ENABLE_MAPPING_DESCRIPTION = "Enable/Disable mapping via gridmafile.";
+extern const std::string OPTL_ENABLE_MAPPING;
+extern const char* OPT_ENABLE_MAPPING_DESCRIPTION;
 
-static const string OPTL_ENABLE_VOMSCHECK = string("security.enable.vomscheck");
-static const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION = "Enable/Disable VOMS credentials check.";
+extern const std::string OPTL_ENABLE_VOMSCHECK;
+extern const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION;
 
-static const string OPTL_MONITORING_ENABLED = string("monitoring.enabled");
+extern const std::string OPTL_MONITORING_ENABLED;
 
-static const string OPTL_MONITORING_FILE_NAME = string("monitoring.filename");
-static const char* OPT_MONITORING_FILE_NAME_DESCRIPTION = "Use <arg> as monitoring file";
+extern const std::string OPTL_MONITORING_FILE_NAME;
+extern const char* OPT_MONITORING_FILE_NAME_DESCRIPTION;
 
-static const string OPTL_MONITORING_DETAILED = string("monitoring.detailed");
-static const char* OPT_MONITORING_DETAILED_DESCRIPTION = "Enable detailed monitoring for each operation";
+extern const std::string OPTL_MONITORING_DETAILED;
+extern const char* OPT_MONITORING_DETAILED_DESCRIPTION;
 
-static const string OPTL_MONITORING_TIME_INTERVAL = string("monitoring.timeInterval");
-static const char* OPT_MONITORING_TIME_INTERVAL_DESCRIPTION = "Number of seconds to print monitoring information.";
+extern const std::string OPTL_MONITORING_TIME_INTERVAL;
+extern const char* OPT_MONITORING_TIME_INTERVAL_DESCRIPTION;
 
-static const string OPTL_LOG_FILE_NAME = string("log.filename");
-static const char* OPT_LOG_FILE_NAME_DESCRIPTION = "Use <arg> as log file";
+extern const std::string OPTL_LOG_FILE_NAME;
+extern const char* OPT_LOG_FILE_NAME_DESCRIPTION;
 
-static const string OPTL_DEBUG_LEVEL = string("log.debuglevel");
-static const char* OPT_DEBUG_LEVEL_DESCRIPTION = "Debug level. <arg> can be: ERROR, WARN, INFO, DEBUG, DEBUG2";
+extern const std::string OPTL_DEBUG_LEVEL;
+extern const char* OPT_DEBUG_LEVEL_DESCRIPTION;
 
-static const string OPTL_PORT = string("fe.port");
-static const char* OPT_PORT_DESCRIPTION = "Listen to port <arg>";
+extern const std::string OPTL_PORT;
+extern const char* OPT_PORT_DESCRIPTION;
 
-static const string OPTL_NUM_THREADS = string("fe.threadpool.threads.number");
+extern const std::string OPTL_NUM_THREADS;
 
-static const string OPTL_MAX_THREADPOOL_PENDING = string("fe.threadpool.maxpending");
+extern const std::string OPTL_MAX_THREADPOOL_PENDING;
 
-static const string OPTL_SLEEP_THREADPOOL_MAX_PENDING = string("fe.threadpool.maxpending.sleep");
+extern const std::string OPTL_SLEEP_THREADPOOL_MAX_PENDING;
 
-static const string OPTL_MAX_GSOAP_PENDING = string("fe.gsoap.maxpending");
+extern const std::string OPTL_MAX_GSOAP_PENDING;
 
-static const string OPTL_GSOAP_SEND_TIMEOUT = string("fe.gsoap.send_timeout");
-static const string OPTL_GSOAP_RECV_TIMEOUT = string("fe.gsoap.recv_timeout");
+extern const std::string OPTL_GSOAP_SEND_TIMEOUT;
+extern const std::string OPTL_GSOAP_RECV_TIMEOUT;
 
-static const string OPTL_PROXY_DIR = string("proxy.dir");
-static const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
+extern const std::string OPTL_PROXY_DIR;
+extern const char* OPT_PROXY_DIR_DESCRIPTION;
 
-static const string OPTL_PROXY_USER = string("proxy.user");
-static const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
+extern const std::string OPTL_PROXY_USER;
+extern const char* OPT_PROXY_USER_DESCRIPTION;
 
-static const string OPTL_XMLRPC_HOST = string("be.xmlrpc.host");
-static const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
+extern const std::string OPTL_XMLRPC_HOST;
+extern const char* OPT_XMLRPC_HOST_DESCRIPTION;
 
-static const string OPTL_RECALLTABLE_PORT = string("be.recalltable.port");
-static const string OPTL_XMLRPC_PORT = string("be.xmlrpc.port");
-static const char* OPT_XMLRPC_PORT_DESCRIPTION = "Port used by the StoRM XMLRPC server";
+extern const std::string OPTL_RECALLTABLE_PORT;
+extern const std::string OPTL_XMLRPC_PORT;
+extern const char* OPT_XMLRPC_PORT_DESCRIPTION;
 
-static const string OPTL_XMLRPC_PATH = string("be.xmlrpc.path");
-static const char* OPT_XMLRPC_PATH_DESCRIPTION = "Path of the StoRM XMLRPC server service";
+extern const std::string OPTL_XMLRPC_PATH;
+extern const char* OPT_XMLRPC_PATH_DESCRIPTION;
 
-static const string OPTL_XMLRPC_TOKEN = "be.xmlrpc.token";
-static const char* OPT_XMLRPC_TOKEN_DESCRIPTION = "The XMLRPC authentication token";
+extern const std::string OPTL_XMLRPC_TOKEN;
+extern const char* OPT_XMLRPC_TOKEN_DESCRIPTION;
 
-static const string OPTL_WSDL_FILE = string("wsdl.file");
-static const char* OPT_WSDL_FILE_DESCRIPTION = "Path to the WSDL to publish in case of GET request";
+extern const std::string OPTL_WSDL_FILE;
+extern const char* OPT_WSDL_FILE_DESCRIPTION;
 
-static const string OPTL_DB_HOST = string("db.host");
-static const char* OPT_DB_HOST_DESCRIPTION = "Machine hosting the DB";
+extern const std::string OPTL_DB_HOST;
+extern const char* OPT_DB_HOST_DESCRIPTION;
 
-static const string OPTL_DB_USER = string("db.user");
-static const char* OPT_DB_USER_DESCRIPTION = "Database user";
+extern const std::string OPTL_DB_USER;
+extern const char* OPT_DB_USER_DESCRIPTION;
 
-static const string OPTL_DB_USER_PASSWORD = string("db.passwd");
-static const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
+extern const std::string OPTL_DB_USER_PASSWORD;
+extern const char* OPT_DB_USER_PASSWORD_DESCRIPTION;
 
-static const string OPTL_XMLRPC_CHECK_ASCII = string("be.xmlrpc.check.ascii");
-static const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not strings to be sent via xmlrpc to the BE";
+extern const std::string OPTL_XMLRPC_CHECK_ASCII;
+extern const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION;
 
-static const string OPTL_USER_CHECK_BLACKLIST = string("check.user.blacklisting");
-static const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
+extern const std::string OPTL_USER_CHECK_BLACKLIST;
+extern const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION;
 
-static const string OPTL_ARGUS_PEPD_ENDPOINT = string("argus-pepd-endpoint");
-static const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION = "Full SERVICE ENDPOINT of the Argus PEP Daemon";
+extern const std::string OPTL_ARGUS_PEPD_ENDPOINT;
+extern const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION;
 
-static const string OPTL_ARGUS_RESOURCE_ID = string("argus.resource-id");
-static const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION = "the resource identifier for StoRM service in Argus policies";
+extern const std::string OPTL_ARGUS_RESOURCE_ID;
+extern const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION;
 
 
 
 // A helper function to simplify printing options stuff
 template<class T>
-ostream& operator<<(ostream& os, const vector<T>& v)
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 {
-    copy(v.begin(), v.end(), ostream_iterator<T>(cout, " "));
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
     return os;
 }
 
@@ -186,7 +183,7 @@ public:
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
     void checkConfigurationData();
-    void checkFileReadPerm(string fileAbsolutePath);
+    void checkFileReadPerm(std::string fileAbsolutePath);
 
     bool requestedHelp();
     bool requestedVersion();
@@ -209,48 +206,48 @@ public:
     int getRecalltablePort();
     int getMonitoringTimeInterval();
     unsigned int getThreadpoolMaxpendingSleepTime();
-    string getDebugLevelString();
-    string getProxyDir();
-    string getProxyUser();
-    string getXMLRPCEndpoint();
+    std::string getDebugLevelString();
+    std::string getProxyDir();
+    std::string getProxyUser();
+    std::string getXMLRPCEndpoint();
 
-    const string& getXMLRPCToken();
+    const std::string& getXMLRPCToken();
 
-    string getXmlRpcHost();
-    string getUser();
-    string getWSDLFilePath();
-    string getMonitoringFile();
-    string getLogFile();
-    string getDBHost();
-    string getDBUser();
-    string getDBUserPassword();
-    string getConfigurationFile();
-    string getGridmapfile();
-    string getHostCertFile();
-    string getHostKeyFile();
+    std::string getXmlRpcHost();
+    std::string getUser();
+    std::string getWSDLFilePath();
+    std::string getMonitoringFile();
+    std::string getLogFile();
+    std::string getDBHost();
+    std::string getDBUser();
+    std::string getDBUserPassword();
+    std::string getConfigurationFile();
+    std::string getGridmapfile();
+    std::string getHostCertFile();
+    std::string getHostKeyFile();
     bool getXMLRPCCheckAscii();
     bool getUserCheckBlacklist();
-    string getArgusPepdEndpoint();
-    string getArgusResourceId();
-    string getCaCertificatesFolder();
+    std::string getArgusPepdEndpoint();
+    std::string getArgusResourceId();
+    std::string getCaCertificatesFolder();
 
 private:
     FrontendConfiguration();
     virtual ~FrontendConfiguration();
-    po::options_description defineConfigFileOptions();
-    po::options_description defineCommandLineOptions();
-    void setCommandLineOptions(po::variables_map& vm);
-    void setConfigurationOptions(po::variables_map& vm);
-    int decodeDebugLevelOption(string& debugLevel);
-    void checkCreateDir(string dirAbsolutePath);
-    string getFromEnvironment(const char* envVar, const string& defaultValue);
-    string getFilename(string path);
-    string getParentPath(string path);
+    boost::program_options::options_description defineConfigFileOptions();
+    boost::program_options::options_description defineCommandLineOptions();
+    void setCommandLineOptions(boost::program_options::variables_map& vm);
+    void setConfigurationOptions(boost::program_options::variables_map& vm);
+    int decodeDebugLevelOption(std::string& debugLevel);
+    void checkCreateDir(std::string dirAbsolutePath);
+    std::string getFromEnvironment(const char* envVar, const std::string& defaultValue);
+    std::string getFilename(std::string path);
+    std::string getParentPath(std::string path);
 
     static FrontendConfiguration* instance;
 
-    po::options_description configurationFileOptions;
-    po::options_description commandLineOptions;
+    boost::program_options::options_description configurationFileOptions;
+    boost::program_options::options_description commandLineOptions;
 
     bool helpRequested;
     bool versionRequested;
@@ -272,29 +269,29 @@ private:
     int port;
     int recalltablePort;
     int monitoring_time_interval;
-    string monitoring_file;
-    string log_file;
-    string proxy_dir;
-    string proxy_user;
-    string user;
-    string wsdl_file;
-    string debugLevelString;
-    string xmlrpc_host;
-    string xmlrpc_port;
-    string xmlrpc_path;
-    string xmlrpc_token;
-    string dbHost;
-    string dbUser;
-    string dbUserPassword;
-    string configuration_file;
-    string gridmapfile;
-    string hostcertfile;
-    string hostkeyfile;
+    std::string monitoring_file;
+    std::string log_file;
+    std::string proxy_dir;
+    std::string proxy_user;
+    std::string user;
+    std::string wsdl_file;
+    std::string debugLevelString;
+    std::string xmlrpc_host;
+    std::string xmlrpc_port;
+    std::string xmlrpc_path;
+    std::string xmlrpc_token;
+    std::string dbHost;
+    std::string dbUser;
+    std::string dbUserPassword;
+    std::string configuration_file;
+    std::string gridmapfile;
+    std::string hostcertfile;
+    std::string hostkeyfile;
     bool xmlrpc_check_ascii;
     bool user_check_blacklist;
-    string argus_pepd_endpoint;
-    string argus_resource_id;
-    string ca_certificates_folder;
+    std::string argus_pepd_endpoint;
+    std::string argus_resource_id;
+    std::string ca_certificates_folder;
 
 };
 

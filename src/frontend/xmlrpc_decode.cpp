@@ -20,7 +20,7 @@
  * that dencode a specified type from the xml structure to the corresponding WSDL type.
  */
  
-#include "xmlrpc_decode.h"
+#include "xmlrpc_decode.hpp"
 #include <stdio.h>
 #include <cgsi_plugin.h>
 
@@ -53,7 +53,7 @@ int decode_lifetimeValue(const char *callerName,
     error = decode_ULONG64(callerName, env_addr, soap, &longValue, fieldName, xmlStruct);
     if (longValue == NULL) *lifetimeVal = NULL;
     else {
-        *lifetimeVal = soap_malloc(soap, sizeof(int));
+        *lifetimeVal = static_cast<int*>(soap_malloc(soap, sizeof(int)));
         **lifetimeVal = (int) *longValue;
     }
     
@@ -97,14 +97,14 @@ int decode_ArrayOfTSURLReturnStatus(const char *callerName,
     }
     
     /************************ Allocate memory for the response structure ******************************/
-    *arrayOfFileStatuses = soap_malloc(soap, sizeof(struct ns1__ArrayOfTSURLReturnStatus));
+    *arrayOfFileStatuses = static_cast<ns1__ArrayOfTSURLReturnStatus*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTSURLReturnStatus)));
     if (NULL == *arrayOfFileStatuses) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfFileStatuses\n");
         xmlrpc_DECREF(xml_arrayOfFileStatuses);
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
     
-    statusArray = soap_malloc(soap, arraySize * sizeof(struct ns1__TSURLReturnStatus *));
+    statusArray = static_cast<ns1__TSURLReturnStatus**>(soap_malloc(soap, arraySize * sizeof(struct ns1__TSURLReturnStatus *)));
     if (NULL == statusArray) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfFileStatuses->statusArray\n");
         *arrayOfFileStatuses = NULL;
@@ -113,7 +113,7 @@ int decode_ArrayOfTSURLReturnStatus(const char *callerName,
     }
     
     for (i=0; i<arraySize; i++) {
-        statusArray[i] = soap_malloc(soap, sizeof(struct ns1__TSURLReturnStatus));
+        statusArray[i] = static_cast<ns1__TSURLReturnStatus*>(soap_malloc(soap, sizeof(struct ns1__TSURLReturnStatus)));
         if (NULL == statusArray[i]) {
             srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfFileStatuses->statusArray[%d]\n", i);
             *arrayOfFileStatuses = NULL;
@@ -205,14 +205,14 @@ int decode_ArrayOfTExtraInfo(const char *callerName,
     }
     
     /************************ Allocate memory for the response structure ******************************/
-    *arrayOfTExtraInfo = soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo));
+    *arrayOfTExtraInfo = static_cast<ns1__ArrayOfTExtraInfo*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTExtraInfo)));
     if (NULL == *arrayOfTExtraInfo) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for extraInfoArray\n");
         xmlrpc_DECREF(xml_arrayOfTExtraInfo);
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
     
-    extraInfoArray = soap_malloc(soap, arraySize * sizeof(struct ns1__TExtraInfo *));
+    extraInfoArray = static_cast<ns1__TExtraInfo**>(soap_malloc(soap, arraySize * sizeof(struct ns1__TExtraInfo *)));
     if (NULL == extraInfoArray) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfTExtraInfo->extraInfoArray\n");
         *arrayOfTExtraInfo = NULL;
@@ -221,7 +221,7 @@ int decode_ArrayOfTExtraInfo(const char *callerName,
     }
     
     for (i=0; i<arraySize; i++) {
-        extraInfoArray[i] = soap_malloc(soap, sizeof(struct ns1__TExtraInfo));
+        extraInfoArray[i] = static_cast<ns1__TExtraInfo*>(soap_malloc(soap, sizeof(struct ns1__TExtraInfo)));
         if (NULL == extraInfoArray[i]) {
             srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfTExtraInfo->extraInfoArray[%d]\n", i);
             *arrayOfTExtraInfo = NULL;
@@ -314,14 +314,14 @@ int decode_ArrayOfTSURLLifetimeReturnStatus(const char *callerName,
     }
     
     /************************ Allocate memory for the response structure ******************************/
-    *arrayOfFileStatuses = soap_malloc(soap, sizeof(struct ns1__ArrayOfTSURLLifetimeReturnStatus));
+    *arrayOfFileStatuses = static_cast<ns1__ArrayOfTSURLLifetimeReturnStatus*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTSURLLifetimeReturnStatus)));
     if (NULL == *arrayOfFileStatuses) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfFileStatuses\n");
         xmlrpc_DECREF(xml_arrayOfFileStatuses);
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
     
-    statusArray = soap_malloc(soap, arraySize * sizeof(struct ns1__TSURLLifetimeReturnStatus *));
+    statusArray = static_cast<ns1__TSURLLifetimeReturnStatus**>(soap_malloc(soap, arraySize * sizeof(struct ns1__TSURLLifetimeReturnStatus *)));
     if (NULL == statusArray) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfFileStatuses->statusArray\n");
         *arrayOfFileStatuses = NULL;
@@ -330,7 +330,7 @@ int decode_ArrayOfTSURLLifetimeReturnStatus(const char *callerName,
     }
     
     for (i=0; i<arraySize; i++) {
-        statusArray[i] = soap_malloc(soap, sizeof(struct ns1__TSURLLifetimeReturnStatus));
+        statusArray[i] = static_cast<ns1__TSURLLifetimeReturnStatus*>(soap_malloc(soap, sizeof(struct ns1__TSURLLifetimeReturnStatus)));
         if (NULL == statusArray[i]) {
             srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfFileStatuses->statusArray[%d]\n", i);
             *arrayOfFileStatuses = NULL;
@@ -441,14 +441,14 @@ int decode_ArrayOfTMetaDataSpace(const char *callerName,
     }
     
     /************************ Allocate memory for the response structure ******************************/
-    *arrayOfSpaceDetails = soap_malloc(soap, sizeof(struct ns1__ArrayOfTMetaDataSpace));
+    *arrayOfSpaceDetails = static_cast<ns1__ArrayOfTMetaDataSpace*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTMetaDataSpace)));
     if (NULL == *arrayOfSpaceDetails) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfSpaceDetails\n");
         xmlrpc_DECREF(xml_arrayOfSpaceDetails);
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
     
-    spaceDataArray = soap_malloc(soap, arraySize * sizeof(struct ns1__TMetaDataSpace *));
+    spaceDataArray = static_cast<ns1__TMetaDataSpace**>(soap_malloc(soap, arraySize * sizeof(struct ns1__TMetaDataSpace *)));
     if (NULL == spaceDataArray) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfSpaceDetails->spaceDataArray\n");
         *arrayOfSpaceDetails = NULL;
@@ -457,7 +457,7 @@ int decode_ArrayOfTMetaDataSpace(const char *callerName,
     }
     
     for (i=0; i<arraySize; i++) {
-        spaceDataArray[i] = soap_malloc(soap, sizeof(struct ns1__TMetaDataSpace));
+        spaceDataArray[i] = static_cast<ns1__TMetaDataSpace*>(soap_malloc(soap, sizeof(struct ns1__TMetaDataSpace)));
         if (NULL == spaceDataArray[i]) {
             srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for arrayOfSpaceDetails->spaceDataArray[%d]\n", i);
             *arrayOfSpaceDetails = NULL;
@@ -639,20 +639,20 @@ int decode_TRetentionPolicyInfo(const char *callerName,
         return(DECODE_ERR_DECODING_ERROR);
     }
     
-    *retentionPolicyInfo = soap_malloc(soap, sizeof(struct ns1__TRetentionPolicyInfo));
+    *retentionPolicyInfo = static_cast<ns1__TRetentionPolicyInfo*>(soap_malloc(soap, sizeof(struct ns1__TRetentionPolicyInfo)));
     if (NULL == *retentionPolicyInfo) {
         srmlogit(STORM_LOG_WARNING, callerName, "Decoding %s: memory allocation error\n", fieldName);
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
-    (*retentionPolicyInfo)->accessLatency = soap_malloc(soap, sizeof(enum ns1__TAccessLatency));
+    (*retentionPolicyInfo)->accessLatency = static_cast<ns1__TAccessLatency*>(soap_malloc(soap, sizeof(enum ns1__TAccessLatency)));
     if (NULL == (*retentionPolicyInfo)->accessLatency) {
         *retentionPolicyInfo = NULL;
         srmlogit(STORM_LOG_WARNING, callerName, "Decoding %s: memory allocation error\n", fieldName);
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
     
-    (*retentionPolicyInfo)->retentionPolicy = retentionPolicy;
-    *((*retentionPolicyInfo)->accessLatency) = accessLatency;
+    (*retentionPolicyInfo)->retentionPolicy = static_cast<ns1__TRetentionPolicy>(retentionPolicy);
+    *((*retentionPolicyInfo)->accessLatency) = static_cast<ns1__TAccessLatency>(accessLatency);
     
     return(0);
 }
@@ -687,7 +687,7 @@ int decode_globalTReturnStatus(const char *callerName,
         return(DECODE_ERR_DECODING_ERROR);
     } 
     
-    returnStatus->statusCode = convertStatusCode(statusCode);
+    returnStatus->statusCode = static_cast<ns1__TStatusCode>(convertStatusCode(statusCode));
     returnStatus->explanation = soap_strdup(soap, explanation);
     free(statusCode);
     free(explanation);
@@ -744,7 +744,7 @@ int decode_TUserPermission(const char *callerName,
     }
     
     /************************ Allocate memory for the response structure ******************************/
-    *userPermission = soap_malloc(soap, sizeof(struct ns1__TUserPermission));
+    *userPermission = static_cast<ns1__TUserPermission*>(soap_malloc(soap, sizeof(struct ns1__TUserPermission)));
     if (*userPermission == NULL) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for userPermission\n");
         xmlrpc_DECREF(xml_userPermission);
@@ -803,7 +803,7 @@ int decode_TGroupPermission(const char *callerName,
     }
     
     /************************ Allocate memory for the response structure ******************************/
-    *groupPermission = soap_malloc(soap, sizeof(struct ns1__TGroupPermission));
+    *groupPermission = static_cast<ns1__TGroupPermission*>(soap_malloc(soap, sizeof(struct ns1__TGroupPermission)));
     if (*groupPermission == NULL) {
         srmlogit(STORM_LOG_WARNING, callerName, "Memory allocation error for groupPermission\n");
         xmlrpc_DECREF(xml_groupPermission);
@@ -906,10 +906,10 @@ int decode_ArrayOfString(const char *callerName,
 
     /****** Allocate memory for the response structure *******/
     error = 0;
-    *arrayOfString = soap_malloc(soap, sizeof(struct ns1__ArrayOfString));
+    *arrayOfString = static_cast<ns1__ArrayOfString*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfString)));
     if (*arrayOfString == NULL) error = 1;
     else {
-        (*arrayOfString)->stringArray = soap_malloc(soap, arraySize * sizeof(char *));
+        (*arrayOfString)->stringArray = static_cast<char**>(soap_malloc(soap, arraySize * sizeof(char *)));
         if ((*arrayOfString)->stringArray == NULL) error = 1;
     }
     if (error) {
@@ -936,7 +936,7 @@ int decode_ArrayOfString(const char *callerName,
         }    
         
         strValue = NULL;
-        xmlrpc_read_string(env_addr, xml_arrayItem, &strValue);
+        xmlrpc_read_string(env_addr, xml_arrayItem, (const char**) &strValue);
  
         if (env_addr->fault_occurred) {
             srmlogit(STORM_LOG_WARNING, callerName, "%s not specified by BE\n", fieldName);
@@ -993,7 +993,7 @@ int decode_int(const char *callerName,
         return(DECODE_ERR_NOT_FOUND);
     }
     
-    *outputInt = soap_malloc(soap, sizeof(int));
+    *outputInt = static_cast<int*>(soap_malloc(soap, sizeof(int)));
     if (NULL == *(outputInt)) return(DECODE_ERR_SOAP_MEMORY_ERROR);
     
     **outputInt = i;
@@ -1025,7 +1025,7 @@ int decode_ULONG64(const char *callerName,
     retStat = decode_string(callerName, env_addr, soap, &strULONG64, fieldName, xmlStruct);
     if (retStat != 0) return(retStat);
     
-    *outputULONG64 = soap_malloc(soap, sizeof(ULONG64));
+    *outputULONG64 = static_cast<ULONG64*>(soap_malloc(soap, sizeof(ULONG64)));
     if (NULL == *(outputULONG64)) return(DECODE_ERR_SOAP_MEMORY_ERROR);
     
     **outputULONG64 = strtoull((char*) strULONG64, (char**)NULL,10);
@@ -1075,7 +1075,7 @@ int decode_TReturnStatus(const char *callerName,
     } 
     
     /************ Allocate memory for the response structure struct ns1__TReturnStatus *status *************/
-    *status = soap_malloc(soap, sizeof(struct ns1__TReturnStatus));
+    *status = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(struct ns1__TReturnStatus)));
     if (NULL == *status) {
         srmlogit(STORM_LOG_ERROR, callerName, "Memory allocation error.\n");
         free(statusCode);
@@ -1083,7 +1083,7 @@ int decode_TReturnStatus(const char *callerName,
         return(DECODE_ERR_SOAP_MEMORY_ERROR);
     }
     
-    (*status)->statusCode = convertStatusCode(statusCode);
+    (*status)->statusCode = static_cast<ns1__TStatusCode>(convertStatusCode(statusCode));
     (*status)->explanation = soap_strdup(soap, explanation);
     free(statusCode);
     free(explanation);
@@ -1133,11 +1133,11 @@ int decode_ArrayOfTMetaDataPathDetail(const char *callerName,
   
     /****************************************************************************************************/
     /******************* Allocate memory for the response structure *************************************/
-    *arrayOfTMetaData = soap_malloc(soap, sizeof(struct ns1__ArrayOfTMetaDataPathDetail));
+    *arrayOfTMetaData = static_cast<ns1__ArrayOfTMetaDataPathDetail*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTMetaDataPathDetail)));
     error = 0;
     if (*arrayOfTMetaData == NULL) error = 1;
     else {
-        pathDetailArray = soap_malloc(soap, arraySize * sizeof(struct ns1__TMetaDataPathDetail *));
+        pathDetailArray = static_cast<ns1__TMetaDataPathDetail**>(soap_malloc(soap, arraySize * sizeof(struct ns1__TMetaDataPathDetail *)));
         if (pathDetailArray == NULL) error = 1;
     }
     if (error) {
@@ -1152,7 +1152,7 @@ int decode_ArrayOfTMetaDataPathDetail(const char *callerName,
     
     // Allocate memory for each pathDetailArray item
     for (i=0; i<arraySize; i++) {
-        pathDetailArray[i] = soap_malloc(soap, sizeof(struct ns1__TMetaDataPathDetail));
+        pathDetailArray[i] = static_cast<ns1__TMetaDataPathDetail*>(soap_malloc(soap, sizeof(struct ns1__TMetaDataPathDetail)));
         if (pathDetailArray[i] == NULL)
         {
             srmlogit(STORM_LOG_ERROR, callerName, "Error: soap_malloc() error\n");

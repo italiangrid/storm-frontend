@@ -19,7 +19,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/bind.hpp>
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <string>
 #include <iostream>
@@ -34,6 +34,7 @@
 
 #include <vector>
 
+#include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
 
 namespace storm {
@@ -105,7 +106,7 @@ private:
     	m_detailed = false;
     	m_funcName = "Monitoring";
     	m_details_template_msg = "[%s] [OK:%u,F:%u,E:%u,Avg:%.3f,Std Dev:%.3f,m:%.3f,M:%.3f]\n";
-    	m_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] Last:(%s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f]) Tasks(max_active:%u,active:%u,pending:%u)\n";
+    	m_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] Last:(%s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f]) Tasks(max_active:%u,active:%u,max_pending:%u,pending:%u)\n";
     	m_defaultMonitor = new MonitorStub();
     }
 
@@ -137,6 +138,7 @@ private:
 				round_asynch_summary.m_maxTime,
 				storm::ThreadPool::getInstance()->size(),
 				storm::ThreadPool::getInstance()->get_active(),
+				FrontendConfiguration::getInstance()->getThreadpoolMaxPending(),
 				storm::ThreadPool::getInstance()->get_pending());
     	}
 

@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "boost/thread.hpp"
+#include <boost/thread.hpp>
 #include "ThreadPool.hpp"
 #include <sstream>
 #include "srmlogit.h"
