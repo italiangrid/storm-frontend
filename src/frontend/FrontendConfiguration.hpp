@@ -120,12 +120,6 @@ extern const std::string OPTL_MAX_GSOAP_PENDING;
 extern const std::string OPTL_GSOAP_SEND_TIMEOUT;
 extern const std::string OPTL_GSOAP_RECV_TIMEOUT;
 
-extern const std::string OPTL_PROXY_DIR;
-extern const char* OPT_PROXY_DIR_DESCRIPTION;
-
-extern const std::string OPTL_PROXY_USER;
-extern const char* OPT_PROXY_USER_DESCRIPTION;
-
 extern const std::string OPTL_XMLRPC_HOST;
 extern const char* OPT_XMLRPC_HOST_DESCRIPTION;
 
@@ -182,7 +176,6 @@ public:
 
     void parseOptions(int argc, char* argv[]);
     void printHelpMessage();
-    void checkConfigurationData();
     void checkFileReadPerm(std::string fileAbsolutePath);
 
     bool requestedHelp();
@@ -207,8 +200,6 @@ public:
     int getMonitoringTimeInterval();
     unsigned int getThreadpoolMaxpendingSleepTime();
     std::string getDebugLevelString();
-    std::string getProxyDir();
-    std::string getProxyUser();
     std::string getXMLRPCEndpoint();
 
     const std::string& getXMLRPCToken();
@@ -271,8 +262,6 @@ private:
     int monitoring_time_interval;
     std::string monitoring_file;
     std::string log_file;
-    std::string proxy_dir;
-    std::string proxy_user;
     std::string user;
     std::string wsdl_file;
     std::string debugLevelString;

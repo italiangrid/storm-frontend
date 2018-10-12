@@ -113,32 +113,6 @@ static int http_get(struct soap *soap) {
 	return SOAP_OK;
 }
 
-int setProxyUserGlobalVariables(std::string proxy_user) {
-
-	struct passwd *pwd;
-
-	std::string proxy_user_name;
-	if (proxy_user.empty()) {
-
-		// Get current user name
-		pwd = getpwuid(getuid());
-		proxy_user.assign(pwd->pw_name);
-
-	} else {
-
-		// Get information on the requested user
-		pwd = getpwnam(proxy_user.c_str());
-		if (NULL == pwd) { // error
-			return CONFERR;
-		}
-
-		proxy_uid = pwd->pw_uid;
-		proxy_gid = pwd->pw_gid;
-	}
-
-	return 0;
-}
-
 void *
 process_request(struct soap* tsoap) {
 
@@ -211,19 +185,6 @@ int loadConfiguration(int argc, char** argv) {
 	if (configuration->requestedVersion()) {
 		printf("Frontend version: %s\n", frontend_version);
 		return 1;
-	}
-
-	if (setProxyUserGlobalVariables(configuration->getProxyUser()) != 0) {
-		fprintf(stderr, "Error: request invalid user \"%s\" for proxy dir.\n",
-				configuration->getProxyUser().c_str());
-		return -1;
-	}
-
-	try {
-		configuration->checkConfigurationData();
-	} catch (exception& e) {
-		cout << e.what() << endl << endl;
-		return -1;
 	}
 
 	return 0;
@@ -309,10 +270,6 @@ void logConfiguration() {
 			configuration->getRecalltablePort());
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_DEBUG_LEVEL.c_str(),
 			configuration->getDebugLevelString().c_str());
-	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_PROXY_DIR.c_str(),
-			configuration->getProxyDir().c_str());
-	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_PROXY_USER.c_str(),
-			configuration->getProxyUser().c_str());
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_DB_HOST.c_str(),
 			configuration->getDBHost().c_str());
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n", OPTL_DB_USER.c_str(),

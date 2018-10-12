@@ -121,12 +121,6 @@ const string OPTL_MAX_GSOAP_PENDING = string("fe.gsoap.maxpending");
 const string OPTL_GSOAP_SEND_TIMEOUT = string("fe.gsoap.send_timeout");
 const string OPTL_GSOAP_RECV_TIMEOUT = string("fe.gsoap.recv_timeout");
 
-const string OPTL_PROXY_DIR = string("proxy.dir");
-const char* OPT_PROXY_DIR_DESCRIPTION = "Directory used to store proxies delegated by the client";
-
-const string OPTL_PROXY_USER = string("proxy.user");
-const char* OPT_PROXY_USER_DESCRIPTION = "Save the proxy certificate using <arg>'s uid and gid";
-
 const string OPTL_XMLRPC_HOST = string("be.xmlrpc.host");
 const char* OPT_XMLRPC_HOST_DESCRIPTION = "StoRM XMLRPC server (the same as the StoRM backend server)";
 
@@ -224,20 +218,6 @@ void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
     notify(config_vm);
 
     setConfigurationOptions(config_vm);
-
-}
-
-void FrontendConfiguration::checkConfigurationData() {
-
-    string dir;
-    try {
-        dir = proxy_dir;
-        checkCreateDir(dir);
-        dir = getParentPath(log_file);
-        checkCreateDir(dir);
-    } catch (exception& e) {
-        throw runtime_error("Error while attempting to create \"" + dir + "\".\n" + string(e.what()));
-    }
 
 }
 
@@ -346,14 +326,6 @@ int FrontendConfiguration::getMonitoringTimeInterval() {
     return monitoring_time_interval;
 }
 
-string FrontendConfiguration::getProxyDir() {
-    return proxy_dir;
-}
-
-string FrontendConfiguration::getProxyUser() {
-    return proxy_user;
-}
-
 string FrontendConfiguration::getXMLRPCEndpoint() {
     return xmlrpc_host + ":" + xmlrpc_port + xmlrpc_path;
 }
@@ -452,7 +424,6 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_MONITORING_DETAILED.c_str(), po::value<bool>()->default_value(DEFAULT_MONITORING_DETAILED), OPT_MONITORING_DETAILED_DESCRIPTION)
             (OPTL_MONITORING_FILE_NAME.c_str(), po::value<string>()->default_value(DEFAULT_MONITORING_FILE_NAME), EMPTY_DESCRIPTION)
             (OPTL_MONITORING_TIME_INTERVAL.c_str(), po::value<int>()->default_value(DEFAULT_MONITORING_TIME_INTERVAL), EMPTY_DESCRIPTION)
-            (OPTL_PROXY_DIR.c_str(), po::value<string>(), OPT_PROXY_DIR_DESCRIPTION)
             (OPTL_PORT.c_str(), po::value<int>()->default_value(DEFAULT_PORT), OPT_PORT_DESCRIPTION)
             (OPTL_XMLRPC_HOST.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_HOST), OPT_XMLRPC_HOST_DESCRIPTION)
             (OPTL_XMLRPC_PORT.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_PORT), OPT_XMLRPC_PORT_DESCRIPTION)
@@ -460,7 +431,6 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_XMLRPC_TOKEN.c_str(), po::value<string>()->default_value(DEFAULT_XMLRPC_TOKEN), OPT_XMLRPC_TOKEN_DESCRIPTION)
             (OPTL_XMLRPC_CHECK_ASCII.c_str(), po::value<bool>()->default_value(DEFAULT_XMLRPC_CHECK_ASCII), OPT_XMLRPC_CHECK_ASCII_DESCRIPTION)
             (OPTL_RECALLTABLE_PORT.c_str(), po::value<int>()->default_value(9998), EMPTY_DESCRIPTION)
-            (OPTL_PROXY_USER.c_str(), po::value<string>(), OPT_PROXY_USER_DESCRIPTION)
             (OPTL_WSDL_FILE.c_str(), po::value<string>()->default_value(DEFAULT_WSDL_FILE), OPT_WSDL_FILE_DESCRIPTION)
             (OPTL_DEBUG_LEVEL.c_str(), po::value<string>()->default_value(DEFAULT_DEBUG_LEVEL), OPT_DEBUG_LEVEL_DESCRIPTION)
             (OPTL_DB_HOST.c_str(), po::value<string>(), OPT_DB_HOST_DESCRIPTION)
@@ -523,9 +493,6 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
     debugLevelString = vm[OPTL_DEBUG_LEVEL].as<string> ();
     debugLevel = decodeDebugLevelOption(debugLevelString);
 
-    if (vm.count(OPTL_PROXY_DIR))
-        proxy_dir = vm[OPTL_PROXY_DIR].as<string> ();
-
     if (vm.count(OPTL_PORT))
         port = vm[OPTL_PORT].as<int> ();
 
@@ -543,9 +510,6 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_XMLRPC_CHECK_ASCII))
             xmlrpc_check_ascii = vm[OPTL_XMLRPC_CHECK_ASCII].as<bool> ();
-
-    if (vm.count(OPTL_PROXY_USER))
-        proxy_user = vm[OPTL_PROXY_USER].as<string> ();
 
     if (vm.count(OPTL_WSDL_FILE))
         wsdl_file = vm[OPTL_WSDL_FILE].as<string> ();
