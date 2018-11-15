@@ -5,10 +5,10 @@ pipeline {
     agent {
         kubernetes {
             cloud 'Kube mwdevel'
-            label 'yaim-pod'
+            label 'frontend-pod'
             containerTemplate {
-                name 'yaim-runner'
-                image 'zachdeibert/autotools'
+                name 'frontend-runner'
+                image 'italiangrid/storm-build:centos6'
                 ttyEnabled true
                 command 'cat'
             }
