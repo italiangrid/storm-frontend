@@ -46,8 +46,6 @@ public:
 
 	sql_string getFQANsOneString();
 
-	bool saveProxy(std::string requestToken);
-
 private:
 	struct soap *_soap;
 	std::string _clientDN;
