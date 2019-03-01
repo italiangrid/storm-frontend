@@ -60,8 +60,8 @@ noinst_INCLUDES = osdep.h \
   storm_util.h \
   srmlogit.h \
   ProtocolChecker.hpp \
-  xmlrpc_decode.h \
-  xmlrpc_encode.h \
+  xmlrpc_decode.hpp \
+  xmlrpc_encode.hpp \
   $(GENERATED_GSOAP_INCLUDES)/srm.v2.2.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2H.h \
   $(GENERATED_GSOAP_INCLUDES)/srmv2Stub.h
@@ -76,6 +76,7 @@ stormfrontend_others = storm_exception.hpp \
     file_status.hpp \
     surl_normalizer.h surl_normalizer.cc \
     request_id.cpp request_id.hpp \
+    xmlrpc_client.cpp xmlrpc_client.hpp \
     StatusTemplate.hpp FileStatusRequest.hpp \
     BolRequest.cpp BolRequest.hpp BolStatusRequest.cpp BolStatusRequest.hpp \
     PtpRequest.cpp PtpRequest.hpp PutStatusRequest.cpp PutStatusRequest.hpp \
@@ -125,11 +126,11 @@ stormfrontend_others = storm_exception.hpp \
     DBConnectionPool.cpp DBConnectionPool.hpp \
     ThreadPool.hpp ThreadPool.cpp \
     srmlogit.cpp sql_string.hpp soap_util.hpp soap_util.cpp \
-    srmv2_dirreq.c srmv2_xferreq.c \
-    srmv2_permreq.c srmv2_spacereq.c \
+    srmv2_dirreq.cpp srmv2_xferreq.cpp \
+    srmv2_permreq.cpp srmv2_spacereq.cpp \
     synch.cpp synch.hpp\
     token_validator.hpp token_validator.cpp \
-    xmlrpc_decode.c xmlrpc_encode.c \
+    xmlrpc_decode.cpp xmlrpc_encode.cpp \
     storm_util.c storm_utils.hpp \
     srmv2C.cc \
     srmv2Server.cc \

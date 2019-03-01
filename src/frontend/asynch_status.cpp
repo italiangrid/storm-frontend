@@ -28,14 +28,14 @@
 #include "CopyStatusRequest.hpp"
 #include "BolStatusRequest.hpp"
 
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/format.hpp>
 #include "MonitoringHelper.hpp"
 #include "Credentials.hpp"
 #include "Authorization.hpp"
 
 #include "get_socket_info.hpp"
 #include "base_request.hpp"
-#include <boost/format.hpp>
 
 int ns1__srmStatusOfPutRequest(struct soap *soap,
 		struct ns1__srmStatusOfPutRequestRequest *req,

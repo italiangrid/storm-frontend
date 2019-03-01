@@ -34,3 +34,4 @@ tags
 /src/frontend/srmv2C.cc
 /src/frontend/srmv2Server.cc
 /src/autogen/stamp-h1
+do-configure.sh

@@ -18,10 +18,6 @@ be.xmlrpc.token = token
 
 be.recalltable.port=9998  # default is 9998
 
-# Proxy information
-proxy.dir = @localstatedir@/tmp/storm/proxy
-#proxy.user = storm       # default is storm
-
 # Database
 db.host = localhost
 db.user = storm

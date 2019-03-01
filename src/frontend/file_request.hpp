@@ -73,8 +73,6 @@ public:
 
     std::vector<sql_string> getFQANsVector() { return m_credentials.getFQANsVector(); }
 
-    bool saveProxy(){ return m_credentials.saveProxy(m_requestToken);}
-
     ns1__TStatusCode getStatus(){ return m_status; }
 
 	std::string getSurlsList() {

@@ -327,7 +327,7 @@ doc_DATA = LICENSE \
         CREDITS \
         ChangeLog \
         README.md \
-	README
+	      README
 
 SUBDIRS = etc wsdl src
 MAINTAINERCLEANFILES = Makefile.in

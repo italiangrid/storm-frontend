@@ -19,7 +19,6 @@
 
 #include <mysql/mysql.h>
 
-            /* srm server constants */
 #define MAXRETRY 2
 #define RETRYI  5
 #define BACKLOG (100) // Max. request backlog
