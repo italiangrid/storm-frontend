@@ -99,7 +99,7 @@ class Monitor {
 			this->aggregated_status.reset();
 		};
 
-		~Monitor() {};
+		virtual ~Monitor() {};
 
 		const std::string getName()
 		{
