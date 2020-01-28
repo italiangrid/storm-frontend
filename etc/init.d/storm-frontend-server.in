@@ -139,7 +139,7 @@ case "$1" in
     FE_ERR="$RUNDIR/storm-frontend-server.err"
 
     # Launch the frontend
-    su -m -s "/bin/bash" -c "$FRONTEND_DAEMON -c $CONFIGURATION_FILE 1>$FE_OUT 2>$FE_ERR" $STORM_FE_USER
+    su -m -s "/bin/bash" -c "ASAN_OPTIONS=log_path=/tmp/storm-fe-asan.log $FRONTEND_DAEMON -c $CONFIGURATION_FILE 1>$FE_OUT 2>$FE_ERR" $STORM_FE_USER
 
     if [ $? -eq 0 ]; then
       pid=$(ps -eo pid,ppid,comm | grep " [0-9] ${prog_short}$" | awk '{print $1}')
