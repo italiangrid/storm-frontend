@@ -158,7 +158,7 @@ case "$1" in
         RETVAL=0
     else
         echo -n "Stopping $prog.."
-        kill -9 `cat $PIDFILE` >& /dev/null
+        kill -2 `cat $PIDFILE` >& /dev/null
         if [ $? -eq 0 ]; then
             check_if_running
             while [ $? -eq $TRUE ]; do
