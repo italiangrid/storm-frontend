@@ -68,10 +68,6 @@ public:
         return m_credentials.getDN();
     }
 
-    std::vector<std::string> getFQANsVector() {
-        return m_credentials.getFQANsVector();
-    }
-
     ns1__TStatusCode getStatus() const {
         return m_status;
     }
