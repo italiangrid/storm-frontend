@@ -18,6 +18,7 @@
 #define _SRM_SERVER_H
 
 #include <mysql/mysql.h>
+#include <argus/pep.h>
 
 #define MAXRETRY 2
 #define RETRYI  5
@@ -45,6 +46,7 @@ struct srm_srv_thread_info {
     struct srm_dbfd  dbfd;
     char             errbuf[PRTBUFSZ];
     const char*      request_id;
+    PEP*             pep_handle;
 };
 
 /* srm server exit codes */

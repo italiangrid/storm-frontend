@@ -173,12 +173,14 @@ struct storm_acl {
 
 /* Prototype definitions */
 int storm_opendb(char *, char *, char *, struct srm_dbfd *);
+void storm_closedb(struct srm_dbfd *dbfd);
 int storm_ping_connection(MYSQL *mysql);
 int storm_start_tr(int, struct srm_dbfd *);
 int storm_end_tr(struct srm_dbfd *);
 void storm_abort_tr(struct srm_dbfd *);
 void set_savepoint(struct srm_dbfd *, const char *);
 void rollback_to_savepoint(struct srm_dbfd *, const char *);
+int storm_list_protocol(struct srm_dbfd *dbfd, char **protocol, int nbprot, int protlen, storm_dbrec_addr *rec_addr);
 
 #ifdef __cplusplus
 }

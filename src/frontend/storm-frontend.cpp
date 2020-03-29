@@ -53,6 +53,8 @@ namespace dt = boost::posix_time;
 #include "storm_exception.hpp"
 #include "request_id.hpp"
 #include "get_socket_info.hpp"
+#include "Authorization.hpp"
+#include <vector>
 
 #define NAME "StoRM SRM v2.2"
 
@@ -79,6 +81,25 @@ static const char* STORM_GLOBUS_THREADING_MODEL = "pthread";
 
 static int gsoap_send_timeout = 10;
 static int gsoap_recv_timeout = 10;
+
+std::vector<storm::authz::PepPtr> peps;
+
+void create_peps(int n)
+{
+  assert(n >= 0);
+  assert(peps.empty());
+
+  peps.reserve(n);
+  for (int i = 0; i != n; ++i) {
+	peps.push_back(storm::authz::make_pep());
+  }
+}
+
+PEP* get_pep(int thread_num)
+{
+  assert(thread_num >= 0 && thread_num < peps.size());
+  return peps[thread_num].get();
+}
 
 void sigint_handler(int sig) {
 	srmlogit(STORM_LOG_INFO, __func__,
@@ -126,6 +147,7 @@ process_request(struct soap* tsoap) {
 	// explicitly manage the request id here since threadinfo is not
 	// destroyed for each request but kept in the database connection pool
 	thread_info->request_id = storm::get_request_id();
+	thread_info->pep_handle = get_pep(storm::ThreadPool::getInstance()->getThreadNumber(boost::this_thread::get_id()));
 
 	tsoap->user = thread_info;
 
@@ -560,6 +582,11 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 	}
+
+        if (FrontendConfiguration::getInstance()->getUserCheckBlacklist()) {
+        	create_peps(configuration->getNumThreads());
+	}
+
 	try {
 		storm::ThreadPool::buildInstance(configuration->getNumThreads(), configuration->getThreadpoolMaxPending());
 	} catch (boost::thread_resource_error& e) {
@@ -571,7 +598,7 @@ int main(int argc, char** argv) {
 	curl_global_init(CURL_GLOBAL_ALL);
 	xmlrpc_env env;
 	xmlrpc_env_init(&env);
-    xmlrpc_client_setup_global_const(&env);
+	xmlrpc_client_setup_global_const(&env);
 	if (env.fault_occurred) {
 		srmlogit(STORM_LOG_DEBUG, __func__, env.fault_string);
 		xmlrpc_env_clean(&env);

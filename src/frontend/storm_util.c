@@ -16,9 +16,11 @@
 #include "srmv2H.h"
 #include "storm_util.h"
 #include "storm_functions.h"
+#include "storm_mysql.h"
 #include <string.h>
 #include <stdlib.h>
 #include "srmlogit.h"
+#include <openssl/pem.h>
 
 int get_supported_protocols(char ***sup_proto) {
     char* funcName = "get_supported_protocols";
