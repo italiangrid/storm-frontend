@@ -2,7 +2,7 @@
 Description=StoRM Frontend service
 
 [Service]
-WorkingDirectory=/etc/storm/frontend-server
+WorkingDirectory=/var/log/storm
 EnvironmentFile=-/etc/sysconfig/storm-frontend-server
 User=storm
 Type=forking
