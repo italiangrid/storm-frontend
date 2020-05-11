@@ -52,12 +52,12 @@ static bool m_auditEnabled;
  *
  **/
 int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) {
+	int result = 0;
 
 	m_auditEnabled = auditEnabled;
     if (NULL == logfile) {
 
         log_fd = stderr;
-        return 0;
 
     } else {
 
@@ -65,7 +65,7 @@ int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) 
 
         if (log_fd == NULL) {
             fprintf(stderr, "Cannot open log file %s\n", logfile);
-            return 1;
+            result = 1;
         }
     }
 
@@ -73,7 +73,6 @@ int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) 
         if (NULL == auditfile) {
 
             audit_fd = stderr;
-            return 0;
 
         } else {
 
@@ -84,14 +83,14 @@ int srmlogit_init(const char* logfile, const char* auditfile, int auditEnabled) 
                 if (log_fd != NULL) {
                     fclose(log_fd);
                 }
-                return 1;
+                result = 1;
             }
         }
     } else {
         audit_fd = NULL;
     }
 
-    return 0;
+    return result;
 }
 
 int srmlogit_set_debuglevel(int level) {

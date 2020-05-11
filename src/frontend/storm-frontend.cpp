@@ -544,13 +544,6 @@ void init_globus_threading() {
 
 int main(int argc, char** argv) {
 
-	try {
-		init_globus_threading();
-	} catch (storm::storm_error& e) {
-		std::cerr << e.what() << std::endl;
-		exit(1);
-	}
-
 	int ret = loadConfiguration(argc, argv);
 	if (ret != 0) {
 		if (ret > 0) {
@@ -596,6 +589,7 @@ int main(int argc, char** argv) {
 	}
 
 	curl_global_init(CURL_GLOBAL_ALL);
+
 	xmlrpc_env env;
 	xmlrpc_env_init(&env);
 	xmlrpc_client_setup_global_const(&env);
@@ -605,12 +599,27 @@ int main(int argc, char** argv) {
 		return SYERR;
 	}
 	xmlrpc_env_clean(&env);
+
+
+	try {
+		init_globus_threading();
+	} catch (storm::storm_error& e) {
+		std::cerr << e.what() << std::endl;
+		exit(1);
+	}
+
 	soap* soap_data = initSoap();
 	if (soap_data == NULL) {
 		return SYERR;
 	}
 
-
+	try {
+		storm::ThreadPool::buildInstance(configuration->getNumThreads(), configuration->getThreadpoolMaxPending());
+	} catch (boost::thread_resource_error& e) {
+		cout
+				<< "Cannot create all the requested threads, not enough resources.\n";
+		return SYERR;
+	}
 
 	// the size of mysql_connection pool and thread pool MUST be the same
 	mysql_connection_pool = new DBConnectionPool(
