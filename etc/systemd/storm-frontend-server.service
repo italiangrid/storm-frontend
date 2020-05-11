@@ -1,0 +1,13 @@
+[Unit]
+Description=StoRM Frontend service
+
+[Service]
+WorkingDirectory=/var/log/storm
+EnvironmentFile=-/etc/sysconfig/storm-frontend-server
+User=storm
+Type=forking
+ExecStart=/usr/sbin/storm-frontend-server -c ${CONFIGURATION_FILE}
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
