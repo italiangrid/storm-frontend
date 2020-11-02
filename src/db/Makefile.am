@@ -26,7 +26,7 @@ libstormdb_la_SOURCES = \
 libstormdb_la_CFLAGS= @MYSQL_CFLAGS@
 GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
 
-INCLUDES = \
+AM_CPPFLAGS = \
     -I$(top_srcdir)/src/frontend \
     -I$(GENERATED_GSOAP_INCLUDES)
 
