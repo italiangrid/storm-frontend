@@ -46,3 +46,4 @@ Makefile.in
 !/m4/mysql.m4
 !/m4/wsdl2h.m4
 !/m4/xmlrpc-c.m4
+src/autogen
