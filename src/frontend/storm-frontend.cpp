@@ -80,7 +80,7 @@ static const char* STORM_GLOBUS_THREADING_MODEL = "pthread";
 static int gsoap_send_timeout = 10;
 static int gsoap_recv_timeout = 10;
 
-void sigint_handler(int sig) {
+void sigint_handler(int /* sig */) {
 	srmlogit(STORM_LOG_INFO, __func__,
 			"Signal SIGINT received: shutting down...\n");
 	stay_running = false;
@@ -466,11 +466,9 @@ int run(soap* soap_data) {
 	/******************************* main loop ******************************/
 	struct soap *tsoap;
 	int exit_code = 0;
-	SOAP_SOCKET sock;
 
-	int fd;
 	while (stay_running) {
-		fd = acceptRequest(soap_data);
+		acceptRequest(soap_data);
 		if (!stay_running) {
 			// received a SIGINT
 			break;
@@ -541,11 +539,11 @@ int main(int argc, char** argv) {
 	}
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"Initializing the ProtocolChecker instance\n");
-	ProtocolChecker::getInstance()->ProtocolChecker::init(&supported_protocols,
+	ProtocolChecker::getInstance()->init(&supported_protocols,
 			nb_supported_protocols);
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"ProtocolChecker initialization completed\n");
-	ProtocolChecker::getInstance()->ProtocolChecker::printProtocols();
+	ProtocolChecker::getInstance()->printProtocols();
 
 	if (!configuration->requestedDebug()) { // fork and leave the daemon in background
 		int pid = fork();

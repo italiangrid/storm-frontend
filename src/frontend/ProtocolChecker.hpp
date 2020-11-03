@@ -24,7 +24,7 @@ public:
 	 * Initialize the object with the list (and its size) of the supported protocols
 	 * 
 	 * */
-	unsigned int init(char*** protocolList, unsigned int protocolListSize);
+	void init(char*** protocolList, int protocolListSize);
 	
 	/*
 	 * 

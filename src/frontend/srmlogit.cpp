@@ -139,7 +139,7 @@ int logPrefix(char* ptrbuf, int log_level, const char* function_name) {
 	// error handling
     }
 
-    suseconds_t msecs = tv.tv_usec / 1000;
+    int msecs = tv.tv_usec / 1000;
 
     tm_p = localtime_r(&tv.tv_sec,&tm);
     if (tm_p == NULL) {

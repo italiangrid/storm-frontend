@@ -23,7 +23,6 @@
 #include "srmlogit.h"
 #include "get_socket_info.hpp"
 #include "Authorization.hpp"
-#include <stdsoap2.h>
 #include "soap_util.hpp"
 #include "synch.hpp"
 #include "storm_exception.hpp"

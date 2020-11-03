@@ -56,7 +56,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse()
     return m_builtResponse;
 }
 
-void storm::CopyRequest::insertIntoDB(struct srm_dbfd *db)
+void storm::CopyRequest::insertIntoDB(struct srm_dbfd *)
 {
 	srmlogit(STORM_LOG_DEBUG, "storm::CopyRequest::insertIntoDB", "empty cause srmCopy is not supported");
 }

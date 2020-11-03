@@ -18,7 +18,7 @@
 
 template<> 
 ns1__srmPingResponse*
-storm::build_error_message_response(struct soap* soap, ns1__TStatusCode error_code, const char* error_msg){
+storm::build_error_message_response(struct soap* soap, ns1__TStatusCode, const char* error_msg){
 		
 	soap_sender_fault(soap, "Ping error!", error_msg);
 	return 0;

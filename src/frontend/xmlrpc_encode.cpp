@@ -177,7 +177,7 @@ int encode_arrayOfUnsignedLong(const char *callerName,
     xml_arrayOfLong = xmlrpc_array_new(env_addr);
     XMLRPC_ASSERT_ENV_OK(env_addr);
     for (i=0; i<nbItems; i++) {
-        snprintf(long64Str, NUM_OF_LONG_CHR, "%lld", unsignedLongArray[i]);
+        snprintf(long64Str, NUM_OF_LONG_CHR, "%lu", unsignedLongArray[i]);
         xml_string = xmlrpc_string_new(env_addr, long64Str);
         XMLRPC_ASSERT_ENV_OK(env_addr);
         xmlrpc_array_append_item(env_addr, xml_arrayOfLong, xml_string);
@@ -260,7 +260,7 @@ int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64
         return(ENCODE_ERR_MISSING_PARAM);
     }
     /* Convert LONG64 value into string */
-    snprintf(long64Str, NUM_OF_LONG_CHR, "%lld", *long64Val);
+    snprintf(long64Str, NUM_OF_LONG_CHR, "%lu", *long64Val);
     xml_string = xmlrpc_string_new(env_addr, long64Str);
     XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_string);
@@ -344,7 +344,7 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
  * @param autohID The authorizationID value, it is a char * in SRM v2.2.
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char *autohID, xmlrpc_value *xmlStruct)
+int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char * /* autohID */, xmlrpc_value *xmlStruct)
 {
     char clientdn[256], **fqans;
     int i, nbfqans, error;
@@ -624,7 +624,7 @@ int encode_TTransferParameters(const char *callerName,
         char *fieldName,
         xmlrpc_value *xmlStruct)
 {
-    xmlrpc_value *xml_transferParametersStruct, *xml_intVal;
+    xmlrpc_value *xml_transferParametersStruct;
 
     if (NULL == transferParameters) {
         srmlogit(STORM_LOG_DEBUG, callerName, "Warning: missing transferParameters parameter\n");

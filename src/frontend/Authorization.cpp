@@ -81,6 +81,7 @@ static std::string decision_tostring(xacml_decision_t decision) {
 
     default:
       authz_failure("Unsupported xacml_decision_t received.");
+      return std::string(); // to silence "control reaches end of non-void function"
   }
 }
 
@@ -95,6 +96,7 @@ static std::string fulfillon_tostring(xacml_fulfillon_t fulfillon) {
 
     default:
       authz_failure("Unsupported xacml_fulfillon_t received.");
+      return std::string(); // to silence "control reaches end of non-void function"
   }
 }
 
@@ -109,11 +111,11 @@ void printXACMLObligation(xacml_obligation_t * obligation) {
                xacml_obligation_getfulfillon(obligation)
            ).c_str());
 
-  size_t attrsLength = xacml_obligation_attributeassignments_length(
+  int attrsLength = xacml_obligation_attributeassignments_length(
       obligation);
 
   srmlogit(STORM_LOG_DEBUG, __func__, "Obligation attributes length: %d\n",
-           (int) attrsLength);
+           attrsLength);
 
   for (int i = 0; i < attrsLength; i++) {
     srmlogit(STORM_LOG_DEBUG, __func__, "++Attribute BEGIN++\n");
@@ -157,7 +159,7 @@ static void printXACMLResult(xacml_result_t * result) {
                          xacml_result_getstatus(result)))));
   }
 
-  size_t obligationsLength = xacml_result_obligations_length(result);
+  int obligationsLength = xacml_result_obligations_length(result);
   srmlogit(STORM_LOG_DEBUG, __func__, "Status obligations:\n");
   for (int i = 0; i < obligationsLength; i++) {
     //we do not manage obligations
@@ -391,7 +393,7 @@ static xacml_decision_t process_xacml_response(ResponsePtr response) {
   }
 
   xacml_decision_t decision;
-  size_t results_length = xacml_response_results_length(response.get());
+  int results_length = xacml_response_results_length(response.get());
   srmlogit(STORM_LOG_DEBUG, __func__, "Response: %d results\n",
            static_cast<int>(results_length));
 
@@ -402,14 +404,12 @@ static xacml_decision_t process_xacml_response(ResponsePtr response) {
   if (results_length > 1) {
     srmlogit(STORM_LOG_WARNING, __func__,
              "Received an unexpected number of results: %d.\n",
-             static_cast<int>(results_length));
+             results_length);
   }
 
   for (int i = 0; i < results_length; i++) {
 
     xacml_result_t * result = 0;
-    xacml_status_t * status = 0;
-    xacml_statuscode_t * statuscode = 0, *subcode = 0;
 
     result = xacml_response_getresult(response.get(), i);
 

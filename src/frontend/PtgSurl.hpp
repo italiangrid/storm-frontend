@@ -85,7 +85,7 @@ private:
 		} else {
 			m_dirOption = true;
 			m_directory = dirOption->isSourceADirectory;
-			m_allLevelRecursive = (dirOption->allLevelRecursive != NULL ? *(dirOption->allLevelRecursive) : false);
+			m_allLevelRecursive = (dirOption->allLevelRecursive != NULL ? (*(dirOption->allLevelRecursive) == true_) : false);
 			if (dirOption->numOfLevels == NULL) {
 				m_numLevels = -1;
 			} else {

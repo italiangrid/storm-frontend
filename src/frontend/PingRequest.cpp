@@ -20,7 +20,7 @@
 const std::string storm::PingRequest::NAME = "Ping";
 const std::string storm::PingRequest::MONITOR_NAME = storm::SRM_PING_MONITOR_NAME;
 
-void storm::PingRequest::load(ns1__srmPingRequest* request)
+void storm::PingRequest::load(ns1__srmPingRequest*)
 {
 }
 

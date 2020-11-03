@@ -17,7 +17,6 @@
 #define SOAP_UTIL_HPP
 
 #include <stdexcept>
-#include <stdsoap2.h>
 #include "srmv2Stub.h"
 
 class soap_bad_alloc : public std::bad_alloc {

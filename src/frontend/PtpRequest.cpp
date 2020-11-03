@@ -328,7 +328,7 @@ void storm::PtpRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_erro
             continue;
         }
     }
-    if(failedCount == m_surls.size())
+    if(failedCount == static_cast<int>(m_surls.size()))
     {
     	srmlogit(STORM_LOG_ERROR, "PtpRequest::insert()",
 				 "No SURLs inserted. Request failed\n");

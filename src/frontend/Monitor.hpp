@@ -101,17 +101,17 @@ class Monitor {
 
 		virtual ~Monitor() {};
 
-		const std::string getName()
+		std::string getName()
 		{
 			return this->name;
 		}
 
-		const std::string getFriendlyName()
+		std::string getFriendlyName()
 		{
 			return this->friendlyName;
 		}
 
-		const OperationType getType()
+		OperationType getType()
 		{
 			return this->type;
 		}

@@ -26,12 +26,12 @@ ProtocolChecker* ProtocolChecker::getInstance() {
 }
 
 
-unsigned int ProtocolChecker::init(char*** protocolList, unsigned int protocolListSize) {
+void ProtocolChecker::init(char*** protocolList, int protocolListSize) {
 
 	const char* func = "ProtocolChecker::init<>";
 	srmlogit(STORM_LOG_DEBUG, func, "Initializing ProtocolChecker\n");
-	int i;
-	for (i = 0; i < protocolListSize; i++) {
+
+	for (int i = 0; i < protocolListSize; i++) {
 		srmlogit(STORM_LOG_DEBUG, func, "Adding protocol %s to supported protocols list\n" , (*protocolList)[i]);
 		std::string current((*protocolList)[i]);
 		this->protocolVector.push_back(current);

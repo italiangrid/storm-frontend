@@ -42,7 +42,7 @@ using namespace std;
 
 template<typename soap_in_t, typename soap_out_t>
 int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soap_out_t>& request,
-        const char* funcName, soap_in_t *req, soap_out_t **resp)
+        const char* funcName, soap_in_t * /* req */, soap_out_t **resp)
 {
     static const char* func = "__process_file_request<>";
 
@@ -115,7 +115,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 				srmlogit(STORM_LOG_ERROR, funcName, "Unexpected exception in request.getRequestedProtocols() call. logic_error: %s\n" , e.what());
 				return(SOAP_FATAL_ERROR);
 			}
-			if(ProtocolChecker::getInstance()->ProtocolChecker::checkProtocols(protocols) != 0)
+			if(ProtocolChecker::getInstance()->checkProtocols(protocols) != 0)
 			{
 				srmlogit(STORM_LOG_INFO, func, "Protocol check failed, received some unsupported protocols\n");
 				std::vector<sql_string> newProtocolVector = ProtocolChecker::getInstance()->removeUnsupportedProtocols(request.getRequestedProtocols());

@@ -731,7 +731,7 @@ int decode_TUserPermission(const char *callerName,
 {
     int error;
     enum ns1__TPermissionMode *mode;
-    xmlrpc_value *xml_userPermission, *permissionMode;
+    xmlrpc_value *xml_userPermission;
     
     // Reset return structure    
     *userPermission = NULL;
@@ -790,7 +790,7 @@ int decode_TGroupPermission(const char *callerName,
 {
     enum ns1__TPermissionMode *mode;
     int error;
-    xmlrpc_value *xml_groupPermission, *permissionMode;
+    xmlrpc_value *xml_groupPermission;
     
     //Reset return structure    
     *groupPermission = NULL;
