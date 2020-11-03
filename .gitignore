@@ -40,6 +40,7 @@ configure
 /aux/*
 Makefile.in
 /m4/*
+!/m4/acinclude.m4
 !/m4/boost.m4
 !/m4/cgsi-gsoap.m4
 !/m4/ltsugar.m4
