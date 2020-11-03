@@ -47,7 +47,7 @@ ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse()
 	}
 
 	m_builtResponse->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-	m_builtResponse->returnStatus->explanation = "srmStatusCopy operation is not supported";
+	m_builtResponse->returnStatus->explanation = const_cast<char*>("srmStatusCopy operation is not supported");
 
     return m_builtResponse;
 }

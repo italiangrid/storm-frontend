@@ -44,7 +44,7 @@ int decode_lifetimeValue(const char *callerName,
                          xmlrpc_env *env_addr,
                          struct soap *soap,
                          int **lifetimeVal,
-                         char *fieldName,
+                         char const* fieldName,
                          xmlrpc_value *xmlStruct)
 {
     int error;
@@ -74,7 +74,7 @@ int decode_ArrayOfTSURLReturnStatus(const char *callerName,
                                     xmlrpc_env *env_addr,
                                     struct soap *soap,
                                     struct ns1__ArrayOfTSURLReturnStatus **arrayOfFileStatuses,
-                                    char *fieldName,
+                                    char const* fieldName,
                                     xmlrpc_value *xmlStruct)
 {
     struct ns1__TSURLReturnStatus **statusArray;
@@ -182,7 +182,7 @@ int decode_ArrayOfTExtraInfo(const char *callerName,
                              xmlrpc_env *env_addr,
                              struct soap *soap,
                              struct ns1__ArrayOfTExtraInfo **arrayOfTExtraInfo,
-                             char *fieldName,
+                             char const* fieldName,
                              xmlrpc_value *xmlStruct)
 {
     struct ns1__TExtraInfo **extraInfoArray;
@@ -291,7 +291,7 @@ int decode_ArrayOfTSURLLifetimeReturnStatus(const char *callerName,
                                             xmlrpc_env *env_addr,
                                             struct soap *soap,
                                             struct ns1__ArrayOfTSURLLifetimeReturnStatus **arrayOfFileStatuses,
-                                            char *fieldName,
+                                            char const* fieldName,
                                             xmlrpc_value *xmlStruct)
 {
     struct ns1__TSURLLifetimeReturnStatus **statusArray;
@@ -418,7 +418,7 @@ int decode_ArrayOfTMetaDataSpace(const char *callerName,
                                  xmlrpc_env *env_addr,
                                  struct soap *soap,
                                  struct ns1__ArrayOfTMetaDataSpace **arrayOfSpaceDetails,
-                                 char *fieldName,
+                                 char const* fieldName,
                                  xmlrpc_value *xmlStruct)
 {
     struct ns1__TMetaDataSpace **spaceDataArray;
@@ -617,7 +617,7 @@ int decode_TRetentionPolicyInfo(const char *callerName,
                                 xmlrpc_env *env_addr,
                                 struct soap *soap,
                                 struct ns1__TRetentionPolicyInfo **retentionPolicyInfo,
-                                char *fieldName,
+                                char const* fieldName,
                                 xmlrpc_value *xmlStruct)
 {
     int retentionPolicy, accessLatency;
@@ -707,7 +707,7 @@ int decode_TPermissionMode(const char *callerName,
                            xmlrpc_env *env_addr,
                            struct soap *soap,
                            enum ns1__TPermissionMode **permissionMode,
-                           char* fieldName,
+                           char const* fieldName,
                            xmlrpc_value *xmlStruct)
 {
     return decode_int(callerName, env_addr, soap, (int**) permissionMode, fieldName, xmlStruct);
@@ -726,7 +726,7 @@ int decode_TUserPermission(const char *callerName,
                            xmlrpc_env *env_addr,
                            struct soap *soap,
                            struct ns1__TUserPermission **userPermission,
-                           char *fieldName,
+                           char const* fieldName,
                            xmlrpc_value *xmlStruct)
 {
     int error;
@@ -785,7 +785,7 @@ int decode_TGroupPermission(const char *callerName,
                   xmlrpc_env *env_addr,
                   struct soap *soap,
                   struct ns1__TGroupPermission **groupPermission,
-                  char *fieldName,
+                  char const* fieldName,
                   xmlrpc_value *xmlStruct)
 {
     enum ns1__TPermissionMode *mode;
@@ -844,7 +844,7 @@ int decode_string(const char *callerName,
                   xmlrpc_env *env_addr,
                   struct soap *soap,
                   char **outputString,
-                  char *fieldName,
+                  char const* fieldName,
                   xmlrpc_value *xmlStruct)
 {
     char *strValue;
@@ -878,7 +878,7 @@ int decode_ArrayOfString(const char *callerName,
                   xmlrpc_env *env_addr,
                   struct soap *soap,
                   struct ns1__ArrayOfString **arrayOfString,
-                  char *fieldName,
+                  char const* fieldName,
                   xmlrpc_value *xmlStruct)
 {
     int arraySize, error, i;
@@ -980,7 +980,7 @@ int decode_int(const char *callerName,
                xmlrpc_env *env_addr,
                struct soap *soap,
                int **outputInt,
-               char *fieldName,
+               char const* fieldName,
                xmlrpc_value *xmlStruct)
 {
     int i;
@@ -1014,7 +1014,7 @@ int decode_ULONG64(const char *callerName,
                    xmlrpc_env *env_addr,
                    struct soap *soap,
                    ULONG64 **outputULONG64,
-                   char *fieldName,
+                   char const* fieldName,
                    xmlrpc_value *xmlStruct)
 {
     char *strULONG64;
@@ -1049,7 +1049,7 @@ int decode_TReturnStatus(const char *callerName,
                   xmlrpc_env *env_addr,
                   struct soap *soap,
                   struct ns1__TReturnStatus **status,
-                  char *fieldName,
+                  char const* fieldName,
                   xmlrpc_value *xmlStruct)
 {
     char *statusCode, *explanation;
@@ -1103,7 +1103,7 @@ int decode_ArrayOfTMetaDataPathDetail(const char *callerName,
                                       xmlrpc_env *env_addr,
                                       struct soap *soap,
                                       struct ns1__ArrayOfTMetaDataPathDetail **arrayOfTMetaData,
-                                      char *fieldName,
+                                      char const* fieldName,
                                       xmlrpc_value *xmlStruct)
 {
     static const char *funcName = "decode_ArrayOfTMetaDataPathDetail";

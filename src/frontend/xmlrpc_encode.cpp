@@ -66,7 +66,7 @@ static int isASCII(const char *data)
 int encode_lifetimeValue(const char *callerName,
         xmlrpc_env *env_addr,
         int *lifetimeVal,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     ULONG64 longValue;
@@ -92,7 +92,7 @@ int encode_lifetimeValue(const char *callerName,
 int encode_arrayOfString(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfString *arrayOfString,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     char **stringArray;
@@ -155,7 +155,7 @@ int encode_arrayOfString(const char *callerName,
 int encode_arrayOfUnsignedLong(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfUnsignedLong *arrayOfUnsignedLong,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     char long64Str[NUM_OF_LONG_CHR];
@@ -198,7 +198,7 @@ int encode_arrayOfUnsignedLong(const char *callerName,
  * @param fieldName The name to assign to the xmlrpc structure
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *fieldName, xmlrpc_value *xmlStruct)
+int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_intVal;
 
@@ -223,7 +223,7 @@ int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *
  * @param fieldName The name to assign to the xmlrpc structure
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char *fieldName, xmlrpc_value *xmlStruct)
+int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_boolVal;
 
@@ -250,7 +250,7 @@ int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *bool
  * @param fieldName The name to assign to the xmlrpc structure
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64Val, char *fieldName, xmlrpc_value *xmlStruct)
+int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64Val, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     char long64Str[NUM_OF_LONG_CHR];
     xmlrpc_value *xml_string;
@@ -413,7 +413,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
 int encode_ArrayOfAnyURI(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfAnyURI *arrayOfSURLs,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     char **urlArray;
@@ -481,7 +481,7 @@ int encode_ArrayOfAnyURI(const char *callerName,
 int encode_ArrayOfTExtraInfo(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfTExtraInfo *extraInfo,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     struct ns1__TExtraInfo **extraInfoArray;
@@ -562,7 +562,7 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
  * @param fieldName The name to assign to xmlrpc field.
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, char* fieldName, xmlrpc_value *xmlStruct)
+int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_val;
     const char* normalized_surl = NULL;
@@ -621,7 +621,7 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
 int encode_TTransferParameters(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__TTransferParameters *transferParameters,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_transferParametersStruct;
