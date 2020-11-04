@@ -227,7 +227,7 @@ static void logTruncateSuffix(char* buffer)
 int loggingError(const char* requestName) {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	writtenChars += logPrefix(prtbuf, STORM_LOG_ERROR);
 	if(writtenChars < max_char_to_write)
@@ -267,7 +267,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     va_list args;
     int save_errno = errno;
     char prtbuf[LOGBUFSZ];
-    signed int max_char_to_write = LOGBUFSZ - 1;
+    signed int max_char_to_write = LOGBUFSZ;
     int writtenChars = 0;
 
     if (level > loglevel) {
@@ -304,7 +304,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
 int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN) {
 	int save_errno = errno;
     char prtbuf[LOGBUFSZ];
-    signed int max_char_to_write = LOGBUFSZ - 1;
+    signed int max_char_to_write = LOGBUFSZ;
     int writtenChars = 0;
     if(requestName == NULL || clientIP == NULL || clientDN == NULL )
 	{
@@ -343,7 +343,7 @@ int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const 
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || surls == NULL)
@@ -396,7 +396,7 @@ int srmLogRequestWithToken(const char* requestName, const char* clientIP, const 
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || requestToken == NULL)
 	{
@@ -435,7 +435,7 @@ int srmLogRequestWithTokenList(const char* requestName, const char* clientIP, co
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || tokens == NULL)
@@ -487,7 +487,7 @@ int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || requestToken == NULL || surls == NULL)
@@ -540,7 +540,7 @@ int srmLogResponseWithToken(const char* requestName, const char* requestToken, c
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	if(requestName == NULL || requestToken == NULL)
 	{
@@ -579,7 +579,7 @@ int srmLogResponse(const char* requestName, const ns1__TStatusCode statusCode)
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	if(requestName == NULL)
 	{
@@ -617,7 +617,7 @@ int srmAudit(const char *msg, ...) {
     va_list args;
     char prtbuf[LOGBUFSZ];
     int save_errno = errno;
-    signed int max_char_to_write = LOGBUFSZ - 1;
+    signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
     struct tm *tm;
 #if defined(_REENTRANT) || defined(_THREAD_SAFE)
