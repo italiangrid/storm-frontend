@@ -45,7 +45,7 @@ public:
 		return !m_requestToken.empty();
 	}
 
-	std::string getRequestToken() throw (std::logic_error) {
+	std::string getRequestToken(){
 		if (!hasRequestToken()) {
 			throw std::logic_error(
 					"Unable to get the request token, token not available");

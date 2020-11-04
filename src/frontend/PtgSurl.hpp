@@ -40,7 +40,7 @@ public:
 		return m_dirOption;
 	}
 
-	bool isDirectory() throw (std::logic_error)
+	bool isDirectory()
 	{
 		if(!this->hasDirOption())
 		{
@@ -49,7 +49,7 @@ public:
 		return m_directory;
 	}
 
-	bool isAllLevelRecursive() throw (std::logic_error)
+	bool isAllLevelRecursive()
 	{
 		if(!this->hasDirOption())
 		{
@@ -63,7 +63,7 @@ public:
 		return m_dirOption && m_numLevels > 0;
 	}
 
-	int getNumLevels() throw (std::logic_error)
+	int getNumLevels()
 	{
 		if(!this->hasDirOption())
 		{

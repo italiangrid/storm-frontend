@@ -179,7 +179,7 @@ protected:
     }
 
 private:
-    void loadCommonFields(soap_in_t* request) throw (invalid_request) {
+    void loadCommonFields(soap_in_t* request){
         if (request == NULL) {
             throw invalid_request("Received NULL request parameter");
         }

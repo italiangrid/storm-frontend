@@ -74,7 +74,7 @@ public:
 		return m_estimatedWaitTime != -1;
 	}
 
-	storm_time_t getEstimatedWaitTime() throw (std::logic_error)
+	storm_time_t getEstimatedWaitTime()
 	{
 		if(!this->hasEstimatedWaitTime())
 		{
@@ -93,7 +93,7 @@ public:
 		return m_remainingPinLifetime != -1;
 	}
 
-	storm_time_t getRemainingPinLifetime() throw (std::logic_error)
+	storm_time_t getRemainingPinLifetime()
 	{
 		if(!this->hasRemainingPinLifetime())
 		{

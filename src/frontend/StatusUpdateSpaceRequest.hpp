@@ -27,8 +27,7 @@ class StatusUpdateSpaceRequest: public SynchRequest<
 		ns1__srmStatusOfUpdateSpaceRequestResponse_> {
 public:
 	StatusUpdateSpaceRequest(struct soap* soapRequest,
-			struct ns1__srmStatusOfUpdateSpaceRequestRequest* request)
-					throw (invalid_request) :
+			struct ns1__srmStatusOfUpdateSpaceRequestRequest* request) :
 			SynchRequest<ns1__srmStatusOfUpdateSpaceRequestRequest,
 					ns1__srmStatusOfUpdateSpaceRequestResponse,
 					ns1__srmStatusOfUpdateSpaceRequestResponse_>(soapRequest,

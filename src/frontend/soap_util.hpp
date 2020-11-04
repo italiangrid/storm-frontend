@@ -34,7 +34,7 @@ namespace storm {
        case of error.
     */
     template<typename soap_type_t>
-    soap_type_t * soap_calloc(struct soap *soap) throw (std::invalid_argument)
+    soap_type_t * soap_calloc(struct soap *soap)
     {
         if(NULL == soap)
             throw std::invalid_argument("soap_calloc: soap is a null pointer");

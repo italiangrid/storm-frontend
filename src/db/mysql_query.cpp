@@ -19,7 +19,7 @@
 
 #include "mysql_query.hpp"
 
-static std::pair<MYSQL_FIELD *, MYSQL_RES *> * _query_init(struct srm_dbfd *dbfd, std::string query) throw(storm_db::mysql_exception){
+static std::pair<MYSQL_FIELD *, MYSQL_RES *> * _query_init(struct srm_dbfd *dbfd, std::string query) {
     static const char * const func = "_query_init";
 
     srmlogit(STORM_LOG_DEBUG, func, "Executing query ``%s''\n", query.c_str());
@@ -165,7 +165,7 @@ std::vector<std::map<std::string, std::string> > * vector_exec_query(struct srm_
  *                 {@c 0} if the previous statement does not use
  *                 an AUTO_INCREMENT value.
  */
-int ID_exec_query(struct srm_dbfd *dbfd, std::string query) throw(storm_db::mysql_exception) {
+int ID_exec_query(struct srm_dbfd *dbfd, std::string query) {
 
 	std::pair<MYSQL_FIELD *, MYSQL_RES *> *p = _query_init(dbfd, query);
 

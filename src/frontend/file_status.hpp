@@ -49,7 +49,7 @@ public:
     token_not_found(std::string reason) {
         errmsg = reason.c_str();
     }
-    const char *what() const throw () {
+    const char *what() const{
         return errmsg;
     }
 

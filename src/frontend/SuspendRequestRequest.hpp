@@ -23,7 +23,7 @@ namespace storm {
 
 class SuspendRequestRequest: public SynchRequest<ns1__srmSuspendRequestRequest, ns1__srmSuspendRequestResponse,ns1__srmSuspendRequestResponse_> {
 public:
-	SuspendRequestRequest(struct soap* soapRequest, struct ns1__srmSuspendRequestRequest* request) throw (invalid_request) :
+	SuspendRequestRequest(struct soap* soapRequest, struct ns1__srmSuspendRequestRequest* request) :
 		SynchRequest<ns1__srmSuspendRequestRequest, ns1__srmSuspendRequestResponse, ns1__srmSuspendRequestResponse_> (soapRequest, request) {
 		this->load(request);
     }

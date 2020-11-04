@@ -333,7 +333,7 @@ public:
     	m_monitor_vector.push_back(monitor);
     }
 
-    Monitor* getMonitor(std::string name) throw (MonitorNotEnabledException)
+    Monitor* getMonitor(std::string name)
 	{
     	boost::lock_guard<boost::recursive_mutex> lock(m_mutex);
     	std::vector<Monitor*>::const_iterator const vectorEnd = m_monitor_vector.end();

@@ -33,7 +33,7 @@ public:
 		this->load(ptpRequest);
 	}
 
-    void insertIntoDB(struct srm_dbfd* dbfd) throw (std::logic_error , storm_db::mysql_exception);
+    void insertIntoDB(struct srm_dbfd* dbfd);
 
     void load(ns1__srmPrepareToPutRequest* req);
     

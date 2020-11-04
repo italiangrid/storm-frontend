@@ -23,7 +23,7 @@ namespace storm {
 
 class MkdirRequest: public SynchRequest<ns1__srmMkdirRequest, ns1__srmMkdirResponse,ns1__srmMkdirResponse_> {
 public:
-	MkdirRequest(struct soap* soapRequest, struct ns1__srmMkdirRequest* request) throw (invalid_request) :
+	MkdirRequest(struct soap* soapRequest, struct ns1__srmMkdirRequest* request) :
 		SynchRequest<ns1__srmMkdirRequest, ns1__srmMkdirResponse, ns1__srmMkdirResponse_> (soapRequest, request) {
 		this->load(request);
     }
