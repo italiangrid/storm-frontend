@@ -33,8 +33,6 @@ public:
 		this->init(-1);
 	};
 
-	~PtpSurl(){};
-
 	bool hasExpected_size()
 	{
 		return m_expected_size > 0;

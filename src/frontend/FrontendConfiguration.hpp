@@ -224,7 +224,6 @@ public:
 
 private:
     FrontendConfiguration();
-    virtual ~FrontendConfiguration();
     boost::program_options::options_description defineConfigFileOptions();
     boost::program_options::options_description defineCommandLineOptions();
     void setCommandLineOptions(boost::program_options::variables_map& vm);

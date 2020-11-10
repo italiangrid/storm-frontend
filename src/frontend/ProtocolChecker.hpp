@@ -40,8 +40,6 @@ public:
 	 */
 	std::vector<sql_string> removeUnsupportedProtocols(std::vector<sql_string> const& protocolVector);
 	
-	~ProtocolChecker() {}
-
 	/*
 	 * Prints the supported protocols
 	 * */

@@ -33,9 +33,6 @@ public:
 		this->load(request);
 	}
 
-	virtual ~ReserveSpaceRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmReserveSpaceResponse_* response);
 
 	void load(ns1__srmReserveSpaceRequest* req);

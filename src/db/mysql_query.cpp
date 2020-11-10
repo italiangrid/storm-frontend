@@ -99,8 +99,6 @@ void map_exec_query(struct srm_dbfd *dbfd, const std::string &query,
  */
 std::map<std::string, std::vector<std::string> > * map_exec_query(struct srm_dbfd *dbfd, const std::string &query) {
 	std::map<std::string, std::vector<std::string> > *dbmap = new std::map<std::string, std::vector<std::string> > ();
-    if (NULL == dbmap)
-        throw std::bad_alloc();
 
     map_exec_query(dbfd, query, *dbmap);
 

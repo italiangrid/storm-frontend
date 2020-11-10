@@ -52,9 +52,6 @@ class SynchronizedQueue {
         assert(size > 0);
       }
 
-      ~SynchronizedQueue() {
-      }
-
       task_func pop() {
 
          boost::mutex::scoped_lock lk(monitor);

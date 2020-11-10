@@ -30,8 +30,6 @@ class Credentials {
 public:
 	Credentials(struct soap *soap) ;
 
-	~Credentials(){}
-
 	void setDN(std::string dn) {
 		_clientDN = dn;
 	}

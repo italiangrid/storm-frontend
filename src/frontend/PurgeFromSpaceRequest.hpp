@@ -32,9 +32,6 @@ public:
 		this->load(request);
 	}
 
-	virtual ~PurgeFromSpaceRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmPurgeFromSpaceResponse_* response);
 
 	void load(ns1__srmPurgeFromSpaceRequest* req);

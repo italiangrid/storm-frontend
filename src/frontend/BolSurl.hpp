@@ -26,8 +26,6 @@ public:
 			m_estimatedWaitTime(-1) {
 	}
 
-	~BolSurl(){}
-
 	unsigned long getFileSize()
 	{
 		return m_fileSize;

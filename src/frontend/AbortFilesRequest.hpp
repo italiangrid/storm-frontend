@@ -29,8 +29,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~AbortFilesRequest() {}
-
 	int performXmlRpcCall(ns1__srmAbortFilesResponse_* response);
 
     void load(ns1__srmAbortFilesRequest* req);

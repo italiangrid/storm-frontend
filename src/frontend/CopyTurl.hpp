@@ -56,8 +56,6 @@ public:
 		}
 	}
 
-	~CopyTurl(){}
-
 	Surl getSourceSurl()
 	{
 		return getSurl();

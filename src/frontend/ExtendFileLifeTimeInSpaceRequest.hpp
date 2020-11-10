@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~ExtendFileLifeTimeInSpaceRequest() {}
-
 	int performXmlRpcCall(ns1__srmExtendFileLifeTimeInSpaceResponse_* response);
 
     void load(ns1__srmExtendFileLifeTimeInSpaceRequest* req);

@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~GetSpaceMetaDataRequest() {}
-
 	int performXmlRpcCall(ns1__srmGetSpaceMetaDataResponse_* response);
 
     void load(ns1__srmGetSpaceMetaDataRequest* req);

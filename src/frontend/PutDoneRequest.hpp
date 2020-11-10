@@ -31,9 +31,6 @@ public:
 		this->load(request);
 	}
 
-	virtual ~PutDoneRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmPutDoneResponse_* response);
 
 	void load(ns1__srmPutDoneRequest* req);

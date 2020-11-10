@@ -20,28 +20,25 @@
 #include <string>
 #include <vector>
 
-#include <exception>
+#include <stdexcept>
 
 #include <mysql/mysql.h>
 #include "storm_functions.h"
 
 namespace storm_db {
 
-    class mysql_exception : public std::exception {
+    class mysql_exception : public std::runtime_error {
     public:
-        mysql_exception(MYSQL* mysql) {
-            _errno = mysql_errno(mysql);
-            errmsg = mysql_error(mysql); 
-        };
-        ~mysql_exception() throw() {};
-        const char* what() const throw() { return errmsg.c_str(); };
-        
-        int get_mysql_errno() const { return _errno;};
-        std::string get_mysql_error() const { return errmsg; };
+        mysql_exception(MYSQL* mysql)
+            : std::runtime_error(mysql_error(mysql)),
+              _errno(mysql_errno(mysql))
+        {
+        }
+        int get_mysql_errno() const { return _errno;}
+        std::string get_mysql_error() const { return what(); }
         
     private:
         int _errno;
-        std::string errmsg;
     };
 
 

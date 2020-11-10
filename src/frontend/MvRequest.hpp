@@ -30,9 +30,6 @@ public:
 		this->load(request);
 	}
 
-	~MvRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmMvResponse_* response);
 
 	void load(ns1__srmMvRequest* req);

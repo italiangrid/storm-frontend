@@ -41,8 +41,6 @@ public:
 			PtgSurl(sourceSurl) , m_destinationSURL("") {
 	};
 
-	~CopySurl(){};
-
 	sql_string getSourceSurl()
 	{
 		return this->getSurl();

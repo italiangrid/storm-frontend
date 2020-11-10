@@ -41,22 +41,6 @@ typedef std::map<std::string, std::string> file_status_result_t;
 typedef std::vector<file_status_result_t> file_status_results_t;
 //#include "file_status_interface.hpp"
 
-class token_not_found: public std::exception {
-public:
-    token_not_found() {
-    }
-    ;
-    token_not_found(std::string reason) {
-        errmsg = reason.c_str();
-    }
-    const char *what() const{
-        return errmsg;
-    }
-
-private:
-    const char *errmsg;
-};
-
 namespace storm {
 // Template Class file_status
 template<typename soap_out_t>

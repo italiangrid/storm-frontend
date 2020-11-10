@@ -29,8 +29,6 @@ class InstrumentedMonitorBuilder{
 		{
 		};
 
-		~InstrumentedMonitorBuilder() {};
-
 		static InstrumentedMonitor* buildAbortFiles()
 		{
 			InstrumentedMonitor* monitor = new InstrumentedMonitor(SRM_ABORT_FILES_MONITOR_NAME, "Abort files", Monitor::Synchronous);

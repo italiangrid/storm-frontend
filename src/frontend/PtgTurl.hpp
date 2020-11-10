@@ -40,8 +40,6 @@ public:
 	  Turl(surl), m_fileSize(-1), m_expectedFileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
 
-	~PtgTurl(){}
-
 	storm_size_t getFileSize()
 	{
 		return m_fileSize;

@@ -41,10 +41,6 @@ public:
 			PtgTurl(surl), m_remainingFileLifetime(-1) {
 	}
 
-	~PtpTurl() {
-	}
-
-
 	void setRemainingFileLifetime(storm_time_t remainingFileLifetime)
 	{
 		m_remainingFileLifetime = remainingFileLifetime;

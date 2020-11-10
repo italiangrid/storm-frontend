@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~SuspendRequestRequest() {}
-
 	int performXmlRpcCall(ns1__srmSuspendRequestResponse_* response);
 
     void load(ns1__srmSuspendRequestRequest* req);
