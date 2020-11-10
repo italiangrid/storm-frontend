@@ -1,11 +1,12 @@
 The StoRM Frontend Service
-===============================
+==========================
 
 StoRM Frontend provides an implementation of the SRM v2.2 Web Service interface.
 
 ## Supported platforms
 
-* Scientific Linux 6 x86_64
+* CentOS 6 x86_64
+* CentOS 7 x86_64
 
 ## Required repositories
 
@@ -15,25 +16,21 @@ In order to build the frontend, please enable the following repositories on your
 
     yum install epel-release
 
-### UMD 3
+### UMD
 
-Get the latest production packages from the UMD-3 repository website:
+Get the latest production packages from the UMD repository website:
 
-http://repository.egi.eu/category/umd_releases/distribution/umd-3/
+http://repository.egi.eu/category/umd_releases/distribution/umd-4/
 
-    wget http://repository.egi.eu/sw/production/umd/3/sl6/x86_64/updates/umd-release-3.14.4-1.el6.noarch.rpm
-    yum localinstall umd-release-3.14.4-1.el6.noarch.rpm
-
-
-### Build instructions
-
-#### Build-time dependencies
+## Build-time dependencies
 
 Install the following required packages:
 
 * git
 * gcc
 * gcc-c++
+* autoconf
+* automake
 * make
 * gsoap-devel
 * curl-devel
@@ -50,18 +47,17 @@ Install the following required packages:
 * libuuid-devel
 * boost-devel
 
+## Build commands
 
-#### Build commands
-
+    ./bootstrap
     ./configure
     make
 
-Use the `--enable-debug` configure flag to include debugging symbols and turn
-off optimization during development.
+Configure with `--with-debug` to compile in debug mode.
 
-# Contact info
+## Contact info
 
 If you have problems, questions, ideas or suggestions, please contact us at
-the following URLs
+the following URL
 
-* GGUS (official support channel): http://www.ggus.eu
+* GGUS (official support channel): https://www.ggus.eu
