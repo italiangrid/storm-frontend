@@ -53,6 +53,8 @@ Install the following required packages:
     ./configure
     make
 
+Configure with `--with-debug` to compile in debug mode.
+
 ## Contact info
 
 If you have problems, questions, ideas or suggestions, please contact us at
