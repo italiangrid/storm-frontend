@@ -55,7 +55,6 @@ noinst_INCLUDES = osdep.h \
   srm_server.h \
   storm_constants.h \
   storm_functions.h \
-  get_socket_info.h \
   storm_limits.h \
   storm_util.h \
   srmlogit.h \

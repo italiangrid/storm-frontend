@@ -25,7 +25,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <cgsi_plugin.h>
-#include "get_socket_info.h"
+#include "get_socket_info.hpp"
 #include "surl_normalizer.h"
 #include <xmlrpc-c/util.h>
 #include "FrontendConfiguration.hpp"
@@ -349,10 +349,8 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     char clientdn[256], **fqans;
     int i, nbfqans, error;
     xmlrpc_value *userDN, *fqansArray, *fqansItem;
-    char ip[256];
 
     /* Initialized to empty string */
-    ip[0]=0;
     clientdn[0] = 0;
 
     /* Get DN and FQAN from the CGSI plugin and the CGSI_VOMS plugin */
@@ -375,7 +373,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
 
     srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
-    srmlogit(STORM_LOG_DEBUG, callerName, "Client IP=%s\n", getip(soap, ip));
+    srmlogit(STORM_LOG_DEBUG, callerName, "Client IP=%s\n", get_ip(soap).c_str());
 
     xmlrpc_DECREF(userDN);
 
