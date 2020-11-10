@@ -17,7 +17,7 @@
 
 MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT 
 
-GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
+GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/gsoap-autogen
 
 sbin_PROGRAMS = storm-frontend-server
 noinst_PROGRAMS = test_surl

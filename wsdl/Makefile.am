@@ -30,10 +30,10 @@ skeletons: $(FLAG_FILE)
 
 $(FLAG_FILE):
 	touch $(FLAG_FILE)
-	mkdir -p $(top_srcdir)/wsdl/gsoap-autogen
-	@WSDL2H@ @WSDL2H_FLAGS@ -w -c -e -y -t $(top_srcdir)/wsdl/typemap.dat $(top_srcdir)/wsdl/srm.v2.2.wsdl -o $(top_srcdir)/wsdl/gsoap-autogen/srm.v2.2.h
-	cd $(top_srcdir)/wsdl/gsoap-autogen; @SOAPCPP2@ -S -I/usr/include -c -p srmv2 srm.v2.2.h; mv srmv2C.c srmv2C.cc; mv srmv2Server.c srmv2Server.cc; cd ..
+	mkdir -p $(top_builddir)/wsdl/gsoap-autogen
+	@WSDL2H@ @WSDL2H_FLAGS@ -w -c -e -y -t $(top_srcdir)/wsdl/typemap.dat $(top_srcdir)/wsdl/srm.v2.2.wsdl -o $(top_builddir)/wsdl/gsoap-autogen/srm.v2.2.h
+	cd $(top_builddir)/wsdl/gsoap-autogen; @SOAPCPP2@ -S -I/usr/include -c -p srmv2 srm.v2.2.h; mv srmv2C.c srmv2C.cc; mv srmv2Server.c srmv2Server.cc; cd ..
 
 clean-local:
-	rm -rf $(top_srcdir)/wsdl/gsoap-autogen
+	rm -rf $(top_builddir)/wsdl/gsoap-autogen
 	rm -f $(FLAG_FILE)
