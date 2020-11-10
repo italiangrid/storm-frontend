@@ -24,7 +24,7 @@ namespace storm {
 class MonitorStub : public InstrumentedMonitor {
 	public:
 
-		static std::string nameOfOperationType(OperationType type)
+		static std::string nameOfOperationType(OperationType)
 		{
 			return std::string("void");
 		}
@@ -97,15 +97,15 @@ class MonitorStub : public InstrumentedMonitor {
 			return M_EMPTY_VALUE;
 		}
 
-		void registerSuccess(long executionTimeInMills)
+		void registerSuccess(long /* executionTimeInMills */)
 		{
 		}
 
-		void registerFailure(long executionTimeInMills)
+		void registerFailure(long /* executionTimeInMills */)
 		{
 		}
 
-		void registerError(long executionTimeInMills)
+		void registerError(long /* executionTimeInMills */)
 		{
 		}
 
@@ -147,15 +147,15 @@ class MonitorStub : public InstrumentedMonitor {
 		{
 		}
 
-		void registerCompleted(long executionTimeInMills, int returnCode)
+		void registerCompleted(long /* executionTimeInMills */, int /* returnCode */)
 		{
 		}
 
-		void addStatusCodeMapping(int returnStatus, bool successfull)
+		void addStatusCodeMapping(int /* returnStatus */, bool /* successfull */)
 		{
 		}
 
-		bool getStatusCodeMapping(int returnStatus)
+		bool getStatusCodeMapping(int /* returnStatus */)
 		{
 			return true;
 		}

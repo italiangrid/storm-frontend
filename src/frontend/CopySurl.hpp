@@ -48,7 +48,7 @@ public:
 		return this->getSurl();
 	}
 
-	void setDestinationSurl(std::string& destinationSurl) throw (std::logic_error)
+	void setDestinationSurl(std::string& destinationSurl)
 	{
 		if(hasDestinationSurl())
 		{
@@ -62,7 +62,7 @@ public:
 		return !m_destinationSURL.empty();
 	}
 
-	sql_string getDestinationSurl() throw (std::logic_error)
+	sql_string getDestinationSurl()
 	{
 		if(!hasDestinationSurl())
 		{

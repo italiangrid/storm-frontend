@@ -40,7 +40,7 @@ public:
 		return m_expected_size > 0;
 	}
 
-	storm_size_t getExpected_size() throw (std::logic_error)
+	storm_size_t getExpected_size()
 	{
 		if(!this->hasExpected_size())
 		{

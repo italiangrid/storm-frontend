@@ -237,7 +237,7 @@ protected:
         return m_turls.size() < m_surls.size();
     }
 
-    bool checkSurl(std::string surl) throw (std::logic_error) {
+    bool checkSurl(std::string surl) {
         std::set<TurlPtr>::const_iterator const vectorEnd = m_turls.end();
         for (std::set<TurlPtr>::const_iterator i = m_turls.begin(); i != vectorEnd; ++i) {
             storm::Turl* turl = dynamic_cast<storm::Turl*> (i->get());

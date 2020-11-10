@@ -27,9 +27,9 @@
 DBConnectionPool::DBConnectionPool(int pool_size): mtx(){
     
     mtx.lock();
-    mysql_connection_pool = new (struct srm_srv_thread_info(*[pool_size]));
+    mysql_connection_pool = new struct srm_srv_thread_info*[pool_size];
 
-    id_map = new (boost::thread::id[pool_size]);
+    id_map = new boost::thread::id[pool_size];
 
     _curr_size = 0;
     _pool_size = pool_size;

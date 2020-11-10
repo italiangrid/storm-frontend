@@ -72,7 +72,7 @@ FullCredentials::FullCredentials(struct soap *soap) : Credentials(soap) {
 /**
  * Returns the gss_cred_id handle from the GSS context.
  */
-gss_cred_id_t FullCredentials::get_gss_cred_id(const gss_ctx_id_t gss_context)  throw (std::invalid_argument)
+gss_cred_id_t FullCredentials::get_gss_cred_id(const gss_ctx_id_t gss_context)
 {
     if (gss_context==NULL) {
     	srmlogit(STORM_LOG_ERROR, __func__, "Credentials: null parameter\n");
@@ -83,7 +83,7 @@ gss_cred_id_t FullCredentials::get_gss_cred_id(const gss_ctx_id_t gss_context)  
     }
 }
 
-globus_gsi_cred_handle_t FullCredentials::get_gss_cred_handle(const gss_cred_id_t gss_cred) throw (CredentialException)
+globus_gsi_cred_handle_t FullCredentials::get_gss_cred_handle(const gss_cred_id_t gss_cred)
 {
 
     /* Internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc */
@@ -103,7 +103,7 @@ globus_gsi_cred_handle_t FullCredentials::get_gss_cred_handle(const gss_cred_id_
     return gsi_cred;
 }
 
-X509 * FullCredentials::gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException)
+X509 * FullCredentials::gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi_cred)
 {
 
     /* Internally a gss_cred_id_t type is a pointer to a gss_cred_id_desc */
@@ -119,7 +119,7 @@ X509 * FullCredentials::gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi
     return cert;
 }
 
-STACK_OF(X509) * FullCredentials::gss_cred_extract_cert_chain(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException)
+STACK_OF(X509) * FullCredentials::gss_cred_extract_cert_chain(const globus_gsi_cred_handle_t gsi_cred)
 {
     STACK_OF(X509) * chain;
 
@@ -134,7 +134,7 @@ STACK_OF(X509) * FullCredentials::gss_cred_extract_cert_chain(const globus_gsi_c
     return chain;
 }
 
-char * FullCredentials::x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain) throw (CredentialException)
+char * FullCredentials::x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain)
 {
     char * pem;
 

@@ -35,3 +35,17 @@ tags
 /src/frontend/srmv2Server.cc
 /src/autogen/stamp-h1
 do-configure.sh
+aclocal.m4
+configure
+/aux/*
+Makefile.in
+/m4/*
+!/m4/acinclude.m4
+!/m4/boost.m4
+!/m4/cgsi-gsoap.m4
+!/m4/ltsugar.m4
+!/m4/mysql.m4
+!/m4/wsdl2h.m4
+!/m4/xmlrpc-c.m4
+src/autogen
+.vscode

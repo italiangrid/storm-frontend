@@ -55,13 +55,13 @@ class file_request {
 public:
     file_request(struct soap* soapRequest) :
     	m_soapRequest(soapRequest),
-    	m_credentials(soapRequest),
-    	m_status(SRM_USCOREREQUEST_USCOREQUEUED),
-    	m_builtResponse(NULL),
     	m_fileStorageType(DB_FILE_TYPE_UNKNOWN),
+    	m_credentials(soapRequest),
     	m_desiredTotalRequestTime(-1),
+    	m_storageSystemInfo(0),
     	m_targetFileRetentionPolicyInfo(0),
-    	m_storageSystemInfo(0){
+    	m_builtResponse(NULL),
+    	m_status(SRM_USCOREREQUEST_USCOREQUEUED) {
     }
 
     virtual ~file_request() {

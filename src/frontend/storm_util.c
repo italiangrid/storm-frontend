@@ -19,11 +19,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "srmlogit.h"
+#include "storm_mysql.h"
+#include <openssl/pem.h>
 
 int get_supported_protocols(char ***sup_proto) {
     char* funcName = "get_supported_protocols";
     int nb_supported_protocols = 0;
-    int c;
     int i;
     struct srm_dbfd dbfd;
     int nbprots = 0;

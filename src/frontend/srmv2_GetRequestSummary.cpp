@@ -332,14 +332,14 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 			}
 		}
     }
-	catch (soap_bad_alloc) {
+	catch (soap_bad_alloc const&) {
 		if ((thip->dbfd).tr_started == 1)
 			storm_end_tr(&thip->dbfd);
 		srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
 		storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
 		return SOAP_EOM;
 	}
-	catch (std::invalid_argument) {
+	catch (std::invalid_argument const&) {
 		if ((thip->dbfd).tr_started == 1)
 			storm_end_tr(&thip->dbfd);
 		srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");

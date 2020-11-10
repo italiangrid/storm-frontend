@@ -114,7 +114,7 @@ void req_token_logger(const char* func, T & request) {
 }
 
 template<typename T>
-void log_request_outcome(const char* func, T & request) {
+void log_request_outcome(const char* /* func */, T & request) {
     srmLogResponse(T::NAME.c_str(),request.getStatus());
 }
 

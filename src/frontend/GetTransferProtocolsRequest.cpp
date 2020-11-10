@@ -21,7 +21,7 @@ const std::string storm::GetTransferProtocolsRequest::NAME = "Get transfer proto
 const std::string storm::GetTransferProtocolsRequest::MONITOR_NAME = storm::SRM_GET_TRANSFER_PROTOCOLS_MONITOR_NAME;
 
 
-void storm::GetTransferProtocolsRequest::load(ns1__srmGetTransferProtocolsRequest* request)
+void storm::GetTransferProtocolsRequest::load(ns1__srmGetTransferProtocolsRequest*)
 {
 }
 

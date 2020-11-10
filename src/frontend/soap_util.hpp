@@ -17,7 +17,6 @@
 #define SOAP_UTIL_HPP
 
 #include <stdexcept>
-#include <stdsoap2.h>
 #include "srmv2Stub.h"
 
 class soap_bad_alloc : public std::bad_alloc {
@@ -35,7 +34,7 @@ namespace storm {
        case of error.
     */
     template<typename soap_type_t>
-    soap_type_t * soap_calloc(struct soap *soap) throw (std::invalid_argument)
+    soap_type_t * soap_calloc(struct soap *soap)
     {
         if(NULL == soap)
             throw std::invalid_argument("soap_calloc: soap is a null pointer");

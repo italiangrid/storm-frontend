@@ -55,7 +55,7 @@ public:
 		return m_remainingFileLifetime != -1;
 	}
 
-	storm_time_t getRemainingFileLifetime() throw (std::logic_error)
+	storm_time_t getRemainingFileLifetime()
 	{
 		if(!this->hasRemainingFileLifetime())
 		{

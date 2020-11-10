@@ -51,6 +51,6 @@ namespace storm_db {
     void vector_exec_query(struct srm_dbfd *dbfd, const std::string &query, std::vector< std::map<std::string, std::string> >& results);
     std::vector< std::map<std::string, std::string> > * vector_exec_query(struct srm_dbfd *dbfd, std::string query);
 
-    int ID_exec_query(struct srm_dbfd *dbfd, std::string query) throw(storm_db::mysql_exception);
+    int ID_exec_query(struct srm_dbfd *dbfd, std::string query);
 }
 #endif // __MYSQL_QUERY_HPP

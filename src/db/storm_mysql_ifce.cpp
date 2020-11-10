@@ -113,7 +113,7 @@ extern "C" int storm_ping_connection(MYSQL *mysql)
 /*************************
  * TRANSACTION FUNCTIONS *
  *************************/
-extern "C" int storm_start_tr(int s, struct srm_dbfd *dbfd)
+extern "C" int storm_start_tr(int, struct srm_dbfd *dbfd)
 {
     (void) mysql_query(&dbfd->mysql, "BEGIN");
     dbfd->tr_started = 1;
@@ -178,14 +178,13 @@ extern "C" int storm_exec_query(const char * const func, struct srm_dbfd *dbfd, 
 */
 extern "C" int free_storm_req_transfer_params(struct storm_req *request)
 {
-    int i;
     if(NULL == request)
         return EINVAL;
 
     if(NULL == request->protocols )
         return 0;
 
-    for(i=0; NULL != request->protocols[i]; i++)
+    for(int i=0; NULL != request->protocols[i]; i++)
         free(request->protocols[i]);
 
     return 0;
@@ -212,9 +211,7 @@ extern "C" void free_gfr_entry_array(struct storm_get_filereq **gfr_array)
 */
 extern "C" int free_storm_req(struct storm_req *request)
 {
-    int ret = free_storm_req_transfer_params(request);
-    if(0 != ret)
-        return ret;
+    return free_storm_req_transfer_params(request);
 }
 
 /**********************
@@ -820,7 +817,7 @@ extern "C" int storm_insert_gfr_entry(struct srm_dbfd *dbfd,
     /* Insert into request_Get table */
     ret = snprintf(
         sql_stmt, 2880, get_stmt,
-        diroptionID == -1? "NULL" : itoa(diroptionID_str, diroptionID),
+        diroptionID == -1? "NULL" : itoa(diroptionID_str, static_cast<unsigned int>(diroptionID)),
         (unsigned long)request_id,
         gfr_entry->surl);
     if ((ret >= 2880) || (ret < 0)) {
@@ -1112,7 +1109,7 @@ extern "C" storm_id_t storm_insert_pending_entry(struct srm_dbfd *dbfd,
         storm_req->r_token,
         storm_req->r_type,
         storm_req->overwrite == DB_OVERWRITE_UNKNOWN ? "NULL": ctoa(overwrite_str, storm_req->overwrite),
-        storm_req->pinlifetime < 0? "NULL" : itoa(pinlifetime_str, storm_req->pinlifetime),
+        storm_req->pinlifetime < 0? "NULL" : itoa(pinlifetime_str, static_cast<unsigned int>(storm_req->pinlifetime)),
         storm_req->nbreqfiles,
         storm_req->status);
 
@@ -1465,7 +1462,7 @@ extern "C" int storm_list_protocol(struct srm_dbfd *dbfd,
                         char **protocol,
                         int nbprot,
                         int protlen,
-                        storm_dbrec_addr *rec_addr)
+                        storm_dbrec_addr * /* rec_addr */)
 {
     static const char *func = "storm_list_protocol";
     static const char *query = "SELECT id FROM config_Protocols";

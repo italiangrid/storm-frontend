@@ -19,7 +19,6 @@
 
 #include <cgsi_plugin.h>
 #include <globus_gss_assist.h>
-#include <stdsoap2.h>
 
 #define CGSI_TRACE "CGSI_TRACE"
 #define CGSI_TRACEFILE "CGSI_TRACEFILE"

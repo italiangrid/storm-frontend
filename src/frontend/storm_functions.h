@@ -20,26 +20,7 @@
 #include <mysql/mysql.h>
 #include "srm_server.h"
 #include "storm_constants.h"
-//#include "osdep.h"
 
-//int *C__storm_errno();
-//#define storm_errno (*C__storm_errno())
-
-/*
-#define RETURN(x) \
-        { \
-        if ( x != 0) { srmlogit (STORM_LOG_ERROR, func, "returns %d\n", (x)); }\
-        else {srmlogit (STORM_LOG_INFO, func, "returns %d\n", (x)); }\
-        if (thip->dbfd.tr_started) \
-                if (x) \
-                        (void) storm_abort_tr (&thip->dbfd); \
-                else \
-                        (void) storm_end_tr (&thip->dbfd); \
-        return ((x)); \
-        }
-
-#define END_TRANS_AND_RETURN(x) RETURN(x)
-*/
                         /* ACL types */
 
 #define STORM_ACL_USER_OBJ        1
@@ -95,7 +76,7 @@
 #define itoa(buf, var)  (snprintf(buf, sizeof(var)*2+2, "0x%x", var),buf)
 #define ctoa(buf, var)  (snprintf(buf, 4, "'%c'", var), buf)
 #define itoa(buf, var)  (snprintf(buf, sizeof(var)*2+2, "0x%x", var),buf)
-#define u64tostr(var, buf, i)  (snprintf(buf, sizeof(var)*2+2, "0x%x", var),buf)
+#define u64tostr(var, buf, i)  (snprintf(buf, sizeof(var)*2+2, "0x%llx", var),buf)
 
 #endif
 

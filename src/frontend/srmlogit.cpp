@@ -139,7 +139,7 @@ int logPrefix(char* ptrbuf, int log_level, const char* function_name) {
 	// error handling
     }
 
-    suseconds_t msecs = tv.tv_usec / 1000;
+    int msecs = tv.tv_usec / 1000;
 
     tm_p = localtime_r(&tv.tv_sec,&tm);
     if (tm_p == NULL) {
@@ -219,10 +219,15 @@ int writeLogPrefix(char* prtbuf, int logLevel)
 	return writeLogPrefix(prtbuf, logLevel, NULL);
 }
 
+static void logTruncateSuffix(char* buffer)
+{
+	snprintf(buffer + LOGBUFSZ - 12, 12, "%s\n", " TRUNCATED");
+}
+
 int loggingError(const char* requestName) {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	writtenChars += logPrefix(prtbuf, STORM_LOG_ERROR);
 	if(writtenChars < max_char_to_write)
@@ -240,13 +245,10 @@ int loggingError(const char* requestName) {
 		}
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-	}
+
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
 	size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
 	if (written_bytes < strlen(prtbuf)){
@@ -265,7 +267,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     va_list args;
     int save_errno = errno;
     char prtbuf[LOGBUFSZ];
-    signed int max_char_to_write = LOGBUFSZ - 1;
+    signed int max_char_to_write = LOGBUFSZ;
     int writtenChars = 0;
 
     if (level > loglevel) {
@@ -279,14 +281,10 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
     	writtenChars += vsnprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, msg, args);
     }
     va_end(args);
-    if(writtenChars < max_char_to_write)
-    {
-    	prtbuf[writtenChars] = '\0';
-    }
-    else
-    {
-    	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
+
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
+	}
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
     size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
@@ -306,7 +304,7 @@ int srmlogit(int level, const char *func, const char *msg, ...) {
 int srmLogRequest(const char* requestName, const char* clientIP, const char* clientDN) {
 	int save_errno = errno;
     char prtbuf[LOGBUFSZ];
-    signed int max_char_to_write = LOGBUFSZ - 1;
+    signed int max_char_to_write = LOGBUFSZ;
     int writtenChars = 0;
     if(requestName == NULL || clientIP == NULL || clientDN == NULL )
 	{
@@ -322,14 +320,10 @@ int srmLogRequest(const char* requestName, const char* clientIP, const char* cli
 				"Request \'%s\' from Client IP=%s Client DN=%s\n",
 				requestName, clientIP, clientDN);
     }
-    if(writtenChars < max_char_to_write)
-    {
-    	prtbuf[writtenChars] = '\0';
-    }
-    else
-    {
-    	sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
-    }
+
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
+	}
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
     size_t const written_bytes = fwrite(prtbuf, sizeof(char), strlen(prtbuf), log_fd);
@@ -349,7 +343,7 @@ int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const 
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || surls == NULL)
@@ -376,17 +370,12 @@ int srmLogRequestWithSurls(const char* requestName, const char* clientIP, const 
 		}
 		else
 		{
-			prtbuf[writtenChars] = '\n';
-			writtenChars++;
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, "\n");
 		}
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
@@ -407,7 +396,7 @@ int srmLogRequestWithToken(const char* requestName, const char* clientIP, const 
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || requestToken == NULL)
 	{
@@ -424,12 +413,8 @@ int srmLogRequestWithToken(const char* requestName, const char* clientIP, const 
 				requestName, clientIP, clientDN, requestToken);
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
@@ -450,7 +435,7 @@ int srmLogRequestWithTokenList(const char* requestName, const char* clientIP, co
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || tokens == NULL)
@@ -477,17 +462,12 @@ int srmLogRequestWithTokenList(const char* requestName, const char* clientIP, co
 		}
 		else
 		{
-			prtbuf[writtenChars] = '\n';
-			writtenChars++;
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, "\n");
 		}
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
@@ -507,7 +487,7 @@ int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 
 	if(requestName == NULL || clientIP == NULL || clientDN == NULL || requestToken == NULL || surls == NULL)
@@ -534,17 +514,12 @@ int srmLogRequestWithTokenAndSurls(const char* requestName, const char* clientIP
 		}
 		else
 		{
-			prtbuf[writtenChars] = '\n';
-			writtenChars++;
+			writtenChars += snprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, "\n");
 		}
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
@@ -565,7 +540,7 @@ int srmLogResponseWithToken(const char* requestName, const char* requestToken, c
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	if(requestName == NULL || requestToken == NULL)
 	{
@@ -582,12 +557,8 @@ int srmLogResponseWithToken(const char* requestName, const char* requestToken, c
 				requestName, reconvertStatusCode(statusCode), requestToken);
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
@@ -608,7 +579,7 @@ int srmLogResponse(const char* requestName, const ns1__TStatusCode statusCode)
 {
 	int save_errno = errno;
 	char prtbuf[LOGBUFSZ];
-	signed int max_char_to_write = LOGBUFSZ - 1;
+	signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
 	if(requestName == NULL)
 	{
@@ -625,12 +596,8 @@ int srmLogResponse(const char* requestName, const ns1__TStatusCode statusCode)
 				requestName, reconvertStatusCode(statusCode));
 	}
 
-	if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
 	boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(log_mutex);
@@ -650,7 +617,7 @@ int srmAudit(const char *msg, ...) {
     va_list args;
     char prtbuf[LOGBUFSZ];
     int save_errno = errno;
-    signed int max_char_to_write = LOGBUFSZ - 1;
+    signed int max_char_to_write = LOGBUFSZ;
 	int writtenChars = 0;
     struct tm *tm;
 #if defined(_REENTRANT) || defined(_THREAD_SAFE)
@@ -678,12 +645,9 @@ int srmAudit(const char *msg, ...) {
     	writtenChars += vsnprintf(prtbuf + writtenChars, max_char_to_write - writtenChars, msg, args);
     }
     va_end(args);
-    if (writtenChars < max_char_to_write) {
-		prtbuf[writtenChars] = '\0';
-	}
-	else
-	{
-		sprintf(prtbuf + (LOGBUFSZ - 12), " TRUNCATED\n\0");
+
+	if (writtenChars >= max_char_to_write) {
+		logTruncateSuffix(prtbuf);
 	}
 
     boost::mutex::scoped_lock lock = boost::mutex::scoped_lock(audit_mutex);

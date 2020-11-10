@@ -3,7 +3,7 @@
 #include <string.h>
 #include <malloc.h>
 
-int main(int argc, const char *argv[])
+int main()
 {
     const char* surls[] = {
         "srm://host.ciccio:8444/test//palla",

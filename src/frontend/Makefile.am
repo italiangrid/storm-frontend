@@ -141,7 +141,7 @@ stormfrontend_others = storm_exception.hpp \
     MonitorNotEnabledException.hpp \
     $(noinst_INCLUDES)
 
-INCLUDES = \
+AM_CPPFLAGS = \
     -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
     @BOOST_CPPFLAGS@ \

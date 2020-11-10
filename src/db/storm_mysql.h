@@ -173,6 +173,8 @@ struct storm_acl {
 
 /* Prototype definitions */
 int storm_opendb(char *, char *, char *, struct srm_dbfd *);
+void storm_closedb(struct srm_dbfd *dbfd);
+int storm_list_protocol(struct srm_dbfd*, char **protocol, int nbprot, int protlen, storm_dbrec_addr*);
 int storm_ping_connection(MYSQL *mysql);
 int storm_start_tr(int, struct srm_dbfd *);
 int storm_end_tr(struct srm_dbfd *);

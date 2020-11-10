@@ -49,11 +49,11 @@ public:
 private:
 	char* m_cert_chain;
 
-	static STACK_OF(X509) * gss_cred_extract_cert_chain(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException);
-	static char * x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain) throw (CredentialException);
-	static gss_cred_id_t get_gss_cred_id(const gss_ctx_id_t gss_context)  throw (std::invalid_argument);
-	static globus_gsi_cred_handle_t get_gss_cred_handle(const gss_cred_id_t gss_cred) throw (CredentialException);
-	static X509 * gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi_cred) throw (CredentialException);
+	static STACK_OF(X509) * gss_cred_extract_cert_chain(const globus_gsi_cred_handle_t gsi_cred);
+	static char * x509_convert_to_PEM(const X509 * x509, const STACK_OF(X509) * chain);
+	static gss_cred_id_t get_gss_cred_id(const gss_ctx_id_t gss_context);
+	static globus_gsi_cred_handle_t get_gss_cred_handle(const gss_cred_id_t gss_cred);
+	static X509 * gss_cred_extract_cert(const globus_gsi_cred_handle_t gsi_cred);
 };
 
 }
