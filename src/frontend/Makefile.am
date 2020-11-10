@@ -68,8 +68,6 @@ noinst_INCLUDES = osdep.h \
 
 stormfrontend_others = storm_exception.hpp \
     Credentials.cpp Credentials.hpp \
-    FullCredentials.cpp FullCredentials.hpp \
-    CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
     base_request.hpp \
     file_request.hpp filerequest_template.hpp \
