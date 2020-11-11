@@ -22,61 +22,54 @@
 #include "storm_mysql.h"
 #include <openssl/pem.h>
 
-int get_supported_protocols(char ***sup_proto) {
-    char* funcName = "get_supported_protocols";
-    int nb_supported_protocols = 0;
-    int i;
-    struct srm_dbfd dbfd;
-    int nbprots = 0;
-    int protlen = 10;
-    char ** sup_protocols;
+std::vector<std::string> get_supported_protocols()
+{
+    typedef std::vector<std::string> Protocols;
+    Protocols result;
 
-    /* Connect to the database if not done yet */
-
+    srm_dbfd dbfd;
     if (storm_opendb(db_srvr, db_user, db_pwd, &dbfd) < 0) {
-        return -1;
+        // log
+        return result;
+        // exception?
     }
 
-    if (NULL == sup_proto) {
-        srmlogit(STORM_LOG_ERROR, funcName, "sup_proto argument is a NULL pointer!\n");
-        return -1;
+    int const n_protocols = storm_list_protocol(&dbfd, NULL, 0, 0, NULL);
+
+    if (n_protocols <= 0) {
+        // log
+        storm_closedb(&dbfd);
+        return result;
+        // exception?
     }
 
-    nb_supported_protocols = storm_list_protocol(&dbfd, NULL, 0, 0, NULL);
-
-    if (nb_supported_protocols == 0) {
-        srmlogit(STORM_LOG_ERROR, funcName, "No protocols supported");
-        return -1;
-    } else if (nb_supported_protocols < 0) {
-        srmlogit(STORM_LOG_ERROR, funcName, "Error in storm_list_protocol: %d",
-                nb_supported_protocols);
-        return -1;
-    }
-    nbprots = nb_supported_protocols;
-
-    sup_protocols = calloc(nbprots, sizeof(char *));
-    if (NULL == sup_protocols) {
-        srmlogit(STORM_LOG_ERROR, funcName, "Unable to calloc() an array of lenght %d", nbprots);
-        return -1;
+    char** protocols = new char*[n_protocols];
+    int const protocol_len = 10;
+    for (int i = 0; i != n_protocols; ++i) {
+        protocols[i] = new char[protocol_len];
     }
 
-    for (i = 0; i < nbprots; i++) {
-        sup_protocols[i] = calloc(protlen, sizeof(char));
-        if (NULL == sup_protocols[i]) {
-            srmlogit(STORM_LOG_ERROR, funcName, "Unable to calloc() an array of lenght %d", protlen);
-            return -1;
-        }
-    }
-
-    i = storm_list_protocol(&dbfd, sup_protocols, nbprots, protlen, NULL);
-    if (i < 0) {
-        srmlogit(STORM_LOG_ERROR, funcName, "Error in storm_list_protocol: %d", i);
-        return -1;
-    }
-
+    int const n_protocols2 = storm_list_protocol(&dbfd, protocols, n_protocols, protocol_len, NULL);
+    // assert(n_protocols == n_protocols2);
     storm_closedb(&dbfd);
-    *sup_proto = sup_protocols;
-    return (nb_supported_protocols);
+
+    if (n_protocols2 <= 0) {
+        // log
+        for (int i = 0; i != n_protocols; ++i) {
+            delete protocols[i];
+        }
+        delete protocols;
+        return result;
+        // exception?
+    }
+
+    for (int i = 0; i != n_protocols; ++i) {
+        result.push_back(std::string(protocols[i]));
+        delete protocols[i];
+    }
+    delete protocols;
+
+    return result;
 }
 
 int convertPermission(char *mode) {
@@ -207,7 +200,7 @@ int convertStatusCode(char* code) {
         return SRM_USCORECUSTOM_USCORESTATUS; // 33
 }
 
-char* reconvertStatusCode(int code) {
+char const* reconvertStatusCode(int code) {
 	switch (code) {
 	case 0:
 		return "SRM_SUCCESS";

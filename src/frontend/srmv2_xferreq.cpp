@@ -24,9 +24,6 @@
 #include <xmlrpc-c/util.h>
 #include "xmlrpc_client.hpp"
 
-extern int nb_supported_protocols;
-extern char **supported_protocols;
-
 struct RPC_ResponseHandlerInput_ReleaseFiles {
     struct soap *soap;
     struct ns1__srmReleaseFilesRequest *req;
@@ -1022,8 +1019,6 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
     static const char *func = "GetTransferProtocols";
     struct ns1__srmGetTransferProtocolsResponse *repp;
     struct ns1__TSupportedTransferProtocol **protocolArray;
-    char **supported_protocols;
-    int i, nb_supported_protocols;
 
     repp = static_cast<ns1__srmGetTransferProtocolsResponse*>(soap_malloc(soap,sizeof(ns1__srmGetTransferProtocolsResponse)));
     if (repp == NULL) return SOAP_EOM;
@@ -1033,9 +1028,9 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
 
     rep->srmGetTransferProtocolsResponse = repp;
 
-    nb_supported_protocols = get_supported_protocols(&supported_protocols);
+    std::vector<std::string> const supported_protocols = get_supported_protocols();
 
-    if (nb_supported_protocols <= 0) {
+    if (supported_protocols.empty()) {
         srmlogit (STORM_LOG_ERROR, func, "get_supported_protocols does not return any protocol");
         repp->returnStatus->statusCode = SRM_USCOREFAILURE;
         repp->returnStatus->explanation = const_cast<char*>("Error: list of supported protocols not found");
@@ -1047,20 +1042,18 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
     if (NULL == repp->protocolInfo)
         return(SOAP_EOM);
 
-    repp->protocolInfo->protocolArray = static_cast<ns1__TSupportedTransferProtocol**>(soap_malloc(soap, nb_supported_protocols * sizeof(struct ns1__TSupportedTransferProtocol *)));
+    repp->protocolInfo->protocolArray = static_cast<ns1__TSupportedTransferProtocol**>(soap_malloc(soap, supported_protocols.size() * sizeof(struct ns1__TSupportedTransferProtocol *)));
     if (NULL == repp->protocolInfo->protocolArray)
         return(SOAP_EOM);
-    repp->protocolInfo->__sizeprotocolArray = nb_supported_protocols;
+    repp->protocolInfo->__sizeprotocolArray = supported_protocols.size();
     protocolArray = repp->protocolInfo->protocolArray;
 
     /* Set the protocol list to return */
-    for (i=0; i<nb_supported_protocols; i++) {
+    for (int i = 0, n = supported_protocols.size(); i != n; ++i) {
         protocolArray[i] = static_cast<ns1__TSupportedTransferProtocol*>(soap_malloc(soap, sizeof(struct ns1__TSupportedTransferProtocol)));
-        protocolArray[i]->transferProtocol = soap_strdup(soap, supported_protocols[i]);
+        protocolArray[i]->transferProtocol = soap_strdup(soap, supported_protocols[i].c_str());
         protocolArray[i]->attributes = NULL;
     }
-
-    free(supported_protocols);
 
     repp->returnStatus->statusCode = SRM_USCORESUCCESS;
     repp->returnStatus->explanation = const_cast<char*>("Success");

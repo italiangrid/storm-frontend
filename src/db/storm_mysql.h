@@ -131,46 +131,6 @@ struct storm_copy_filereq {
         char            errstring[256];
 };
 
-struct storm_tokeninfo {
-        char            r_token[ST_MAXDPMTOKENLEN+1];
-        time_t          c_time;
-};
-
-
-/* File status operations */
-
-struct storm_filestatus {
-        char            *surl;
-        int             status;
-        char            *errstring;
-};
-
-
-struct storm_filestatg {
-    u_signed64  fileid;
-    char        guid[ST_MAXGUIDLEN+1];
-    mode_t      filemode;
-    int     nlink;      /* number of files in a directory */
-    uid_t       uid;
-    gid_t       gid;
-    u_signed64  filesize;
-    time_t      atime;      /* last access to file */
-    time_t      mtime;      /* last file modification */
-    time_t      ctime;      /* last metadata modification */
-    short       fileclass;  /* 1 --> experiment, 2 --> user */
-    char        status;     /* ' ' --> online, 'm' --> migrated */
-    char        csumtype[3];
-    char        csumvalue[33];
-};
-
-/* Permissions */
-
-struct storm_acl {
-        unsigned char   a_type;
-        int             a_id;
-        unsigned char   a_perm;
-};
-
 /* Prototype definitions */
 int storm_opendb(char *, char *, char *, struct srm_dbfd *);
 void storm_closedb(struct srm_dbfd *dbfd);

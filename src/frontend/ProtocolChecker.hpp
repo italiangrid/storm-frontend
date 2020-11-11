@@ -24,7 +24,7 @@ public:
 	 * Initialize the object with the list (and its size) of the supported protocols
 	 * 
 	 * */
-	void init(char*** protocolList, int protocolListSize);
+	void init(std::vector<std::string> const& protocolList);
 	
 	/*
 	 * 

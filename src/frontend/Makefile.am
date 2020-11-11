@@ -128,7 +128,7 @@ stormfrontend_others = storm_exception.hpp \
     synch.cpp synch.hpp\
     token_validator.hpp token_validator.cpp \
     xmlrpc_decode.cpp xmlrpc_encode.cpp \
-    storm_util.c storm_utils.hpp \
+    storm_util.cpp storm_utils.hpp \
     srmv2C.cc \
     srmv2Server.cc \
     Monitor.hpp InstrumentedMonitor.hpp \

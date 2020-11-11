@@ -307,11 +307,9 @@ int performSanityChecks() {
 	}
 
 	/**** Get list of supported protocols ****/
-	if ((nb_supported_protocols = get_supported_protocols(&supported_protocols))
-			< 0) {
-		srmlogit(STORM_LOG_ERROR, __func__,
-				"Error in get_supported_protocols(): unable to retrieve "
-						"supported protocols from the DB.");
+	std::vector<std::string> supported_protocols = get_supported_protocols();
+	if (supported_protocols.empty()) {
+		srmlogit(STORM_LOG_ERROR, __func__, "No supported protocols");
 		return 1;
 	}
 	return 0;
@@ -539,8 +537,8 @@ int main(int argc, char** argv) {
 	}
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"Initializing the ProtocolChecker instance\n");
-	ProtocolChecker::getInstance()->init(&supported_protocols,
-			nb_supported_protocols);
+	std::vector<std::string> supported_protocols = get_supported_protocols();
+	ProtocolChecker::getInstance()->init(supported_protocols);
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"ProtocolChecker initialization completed\n");
 	ProtocolChecker::getInstance()->printProtocols();
