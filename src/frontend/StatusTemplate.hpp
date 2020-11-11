@@ -20,7 +20,7 @@
 #include "srmv2H.h"
 #include "srm_server.h"
 #include "FileStatusRequest.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 #include "get_socket_info.hpp"
 #include <cgsi_plugin.h>
 

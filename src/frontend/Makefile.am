@@ -53,9 +53,7 @@ storm_frontend_server_LDFLAGS= \
 
 noinst_INCLUDES = osdep.h \
   srm_server.h \
-  storm_constants.h \
   storm_functions.h \
-  storm_limits.h \
   storm_util.h \
   srmlogit.h \
   ProtocolChecker.hpp \

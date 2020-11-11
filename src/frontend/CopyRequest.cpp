@@ -17,7 +17,7 @@
 
 #include "CopyRequest.hpp"
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 
 #include "srmlogit.h"
 

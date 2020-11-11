@@ -21,7 +21,7 @@ libstormdb_la_SOURCES = \
     storm_mysql_ifce.cpp \
     mysql_query.cpp \
     mysql_query.hpp \
-    storm_mysql.h
+    storm_mysql.hpp
 
 libstormdb_la_CFLAGS= @MYSQL_CFLAGS@
 GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/gsoap-autogen

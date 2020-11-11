@@ -27,7 +27,7 @@
 #include "Credentials.hpp"
 
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 #include "sql_string.hpp"
 
 #include "get_socket_info.hpp"
@@ -63,6 +63,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 
     // Generate the request token (unique identifier)
     uuid_t uuid;
+	const int ST_MAXDPMTOKENLEN = 36;
     char r_token[ST_MAXDPMTOKENLEN + 1];
     uuid_generate(uuid);
     uuid_unparse(uuid, r_token);

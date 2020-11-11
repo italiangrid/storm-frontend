@@ -21,7 +21,6 @@
 #include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_functions.h"
-#include "storm_limits.h"
 #include "storm_util.h"
 #include "srmlogit.h"
 
@@ -320,6 +319,7 @@ soap* initSoap() {
 	/**** gSOAP and CGSI_gSOAP plugin initializaion ****/
 	struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
 
+	int const SOAP_MAX_KEEPALIVE = 100;
 	soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
 	// non-blocking soap_accept()... exit from soap_accept() every 5 secs if no requests arrive
 	soap_data->accept_timeout = 5;

@@ -19,7 +19,6 @@
 #include <utime.h>
 #include <mysql/mysql.h>
 #include "srm_server.h"
-#include "storm_constants.h"
 
                         /* ACL types */
 

@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "srmlogit.h"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 #include <openssl/pem.h>
 
 std::vector<std::string> get_supported_protocols()
@@ -34,7 +34,7 @@ std::vector<std::string> get_supported_protocols()
         // exception?
     }
 
-    int const n_protocols = storm_list_protocol(&dbfd, NULL, 0, 0, NULL);
+    int const n_protocols = storm_list_protocol(&dbfd, NULL, 0, 0);
 
     if (n_protocols <= 0) {
         // log
@@ -49,7 +49,7 @@ std::vector<std::string> get_supported_protocols()
         protocols[i] = new char[protocol_len];
     }
 
-    int const n_protocols2 = storm_list_protocol(&dbfd, protocols, n_protocols, protocol_len, NULL);
+    int const n_protocols2 = storm_list_protocol(&dbfd, protocols, n_protocols, protocol_len);
     // assert(n_protocols == n_protocols2);
     storm_closedb(&dbfd);
 

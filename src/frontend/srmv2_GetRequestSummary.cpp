@@ -23,7 +23,7 @@
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 
 #include "Authorization.hpp"
 #include "MonitoringHelper.hpp"
