@@ -33,5 +33,4 @@ db.passwd = password
 
 
 # WSDL to be returned to a GET request
-wsdl.file = @datadir@/wsdl/srm.v2.2.wsdl
-
+wsdl.file = @datarootdir@/wsdl/srm.v2.2.wsdl
