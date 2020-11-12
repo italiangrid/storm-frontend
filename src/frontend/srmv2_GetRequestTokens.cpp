@@ -105,8 +105,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         srmlogit(STORM_LOG_DEBUG, func, "Query: %s\n", query_sql.c_str());
         
         storm_start_tr(0, &thip->dbfd);
-        vector< map<string, string> > results;
-        storm_db::vector_exec_query(&thip->dbfd, query_sql, results);
+        vector< map<string, string> > results = storm_db::vector_exec_query(&thip->dbfd, query_sql);
         storm_end_tr(&thip->dbfd);
         
         int resultsSize = results.size();

@@ -180,8 +180,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         query_sql += ')';
         // Execute the DB query
         storm_start_tr(0, &thip->dbfd);
-        vector< map<string, string> > results;
-        storm_db::vector_exec_query(&thip->dbfd, query_sql, results);
+	    vector< map<string, string> > results = storm_db::vector_exec_query(&thip->dbfd, query_sql);
 
         int resultsSize = results.size();
         srmlogit(STORM_LOG_INFO, func, "Results (size): %d\n", resultsSize);
@@ -281,8 +280,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 					}
 					if (!query_sql.empty()) {
 						// Calculate the values: numOfCompletedFiles, numOfWaitingFiles, numOfFailedFiles
-						vector< map<string, string> > results_status;
-						storm_db::vector_exec_query(&thip->dbfd, query_sql, results_status);
+						std::vector< std::map<std::string, std::string> > results_status = storm_db::vector_exec_query(&thip->dbfd, query_sql);
 
 						if (results_status.size() != static_cast<size_t>(r_nbreqfiles)) {
 							reqSummary->status->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
