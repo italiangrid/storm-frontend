@@ -18,10 +18,6 @@
 #include "srmlogit.h"
 #include <mysql/mysql.h>
 
-DBConnectionPool::DBConnectionPool(int pool_size)
-{
-}
-
 DBConnectionPool::~DBConnectionPool()
 {
     for (Contexts::iterator it = m_thread_contexts.begin(), e = m_thread_contexts.end(); it != e; ++it) {
