@@ -13,15 +13,8 @@
  * limitations under the License.
 */
 
-/*
- * DBConnectionPool.hpp
- *
- *  Created on: Dec 11, 2008
- *      Author: alb
- */
-
-#ifndef DBCONNECTIONPOOL_HPP_
-#define DBCONNECTIONPOOL_HPP_
+#ifndef DBCONNECTIONPOOL_HPP
+#define DBCONNECTIONPOOL_HPP
 
 #include "srm_server.h"
 #include <boost/thread.hpp>
@@ -34,7 +27,10 @@ public:
     srm_srv_thread_info* getConnection(boost::thread::id thread_id);
 
 private:
-    struct srm_srv_thread_info** mysql_connection_pool;
+    typedef std::map<boost::thread::id, srm_srv_thread_info> Contexts;
+    
+    Contexts m_thread_contexts;
+    srm_srv_thread_info** mysql_connection_pool;
     boost::thread::id* id_map;
     int _pool_size;
     int _curr_size;

@@ -36,15 +36,17 @@ int storm_opendb(char const *db_srvr, char const *db_user, char const *db_pwd, s
     static const char *func = "storm_opendb";
     int ntries;
 
-    mysql_init(&dbfd->mysql);
+    if (dbfd->mysql == NULL) {
+        dbfd->mysql = mysql_init(NULL);
+    }
 
     // Set auto-reconnect option to TRUE
     my_bool reconnect = 1;
-    mysql_options(&dbfd->mysql, MYSQL_OPT_RECONNECT, &reconnect);
+    mysql_options(dbfd->mysql, MYSQL_OPT_RECONNECT, &reconnect);
 
     ntries = 0;
     while (1) {
-        if (mysql_real_connect(&dbfd->mysql, db_srvr, db_user, db_pwd, "storm_db", 0, NULL, 0) == &dbfd->mysql) {
+        if (mysql_real_connect(dbfd->mysql, db_srvr, db_user, db_pwd, "storm_db", 0, NULL, 0) == dbfd->mysql) {
             srmlogit(STORM_LOG_DEBUG, func, "Connected to the DB.\n");
             return (0);
         }
@@ -53,7 +55,7 @@ int storm_opendb(char const *db_srvr, char const *db_user, char const *db_pwd, s
         	break;
         }
 
-        srmlogit(STORM_LOG_ERROR, func, "Failed to get a DB connection, trying again in %d seconds. Error: %s\n", RETRYI, mysql_error(&dbfd->mysql));
+        srmlogit(STORM_LOG_ERROR, func, "Failed to get a DB connection, trying again in %d seconds. Error: %s\n", RETRYI, mysql_error(dbfd->mysql));
         sleep(RETRYI);
     }
     srmlogit (STORM_LOG_ERROR, func, "Cannot connect to the DB.\n");
@@ -62,7 +64,7 @@ int storm_opendb(char const *db_srvr, char const *db_user, char const *db_pwd, s
 
 void storm_closedb(srm_dbfd *dbfd)
 {
-    mysql_close(&dbfd->mysql);
+    mysql_close(dbfd->mysql);
     return ;
 }
 
@@ -77,21 +79,21 @@ int storm_ping_connection(MYSQL *mysql)
  *************************/
 int storm_start_tr(int, srm_dbfd *dbfd)
 {
-    (void) mysql_query(&dbfd->mysql, "BEGIN");
+    (void) mysql_query(dbfd->mysql, "BEGIN");
     dbfd->tr_started = 1;
     return(0);
 }
 
 int storm_end_tr(srm_dbfd *dbfd)
 {
-    (void) mysql_query(&dbfd->mysql, "COMMIT");
+    (void) mysql_query(dbfd->mysql, "COMMIT");
     dbfd->tr_started = 0;
     return(0);
 }
 
 void storm_abort_tr(srm_dbfd *dbfd)
 {
-    (void) mysql_query (&dbfd->mysql, "ROLLBACK");
+    (void) mysql_query (dbfd->mysql, "ROLLBACK");
     dbfd->tr_started = 0;
     return ;
 }
@@ -100,7 +102,7 @@ void set_savepoint(srm_dbfd *dbfd, const char * name)
 {
     std::string query("SAVEPOINT ");
     query+=name;
-    mysql_query(&dbfd->mysql, query.c_str());
+    mysql_query(dbfd->mysql, query.c_str());
     return ;
 }
 
@@ -108,7 +110,7 @@ void rollback_to_savepoint(srm_dbfd *dbfd, const char * name)
 {
     std::string query("ROLLBACK TO SAVEPOINT ");
     query+=name;
-    mysql_query(&dbfd->mysql, query.c_str());
+    mysql_query(dbfd->mysql, query.c_str());
     return ;
 }
 
@@ -117,12 +119,12 @@ int storm_exec_query(const char * const func, srm_dbfd *dbfd, const char *sql_st
 {
     srmlogit(STORM_LOG_DEBUG2, func, "Executing query: ``%s''\n", sql_stmt);
 
-    if (mysql_query(&dbfd->mysql, sql_stmt)) {
-        srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s\n", mysql_error (&dbfd->mysql));
+    if (mysql_query(dbfd->mysql, sql_stmt)) {
+        srmlogit (STORM_LOG_ERROR, func, "mysql_query error: %s\n", mysql_error (dbfd->mysql));
         return(-1);
     }
-    if ((*res = mysql_store_result (&dbfd->mysql)) == NULL) {
-        srmlogit (STORM_LOG_ERROR, func, "mysql_store_res error: %s\n", mysql_error (&dbfd->mysql));
+    if ((*res = mysql_store_result (dbfd->mysql)) == NULL) {
+        srmlogit (STORM_LOG_ERROR, func, "mysql_store_res error: %s\n", mysql_error (dbfd->mysql));
         return(-1);
     }
     return(0);

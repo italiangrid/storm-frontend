@@ -16,11 +16,15 @@
 #ifndef THREADPOOL_HPP_
 #define THREADPOOL_HPP_
 
+#include "FrontendConfiguration.hpp"
+
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <mysql/mysql.h>
+
 #include <queue>
 #include <iostream>
 #include <string>
@@ -30,7 +34,6 @@
 
 #include <sstream>
 
-#include "FrontendConfiguration.hpp"
 
 namespace storm{
 
@@ -125,6 +128,8 @@ class ThreadPool {
             bool* stop) {
 
          try {
+            mysql_thread_init();
+
             for (;;) {
                task_func func = (*sq).pop();
                if (*stop) {
@@ -143,6 +148,7 @@ class ThreadPool {
          } catch (boost::thread_interrupted& e) {
          }
 
+         mysql_thread_end();
       }
 
    public:

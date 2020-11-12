@@ -27,7 +27,7 @@ std::vector<std::string> get_supported_protocols()
     typedef std::vector<std::string> Protocols;
     Protocols result;
 
-    srm_dbfd dbfd;
+    srm_dbfd dbfd{};
     if (storm_opendb(db_srvr, db_user, db_pwd, &dbfd) < 0) {
         // log
         return result;

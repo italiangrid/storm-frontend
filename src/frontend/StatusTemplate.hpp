@@ -72,9 +72,9 @@ int processRequestStatus(struct soap* soap, const char* funcName,
         }
         thip->db_open_done = 1;
     } else { // ping connection and reconnect if needed
-    	if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
+    	if (storm_ping_connection(thip->dbfd.mysql) != 0) {
     		// check if reconnection succeeded
-    		if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
+    		if (storm_ping_connection(thip->dbfd.mysql) != 0) {
     			try
     			{
     				*resp = statusRequest.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR,

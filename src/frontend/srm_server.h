@@ -35,15 +35,14 @@ extern char *xmlrpc_endpoint;
 
 /* srm server structures */
 struct srm_dbfd {
-    MYSQL   mysql;
+    MYSQL*   mysql;
     int     tr_started;
 };
 
 struct srm_srv_thread_info {
-    int              is_used;
-    int              db_open_done;
-    struct srm_dbfd  dbfd;
-    char             errbuf[PRTBUFSZ];
+    bool              is_used;
+    bool              db_open_done;
+    srm_dbfd  dbfd;
     const char*      request_id;
 };
 

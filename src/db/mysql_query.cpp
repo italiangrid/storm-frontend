@@ -23,19 +23,19 @@ static MYSQL_RES* _query_init(srm_dbfd *dbfd, std::string const& query)
 
     srmlogit(STORM_LOG_DEBUG, func, "Executing query ``%s''\n", query.c_str());
 
-    if (mysql_query(&dbfd->mysql, query.c_str())) {
-        srmlogit(STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n", mysql_error(
-        		(MYSQL*)&dbfd->mysql), query.c_str());
-        throw storm_db::mysql_exception(&dbfd->mysql);
+    if (mysql_query(dbfd->mysql, query.c_str())) {
+        srmlogit(STORM_LOG_ERROR, func, "mysql_query error: %s. Query: ``%s''\n",
+            mysql_error(dbfd->mysql), query.c_str());
+        throw storm_db::mysql_exception(dbfd->mysql);
     }
 
     MYSQL_RES* res = NULL;
-    if (0 != mysql_field_count(&dbfd->mysql)) { // The stmt has no result.
-        res = mysql_store_result(&dbfd->mysql);
+    if (0 != mysql_field_count(dbfd->mysql)) { // The stmt has no result.
+        res = mysql_store_result(dbfd->mysql);
         if (NULL == res) { // Error getting the result of the query.
             srmlogit(STORM_LOG_ERROR, func, "mysql_store_res error: %s\n",
-                    mysql_error(&dbfd->mysql));
-            throw storm_db::mysql_exception(&dbfd->mysql);
+                    mysql_error(dbfd->mysql));
+            throw storm_db::mysql_exception(dbfd->mysql);
         }
     }
 
@@ -85,7 +85,7 @@ int ID_exec_query(srm_dbfd *dbfd, std::string const& query) {
 
     mysql_free_result(p);
 
-    return mysql_insert_id(&dbfd->mysql);
+    return mysql_insert_id(dbfd->mysql);
 }
 
 } // namespace storm_db
