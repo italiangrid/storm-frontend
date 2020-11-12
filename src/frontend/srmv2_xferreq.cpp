@@ -13,7 +13,6 @@
  * limitations under the License.
 */
 
-#include "storm_functions.h"
 #include "srm_server.h"
 #include "srmv2H.h"
 #include "storm_util.h"
@@ -143,13 +142,6 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -348,13 +340,6 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -526,13 +511,6 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -710,13 +688,6 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -908,13 +879,6 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -1211,12 +1175,6 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->versionInfo = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }

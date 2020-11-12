@@ -21,7 +21,7 @@
  * the SRM 2.2 specification.
  */
 
-#include "storm_functions.h"
+#include "srm_server.h"
 #include "srmv2H.h"
 #include "xmlrpc_encode.hpp"
 #include "xmlrpc_decode.hpp"
@@ -140,13 +140,6 @@ int ns1__srmMkdir_impl(struct soap *soap, struct ns1__srmMkdirRequest *req,
     error = encode_string(func, &env, req->authorizationID, const_cast<char*>(SRM_PARAM_authorizationID), inputParam);
 
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -316,13 +309,6 @@ int ns1__srmRmdir_impl(struct soap *soap, struct ns1__srmRmdirRequest *req,
 
     error = encode_string(func, &env,req->authorizationID, const_cast<char*>(SRM_PARAM_authorizationID), inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -525,13 +511,6 @@ int ns1__srmRm_impl(struct soap *soap, struct ns1__srmRmRequest *req,
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -758,13 +737,6 @@ int ns1__srmLs_impl(struct soap *soap, struct ns1__srmLsRequest *req,
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -1070,13 +1042,6 @@ int ns1__srmMv_impl(struct soap *soap, struct ns1__srmMvRequest *req,
 
     error = encode_string(func, &env,req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }

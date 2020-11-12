@@ -15,7 +15,7 @@
 
 #include "srmv2H.h"
 #include "storm_util.h"
-#include "storm_functions.h"
+#include "srm_server.h"
 #include <string.h>
 #include <stdlib.h>
 #include "srmlogit.h"
@@ -56,18 +56,18 @@ std::vector<std::string> get_supported_protocols()
     if (n_protocols2 <= 0) {
         // log
         for (int i = 0; i != n_protocols; ++i) {
-            delete protocols[i];
+            delete [] protocols[i];
         }
-        delete protocols;
+        delete [] protocols;
         return result;
         // exception?
     }
 
     for (int i = 0; i != n_protocols; ++i) {
         result.push_back(std::string(protocols[i]));
-        delete protocols[i];
+        delete [] protocols[i];
     }
-    delete protocols;
+    delete [] protocols;
 
     return result;
 }

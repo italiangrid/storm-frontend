@@ -33,6 +33,8 @@
 
 #include <cgsi_plugin.h>
 #include "token_validator.hpp"
+#include "srm_server.h"
+
 using namespace std;
 
 extern "C" int ns1__srmGetRequestTokens(struct soap *soap,

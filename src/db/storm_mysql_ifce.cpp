@@ -19,7 +19,7 @@
  */
 
 #include "storm_mysql.hpp"
-#include "storm_functions.h"
+#include "srm_server.h"
 #include "srmlogit.h"
 #include "srmv2H.h"
 #include <mysql/mysqld_error.h>

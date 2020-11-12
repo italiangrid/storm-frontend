@@ -23,7 +23,8 @@
 #include <stdexcept>
 
 #include <mysql/mysql.h>
-#include "storm_functions.h"
+
+class srm_dbfd;
 
 namespace storm_db {
 

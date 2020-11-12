@@ -15,6 +15,7 @@
 
 #include "mysql_query.hpp"
 #include "srmlogit.h"
+#include "srm_server.h"
 
 static MYSQL_RES* _query_init(srm_dbfd *dbfd, std::string const& query)
 {

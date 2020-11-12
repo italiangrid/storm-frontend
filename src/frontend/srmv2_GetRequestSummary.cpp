@@ -33,6 +33,7 @@
 #include "token_validator.hpp"
 #include "storm_exception.hpp"
 #include "xmlrpc_client.hpp"
+#include "srm_server.h"
 
 #include <cgsi_plugin.h>
 

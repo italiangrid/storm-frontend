@@ -17,7 +17,6 @@
 #define FILE_STATUS_REQUEST_HPP
 
 #include "srmv2H.h"
-#include "storm_functions.h"
 #include "storm_util.h"
 #include "srm_server.h"
 #include "srmlogit.h"
