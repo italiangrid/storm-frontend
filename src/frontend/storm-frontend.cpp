@@ -307,9 +307,15 @@ int performSanityChecks() {
 	/**** Get list of supported protocols ****/
 	std::vector<std::string> supported_protocols = get_supported_protocols();
 	if (supported_protocols.empty()) {
-		srmlogit(STORM_LOG_ERROR, __func__, "No supported protocols");
+		srmlogit(STORM_LOG_ERROR, __func__, "No supported protocols\n");
 		return 1;
 	}
+
+	if (!mysql_thread_safe()) {
+		srmlogit(STORM_LOG_ERROR, __func__, "MySQL is not thread-safe\n");
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -517,6 +523,8 @@ void init_globus_threading() {
 
 int main(int argc, char** argv) {
 
+	mysql_library_init(argc, argv, NULL);
+
 	int ret = loadConfiguration(argc, argv);
 	if (ret != 0) {
 		if (ret > 0) {
@@ -612,8 +620,10 @@ int main(int argc, char** argv) {
 
 	curl_global_cleanup();
 
+	mysql_library_end();
+
 	srmlogit(STORM_LOG_NONE, __func__, "StoRM Frontend shutdown complete.\n");
 
-	return (exit_code);
+	return exit_code;
 }
 
