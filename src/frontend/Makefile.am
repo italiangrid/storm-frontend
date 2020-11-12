@@ -68,7 +68,6 @@ stormfrontend_others = storm_exception.hpp \
     get_socket_info.hpp get_socket_info.cpp \
     base_request.hpp \
     file_request.hpp filerequest_template.hpp \
-    file_status.hpp \
     surl_normalizer.h surl_normalizer.cc \
     request_id.cpp request_id.hpp \
     xmlrpc_client.cpp xmlrpc_client.hpp \
