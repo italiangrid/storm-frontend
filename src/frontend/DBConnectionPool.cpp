@@ -31,9 +31,11 @@ DBConnectionPool::~DBConnectionPool()
 }
 
 srm_srv_thread_info*
-DBConnectionPool::getConnection(boost::thread::id tid)
+DBConnectionPool::getConnection()
 {
     boost::lock_guard<boost::mutex> l(mtx);
+
+    boost::thread::id const tid = boost::this_thread::get_id();
 
     Contexts::iterator it = m_thread_contexts.lower_bound(tid);
     if (it->first == tid) {

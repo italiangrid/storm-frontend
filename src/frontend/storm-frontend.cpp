@@ -118,8 +118,7 @@ process_request(struct soap* tsoap) {
 	storm::set_request_id();
 
 	srmlogit(STORM_LOG_DEBUG, "process_request", "-- START process_request\n");
-	srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection(
-			boost::this_thread::get_id());
+	srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection();
 
 	// explicitly manage the request id here since threadinfo is not
 	// destroyed for each request but kept in the database connection pool
