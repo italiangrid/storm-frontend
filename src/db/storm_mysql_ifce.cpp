@@ -31,7 +31,7 @@ using namespace std;
 /************************
  * CONNECTION FUNCTIONS *
  ************************/
-int storm_opendb(char const *db_srvr, char const *db_user, char const *db_pwd, srm_dbfd *dbfd)
+int storm_opendb(std::string const& server, std::string const& user, std::string const& pw, srm_dbfd *dbfd)
 {
     static const char *func = "storm_opendb";
     int ntries;
@@ -46,7 +46,7 @@ int storm_opendb(char const *db_srvr, char const *db_user, char const *db_pwd, s
 
     ntries = 0;
     while (1) {
-        if (mysql_real_connect(dbfd->mysql, db_srvr, db_user, db_pwd, "storm_db", 0, NULL, 0) == dbfd->mysql) {
+        if (mysql_real_connect(dbfd->mysql, server.c_str(), user.c_str(), pw.c_str(), "storm_db", 0, NULL, 0) == dbfd->mysql) {
             srmlogit(STORM_LOG_DEBUG, func, "Connected to the DB.\n");
             return (0);
         }

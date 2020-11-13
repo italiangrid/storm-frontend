@@ -17,10 +17,11 @@
 #define STORM_MYSQL_HPP
 
 #include <mysql/mysql.h>
+#include <string>
 
 class srm_dbfd;
 
-int storm_opendb(char const*, char const*, char const*, srm_dbfd *);
+int storm_opendb(std::string const& server, std::string const& user, std::string const& pw, srm_dbfd *);
 void storm_closedb(srm_dbfd *dbfd);
 int storm_list_protocol(srm_dbfd*, char **protocol, int nbprot, int protlen);
 int storm_ping_connection(MYSQL *mysql);
