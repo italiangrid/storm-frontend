@@ -40,8 +40,6 @@ struct srm_dbfd {
 };
 
 struct srm_srv_thread_info {
-    bool              is_used;
-    bool              db_open_done;
     srm_dbfd  dbfd;
     const char*      request_id;
 };

@@ -18,6 +18,11 @@
 #include "srmlogit.h"
 #include <mysql/mysql.h>
 
+DBConnectionPool::DBConnectionPool(std::string const& server, std::string const& user, std::string const& pw)
+    : m_server(server), m_user(user), m_pw(pw)
+{
+} 
+
 DBConnectionPool::~DBConnectionPool()
 {
     for (Contexts::iterator it = m_thread_contexts.begin(), e = m_thread_contexts.end(); it != e; ++it) {
@@ -42,12 +47,10 @@ DBConnectionPool::getConnection()
         //   will have worked on the map in the meantime
         // of course the insertion needs to be done under the lock
         srm_srv_thread_info context{};
-        context.is_used = true;
-        context.db_open_done = true;
         context.request_id = NULL;
         context.dbfd.tr_started = 0;
         context.dbfd.mysql = mysql_init(NULL);
-        storm_opendb(db_srvr, db_user, db_pwd, &context.dbfd);
+        storm_opendb(m_server.c_str(), m_user.c_str(), m_pw.c_str(), &context.dbfd);
         Contexts::iterator new_it = m_thread_contexts.insert(it, std::make_pair(tid, context));
         return &new_it->second;
     }

@@ -590,7 +590,11 @@ int main(int argc, char** argv) {
 	}
 
 	// the size of mysql_connection pool and thread pool MUST be the same
-	mysql_connection_pool = new DBConnectionPool;
+	mysql_connection_pool = new DBConnectionPool(
+		configuration->getDBHost(),
+		configuration->getDBUser(),
+		configuration->getDBUserPassword()
+	);
 	storm::Monitoring* monitoring = initMonitoring();
 	// SIGINT (kill -2) to stop the frontend
 	signal(SIGINT, sigint_handler);

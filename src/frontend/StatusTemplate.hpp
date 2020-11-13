@@ -58,36 +58,19 @@ int processRequestStatus(struct soap* soap, const char* funcName,
         return SOAP_OK;
     }
 
-    if (!(thip->db_open_done)) { // Get DB connection
-        if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-        	try
-        	{
-        		*resp = statusRequest.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Cannot get a DB connection.");
-        	} catch(std::logic_error& exc)
-        	{
-        		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
-        		return(SOAP_FATAL_ERROR);
-        	}
-            return SOAP_OK;
-        }
-        thip->db_open_done = 1;
-    } else { // ping connection and reconnect if needed
-    	if (storm_ping_connection(thip->dbfd.mysql) != 0) {
-    		// check if reconnection succeeded
-    		if (storm_ping_connection(thip->dbfd.mysql) != 0) {
-    			try
-    			{
-    				*resp = statusRequest.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR,
-    						"Lost connection to the DB.");
-    			} catch(std::logic_error& exc)
-    			{
-    				srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
-    				return(SOAP_FATAL_ERROR);
-    			}
-				return SOAP_OK;
-			}
-		}
-    }
+    // ping connection (which would reconnect if needed)
+    if (storm_ping_connection(thip->dbfd.mysql) != 0) {
+    	try
+    	{
+    		*resp = statusRequest.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR,
+    				"Lost connection to the DB.");
+    	} catch(std::logic_error& exc)
+    	{
+    		srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. logic_error: %s\n" , exc.what());
+			return(SOAP_FATAL_ERROR);
+    	}
+		return SOAP_OK;
+	}
 
     try {
 

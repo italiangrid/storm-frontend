@@ -19,15 +19,21 @@
 #include "srm_server.h"
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <string>
 
 class DBConnectionPool {
 public:
+    DBConnectionPool(std::string const& server, std::string const& user, std::string const& pw);
     ~DBConnectionPool();
     srm_srv_thread_info* getConnection();
 
 private:
     typedef std::map<boost::thread::id, srm_srv_thread_info> Contexts;
-    
+
+private:
+    std::string m_server;
+    std::string m_user;
+    std::string m_pw;    
     Contexts m_thread_contexts;
     srm_srv_thread_info** mysql_connection_pool;
     boost::thread::id* id_map;
