@@ -304,8 +304,7 @@ int performSanityChecks() {
 	}
 
 	/**** Get list of supported protocols ****/
-	std::vector<std::string> supported_protocols = get_supported_protocols();
-	if (supported_protocols.empty()) {
+	if (ProtocolChecker::getInstance()->getProtocols().empty()) {
 		srmlogit(STORM_LOG_ERROR, __func__, "No supported protocols\n");
 		return 1;
 	}
@@ -538,16 +537,21 @@ int main(int argc, char** argv) {
 	initLogging();
 	logConfiguration();
 
-	if (performSanityChecks() != 0) {
-		return 1;
-	}
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"Initializing the ProtocolChecker instance\n");
-	std::vector<std::string> supported_protocols = get_supported_protocols();
+	std::vector<std::string> supported_protocols = get_supported_protocols(
+		configuration->getDBHost(),
+		configuration->getDBUser(),
+		configuration->getDBUserPassword()
+	);
 	ProtocolChecker::getInstance()->init(supported_protocols);
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"ProtocolChecker initialization completed\n");
 	ProtocolChecker::getInstance()->printProtocols();
+
+	if (performSanityChecks() != 0) {
+		return 1;
+	}
 
 	if (!configuration->requestedDebug()) { // fork and leave the daemon in background
 		int pid = fork();

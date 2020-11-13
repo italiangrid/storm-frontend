@@ -20,8 +20,12 @@
 #include "xmlrpc_decode.hpp"
 #include "xmlrpc_encode.hpp"
 #include "frontend_version.h"
+#include "ProtocolChecker.hpp"
+
 #include <xmlrpc-c/util.h>
 #include "xmlrpc_client.hpp"
+
+#include <cassert>
 
 struct RPC_ResponseHandlerInput_ReleaseFiles {
     struct soap *soap;
@@ -980,7 +984,6 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
                                  struct ns1__srmGetTransferProtocolsRequest *,
                                  struct ns1__srmGetTransferProtocolsResponse_ *rep)
 {
-    static const char *func = "GetTransferProtocols";
     struct ns1__srmGetTransferProtocolsResponse *repp;
     struct ns1__TSupportedTransferProtocol **protocolArray;
 
@@ -992,14 +995,9 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
 
     rep->srmGetTransferProtocolsResponse = repp;
 
-    std::vector<std::string> const supported_protocols = get_supported_protocols();
+    std::vector<std::string> const& supported_protocols = ProtocolChecker::getInstance()->getProtocols();
 
-    if (supported_protocols.empty()) {
-        srmlogit (STORM_LOG_ERROR, func, "get_supported_protocols does not return any protocol");
-        repp->returnStatus->statusCode = SRM_USCOREFAILURE;
-        repp->returnStatus->explanation = const_cast<char*>("Error: list of supported protocols not found");
-        return(SOAP_OK);
-    }
+    assert(!supported_protocols.empty());
 
     /* Allocate the response structure for the list of protocols */
     repp->protocolInfo = static_cast<ns1__ArrayOfTSupportedTransferProtocol*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTSupportedTransferProtocol)));

@@ -22,13 +22,13 @@
 #include "storm_mysql.hpp"
 #include <openssl/pem.h>
 
-std::vector<std::string> get_supported_protocols()
+std::vector<std::string> get_supported_protocols(std::string const& server, std::string const& user, std::string const& pw)
 {
     typedef std::vector<std::string> Protocols;
     Protocols result;
 
     srm_dbfd dbfd{};
-    if (storm_opendb(db_srvr, db_user, db_pwd, &dbfd) < 0) {
+    if (storm_opendb(server.c_str(), user.c_str(), pw.c_str(), &dbfd) < 0) {
         // log
         return result;
         // exception?

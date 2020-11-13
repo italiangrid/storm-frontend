@@ -45,6 +45,8 @@ public:
 	 * */
 	void printProtocols() const;
 
+	std::vector<std::string> const& getProtocols() const { return protocolVector; }
+
 private:
 	ProtocolChecker()	{}
 

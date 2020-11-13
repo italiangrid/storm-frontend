@@ -26,7 +26,7 @@ typedef long long storm_size_t;
 typedef long storm_id_t;
 
 /* Prototype definitions */
-std::vector<std::string> get_supported_protocols();
+std::vector<std::string> get_supported_protocols(std::string const& server, std::string const& user, std::string const& pw);
 char const* reconvertStatusCode(int  code);
 int convertStatusCode(char*  code);
 int convertPermission(char *mode);
