@@ -21,7 +21,7 @@
 
 #include "srmlogit.h"
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>

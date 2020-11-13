@@ -13,26 +13,19 @@
  * limitations under the License.
 */
 
-#ifndef _STORM_UTIL_H
-#define _STORM_UTIL_H
+#ifndef STORM_UTIL_HPP
+#define STORM_UTIL_HPP
 
-#include <openssl/x509.h>
 #include <vector>
 #include <string>
 
 /* Type definitions */
 typedef time_t storm_time_t;
 typedef long long storm_size_t;
-typedef long storm_id_t;
 
 /* Prototype definitions */
 std::vector<std::string> get_supported_protocols(std::string const& server, std::string const& user, std::string const& pw);
 char const* reconvertStatusCode(int  code);
-int convertStatusCode(char*  code);
-int convertPermission(char *mode);
-int convertFileStorageType(char *fstype);
-int convertFileType(char* ftype);
-int convertSpaceType(char *stype);
-STACK_OF(X509) *load_chain(const char *certfile);
+int convertStatusCode(char const*  code);
 
 #endif

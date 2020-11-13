@@ -14,7 +14,7 @@
 */
 
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srm_server.h"
 #include <string.h>
 #include <stdlib.h>
@@ -72,64 +72,8 @@ std::vector<std::string> get_supported_protocols(std::string const& server, std:
     return result;
 }
 
-int convertPermission(char *mode) {
-    if (strcmp("None", mode) == 0)
-        return NONE;
-    if (strcmp("X", mode) == 0)
-        return X;
-    if (strcmp("W", mode) == 0)
-        return W;
-    if (strcmp("R", mode) == 0)
-        return R;
-    if (strcmp("RX", mode) == 0)
-        return RX;
-    if (strcmp("RW", mode) == 0)
-        return RW;
-    if (strcmp("RWX", mode) == 0)
-        return RWX;
-    return (NONE);
-}
-
-/** Converts the file storage type */
-int convertFileStorageType(char *fstype) {
-    if (strcmp("Volatile_", fstype) == 0)
-        return VOLATILE;
-    if (strcmp("Durable_", fstype) == 0)
-        return DURABLE;
-    if (strcmp("Permanent_", fstype) == 0)
-        return PERMANENT;
-    if (strcmp("Unknown.", fstype) == 0)
-        return -1;
-    return -1;
-}
-
-int convertFileType(char* ftype) {
-    if (strcmp("File", ftype) == 0)
-        return FILE_;
-    if (strcmp("Directory", ftype) == 0)
-        return DIRECTORY;
-    if (strcmp("Link", ftype) == 0)
-        return LINK;
-    if (strcmp("Unknown.", ftype) == 0)
-        return -1;
-    return -1;
-}
-
-/** Converts the file storage type */
-int convertSpaceType(char *stype) {
-    if (strcmp("Volatile", stype) == 0)
-        return VOLATILE;
-    if (strcmp("Durable", stype) == 0)
-        return DURABLE;
-    if (strcmp("Permanent", stype) == 0)
-        return PERMANENT;
-    if (strcmp("Unknown.", stype) == 0)
-        return -1;
-    return -1;
-}
-
 /* Converts the status code from char* format into a SRM status code */
-int convertStatusCode(char* code) {
+int convertStatusCode(char const* code) {
     if (strcmp("SRM_SUCCESS", code) == 0)
         return SRM_USCORESUCCESS; // 0
     else if (strcmp("SRM_FAILURE", code) == 0)
@@ -274,55 +218,4 @@ char const* reconvertStatusCode(int code) {
 		srmlogit(STORM_LOG_WARNING, "reconvertStatusCode", "Received an unknown status code: %d\n", code);
 		return "UNKNOWN";
 	}
-}
-
-/*** Get chain ***/
-STACK_OF(X509)* load_chain(const char *certfile)
-{
-    STACK_OF(X509_INFO) *sk=NULL;
-    STACK_OF(X509) *stack=NULL, *ret=NULL;
-    BIO *in=NULL;
-    X509_INFO *xi;
-    int first = 1;
-
-    if (!(stack = sk_X509_new_null())) {
-        printf("memory allocation failure\n");
-        goto end;
-    }
-
-    if (!(in=BIO_new_file(certfile, "r"))) {
-        printf("error opening the file, %s\n",certfile);
-        goto end;
-    }
-
-    /* This loads from a file, a stack of x509/crl/pkey sets */
-    if (!(sk=PEM_X509_INFO_read_bio(in,NULL,NULL,NULL))) {
-        printf("error reading the file, %s\n",certfile);
-        goto end;
-    }
-
-    /* scan over it and pull out the certs */
-    while (sk_X509_INFO_num(sk)) {
-        /* skip first cert */
-        if (first) {
-            first = 0;
-            continue;
-        }
-        xi=sk_X509_INFO_shift(sk);
-        if (xi->x509 != NULL) {
-            sk_X509_push(stack,xi->x509);
-            xi->x509=NULL;
-        }
-        X509_INFO_free(xi);
-    }
-    if (!sk_X509_num(stack)) {
-        printf("no certificates in file, %s\n",certfile);
-        sk_X509_free(stack);
-        goto end;
-    }
-    ret = stack;
-    end:
-    BIO_free(in);
-    sk_X509_INFO_free(sk);
-    return(ret);
 }

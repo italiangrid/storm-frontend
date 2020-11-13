@@ -27,7 +27,7 @@
 #include "ThreadPool.hpp"
 #include <sstream>
 #include "srmlogit.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "request_id.hpp"
 
 extern int jid;

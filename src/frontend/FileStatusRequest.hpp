@@ -17,7 +17,7 @@
 #define FILE_STATUS_REQUEST_HPP
 
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srm_server.h"
 #include "srmlogit.h"
 #include "HttpPostClient.h"

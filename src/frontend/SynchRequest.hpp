@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <set>
 
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "soap_util.hpp"
 #include "synch.hpp"
 #include "Credentials.hpp"

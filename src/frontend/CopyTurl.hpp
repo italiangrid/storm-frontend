@@ -18,7 +18,7 @@
 
 
 #include "Turl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 

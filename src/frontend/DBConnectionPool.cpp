@@ -50,7 +50,7 @@ DBConnectionPool::getConnection()
         context.request_id = NULL;
         context.dbfd.tr_started = 0;
         context.dbfd.mysql = mysql_init(NULL);
-        storm_opendb(m_server.c_str(), m_user.c_str(), m_pw.c_str(), &context.dbfd);
+        storm_opendb(m_server, m_user, m_pw, &context.dbfd);
         Contexts::iterator new_it = m_thread_contexts.insert(it, std::make_pair(tid, context));
         return &new_it->second;
     }

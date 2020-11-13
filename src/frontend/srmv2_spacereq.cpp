@@ -15,7 +15,7 @@
 
 #include "srm_server.h"
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srmlogit.h"
 #include "xmlrpc_encode.hpp"
 #include "xmlrpc_decode.hpp"

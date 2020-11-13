@@ -31,7 +31,7 @@ extern "C" {
 
 #include "storm_exception.hpp"
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srm_server.h"
 
 #include "soap_util.hpp"

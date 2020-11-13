@@ -20,7 +20,7 @@
 
 #include "srmv2H.h"
 #include "Surl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 class PtpSurl : public Surl  {

@@ -34,7 +34,7 @@
 
 #include <vector>
 #include <sstream>
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "ProtocolChecker.hpp"
 #include "storm_exception.hpp"
 
