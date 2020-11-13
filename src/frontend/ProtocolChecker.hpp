@@ -32,18 +32,18 @@ public:
 	 * Return 0 if all protocols are valid
 	 * Return 1 if at least 1 protocol is not valid
 	 */
-	int checkProtocols(std::vector<sql_string> const & protocolVector);
+	int checkProtocols(std::vector<sql_string> const & protocolVector) const;
 	/*
 	 *
 	 * Returns a new array containing the protocols from the provided array that are supported
 	 * The returned array respects the order of the provided one
 	 */
-	std::vector<sql_string> removeUnsupportedProtocols(std::vector<sql_string> const& protocolVector);
+	std::vector<sql_string> removeUnsupportedProtocols(std::vector<sql_string> const& protocolVector) const;
 	
 	/*
 	 * Prints the supported protocols
 	 * */
-	void printProtocols();
+	void printProtocols() const;
 
 private:
 	ProtocolChecker()	{}

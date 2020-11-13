@@ -38,7 +38,7 @@ void ProtocolChecker::init(std::vector<std::string> const& protocols) {
 	srmlogit(STORM_LOG_DEBUG, func, "ProtocolChecker initialization completed\n");
 }
 
-int ProtocolChecker::checkProtocols(std::vector<sql_string> const & protocolVector)
+int ProtocolChecker::checkProtocols(std::vector<sql_string> const & protocolVector) const
 {
 	const char* func = "ProtocolChecker::checkProtocols<>";
 	srmlogit(STORM_LOG_DEBUG, func, "Checking the provided protocols against supported ones\n");
@@ -62,7 +62,7 @@ int ProtocolChecker::checkProtocols(std::vector<sql_string> const & protocolVect
 	return 0;
 }
 
-std::vector<sql_string> ProtocolChecker::removeUnsupportedProtocols(std::vector<sql_string> const & protocolVector)
+std::vector<sql_string> ProtocolChecker::removeUnsupportedProtocols(std::vector<sql_string> const & protocolVector) const
 {
 	const char* func = "ProtocolChecker::removeUnsupportedProtocols<>";
 	srmlogit(STORM_LOG_DEBUG, func, "Removing unsupported protocols from the provided list\n");
@@ -89,14 +89,14 @@ std::vector<sql_string> ProtocolChecker::removeUnsupportedProtocols(std::vector<
 }
 
 
-void ProtocolChecker::printProtocols()
+void ProtocolChecker::printProtocols() const
 {
 	const char* func = "ProtocolChecker::printProtocols<>";
 	srmlogit(STORM_LOG_DEBUG, func, "Listying suported protocols\n");
 	if(!(this->protocolVector.empty()))
 	{
 		bool read = false;
-		for (std::vector<std::string>::iterator it = this->protocolVector.begin(); it
+		for (std::vector<std::string>::const_iterator it = this->protocolVector.begin(); it
 					!= this->protocolVector.end(); ++it)
 		{
 			read = true;
