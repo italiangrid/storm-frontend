@@ -24,7 +24,7 @@ public:
 	 * Initialize the object with the list (and its size) of the supported protocols
 	 * 
 	 * */
-	void init(std::vector<std::string> const& protocolList);
+	void init(std::vector<std::string> const& protocols);
 	
 	/*
 	 * 
@@ -32,20 +32,20 @@ public:
 	 * Return 0 if all protocols are valid
 	 * Return 1 if at least 1 protocol is not valid
 	 */
-	int checkProtocols(std::vector<sql_string> const & protocolVector) const;
+	int checkProtocols(std::vector<sql_string> const & protocols) const;
 	/*
 	 *
 	 * Returns a new array containing the protocols from the provided array that are supported
 	 * The returned array respects the order of the provided one
 	 */
-	std::vector<sql_string> removeUnsupportedProtocols(std::vector<sql_string> const& protocolVector) const;
+	std::vector<sql_string> removeUnsupportedProtocols(std::vector<sql_string> const& protocols) const;
 	
 	/*
 	 * Prints the supported protocols
 	 * */
 	void printProtocols() const;
 
-	std::vector<std::string> const& getProtocols() const { return protocolVector; }
+	std::vector<std::string> const& getProtocols() const { return m_protocols; }
 
 private:
 	ProtocolChecker()	{}
@@ -53,7 +53,7 @@ private:
 	/*
 	 * An array of supported protocols
 	 * */
-	std::vector<std::string> protocolVector;
+	std::vector<std::string> m_protocols;
 	
 	/*
 	 * Singleton instance
