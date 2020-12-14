@@ -34,32 +34,23 @@ using namespace std;
 int storm_opendb(std::string const& server, std::string const& user, std::string const& pw, srm_dbfd *dbfd)
 {
     static const char *func = "storm_opendb";
-    int ntries;
 
     if (dbfd->mysql == NULL) {
         dbfd->mysql = mysql_init(NULL);
     }
 
-    // Set auto-reconnect option to TRUE
-    my_bool reconnect = 1;
+    my_bool const reconnect = 1;
     mysql_options(dbfd->mysql, MYSQL_OPT_RECONNECT, &reconnect);
+    unsigned int const connect_timeout = MAXRETRY * RETRYI;
+    mysql_options(dbfd->mysql, MYSQL_OPT_CONNECT_TIMEOUT, &connect_timeout);
 
-    ntries = 0;
-    while (1) {
-        if (mysql_real_connect(dbfd->mysql, server.c_str(), user.c_str(), pw.c_str(), "storm_db", 0, NULL, 0) == dbfd->mysql) {
-            srmlogit(STORM_LOG_DEBUG, func, "Connected to the DB.\n");
-            return (0);
-        }
-
-        if (ntries++ >= MAXRETRY) {
-        	break;
-        }
-
-        srmlogit(STORM_LOG_ERROR, func, "Failed to get a DB connection, trying again in %d seconds. Error: %s\n", RETRYI, mysql_error(dbfd->mysql));
-        sleep(RETRYI);
+    if (mysql_real_connect(dbfd->mysql, server.c_str(), user.c_str(), pw.c_str(), "storm_db", 0, NULL, 0) == dbfd->mysql) {
+        srmlogit(STORM_LOG_DEBUG, func, "Connected to the DB.\n");
+        return 0;
+    } else {
+        srmlogit (STORM_LOG_ERROR, func, "Cannot connect to the DB.\n");
+        return -1;
     }
-    srmlogit (STORM_LOG_ERROR, func, "Cannot connect to the DB.\n");
-    return (-1);
 }
 
 void storm_closedb(srm_dbfd *dbfd)
