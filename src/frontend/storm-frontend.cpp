@@ -58,25 +58,17 @@ using namespace std;
 
 static bool stay_running = true;
 
-char *db_pwd;
-char *db_srvr;
-char *db_user;
-
 char* xmlrpc_endpoint;
 char* wsdl_file;
-char** supported_protocols;
-
-int nb_supported_protocols;
 
 DBConnectionPool* mysql_connection_pool;
-
-uid_t proxy_uid = 0;
-gid_t proxy_gid = 0;
 
 static const char* STORM_GLOBUS_THREADING_MODEL = "pthread";
 
 static int gsoap_send_timeout = 10;
 static int gsoap_recv_timeout = 10;
+
+int const SYERR = 2; // system error
 
 void sigint_handler(int /* sig */) {
 	srmlogit(STORM_LOG_INFO, __func__,
@@ -189,9 +181,6 @@ int loadConfiguration(int argc, char** argv) {
 
 void fillGlobalVars() {
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
-	db_user = strdup(configuration->getDBUser().c_str());
-	db_pwd = strdup(configuration->getDBUserPassword().c_str());
-	db_srvr = strdup(configuration->getDBHost().c_str());
 	wsdl_file = strdup(configuration->getWSDLFilePath().c_str());
 	xmlrpc_endpoint = strdup(configuration->getXMLRPCEndpoint().c_str());
 	gsoap_send_timeout = configuration->getGsoapSendTimeout();

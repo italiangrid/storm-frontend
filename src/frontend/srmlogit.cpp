@@ -40,6 +40,8 @@ static FILE *audit_fd = NULL;
 static int loglevel = STORM_LOG_ERROR;
 static bool m_auditEnabled;
 
+int const LOGBUFSZ = 1024;
+
 /**
  * This function init the log file. At this moment, open the file in
  * append mode and set the global (to the srmlogit.c file) variable.

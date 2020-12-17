@@ -41,7 +41,7 @@ int storm_opendb(std::string const& server, std::string const& user, std::string
 
     my_bool const reconnect = 1;
     mysql_options(dbfd->mysql, MYSQL_OPT_RECONNECT, &reconnect);
-    unsigned int const connect_timeout = MAXRETRY * RETRYI;
+    unsigned int const connect_timeout = 10; // seconds
     mysql_options(dbfd->mysql, MYSQL_OPT_CONNECT_TIMEOUT, &connect_timeout);
 
     if (mysql_real_connect(dbfd->mysql, server.c_str(), user.c_str(), pw.c_str(), "storm_db", 0, NULL, 0) == dbfd->mysql) {
