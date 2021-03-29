@@ -76,6 +76,12 @@ void sigint_handler(int /* sig */) {
 	stay_running = false;
 }
 
+void sigterm_handler(int /* sig */) {
+	srmlogit(STORM_LOG_INFO, __func__,
+			"Signal SIGTERM received: shutting down...\n");
+	stay_running = false;
+}
+
 static int http_get(struct soap *soap) {
 
 	int fd = open(wsdl_file, O_RDONLY | O_NONBLOCK);
@@ -589,8 +595,9 @@ int main(int argc, char** argv) {
 		configuration->getDBUserPassword()
 	);
 	storm::Monitoring* monitoring = initMonitoring();
-	// SIGINT (kill -2) to stop the frontend
+
 	signal(SIGINT, sigint_handler);
+	signal(SIGTERM, sigterm_handler);
 
 	srmlogit(STORM_LOG_NONE, __func__,
 			"StoRM frontend successfully started...\n");
