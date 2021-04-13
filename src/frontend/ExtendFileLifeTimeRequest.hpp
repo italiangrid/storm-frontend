@@ -23,12 +23,10 @@ namespace storm {
 
 class ExtendFileLifeTimeRequest: public SynchRequest<ns1__srmExtendFileLifeTimeRequest, ns1__srmExtendFileLifeTimeResponse,ns1__srmExtendFileLifeTimeResponse_> {
 public:
-	ExtendFileLifeTimeRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeRequest* request) throw (invalid_request) :
+	ExtendFileLifeTimeRequest(struct soap* soapRequest, struct ns1__srmExtendFileLifeTimeRequest* request) :
 		SynchRequest<ns1__srmExtendFileLifeTimeRequest, ns1__srmExtendFileLifeTimeResponse, ns1__srmExtendFileLifeTimeResponse_> (soapRequest, request) {
 		this->load(request);
     }
-
-	virtual ~ExtendFileLifeTimeRequest() {}
 
 	int performXmlRpcCall(ns1__srmExtendFileLifeTimeResponse_* response);
 
@@ -41,7 +39,7 @@ public:
 		return !m_requestToken.empty();
 	}
 
-	std::string getRequestToken() throw (std::logic_error)
+	std::string getRequestToken()
 	{
 		if(!hasRequestToken())
 		{

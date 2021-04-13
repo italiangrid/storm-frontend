@@ -39,7 +39,7 @@ public:
 
 	virtual ~Turl(){};
 
-	sql_string getTurl() throw (std::logic_error)
+	sql_string getTurl()
 	{
 		if(isEmpty())
 		{

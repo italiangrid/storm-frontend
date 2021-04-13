@@ -18,7 +18,7 @@
 
 
 #include "Turl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 
@@ -39,8 +39,6 @@ public:
 	PtgTurl(Surl surl):
 	  Turl(surl), m_fileSize(-1), m_expectedFileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
-
-	~PtgTurl(){}
 
 	storm_size_t getFileSize()
 	{
@@ -74,7 +72,7 @@ public:
 		return m_estimatedWaitTime != -1;
 	}
 
-	storm_time_t getEstimatedWaitTime() throw (std::logic_error)
+	storm_time_t getEstimatedWaitTime()
 	{
 		if(!this->hasEstimatedWaitTime())
 		{
@@ -93,7 +91,7 @@ public:
 		return m_remainingPinLifetime != -1;
 	}
 
-	storm_time_t getRemainingPinLifetime() throw (std::logic_error)
+	storm_time_t getRemainingPinLifetime()
 	{
 		if(!this->hasRemainingPinLifetime())
 		{

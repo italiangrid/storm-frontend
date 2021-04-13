@@ -23,12 +23,10 @@ namespace storm {
 
 class GetSpaceTokensRequest: public SynchRequest<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse,ns1__srmGetSpaceTokensResponse_> {
 public:
-	GetSpaceTokensRequest(struct soap* soapRequest, struct ns1__srmGetSpaceTokensRequest* request) throw (invalid_request) :
+	GetSpaceTokensRequest(struct soap* soapRequest, struct ns1__srmGetSpaceTokensRequest* request) :
 		SynchRequest<ns1__srmGetSpaceTokensRequest, ns1__srmGetSpaceTokensResponse, ns1__srmGetSpaceTokensResponse_> (soapRequest, request) {
 		this->load(request);
     }
-
-	virtual ~GetSpaceTokensRequest() {}
 
 	int performXmlRpcCall(ns1__srmGetSpaceTokensResponse_* response);
 

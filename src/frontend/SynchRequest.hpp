@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <set>
 
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "soap_util.hpp"
 #include "synch.hpp"
 #include "Credentials.hpp"
@@ -179,7 +179,7 @@ protected:
     }
 
 private:
-    void loadCommonFields(soap_in_t* request) throw (invalid_request) {
+    void loadCommonFields(soap_in_t* request){
         if (request == NULL) {
             throw invalid_request("Received NULL request parameter");
         }

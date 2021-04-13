@@ -13,44 +13,22 @@
  * limitations under the License.
 */
 
-#ifndef CREDENTIALS_HPP_
-#define CREDENTIALS_HPP_
+#ifndef STORM_MYSQL_HPP
+#define STORM_MYSQL_HPP
 
-#include "srmv2H.h"
-
+#include <mysql/mysql.h>
 #include <string>
-#include <vector>
 
-#include "mysql_query.hpp"
-#include "sql_string.hpp"
+class srm_dbfd;
 
-namespace storm {
+int storm_opendb(std::string const& server, std::string const& user, std::string const& pw, srm_dbfd *);
+void storm_closedb(srm_dbfd *dbfd);
+int storm_list_protocol(srm_dbfd*, char **protocol, int nbprot, int protlen);
+int storm_ping_connection(MYSQL *mysql);
+int storm_start_tr(int, srm_dbfd *);
+int storm_end_tr(srm_dbfd *);
+void storm_abort_tr(srm_dbfd *);
+void set_savepoint(srm_dbfd *, const char *);
+void rollback_to_savepoint(srm_dbfd *, const char *);
 
-class Credentials {
-public:
-	Credentials(struct soap *soap) ;
-
-	void setDN(std::string dn) {
-		_clientDN = dn;
-	}
-
-	std::string getDN() {
-		return _clientDN;
-	}
-
-	std::vector<sql_string> getFQANsVector() {
-		return _fqans_vector;
-	}
-
-	sql_string getFQANsOneString();
-
-private:
-	struct soap *_soap;
-	std::string _clientDN;
-	std::vector<sql_string> _fqans_vector;
-	
-};
-
-}
-
-#endif /*CREDENTIALS_HPP_*/
+#endif

@@ -21,13 +21,13 @@
 const std::string storm::CopyStatusRequest::NAME = "Copy Status";
 const std::string storm::CopyStatusRequest::MONITOR_NAME = storm::SRM_COPY_MONITOR_NAME;
 
-void storm::CopyStatusRequest::load(ns1__srmStatusOfCopyRequestRequest* req)
+void storm::CopyStatusRequest::load(ns1__srmStatusOfCopyRequestRequest*)
 {
     srmlogit(STORM_LOG_DEBUG, "storm::CopyStatusRequest::load", "empty cause srmStatusOfCopy is not supported");
 
 }
 
-void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd* db){
+void storm::CopyStatusRequest::loadFromDB(struct srm_dbfd*){
 
     srmlogit(STORM_LOG_DEBUG, "storm::CopyStatusRequest::loadFromDB", "empty cause srmStatusOfCopy is not supported");
 
@@ -47,7 +47,7 @@ ns1__srmStatusOfCopyRequestResponse* storm::CopyStatusRequest::buildResponse()
 	}
 
 	m_builtResponse->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
-	m_builtResponse->returnStatus->explanation = "srmStatusCopy operation is not supported";
+	m_builtResponse->returnStatus->explanation = const_cast<char*>("srmStatusCopy operation is not supported");
 
     return m_builtResponse;
 }

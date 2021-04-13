@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~ChangeSpaceForFilesRequest() {}
-
 	int performXmlRpcCall(ns1__srmChangeSpaceForFilesResponse_* response);
 
     void load(ns1__srmChangeSpaceForFilesRequest* req);

@@ -13,44 +13,19 @@
  * limitations under the License.
 */
 
-#ifndef CREDENTIALS_HPP_
-#define CREDENTIALS_HPP_
+#ifndef STORM_UTIL_HPP
+#define STORM_UTIL_HPP
 
-#include "srmv2H.h"
-
-#include <string>
 #include <vector>
+#include <string>
 
-#include "mysql_query.hpp"
-#include "sql_string.hpp"
+/* Type definitions */
+typedef time_t storm_time_t;
+typedef long long storm_size_t;
 
-namespace storm {
+/* Prototype definitions */
+std::vector<std::string> get_supported_protocols(std::string const& server, std::string const& user, std::string const& pw);
+char const* reconvertStatusCode(int  code);
+int convertStatusCode(char const*  code);
 
-class Credentials {
-public:
-	Credentials(struct soap *soap) ;
-
-	void setDN(std::string dn) {
-		_clientDN = dn;
-	}
-
-	std::string getDN() {
-		return _clientDN;
-	}
-
-	std::vector<sql_string> getFQANsVector() {
-		return _fqans_vector;
-	}
-
-	sql_string getFQANsOneString();
-
-private:
-	struct soap *_soap;
-	std::string _clientDN;
-	std::vector<sql_string> _fqans_vector;
-	
-};
-
-}
-
-#endif /*CREDENTIALS_HPP_*/
+#endif

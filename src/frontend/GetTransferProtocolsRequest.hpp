@@ -23,12 +23,10 @@ namespace storm {
 
 class GetTransferProtocolsRequest: public SynchRequest<ns1__srmGetTransferProtocolsRequest, ns1__srmGetTransferProtocolsResponse,ns1__srmGetTransferProtocolsResponse_> {
 public:
-	GetTransferProtocolsRequest(struct soap* soapRequest, struct ns1__srmGetTransferProtocolsRequest* request) throw (invalid_request) :
+	GetTransferProtocolsRequest(struct soap* soapRequest, struct ns1__srmGetTransferProtocolsRequest* request) :
 		SynchRequest<ns1__srmGetTransferProtocolsRequest, ns1__srmGetTransferProtocolsResponse, ns1__srmGetTransferProtocolsResponse_> (soapRequest, request) {
 		this->load(request);
     }
-
-	virtual ~GetTransferProtocolsRequest() {}
 
 	int performXmlRpcCall(ns1__srmGetTransferProtocolsResponse_* response);
 

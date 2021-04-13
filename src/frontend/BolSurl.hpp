@@ -22,11 +22,9 @@ namespace storm {
 class BolSurl : public PtgSurl {
 public:
 	BolSurl(std::string surl, ns1__TDirOption* dirOption):
-			PtgSurl(surl, dirOption), m_fileSize(-1), m_estimatedWaitTime(-1),
-			m_remainingPinTime(-1) {
+			PtgSurl(surl, dirOption), m_fileSize(-1), m_remainingPinTime(-1),
+			m_estimatedWaitTime(-1) {
 	}
-
-	~BolSurl(){}
 
 	unsigned long getFileSize()
 	{

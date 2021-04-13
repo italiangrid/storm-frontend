@@ -23,12 +23,10 @@ namespace storm {
 
 class GetSpaceMetaDataRequest: public SynchRequest<ns1__srmGetSpaceMetaDataRequest, ns1__srmGetSpaceMetaDataResponse,ns1__srmGetSpaceMetaDataResponse_> {
 public:
-	GetSpaceMetaDataRequest(struct soap* soapRequest, struct ns1__srmGetSpaceMetaDataRequest* request) throw (invalid_request) :
+	GetSpaceMetaDataRequest(struct soap* soapRequest, struct ns1__srmGetSpaceMetaDataRequest* request) :
 		SynchRequest<ns1__srmGetSpaceMetaDataRequest, ns1__srmGetSpaceMetaDataResponse, ns1__srmGetSpaceMetaDataResponse_> (soapRequest, request) {
 		this->load(request);
     }
-
-	virtual ~GetSpaceMetaDataRequest() {}
 
 	int performXmlRpcCall(ns1__srmGetSpaceMetaDataResponse_* response);
 

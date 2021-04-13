@@ -60,19 +60,19 @@
 
 
 /* Prototype definitions */
-int encode_lifetimeValue(const char *callerName, xmlrpc_env *env_addr, int *lifetimeVal, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_arrayOfString(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfString *arrayOfString, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_arrayOfUnsignedLong(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfUnsignedLong *arrayOfUnsignedLong, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64Val, char *fieldName, xmlrpc_value *xmlStruct);
+int encode_lifetimeValue(const char *callerName, xmlrpc_env *env_addr, int *lifetimeVal, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_arrayOfString(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfString *arrayOfString, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_arrayOfUnsignedLong(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfUnsignedLong *arrayOfUnsignedLong, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64Val, char const* fieldName, xmlrpc_value *xmlStruct);
 int encode_retentionPolicyInfo(const char *callerName, xmlrpc_env *env_addr, struct ns1__TRetentionPolicyInfo *retentionPolicyInfo, xmlrpc_value *xmlStruct);
 int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_addr, char *spaceToken, xmlrpc_value *xmlStruct);
 int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char *autohID, xmlrpc_value *xmlStruct);
-int encode_ArrayOfAnyURI(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfAnyURI *arrayOfSURLs, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_ArrayOfTExtraInfo(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfTExtraInfo *extraInfo, char *fieldName, xmlrpc_value *xmlStruct);
+int encode_ArrayOfAnyURI(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfAnyURI *arrayOfSURLs, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_ArrayOfTExtraInfo(const char *callerName, xmlrpc_env *env_addr, struct ns1__ArrayOfTExtraInfo *extraInfo, char const* fieldName, xmlrpc_value *xmlStruct);
 //int encode_TExtraInfo(const char *callerName, xmlrpc_env *env_addr, xmlrpc_value* infoArray, char* key, char* value);
-int encode_string(const char *callerName, xmlrpc_env *env_addr, char *anyURI, char* fieldName, xmlrpc_value *xmlStruct);
-int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char *fieldName, xmlrpc_value *xmlStruct);
-int encode_TTransferParameters(const char *callerName, xmlrpc_env *env_addr, struct ns1__TTransferParameters *transferParameters, char *fieldName, xmlrpc_value *xmlStruct);
+int encode_string(const char *callerName, xmlrpc_env *env_addr, char *anyURI, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char const* fieldName, xmlrpc_value *xmlStruct);
+int encode_TTransferParameters(const char *callerName, xmlrpc_env *env_addr, struct ns1__TTransferParameters *transferParameters, char const* fieldName, xmlrpc_value *xmlStruct);
 
 int call_FrontendConfiguration_getXMLRPCCheckAscii(); 

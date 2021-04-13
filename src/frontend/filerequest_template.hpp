@@ -27,14 +27,14 @@
 #include "Credentials.hpp"
 
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 #include "sql_string.hpp"
 
 #include "get_socket_info.hpp"
 
 #include <vector>
 #include <sstream>
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "ProtocolChecker.hpp"
 #include "storm_exception.hpp"
 
@@ -42,7 +42,7 @@ using namespace std;
 
 template<typename soap_in_t, typename soap_out_t>
 int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soap_out_t>& request,
-        const char* funcName, soap_in_t *req, soap_out_t **resp)
+        const char* funcName, soap_in_t * /* req */, soap_out_t **resp)
 {
     static const char* func = "__process_file_request<>";
 
@@ -63,6 +63,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 
     // Generate the request token (unique identifier)
     uuid_t uuid;
+	const int ST_MAXDPMTOKENLEN = 36;
     char r_token[ST_MAXDPMTOKENLEN + 1];
     uuid_generate(uuid);
     uuid_unparse(uuid, r_token);
@@ -72,32 +73,16 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 
     srmlogit(STORM_LOG_DEBUG, func, "Request token: %s\n", request.getRequestToken().c_str());
 
-    // Connect to the DB, if needed.
-    if (!(thip->db_open_done)) { // Get DB connection
-        if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-        	try {
-        		*resp = request.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR, "Cannot get a DB connection.");
-			} catch(storm::storm_error& exc) {
-				srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
-				return(SOAP_FATAL_ERROR);
-			}
-            return SOAP_OK;
-        }
-        thip->db_open_done = 1;
-    } else { // ping connection and reconnect if needed
-		if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
-			// check if reconnection succeeded
-			if (storm_ping_connection(&thip->dbfd.mysql) != 0) {
-				try {
-					*resp = request.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR,
-							"Lost connection to the DB.");
-				} catch(storm::storm_error& exc) {
-					srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
-					return(SOAP_FATAL_ERROR);
-				}
-				return SOAP_OK;
-			}
+    // ping connection (which would reconnect if needed)
+	if (storm_ping_connection(thip->dbfd.mysql) != 0) {
+		try {
+			*resp = request.buildSpecificResponse(SRM_USCOREINTERNAL_USCOREERROR,
+					"Lost connection to the DB.");
+		} catch(storm::storm_error& exc) {
+			srmlogit(STORM_LOG_ERROR, funcName, "Unable to build soap response. InvalidResponse: %s\n" , exc.what());
+			return(SOAP_FATAL_ERROR);
 		}
+		return SOAP_OK;
 	}
 
     try {
@@ -115,7 +100,7 @@ int __process_file_request(struct soap *soap, storm::file_request<soap_in_t, soa
 				srmlogit(STORM_LOG_ERROR, funcName, "Unexpected exception in request.getRequestedProtocols() call. logic_error: %s\n" , e.what());
 				return(SOAP_FATAL_ERROR);
 			}
-			if(ProtocolChecker::getInstance()->ProtocolChecker::checkProtocols(protocols) != 0)
+			if(ProtocolChecker::getInstance()->checkProtocols(protocols) != 0)
 			{
 				srmlogit(STORM_LOG_INFO, func, "Protocol check failed, received some unsupported protocols\n");
 				std::vector<sql_string> newProtocolVector = ProtocolChecker::getInstance()->removeUnsupportedProtocols(request.getRequestedProtocols());

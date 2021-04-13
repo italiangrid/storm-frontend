@@ -17,7 +17,7 @@
 #include "srmlogit.h"
 
 int ns1__srmSetPermission_impl(struct soap *soap,
-                          struct ns1__srmSetPermissionRequest *req,
+                          struct ns1__srmSetPermissionRequest *,
                           struct ns1__srmSetPermissionResponse_ *rep)
 {
     struct ns1__srmSetPermissionResponse *repp;
@@ -28,7 +28,7 @@ int ns1__srmSetPermission_impl(struct soap *soap,
     repp->returnStatus = static_cast<ns1__TReturnStatus*>(soap_malloc(soap, sizeof(ns1__TReturnStatus)));
     if (repp->returnStatus == NULL) return SOAP_EOM;
 
-    repp->returnStatus->explanation = "Not supported";
+    repp->returnStatus->explanation = const_cast<char*>("Not supported");
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
     /* Assign the repp response structure to the output parameter rep */
@@ -38,7 +38,7 @@ int ns1__srmSetPermission_impl(struct soap *soap,
 }
 
 int ns1__srmCheckPermission_impl(struct soap *soap,
-                            struct ns1__srmCheckPermissionRequest *req,
+                            struct ns1__srmCheckPermissionRequest *,
                             struct ns1__srmCheckPermissionResponse_ *rep)
 {
     struct ns1__srmCheckPermissionResponse *repp;
@@ -51,7 +51,7 @@ int ns1__srmCheckPermission_impl(struct soap *soap,
     if (repp->returnStatus == NULL) return SOAP_EOM;
 
     repp->arrayOfPermissions = NULL;
-    repp->returnStatus->explanation = "Not supported";
+    repp->returnStatus->explanation = const_cast<char*>("Not supported");
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
     /* Assign the repp response structure to the output parameter rep */
@@ -61,7 +61,7 @@ int ns1__srmCheckPermission_impl(struct soap *soap,
 }
 
 int ns1__srmGetPermission_impl(struct soap *soap,
-                          struct ns1__srmGetPermissionRequest *req,
+                          struct ns1__srmGetPermissionRequest *,
                           struct ns1__srmGetPermissionResponse_ *rep)
 {
     struct ns1__srmGetPermissionResponse *repp;
@@ -73,7 +73,7 @@ int ns1__srmGetPermission_impl(struct soap *soap,
     if (repp->returnStatus == NULL) return SOAP_EOM;
     
     repp->arrayOfPermissionReturns = NULL;
-    repp->returnStatus->explanation = "Not supported";
+    repp->returnStatus->explanation = const_cast<char*>("Not supported");
     repp->returnStatus->statusCode = SRM_USCORENOT_USCORESUPPORTED;
 
     /* Assign the repp response structure to the output parameter rep */

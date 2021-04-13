@@ -18,7 +18,7 @@
 
 
 #include "PtgTurl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 
@@ -41,10 +41,6 @@ public:
 			PtgTurl(surl), m_remainingFileLifetime(-1) {
 	}
 
-	~PtpTurl() {
-	}
-
-
 	void setRemainingFileLifetime(storm_time_t remainingFileLifetime)
 	{
 		m_remainingFileLifetime = remainingFileLifetime;
@@ -55,7 +51,7 @@ public:
 		return m_remainingFileLifetime != -1;
 	}
 
-	storm_time_t getRemainingFileLifetime() throw (std::logic_error)
+	storm_time_t getRemainingFileLifetime()
 	{
 		if(!this->hasRemainingFileLifetime())
 		{

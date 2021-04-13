@@ -27,7 +27,6 @@
 #include "MonitorNotEnabledException.hpp"
 
 #include "srmv2H.h"
-#include <stdsoap2.h>
 
 namespace storm {
 

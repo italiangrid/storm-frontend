@@ -21,7 +21,7 @@
 
 #include "srmlogit.h"
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
@@ -70,20 +70,20 @@
 #define SRM_PARAM_mode "mode"
 
 /* Prototype definitions */
-int decode_lifetimeValue(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, int **lifetimeVal, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ArrayOfTSURLReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTSURLReturnStatus **arrayOfFileStatuses, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ArrayOfTSURLLifetimeReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTSURLLifetimeReturnStatus **arrayOfFileStatuses, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ArrayOfTExtraInfo(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTExtraInfo **arrayOfTExtraInfo, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_TRetentionPolicyInfo(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TRetentionPolicyInfo **retentionPolicyInfo, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_string(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char **outputString, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_int(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, int **outputInt, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ULONG64(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, ULONG64 **outputULONG64, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ArrayOfString(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfString **arrayOfString, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_TPermissionMode(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, enum ns1__TPermissionMode **permissionMode, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ArrayOfTMetaDataSpace(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTMetaDataSpace **arrayOfSpaceDetails, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_TUserPermission(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TUserPermission **userPermission, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_TGroupPermission(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TGroupPermission **groupPermission, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_TReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TReturnStatus **status, char *fieldName, xmlrpc_value *xmlStruct);
-int decode_ArrayOfTMetaDataPathDetail(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTMetaDataPathDetail **arrayOfTMetaData, char *fieldName, xmlrpc_value *xmlStruct);
+int decode_lifetimeValue(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, int **lifetimeVal, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfTSURLReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTSURLReturnStatus **arrayOfFileStatuses, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfTSURLLifetimeReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTSURLLifetimeReturnStatus **arrayOfFileStatuses, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfTExtraInfo(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTExtraInfo **arrayOfTExtraInfo, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_TRetentionPolicyInfo(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TRetentionPolicyInfo **retentionPolicyInfo, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_string(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char **outputString, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_int(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, int **outputInt, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ULONG64(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, ULONG64 **outputULONG64, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfString(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfString **arrayOfString, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_TPermissionMode(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, enum ns1__TPermissionMode **permissionMode, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfTMetaDataSpace(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTMetaDataSpace **arrayOfSpaceDetails, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_TUserPermission(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TUserPermission **userPermission, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_TGroupPermission(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TGroupPermission **groupPermission, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_TReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TReturnStatus **status, char const* fieldName, xmlrpc_value *xmlStruct);
+int decode_ArrayOfTMetaDataPathDetail(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__ArrayOfTMetaDataPathDetail **arrayOfTMetaData, char const* fieldName, xmlrpc_value *xmlStruct);
 
 int decode_globalTReturnStatus(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, struct ns1__TReturnStatus *returnStatus, xmlrpc_value *xmlStruct);

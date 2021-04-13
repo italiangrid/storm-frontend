@@ -13,7 +13,7 @@
 # limitations under the License.
 
 AC_PREREQ([2.59])
-AC_INIT([storm frontend server], [1.8.13], andrea.ceccanti@cnaf.infn.it)
+AC_INIT([storm frontend server], [1.8.14], andrea.ceccanti@cnaf.infn.it)
 
 AC_CONFIG_AUX_DIR([./aux])
 AC_CONFIG_MACRO_DIR([m4])
@@ -32,7 +32,8 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
- 
+AC_COMPILER
+
 BOOST_REQUIRE([1.41.0])
 BOOST_SMART_PTR
 BOOST_PROGRAM_OPTIONS([mt-])

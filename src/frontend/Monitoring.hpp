@@ -106,7 +106,7 @@ private:
     	m_detailed = false;
     	m_funcName = "Monitoring";
     	m_details_template_msg = "[%s] [OK:%u,F:%u,E:%u,Avg:%.3f,Std Dev:%.3f,m:%.3f,M:%.3f]\n";
-    	m_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] Last:(%s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f]) Tasks(max_active:%u,active:%u,max_pending:%u,pending:%u)\n";
+    	m_summary_template_msg = "[#%6u lifetime=%02u:%02u:%02u] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] Last:(%s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f] %s [OK:%u,F:%u,E:%u,m:%.3f,M:%.3f,Avg:%.3f]) Tasks(max_active:%u,active:%u,max_pending:%u,pending:%u)\n";
     	m_defaultMonitor = new MonitorStub();
     }
 
@@ -132,10 +132,11 @@ private:
 				round_synch_summary.m_name.c_str(),
 				round_synch_summary.getSuccess(), round_synch_summary.m_failed,
 				round_synch_summary.m_errors, round_synch_summary.m_minTime,
-				round_synch_summary.m_maxTime, round_asynch_summary.m_name.c_str(),
+				round_synch_summary.m_maxTime, round_synch_summary.getAverageTime(),
+				round_asynch_summary.m_name.c_str(),
 				round_asynch_summary.getSuccess(), round_asynch_summary.m_failed,
 				round_asynch_summary.m_errors, round_asynch_summary.m_minTime,
-				round_asynch_summary.m_maxTime,
+				round_asynch_summary.m_maxTime, round_asynch_summary.getAverageTime(),
 				storm::ThreadPool::getInstance()->size(),
 				storm::ThreadPool::getInstance()->get_active(),
 				FrontendConfiguration::getInstance()->getThreadpoolMaxPending(),
@@ -333,7 +334,7 @@ public:
     	m_monitor_vector.push_back(monitor);
     }
 
-    Monitor* getMonitor(std::string name) throw (MonitorNotEnabledException)
+    Monitor* getMonitor(std::string name)
 	{
     	boost::lock_guard<boost::recursive_mutex> lock(m_mutex);
     	std::vector<Monitor*>::const_iterator const vectorEnd = m_monitor_vector.end();

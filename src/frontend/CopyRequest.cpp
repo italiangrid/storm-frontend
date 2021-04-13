@@ -17,7 +17,7 @@
 
 #include "CopyRequest.hpp"
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 
 #include "srmlogit.h"
 
@@ -56,7 +56,7 @@ ns1__srmCopyResponse* storm::CopyRequest::buildResponse()
     return m_builtResponse;
 }
 
-void storm::CopyRequest::insertIntoDB(struct srm_dbfd *db)
+void storm::CopyRequest::insertIntoDB(struct srm_dbfd *)
 {
 	srmlogit(STORM_LOG_DEBUG, "storm::CopyRequest::insertIntoDB", "empty cause srmCopy is not supported");
 }

@@ -178,9 +178,6 @@ FrontendConfiguration::FrontendConfiguration() {
 
 }
 
-FrontendConfiguration::~FrontendConfiguration() {
-}
-
 void FrontendConfiguration::parseOptions(int argc, char* argv[]) {
 
     po::variables_map cmdline_vm;

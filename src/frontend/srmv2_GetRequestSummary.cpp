@@ -23,7 +23,7 @@
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 
 #include "Authorization.hpp"
 #include "MonitoringHelper.hpp"
@@ -33,6 +33,7 @@
 #include "token_validator.hpp"
 #include "storm_exception.hpp"
 #include "xmlrpc_client.hpp"
+#include "srm_server.h"
 
 #include <cgsi_plugin.h>
 
@@ -149,17 +150,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         	}
         }
 
-        // Connect to the DB, if needed.
-        if (!(thip->db_open_done)) {
-            if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-                srmlogit(STORM_LOG_ERROR, func, "DB open error!\n");
-                repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-                repp->returnStatus->explanation = const_cast<char*>("DB open error");
-                storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
-                return SOAP_OK;
-            }
-            thip->db_open_done = 1;
-        }
+        // TODO ping db connection?
 
         // Create the DB query
         std::string query_sql = std::string("SELECT ID, r_token, config_RequestTypeID, status, errstring, nbreqfiles "
@@ -180,8 +171,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         query_sql += ')';
         // Execute the DB query
         storm_start_tr(0, &thip->dbfd);
-        vector< map<string, string> > results;
-        storm_db::vector_exec_query(&thip->dbfd, query_sql, results);
+	    vector< map<string, string> > results = storm_db::vector_exec_query(&thip->dbfd, query_sql);
 
         int resultsSize = results.size();
         srmlogit(STORM_LOG_INFO, func, "Results (size): %d\n", resultsSize);
@@ -281,8 +271,7 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 					}
 					if (!query_sql.empty()) {
 						// Calculate the values: numOfCompletedFiles, numOfWaitingFiles, numOfFailedFiles
-						vector< map<string, string> > results_status;
-						storm_db::vector_exec_query(&thip->dbfd, query_sql, results_status);
+						std::vector< std::map<std::string, std::string> > results_status = storm_db::vector_exec_query(&thip->dbfd, query_sql);
 
 						if (results_status.size() != static_cast<size_t>(r_nbreqfiles)) {
 							reqSummary->status->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
@@ -332,14 +321,14 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
 			}
 		}
     }
-	catch (soap_bad_alloc) {
+	catch (soap_bad_alloc const&) {
 		if ((thip->dbfd).tr_started == 1)
 			storm_end_tr(&thip->dbfd);
 		srmlogit(STORM_LOG_ERROR, func, "Memory allocation error (response structure)!\n");
 		storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
 		return SOAP_EOM;
 	}
-	catch (std::invalid_argument) {
+	catch (std::invalid_argument const&) {
 		if ((thip->dbfd).tr_started == 1)
 			storm_end_tr(&thip->dbfd);
 		srmlogit(STORM_LOG_ERROR, func, "soap pointer is NULL!\n");

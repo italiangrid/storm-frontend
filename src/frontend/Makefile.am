@@ -17,7 +17,7 @@
 
 MTC_CFLAGS = -DCTHREAD_LINUX -D_THREAD_SAFE -D_REENTRANT 
 
-GENERATED_GSOAP_INCLUDES = $(top_srcdir)/wsdl/gsoap-autogen
+GENERATED_GSOAP_INCLUDES = $(top_builddir)/wsdl/gsoap-autogen
 
 sbin_PROGRAMS = storm-frontend-server
 noinst_PROGRAMS = test_surl
@@ -53,10 +53,6 @@ storm_frontend_server_LDFLAGS= \
 
 noinst_INCLUDES = osdep.h \
   srm_server.h \
-  storm_constants.h \
-  storm_functions.h \
-  get_socket_info.h \
-  storm_limits.h \
   storm_util.h \
   srmlogit.h \
   ProtocolChecker.hpp \
@@ -68,12 +64,9 @@ noinst_INCLUDES = osdep.h \
 
 stormfrontend_others = storm_exception.hpp \
     Credentials.cpp Credentials.hpp \
-    FullCredentials.cpp FullCredentials.hpp \
-    CredentialException.hpp \
     get_socket_info.hpp get_socket_info.cpp \
     base_request.hpp \
     file_request.hpp filerequest_template.hpp \
-    file_status.hpp \
     surl_normalizer.h surl_normalizer.cc \
     request_id.cpp request_id.hpp \
     xmlrpc_client.cpp xmlrpc_client.hpp \
@@ -131,7 +124,7 @@ stormfrontend_others = storm_exception.hpp \
     synch.cpp synch.hpp\
     token_validator.hpp token_validator.cpp \
     xmlrpc_decode.cpp xmlrpc_encode.cpp \
-    storm_util.c storm_utils.hpp \
+    storm_util.cpp storm_utils.hpp \
     srmv2C.cc \
     srmv2Server.cc \
     Monitor.hpp InstrumentedMonitor.hpp \
@@ -141,7 +134,7 @@ stormfrontend_others = storm_exception.hpp \
     MonitorNotEnabledException.hpp \
     $(noinst_INCLUDES)
 
-INCLUDES = \
+AM_CPPFLAGS = \
     -I$(top_srcdir)/src/db \
     -I$(GENERATED_GSOAP_INCLUDES) \
     @BOOST_CPPFLAGS@ \

@@ -18,7 +18,7 @@
 
 
 #include "Turl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 
@@ -56,8 +56,6 @@ public:
 		}
 	}
 
-	~CopyTurl(){}
-
 	Surl getSourceSurl()
 	{
 		return getSurl();
@@ -88,7 +86,7 @@ public:
 		return m_estimatedWaitTime != -1;
 	}
 
-	storm_time_t getEstimatedWaitTime() throw (std::logic_error)
+	storm_time_t getEstimatedWaitTime()
 	{
 		if(!this->hasEstimatedWaitTime())
 		{
@@ -107,7 +105,7 @@ public:
 		return m_remainingFileLifetime != -1;
 	}
 
-	storm_time_t getRemainingFileLifetime() throw (std::logic_error)
+	storm_time_t getRemainingFileLifetime()
 	{
 		if(!this->hasRemainingFileLifetime())
 		{

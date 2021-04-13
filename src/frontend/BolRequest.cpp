@@ -17,7 +17,7 @@
 
 #include "srmlogit.h"
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 
 #include "BolRequest.hpp"
 
@@ -318,7 +318,7 @@ void storm::BolRequest::insertIntoDB(struct srm_dbfd* db){
             continue;
         }
     }
-    if(failedCount == m_surls.size())
+    if(failedCount == static_cast<int>(m_surls.size()))
     {
     	srmlogit(STORM_LOG_ERROR, "BolRequest::insert()",
 				 "No SURLs inserted. Request failed\n");

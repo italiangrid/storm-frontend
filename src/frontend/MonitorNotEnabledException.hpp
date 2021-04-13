@@ -1,25 +1,15 @@
 #ifndef MONITOR_NOT_ENABLED_EXCEPTION_HPP_
 #define MONITOR_NOT_ENABLED_EXCEPTION_HPP_
 
-#include <exception>
-#include <string>
+#include <stdexcept>
 
 namespace storm {
 
-class MonitorNotEnabledException: public std::exception
+struct MonitorNotEnabledException: std::runtime_error
 {
-public:
-	MonitorNotEnabledException(std::string text) {
-		message = text;
-	};
-
-	~MonitorNotEnabledException() throw () {};
-
-	const char* what() const throw () {
-		return message.c_str();
+	MonitorNotEnabledException(std::string const& text) : std::runtime_error(text)
+	{
 	}
-private:
-	std::string message;
 };
 
 }

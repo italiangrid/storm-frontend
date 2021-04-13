@@ -17,7 +17,7 @@
 #include <sstream>
 
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 #include "srmlogit.h"
 
 #include "PtpRequest.hpp"
@@ -180,7 +180,7 @@ ns1__srmPrepareToPutResponse * storm::PtpRequest::buildResponse(){
     return m_builtResponse;
 }
 
-void storm::PtpRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_error , storm_db::mysql_exception) {
+void storm::PtpRequest::insertIntoDB(struct srm_dbfd* db) {
     std::string nullcomma("NULL, ");
     std::ostringstream query_s;
     std::string q("INSERT INTO request_queue ("
@@ -328,7 +328,7 @@ void storm::PtpRequest::insertIntoDB(struct srm_dbfd* db) throw (std::logic_erro
             continue;
         }
     }
-    if(failedCount == m_surls.size())
+    if(failedCount == static_cast<int>(m_surls.size()))
     {
     	srmlogit(STORM_LOG_ERROR, "PtpRequest::insert()",
 				 "No SURLs inserted. Request failed\n");

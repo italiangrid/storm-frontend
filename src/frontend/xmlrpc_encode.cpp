@@ -25,7 +25,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <cgsi_plugin.h>
-#include "get_socket_info.h"
+#include "get_socket_info.hpp"
 #include "surl_normalizer.h"
 #include <xmlrpc-c/util.h>
 #include "FrontendConfiguration.hpp"
@@ -66,7 +66,7 @@ static int isASCII(const char *data)
 int encode_lifetimeValue(const char *callerName,
         xmlrpc_env *env_addr,
         int *lifetimeVal,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     ULONG64 longValue;
@@ -92,7 +92,7 @@ int encode_lifetimeValue(const char *callerName,
 int encode_arrayOfString(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfString *arrayOfString,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     char **stringArray;
@@ -155,7 +155,7 @@ int encode_arrayOfString(const char *callerName,
 int encode_arrayOfUnsignedLong(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfUnsignedLong *arrayOfUnsignedLong,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     char long64Str[NUM_OF_LONG_CHR];
@@ -177,7 +177,7 @@ int encode_arrayOfUnsignedLong(const char *callerName,
     xml_arrayOfLong = xmlrpc_array_new(env_addr);
     XMLRPC_ASSERT_ENV_OK(env_addr);
     for (i=0; i<nbItems; i++) {
-        snprintf(long64Str, NUM_OF_LONG_CHR, "%lld", unsignedLongArray[i]);
+        snprintf(long64Str, NUM_OF_LONG_CHR, "%lu", unsignedLongArray[i]);
         xml_string = xmlrpc_string_new(env_addr, long64Str);
         XMLRPC_ASSERT_ENV_OK(env_addr);
         xmlrpc_array_append_item(env_addr, xml_arrayOfLong, xml_string);
@@ -198,7 +198,7 @@ int encode_arrayOfUnsignedLong(const char *callerName,
  * @param fieldName The name to assign to the xmlrpc structure
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *fieldName, xmlrpc_value *xmlStruct)
+int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_intVal;
 
@@ -223,7 +223,7 @@ int encode_int(const char *callerName, xmlrpc_env *env_addr, int *intVal, char *
  * @param fieldName The name to assign to the xmlrpc structure
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char *fieldName, xmlrpc_value *xmlStruct)
+int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *boolVal, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_boolVal;
 
@@ -250,7 +250,7 @@ int encode_bool(const char *callerName, xmlrpc_env *env_addr, unsigned int *bool
  * @param fieldName The name to assign to the xmlrpc structure
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64Val, char *fieldName, xmlrpc_value *xmlStruct)
+int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64Val, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     char long64Str[NUM_OF_LONG_CHR];
     xmlrpc_value *xml_string;
@@ -260,7 +260,7 @@ int encode_ULONG64(const char *callerName, xmlrpc_env *env_addr, ULONG64 *long64
         return(ENCODE_ERR_MISSING_PARAM);
     }
     /* Convert LONG64 value into string */
-    snprintf(long64Str, NUM_OF_LONG_CHR, "%lld", *long64Val);
+    snprintf(long64Str, NUM_OF_LONG_CHR, "%lu", *long64Val);
     xml_string = xmlrpc_string_new(env_addr, long64Str);
     XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, fieldName, xml_string);
@@ -344,15 +344,13 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
  * @param autohID The authorizationID value, it is a char * in SRM v2.2.
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char *autohID, xmlrpc_value *xmlStruct)
+int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char * /* autohID */, xmlrpc_value *xmlStruct)
 {
     char clientdn[256], **fqans;
     int i, nbfqans, error;
     xmlrpc_value *userDN, *fqansArray, *fqansItem;
-    char ip[256];
 
     /* Initialized to empty string */
-    ip[0]=0;
     clientdn[0] = 0;
 
     /* Get DN and FQAN from the CGSI plugin and the CGSI_VOMS plugin */
@@ -375,7 +373,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
 
     srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
-    srmlogit(STORM_LOG_DEBUG, callerName, "Client IP=%s\n", getip(soap, ip));
+    srmlogit(STORM_LOG_DEBUG, callerName, "Client IP=%s\n", get_ip(soap).c_str());
 
     xmlrpc_DECREF(userDN);
 
@@ -413,7 +411,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
 int encode_ArrayOfAnyURI(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfAnyURI *arrayOfSURLs,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     char **urlArray;
@@ -481,7 +479,7 @@ int encode_ArrayOfAnyURI(const char *callerName,
 int encode_ArrayOfTExtraInfo(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__ArrayOfTExtraInfo *extraInfo,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
     struct ns1__TExtraInfo **extraInfoArray;
@@ -562,7 +560,7 @@ int encode_ArrayOfTExtraInfo(const char *callerName,
  * @param fieldName The name to assign to xmlrpc field.
  * @param xmlStruct The xmlrpc destination variable.
  */
-int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, char* fieldName, xmlrpc_value *xmlStruct)
+int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, char const* fieldName, xmlrpc_value *xmlStruct)
 {
     xmlrpc_value *xml_val;
     const char* normalized_surl = NULL;
@@ -621,10 +619,10 @@ int encode_string(const char *callerName, xmlrpc_env *env_addr, char *value, cha
 int encode_TTransferParameters(const char *callerName,
         xmlrpc_env *env_addr,
         struct ns1__TTransferParameters *transferParameters,
-        char *fieldName,
+        char const* fieldName,
         xmlrpc_value *xmlStruct)
 {
-    xmlrpc_value *xml_transferParametersStruct, *xml_intVal;
+    xmlrpc_value *xml_transferParametersStruct;
 
     if (NULL == transferParameters) {
         srmlogit(STORM_LOG_DEBUG, callerName, "Warning: missing transferParameters parameter\n");
