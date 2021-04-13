@@ -27,7 +27,7 @@
 #include "ThreadPool.hpp"
 #include <sstream>
 #include "srmlogit.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "request_id.hpp"
 
 extern int jid;
@@ -39,6 +39,8 @@ static FILE *log_fd = NULL;
 static FILE *audit_fd = NULL;
 static int loglevel = STORM_LOG_ERROR;
 static bool m_auditEnabled;
+
+int const LOGBUFSZ = 1024;
 
 /**
  * This function init the log file. At this moment, open the file in

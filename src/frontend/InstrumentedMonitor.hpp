@@ -31,10 +31,6 @@ class InstrumentedMonitor : public Monitor {
 		{
 		};
 
-		~InstrumentedMonitor() {
-		};
-
-
 		void registerCompleted(long executionTimeInMills, int returnCode)
 		{
 			if(getStatusCodeMapping(returnCode))

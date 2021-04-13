@@ -45,7 +45,7 @@ void storm::Monitoring::thread_function(Monitoring* m) {
 
         }
     } catch (boost::thread_interrupted &e) {
-        srmlogit(STORM_LOG_ERROR, m->m_funcName, "Received thread_interrupted exception\n");
+        srmlogit(STORM_LOG_INFO, m->m_funcName, "Received thread_interrupted exception\n");
     }
 }
 

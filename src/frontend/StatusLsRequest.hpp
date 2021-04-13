@@ -32,9 +32,6 @@ public:
 		this->load(request);
 	}
 
-	~StatusLsRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmStatusOfLsRequestResponse_* response);
 
 	void load(ns1__srmStatusOfLsRequestRequest* req);

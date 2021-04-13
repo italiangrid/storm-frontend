@@ -28,14 +28,11 @@ public:
 		this->load(request);
     }
 
-	virtual ~UpdateSpaceRequest() {}
-
 	int performXmlRpcCall(ns1__srmUpdateSpaceResponse_* response);
 
     void load(ns1__srmUpdateSpaceRequest* req);
 
     int buildResponse();
-
 
 	std::string getSpaceToken()
 	{

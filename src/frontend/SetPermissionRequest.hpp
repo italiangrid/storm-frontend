@@ -32,9 +32,6 @@ public:
 		this->load(request);
 	}
 
-	virtual ~SetPermissionRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmSetPermissionResponse_* response);
 
 	void load(ns1__srmSetPermissionRequest* req);

@@ -22,7 +22,7 @@
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 
 #include "Authorization.hpp"
 #include "MonitoringHelper.hpp"
@@ -33,6 +33,8 @@
 
 #include <cgsi_plugin.h>
 #include "token_validator.hpp"
+#include "srm_server.h"
+
 using namespace std;
 
 extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
@@ -74,18 +76,8 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
 			srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
 		}
 
-        // Connect to the DB, if needed.
-        if (!(thip->db_open_done)) {
-            if (storm_opendb(db_srvr, db_user, db_pwd, &thip->dbfd) < 0) {
-                srmlogit(STORM_LOG_ERROR, func, "DB open error!\n");
-                repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-                repp->returnStatus->explanation = const_cast<char*>("DB open error");
-                storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
-                return SOAP_OK;
-            }
-            thip->db_open_done = 1;
-        }
-        
+        // TODO ping db connection?
+
         // Get userRequestDescription
         std::string u_token;
         if (req->userRequestDescription != NULL){
@@ -105,8 +97,7 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
         srmlogit(STORM_LOG_DEBUG, func, "Query: %s\n", query_sql.c_str());
         
         storm_start_tr(0, &thip->dbfd);
-        vector< map<string, string> > results;
-        storm_db::vector_exec_query(&thip->dbfd, query_sql, results);
+        vector< map<string, string> > results = storm_db::vector_exec_query(&thip->dbfd, query_sql);
         storm_end_tr(&thip->dbfd);
         
         int resultsSize = results.size();

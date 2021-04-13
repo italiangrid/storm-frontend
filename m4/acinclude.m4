@@ -38,4 +38,15 @@ AC_DEFUN([AC_COMPILER],
       CXXFLAGS="${CXXFLAGS} --coverage"
       LDFLAGS="${LDFLAGS} --coverage"
     fi
+
+    AC_ARG_WITH(asan,
+      [  --with-asan Enable address sanitizer],
+      [ac_with_asan="yes"],
+      [ac_with_asan="no"])
+
+    if test "x$ac_with_asan" = "xyes" ; then
+      CFLAGS="${CFLAGS} -fsanitize=address"
+      CXXFLAGS="${CXXFLAGS} -fsanitize=address"
+      LDFLAGS="${LDFLAGS} -fsanitize=address"
+    fi
 ])

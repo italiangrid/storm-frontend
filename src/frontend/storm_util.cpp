@@ -14,129 +14,66 @@
 */
 
 #include "srmv2H.h"
-#include "storm_util.h"
-#include "storm_functions.h"
+#include "storm_util.hpp"
+#include "srm_server.h"
 #include <string.h>
 #include <stdlib.h>
 #include "srmlogit.h"
-#include "storm_mysql.h"
+#include "storm_mysql.hpp"
 #include <openssl/pem.h>
 
-int get_supported_protocols(char ***sup_proto) {
-    char* funcName = "get_supported_protocols";
-    int nb_supported_protocols = 0;
-    int i;
-    struct srm_dbfd dbfd;
-    int nbprots = 0;
-    int protlen = 10;
-    char ** sup_protocols;
+std::vector<std::string> get_supported_protocols(std::string const& server, std::string const& user, std::string const& pw)
+{
+    typedef std::vector<std::string> Protocols;
+    Protocols result;
 
-    /* Connect to the database if not done yet */
-
-    if (storm_opendb(db_srvr, db_user, db_pwd, &dbfd) < 0) {
-        return -1;
+    srm_dbfd dbfd{};
+    if (storm_opendb(server.c_str(), user.c_str(), pw.c_str(), &dbfd) < 0) {
+        // log
+        return result;
+        // exception?
     }
 
-    if (NULL == sup_proto) {
-        srmlogit(STORM_LOG_ERROR, funcName, "sup_proto argument is a NULL pointer!\n");
-        return -1;
+    int const n_protocols = storm_list_protocol(&dbfd, NULL, 0, 0);
+
+    if (n_protocols <= 0) {
+        // log
+        storm_closedb(&dbfd);
+        return result;
+        // exception?
     }
 
-    nb_supported_protocols = storm_list_protocol(&dbfd, NULL, 0, 0, NULL);
-
-    if (nb_supported_protocols == 0) {
-        srmlogit(STORM_LOG_ERROR, funcName, "No protocols supported");
-        return -1;
-    } else if (nb_supported_protocols < 0) {
-        srmlogit(STORM_LOG_ERROR, funcName, "Error in storm_list_protocol: %d",
-                nb_supported_protocols);
-        return -1;
-    }
-    nbprots = nb_supported_protocols;
-
-    sup_protocols = calloc(nbprots, sizeof(char *));
-    if (NULL == sup_protocols) {
-        srmlogit(STORM_LOG_ERROR, funcName, "Unable to calloc() an array of lenght %d", nbprots);
-        return -1;
+    char** protocols = new char*[n_protocols];
+    int const protocol_len = 10;
+    for (int i = 0; i != n_protocols; ++i) {
+        protocols[i] = new char[protocol_len];
     }
 
-    for (i = 0; i < nbprots; i++) {
-        sup_protocols[i] = calloc(protlen, sizeof(char));
-        if (NULL == sup_protocols[i]) {
-            srmlogit(STORM_LOG_ERROR, funcName, "Unable to calloc() an array of lenght %d", protlen);
-            return -1;
-        }
-    }
-
-    i = storm_list_protocol(&dbfd, sup_protocols, nbprots, protlen, NULL);
-    if (i < 0) {
-        srmlogit(STORM_LOG_ERROR, funcName, "Error in storm_list_protocol: %d", i);
-        return -1;
-    }
-
+    int const n_protocols2 = storm_list_protocol(&dbfd, protocols, n_protocols, protocol_len);
+    // assert(n_protocols == n_protocols2);
     storm_closedb(&dbfd);
-    *sup_proto = sup_protocols;
-    return (nb_supported_protocols);
-}
 
-int convertPermission(char *mode) {
-    if (strcmp("None", mode) == 0)
-        return NONE;
-    if (strcmp("X", mode) == 0)
-        return X;
-    if (strcmp("W", mode) == 0)
-        return W;
-    if (strcmp("R", mode) == 0)
-        return R;
-    if (strcmp("RX", mode) == 0)
-        return RX;
-    if (strcmp("RW", mode) == 0)
-        return RW;
-    if (strcmp("RWX", mode) == 0)
-        return RWX;
-    return (NONE);
-}
+    if (n_protocols2 <= 0) {
+        // log
+        for (int i = 0; i != n_protocols; ++i) {
+            delete [] protocols[i];
+        }
+        delete [] protocols;
+        return result;
+        // exception?
+    }
 
-/** Converts the file storage type */
-int convertFileStorageType(char *fstype) {
-    if (strcmp("Volatile_", fstype) == 0)
-        return VOLATILE;
-    if (strcmp("Durable_", fstype) == 0)
-        return DURABLE;
-    if (strcmp("Permanent_", fstype) == 0)
-        return PERMANENT;
-    if (strcmp("Unknown.", fstype) == 0)
-        return -1;
-    return -1;
-}
+    for (int i = 0; i != n_protocols; ++i) {
+        result.push_back(std::string(protocols[i]));
+        delete [] protocols[i];
+    }
+    delete [] protocols;
 
-int convertFileType(char* ftype) {
-    if (strcmp("File", ftype) == 0)
-        return FILE_;
-    if (strcmp("Directory", ftype) == 0)
-        return DIRECTORY;
-    if (strcmp("Link", ftype) == 0)
-        return LINK;
-    if (strcmp("Unknown.", ftype) == 0)
-        return -1;
-    return -1;
-}
-
-/** Converts the file storage type */
-int convertSpaceType(char *stype) {
-    if (strcmp("Volatile", stype) == 0)
-        return VOLATILE;
-    if (strcmp("Durable", stype) == 0)
-        return DURABLE;
-    if (strcmp("Permanent", stype) == 0)
-        return PERMANENT;
-    if (strcmp("Unknown.", stype) == 0)
-        return -1;
-    return -1;
+    return result;
 }
 
 /* Converts the status code from char* format into a SRM status code */
-int convertStatusCode(char* code) {
+int convertStatusCode(char const* code) {
     if (strcmp("SRM_SUCCESS", code) == 0)
         return SRM_USCORESUCCESS; // 0
     else if (strcmp("SRM_FAILURE", code) == 0)
@@ -207,7 +144,7 @@ int convertStatusCode(char* code) {
         return SRM_USCORECUSTOM_USCORESTATUS; // 33
 }
 
-char* reconvertStatusCode(int code) {
+char const* reconvertStatusCode(int code) {
 	switch (code) {
 	case 0:
 		return "SRM_SUCCESS";
@@ -281,55 +218,4 @@ char* reconvertStatusCode(int code) {
 		srmlogit(STORM_LOG_WARNING, "reconvertStatusCode", "Received an unknown status code: %d\n", code);
 		return "UNKNOWN";
 	}
-}
-
-/*** Get chain ***/
-STACK_OF(X509)* load_chain(const char *certfile)
-{
-    STACK_OF(X509_INFO) *sk=NULL;
-    STACK_OF(X509) *stack=NULL, *ret=NULL;
-    BIO *in=NULL;
-    X509_INFO *xi;
-    int first = 1;
-
-    if (!(stack = sk_X509_new_null())) {
-        printf("memory allocation failure\n");
-        goto end;
-    }
-
-    if (!(in=BIO_new_file(certfile, "r"))) {
-        printf("error opening the file, %s\n",certfile);
-        goto end;
-    }
-
-    /* This loads from a file, a stack of x509/crl/pkey sets */
-    if (!(sk=PEM_X509_INFO_read_bio(in,NULL,NULL,NULL))) {
-        printf("error reading the file, %s\n",certfile);
-        goto end;
-    }
-
-    /* scan over it and pull out the certs */
-    while (sk_X509_INFO_num(sk)) {
-        /* skip first cert */
-        if (first) {
-            first = 0;
-            continue;
-        }
-        xi=sk_X509_INFO_shift(sk);
-        if (xi->x509 != NULL) {
-            sk_X509_push(stack,xi->x509);
-            xi->x509=NULL;
-        }
-        X509_INFO_free(xi);
-    }
-    if (!sk_X509_num(stack)) {
-        printf("no certificates in file, %s\n",certfile);
-        sk_X509_free(stack);
-        goto end;
-    }
-    ret = stack;
-    end:
-    BIO_free(in);
-    sk_X509_INFO_free(sk);
-    return(ret);
 }

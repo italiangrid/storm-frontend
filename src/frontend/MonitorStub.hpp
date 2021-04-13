@@ -34,9 +34,6 @@ class MonitorStub : public InstrumentedMonitor {
 			M_EMPTY_VALUE = -1;
 		};
 
-		~MonitorStub() {};
-
-
 		int getCompleted()
 		{
 			return M_EMPTY_VALUE;

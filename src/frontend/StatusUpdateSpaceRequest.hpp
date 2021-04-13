@@ -35,9 +35,6 @@ public:
 		this->load(request);
 	}
 
-	~StatusUpdateSpaceRequest() {
-	}
-
 	int performXmlRpcCall(
 			ns1__srmStatusOfUpdateSpaceRequestResponse_* response);
 

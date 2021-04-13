@@ -18,7 +18,7 @@
 
 
 #include "Turl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 
@@ -55,8 +55,6 @@ public:
 			throw invalid_surl("Unable to create a TURL with an empty destination SURL");
 		}
 	}
-
-	~CopyTurl(){}
 
 	Surl getSourceSurl()
 	{

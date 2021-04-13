@@ -18,7 +18,7 @@
 
 
 #include "Turl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 
@@ -39,8 +39,6 @@ public:
 	PtgTurl(Surl surl):
 	  Turl(surl), m_fileSize(-1), m_expectedFileSize(-1), m_estimatedWaitTime(-1), m_remainingPinLifetime(-1) {
 	}
-
-	~PtgTurl(){}
 
 	storm_size_t getFileSize()
 	{

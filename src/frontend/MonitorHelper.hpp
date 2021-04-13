@@ -27,10 +27,6 @@ namespace storm {
 
 class MonitorHelper{
 	public:
-		MonitorHelper() {
-		};
-
-		~MonitorHelper() {};
 
 		static void addSuccessStatusCodeMapping(std::string monitorName, int successReturnStatus)
 		{

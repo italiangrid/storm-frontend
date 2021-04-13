@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~MkdirRequest() {}
-
 	int performXmlRpcCall(ns1__srmMkdirResponse_* response);
 
     void load(ns1__srmMkdirRequest* req);

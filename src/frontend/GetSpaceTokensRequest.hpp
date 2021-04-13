@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~GetSpaceTokensRequest() {}
-
 	int performXmlRpcCall(ns1__srmGetSpaceTokensResponse_* response);
 
     void load(ns1__srmGetSpaceTokensRequest* req);

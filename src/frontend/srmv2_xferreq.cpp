@@ -13,19 +13,19 @@
  * limitations under the License.
 */
 
-#include "storm_functions.h"
 #include "srm_server.h"
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srmlogit.h"
 #include "xmlrpc_decode.hpp"
 #include "xmlrpc_encode.hpp"
 #include "frontend_version.h"
+#include "ProtocolChecker.hpp"
+
 #include <xmlrpc-c/util.h>
 #include "xmlrpc_client.hpp"
 
-extern int nb_supported_protocols;
-extern char **supported_protocols;
+#include <cassert>
 
 struct RPC_ResponseHandlerInput_ReleaseFiles {
     struct soap *soap;
@@ -146,13 +146,6 @@ int ns1__srmReleaseFiles_impl (struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -351,13 +344,6 @@ int ns1__srmPutDone_impl(struct soap *soap, struct ns1__srmPutDoneRequest *req, 
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -529,13 +515,6 @@ int ns1__srmAbortRequest_impl(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -713,13 +692,6 @@ int ns1__srmAbortFiles_impl(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -911,13 +883,6 @@ int ns1__srmExtendFileLifeTime_impl(struct soap *soap,
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->returnStatus->statusCode = SRM_USCOREINTERNAL_USCOREERROR;
-            repp->returnStatus->explanation = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }
@@ -1019,11 +984,8 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
                                  struct ns1__srmGetTransferProtocolsRequest *,
                                  struct ns1__srmGetTransferProtocolsResponse_ *rep)
 {
-    static const char *func = "GetTransferProtocols";
     struct ns1__srmGetTransferProtocolsResponse *repp;
     struct ns1__TSupportedTransferProtocol **protocolArray;
-    char **supported_protocols;
-    int i, nb_supported_protocols;
 
     repp = static_cast<ns1__srmGetTransferProtocolsResponse*>(soap_malloc(soap,sizeof(ns1__srmGetTransferProtocolsResponse)));
     if (repp == NULL) return SOAP_EOM;
@@ -1033,34 +995,27 @@ int ns1__srmGetTransferProtocols_impl(struct soap* soap,
 
     rep->srmGetTransferProtocolsResponse = repp;
 
-    nb_supported_protocols = get_supported_protocols(&supported_protocols);
+    std::vector<std::string> const& supported_protocols = ProtocolChecker::getInstance()->getProtocols();
 
-    if (nb_supported_protocols <= 0) {
-        srmlogit (STORM_LOG_ERROR, func, "get_supported_protocols does not return any protocol");
-        repp->returnStatus->statusCode = SRM_USCOREFAILURE;
-        repp->returnStatus->explanation = const_cast<char*>("Error: list of supported protocols not found");
-        return(SOAP_OK);
-    }
+    assert(!supported_protocols.empty());
 
     /* Allocate the response structure for the list of protocols */
     repp->protocolInfo = static_cast<ns1__ArrayOfTSupportedTransferProtocol*>(soap_malloc(soap, sizeof(struct ns1__ArrayOfTSupportedTransferProtocol)));
     if (NULL == repp->protocolInfo)
         return(SOAP_EOM);
 
-    repp->protocolInfo->protocolArray = static_cast<ns1__TSupportedTransferProtocol**>(soap_malloc(soap, nb_supported_protocols * sizeof(struct ns1__TSupportedTransferProtocol *)));
+    repp->protocolInfo->protocolArray = static_cast<ns1__TSupportedTransferProtocol**>(soap_malloc(soap, supported_protocols.size() * sizeof(struct ns1__TSupportedTransferProtocol *)));
     if (NULL == repp->protocolInfo->protocolArray)
         return(SOAP_EOM);
-    repp->protocolInfo->__sizeprotocolArray = nb_supported_protocols;
+    repp->protocolInfo->__sizeprotocolArray = supported_protocols.size();
     protocolArray = repp->protocolInfo->protocolArray;
 
     /* Set the protocol list to return */
-    for (i=0; i<nb_supported_protocols; i++) {
+    for (int i = 0, n = supported_protocols.size(); i != n; ++i) {
         protocolArray[i] = static_cast<ns1__TSupportedTransferProtocol*>(soap_malloc(soap, sizeof(struct ns1__TSupportedTransferProtocol)));
-        protocolArray[i]->transferProtocol = soap_strdup(soap, supported_protocols[i]);
+        protocolArray[i]->transferProtocol = soap_strdup(soap, supported_protocols[i].c_str());
         protocolArray[i]->attributes = NULL;
     }
-
-    free(supported_protocols);
 
     repp->returnStatus->statusCode = SRM_USCORESUCCESS;
     repp->returnStatus->explanation = const_cast<char*>("Success");
@@ -1218,12 +1173,6 @@ int ns1__srmPing_impl(struct soap* soap, struct ns1__srmPingRequest *req, struct
     /** OPTIONAL ************ (1) Encode authorizationID (char *) ****************************/
     error = encode_string(func, &env, req->authorizationID, SRM_PARAM_authorizationID, inputParam);
     if (error) {
-        if (error != ENCODE_ERR_MISSING_PARAM && (! DONT_FAIL_FOR_AUTHORIZATION_ID)) {
-            repp->versionInfo = const_cast<char*>("Error encoding authorizationID");
-            xmlrpc_DECREF(inputParam);
-            xmlrpc_env_clean(&env);
-            return(SOAP_OK);
-        }
         xmlrpc_env_clean(&env);
         xmlrpc_env_init(&env);
     }

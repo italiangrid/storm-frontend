@@ -33,8 +33,6 @@ public:
 		this->init(NULL);
 	};
 
-	~PtgSurl(){};
-
 	bool hasDirOption()
 	{
 		return m_dirOption;

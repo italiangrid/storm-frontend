@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~GetTransferProtocolsRequest() {}
-
 	int performXmlRpcCall(ns1__srmGetTransferProtocolsResponse_* response);
 
     void load(ns1__srmGetTransferProtocolsRequest* req);

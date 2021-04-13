@@ -28,8 +28,6 @@ public:
 		this->load(request);
     }
 
-	virtual ~AbortRequestRequest() {}
-
 	int performXmlRpcCall(ns1__srmAbortRequestResponse_* response);
 
     void load(ns1__srmAbortRequestRequest* req);

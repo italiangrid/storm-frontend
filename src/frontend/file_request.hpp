@@ -31,7 +31,7 @@ extern "C" {
 
 #include "storm_exception.hpp"
 #include "srmv2H.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srm_server.h"
 
 #include "soap_util.hpp"
@@ -40,6 +40,24 @@ extern "C" {
 #include "Surl.hpp"
 #include "token_validator.hpp"
 #include "Monitor.hpp"
+
+/* storm_req File Type */
+#define DB_FILE_TYPE_VOLATILE  'V'
+#define DB_FILE_TYPE_DURABLE   'D'
+#define DB_FILE_TYPE_PERMANENT 'P'
+#define DB_FILE_TYPE_UNKNOWN   '\0'
+
+/* storm_req Request Type */
+#define DB_BOL_REQUEST  "BOL"
+#define DB_COPY_REQUEST "COP"
+#define DB_GET_REQUEST  "PTG"
+#define DB_PUT_REQUEST  "PTP"
+
+/* storm_req Overwrite Mode */
+#define DB_OVERWRITE_NEVER         'N'
+#define DB_OVERWRITE_ALWAYS        'A'
+#define DB_OVERWRITE_IF_DIFFERENT  'D'
+#define DB_OVERWRITE_UNKNOWN       '\0'
 
 namespace storm {
 

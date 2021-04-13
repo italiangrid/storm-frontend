@@ -30,9 +30,6 @@ public:
 		this->load(request);
 	}
 
-	virtual ~PingRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmPingResponse_* response);
 
 	void load(ns1__srmPingRequest* req) ;

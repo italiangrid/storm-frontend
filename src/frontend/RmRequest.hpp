@@ -30,9 +30,6 @@ public:
 		this->load(request);
 	}
 
-	virtual ~RmRequest() {
-	}
-
 	int performXmlRpcCall(ns1__srmRmResponse_* response);
 
 	void load(ns1__srmRmRequest* req);

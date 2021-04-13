@@ -20,9 +20,7 @@
 
 #include "srm_server.h"
 #include "srmv2H.h"
-#include "storm_functions.h"
-#include "storm_limits.h"
-#include "storm_util.h"
+#include "storm_util.hpp"
 #include "srmlogit.h"
 
 #include <signal.h>
@@ -60,29 +58,27 @@ using namespace std;
 
 static bool stay_running = true;
 
-char *db_pwd;
-char *db_srvr;
-char *db_user;
-
 char* xmlrpc_endpoint;
 char* wsdl_file;
-char** supported_protocols;
-
-int nb_supported_protocols;
 
 DBConnectionPool* mysql_connection_pool;
-
-uid_t proxy_uid = 0;
-gid_t proxy_gid = 0;
 
 static const char* STORM_GLOBUS_THREADING_MODEL = "pthread";
 
 static int gsoap_send_timeout = 10;
 static int gsoap_recv_timeout = 10;
 
+int const SYERR = 2; // system error
+
 void sigint_handler(int /* sig */) {
 	srmlogit(STORM_LOG_INFO, __func__,
 			"Signal SIGINT received: shutting down...\n");
+	stay_running = false;
+}
+
+void sigterm_handler(int /* sig */) {
+	srmlogit(STORM_LOG_INFO, __func__,
+			"Signal SIGTERM received: shutting down...\n");
 	stay_running = false;
 }
 
@@ -120,8 +116,7 @@ process_request(struct soap* tsoap) {
 	storm::set_request_id();
 
 	srmlogit(STORM_LOG_DEBUG, "process_request", "-- START process_request\n");
-	srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection(
-			boost::this_thread::get_id());
+	srm_srv_thread_info * thread_info = mysql_connection_pool->getConnection();
 
 	// explicitly manage the request id here since threadinfo is not
 	// destroyed for each request but kept in the database connection pool
@@ -192,9 +187,6 @@ int loadConfiguration(int argc, char** argv) {
 
 void fillGlobalVars() {
 	FrontendConfiguration* configuration = FrontendConfiguration::getInstance();
-	db_user = strdup(configuration->getDBUser().c_str());
-	db_pwd = strdup(configuration->getDBUserPassword().c_str());
-	db_srvr = strdup(configuration->getDBHost().c_str());
 	wsdl_file = strdup(configuration->getWSDLFilePath().c_str());
 	xmlrpc_endpoint = strdup(configuration->getXMLRPCEndpoint().c_str());
 	gsoap_send_timeout = configuration->getGsoapSendTimeout();
@@ -307,13 +299,16 @@ int performSanityChecks() {
 	}
 
 	/**** Get list of supported protocols ****/
-	if ((nb_supported_protocols = get_supported_protocols(&supported_protocols))
-			< 0) {
-		srmlogit(STORM_LOG_ERROR, __func__,
-				"Error in get_supported_protocols(): unable to retrieve "
-						"supported protocols from the DB.");
+	if (ProtocolChecker::getInstance()->getProtocols().empty()) {
+		srmlogit(STORM_LOG_ERROR, __func__, "No supported protocols\n");
 		return 1;
 	}
+
+	if (!mysql_thread_safe()) {
+		srmlogit(STORM_LOG_ERROR, __func__, "MySQL is not thread-safe\n");
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -322,6 +317,7 @@ soap* initSoap() {
 	/**** gSOAP and CGSI_gSOAP plugin initializaion ****/
 	struct soap *soap_data = soap_new2(SOAP_IO_KEEPALIVE, SOAP_IO_KEEPALIVE);
 
+	int const SOAP_MAX_KEEPALIVE = 100;
 	soap_data->max_keep_alive = SOAP_MAX_KEEPALIVE;
 	// non-blocking soap_accept()... exit from soap_accept() every 5 secs if no requests arrive
 	soap_data->accept_timeout = 5;
@@ -520,6 +516,8 @@ void init_globus_threading() {
 
 int main(int argc, char** argv) {
 
+	mysql_library_init(argc, argv, NULL);
+
 	int ret = loadConfiguration(argc, argv);
 	if (ret != 0) {
 		if (ret > 0) {
@@ -534,16 +532,21 @@ int main(int argc, char** argv) {
 	initLogging();
 	logConfiguration();
 
-	if (performSanityChecks() != 0) {
-		return 1;
-	}
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"Initializing the ProtocolChecker instance\n");
-	ProtocolChecker::getInstance()->init(&supported_protocols,
-			nb_supported_protocols);
+	std::vector<std::string> supported_protocols = get_supported_protocols(
+		configuration->getDBHost(),
+		configuration->getDBUser(),
+		configuration->getDBUserPassword()
+	);
+	ProtocolChecker::getInstance()->init(supported_protocols);
 	srmlogit(STORM_LOG_DEBUG, __func__,
 			"ProtocolChecker initialization completed\n");
 	ProtocolChecker::getInstance()->printProtocols();
+
+	if (performSanityChecks() != 0) {
+		return 1;
+	}
 
 	if (!configuration->requestedDebug()) { // fork and leave the daemon in background
 		int pid = fork();
@@ -587,10 +590,14 @@ int main(int argc, char** argv) {
 
 	// the size of mysql_connection pool and thread pool MUST be the same
 	mysql_connection_pool = new DBConnectionPool(
-			configuration->getNumThreads());
+		configuration->getDBHost(),
+		configuration->getDBUser(),
+		configuration->getDBUserPassword()
+	);
 	storm::Monitoring* monitoring = initMonitoring();
-	// SIGINT (kill -2) to stop the frontend
+
 	signal(SIGINT, sigint_handler);
+	signal(SIGTERM, sigterm_handler);
 
 	srmlogit(STORM_LOG_NONE, __func__,
 			"StoRM frontend successfully started...\n");
@@ -615,8 +622,10 @@ int main(int argc, char** argv) {
 
 	curl_global_cleanup();
 
+	mysql_library_end();
+
 	srmlogit(STORM_LOG_NONE, __func__, "StoRM Frontend shutdown complete.\n");
 
-	return (exit_code);
+	return exit_code;
 }
 

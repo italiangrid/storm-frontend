@@ -20,7 +20,7 @@
 
 #include "srmv2H.h"
 #include "Surl.hpp"
-#include "storm_util.h"
+#include "storm_util.hpp"
 
 namespace storm {
 class PtpSurl : public Surl  {
@@ -32,8 +32,6 @@ public:
 	PtpSurl(std::string surl) : Surl(surl) {
 		this->init(-1);
 	};
-
-	~PtpSurl(){};
 
 	bool hasExpected_size()
 	{

@@ -30,7 +30,6 @@ public:
 					m_numOfLevels(-1), m_offset(-1), m_count(-1) {
 		this->load(request);
     }
-	virtual ~LsRequest() {}
 
 	int performXmlRpcCall(ns1__srmLsResponse_* response);
 

@@ -69,8 +69,7 @@ void storm::BolStatusRequest::loadFromDB(struct srm_dbfd* db){
     			"(c.request_queueID=r.ID AND s.request_BoLID=c.ID) "
     			"WHERE r.r_token=" + sqlFormat(m_requestToken);
     }
-    file_status_results_t results;
-    storm_db::vector_exec_query(db, query, results);
+    file_status_results_t results = storm_db::vector_exec_query(db, query);
 	if (results.size() == 0)
 	{
 		if(m_surls.size() > 0)
