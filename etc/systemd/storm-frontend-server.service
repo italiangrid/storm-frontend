@@ -1,5 +1,6 @@
 [Unit]
 Description=StoRM Frontend service
+After=mariadb.service
 
 [Service]
 WorkingDirectory=/var/log/storm
