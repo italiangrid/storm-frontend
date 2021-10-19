@@ -51,7 +51,7 @@ storm_frontend_server_LDFLAGS= \
 	@BOOST_PROGRAM_OPTIONS_LDFLAGS@ \
 	@BOOST_REGEX_LDFLAGS@
 
-noinst_INCLUDES = osdep.h \
+noinst_INCLUDES = \
   srm_server.h \
   storm_util.h \
   srmlogit.h \
