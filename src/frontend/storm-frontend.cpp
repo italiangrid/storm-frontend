@@ -15,7 +15,7 @@
 
 #include "srmSoapBinding.nsmap"
 
-#include "cgsi_plugin.h"
+//#include "cgsi_plugin.h"
 #include "config.h"
 
 #include "srm_server.h"
@@ -130,6 +130,24 @@ static int http_get(struct soap *soap) {
 	return SOAP_OK;
 }
 
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
+int http_parse_header(struct soap *soap, const char *key, const char *val)
+{
+  srmlogit(STORM_LOG_DEBUG, __func__, "%s: %s\n", key, val);
+
+	srm_srv_thread_info* thread_info = static_cast<srm_srv_thread_info*>(soap->user);
+
+	if (std::strcmp(key, "x-voms_user") == 0) {
+		thread_info->dn = val;
+	} else if (std::strcmp(key, "x-voms_fqans") == 0) {
+		// /test.vo/Role=NULL/Capability=NULL,/test.vo/G1/Role=NULL/Capability=NULL,/test.vo/G2/Role=NULL/Capability=NULL,/test.vo/G2/G3/Role=NULL/Capability=NULL
+		boost::algorithm::split(thread_info->fqans, val, boost::algorithm::is_any_of(","));	
+	}
+  return static_cast<srm_srv_thread_info*>(soap->user)->fparsehdr(soap, key, val);
+}
+
 void *
 process_request(struct soap* tsoap) {
 
@@ -146,6 +164,8 @@ process_request(struct soap* tsoap) {
     FrontendConfiguration::getInstance()->getUserCheckBlacklist()
     ? get_pep(storm::ThreadPool::getInstance()->getThreadNumber(boost::this_thread::get_id()))
     : 0;
+  thread_info->fparsehdr = tsoap->fparsehdr;
+  tsoap->fparsehdr = http_parse_header;
 
   tsoap->user = thread_info;
 
@@ -350,20 +370,20 @@ soap* initSoap() {
 	soap_data->fget = http_get;
 	soap_data->bind_flags = SO_REUSEADDR;
 
-	int flags = CGSI_OPT_DELEG_FLAG;
+	//int flags = CGSI_OPT_DELEG_FLAG;
 	// Renamed disable with enable and changed checks accordingly
 
-	if (!configuration->mappingEnabled()) {
-		flags |= CGSI_OPT_DISABLE_MAPPING;
-		srmlogit(STORM_LOG_NONE, __func__, "Mapping disabled\n");
-	}
+	//if (!configuration->mappingEnabled()) {
+	//	flags |= CGSI_OPT_DISABLE_MAPPING;
+	//	srmlogit(STORM_LOG_NONE, __func__, "Mapping disabled\n");
+	//}
 
-	if (!configuration->vomsCheckEnabled()) {
-		flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
-		srmlogit(STORM_LOG_NONE, __func__, "VOMS check disabled\n");
-	}
+	//if (!configuration->vomsCheckEnabled()) {
+	//	flags |= CGSI_OPT_DISABLE_VOMS_CHECK;
+	//	srmlogit(STORM_LOG_NONE, __func__, "VOMS check disabled\n");
+	//}
 
-	soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
+	//soap_register_plugin_arg(soap_data, server_cgsi_plugin, &flags);
 
 	int m;
 	m = soap_bind(soap_data, NULL, configuration->getPort(),

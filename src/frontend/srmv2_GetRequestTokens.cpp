@@ -31,7 +31,7 @@
 #include "Credentials.hpp"
 #include "get_socket_info.hpp"
 
-#include <cgsi_plugin.h>
+//#include <cgsi_plugin.h>
 #include "token_validator.hpp"
 #include "srm_server.h"
 

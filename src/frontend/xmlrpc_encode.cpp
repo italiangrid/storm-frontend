@@ -24,7 +24,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdio.h>
-#include <cgsi_plugin.h>
+//#include <cgsi_plugin.h>
 #include "get_socket_info.hpp"
 #include "surl_normalizer.h"
 #include <xmlrpc-c/util.h>
@@ -336,6 +336,8 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
     return(0);
 }
 
+#include "srm_server.h"
+
 /**
  * The encode_VOMSAttributes() function encodes the authorizationID field (SRM v2.2) into a xml structure
  * @param callerName The name of the caller function (for log messages).
@@ -346,49 +348,33 @@ int encode_userSpaceTokenDescription(const char *callerName, xmlrpc_env *env_add
  */
 int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct soap *soap, char * /* autohID */, xmlrpc_value *xmlStruct)
 {
-    char clientdn[256], **fqans;
-    int i, nbfqans, error;
-    xmlrpc_value *userDN, *fqansArray, *fqansItem;
-
-    /* Initialized to empty string */
-    clientdn[0] = 0;
-
-    /* Get DN and FQAN from the CGSI plugin and the CGSI_VOMS plugin */
-    get_client_dn(soap, clientdn, sizeof(clientdn));
-    nbfqans = 0;
-    /* fqans will point to a memory area in the soap structure: it must not be freed */
-    fqans = get_client_roles(soap, &nbfqans);
-
-    /* Paranoic error check for the result returned by the get_client_roles() function */
-    if (nbfqans > 0) {
-        if (fqans == NULL) {
-            srmlogit(STORM_LOG_ERROR, callerName,"ERROR: FQAN not found (but they should exist): fqans=NULL\n");
-            return(ENCODE_ERR_ENCODING_ERROR);
-        }
-    }
+	srm_srv_thread_info* thread_info = static_cast<srm_srv_thread_info*>(soap->user);
 
     /* Encode the userDN field */
-    userDN = xmlrpc_string_new(env_addr, clientdn);
+    std::string const& dn = thread_info->dn;
+    xmlrpc_value* userDN = xmlrpc_string_new(env_addr, dn.c_str());
     XMLRPC_ASSERT_ENV_OK(env_addr);
     xmlrpc_struct_set_value(env_addr, xmlStruct, "userDN", userDN);
 
-    srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", clientdn);
+    srmlogit(STORM_LOG_DEBUG, callerName, "UserDN=%s\n", dn.c_str());
     srmlogit(STORM_LOG_DEBUG, callerName, "Client IP=%s\n", get_ip(soap).c_str());
 
     xmlrpc_DECREF(userDN);
 
+    std::vector<std::string> const& fqans = thread_info->fqans;
+    int const nbfqans = fqans.size();
     srmlogit(STORM_LOG_DEBUG, callerName, "Number of FQANs: %d\n", nbfqans);
 
     if (nbfqans > 0) {
-        fqansArray = xmlrpc_array_new(env_addr);
+        xmlrpc_value* fqansArray = xmlrpc_array_new(env_addr);
         XMLRPC_ASSERT_ENV_OK(env_addr);
         /* Encode FQANS (fqans is an array of strings) into fqansArray */
-        error = 1;  // variable for paranoic error check
-        for (i=0; i<nbfqans; i++) {
-            if (fqans[i] != NULL) {
-                srmlogit(STORM_LOG_DEBUG, callerName, "FQAN[%d]: %s\n", i, fqans[i]);
+        int error = 1;  // variable for paranoic error check
+        for (int i=0; i<nbfqans; i++) {
+            if (!fqans[i].empty()) {
+                srmlogit(STORM_LOG_DEBUG, callerName, "FQAN[%d]: %s\n", i, fqans[i].c_str());
                 error = 0;
-                fqansItem = xmlrpc_string_new(env_addr, fqans[i]);
+                xmlrpc_value* fqansItem = xmlrpc_string_new(env_addr, fqans[i].c_str());
                 XMLRPC_ASSERT_ENV_OK(env_addr);
                 xmlrpc_array_append_item(env_addr, fqansArray, fqansItem);
                 xmlrpc_DECREF(fqansItem);
@@ -398,7 +384,7 @@ int encode_VOMSAttributes(const char *callerName, xmlrpc_env *env_addr, struct s
         if (!error) xmlrpc_struct_set_value(env_addr, xmlStruct, "userFQANS", fqansArray);
         xmlrpc_DECREF(fqansArray);
     }
-    return(0);
+    return 0;
 }
 
 /**

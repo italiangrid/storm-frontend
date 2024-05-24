@@ -35,7 +35,7 @@
 #include "xmlrpc_client.hpp"
 #include "srm_server.h"
 
-#include <cgsi_plugin.h>
+//#include <cgsi_plugin.h>
 
 using namespace std;
 

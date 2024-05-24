@@ -19,6 +19,8 @@
 
 #include <mysql/mysql.h>
 #include <argus/pep.h>
+#include <vector>
+#include <string>
 
 extern char *xmlrpc_endpoint;
 
@@ -32,6 +34,10 @@ struct srm_srv_thread_info {
     srm_dbfd  dbfd;
     const char*      request_id;
     PEP* pep_handle;
+    std::string dn;
+    std::vector<std::string> fqans;
+    typedef int (*parse_http_header_cb_t)(struct soap*, const char*, const char*);
+    parse_http_header_cb_t fparsehdr;
 };
 
 #endif /* _SRM_SERVER_H */

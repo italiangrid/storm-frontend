@@ -223,7 +223,7 @@ int writeLogPrefix(char* prtbuf, int logLevel)
 
 static void logTruncateSuffix(char* buffer)
 {
-	snprintf(buffer + LOGBUFSZ - 12, 12, "%s\n", " TRUNCATED");
+	snprintf(buffer + (LOGBUFSZ - 12), 12, "%s\n", " TRUNCATED");
 }
 
 int loggingError(const char* requestName) {

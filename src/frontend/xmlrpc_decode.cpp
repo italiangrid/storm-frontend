@@ -22,7 +22,7 @@
  
 #include "xmlrpc_decode.hpp"
 #include <stdio.h>
-#include <cgsi_plugin.h>
+//#include <cgsi_plugin.h>
 
 
 /***************************************************************************************************************/

@@ -22,7 +22,7 @@
 #include "FileStatusRequest.hpp"
 #include "storm_mysql.hpp"
 #include "get_socket_info.hpp"
-#include <cgsi_plugin.h>
+//#include <cgsi_plugin.h>
 
 template<typename soap_request_t, typename soap_response_t>
 int processRequestStatus(struct soap* soap, const char* funcName,
