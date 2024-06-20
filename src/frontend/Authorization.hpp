@@ -16,12 +16,16 @@
 #ifndef AUTHORIZATION_HPP_
 #define AUTHORIZATION_HPP_
 
+#include <boost/shared_ptr.hpp>
+#include <argus/pep.h>
 class soap;
 
 namespace storm {
 
   namespace authz {
 
+    typedef boost::shared_ptr<PEP> PepPtr;
+    PepPtr make_pep();
     bool is_blacklisted(soap* soap);
 
   }

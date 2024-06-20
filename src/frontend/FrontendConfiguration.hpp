@@ -30,134 +30,30 @@
 #include <iterator>
 #include <string>
 
-extern const std::string DEFAULT_CONFIGURATION_FILE;
-extern const std::string DEFAULT_GRIDMAPFILE;
-extern const std::string DEFAULT_HOST_CERT_FILE;
-extern const std::string DEFAULT_HOST_KEY_FILE;
-extern const std::string DEFAULT_LOG_FILE_NAME;
-extern const std::string DEFAULT_MONITORING_FILE_NAME;
-extern const std::string DEFAULT_WSDL_FILE;
-extern const std::string DEFAULT_XMLRPC_HOST;
-extern const std::string DEFAULT_XMLRPC_PORT;
-extern const std::string DEFAULT_XMLRPC_PATH;
-extern const std::string DEFAULT_XMLRPC_TOKEN;
-extern const std::string DEFAULT_DEBUG_LEVEL;
-extern const unsigned int DEFAULT_SLEEP_THREADPOOL_MAX_PENDING;
 extern const int DEFAULT_THREADS_NUMBER;
 extern const int DEFAULT_THREADPOOL_MAX_PENDING;
-
-extern const int DEFAULT_GSOAP_MAX_PENDING;
-extern const int DEFAULT_GSOAP_SEND_TIMEOUT; // seconds
-extern const int DEFAULT_GSOAP_RECV_TIMEOUT; // seconds
-
-extern const int DEFAULT_PORT;
-extern const bool DEFAULT_MONITORING_ENABLED;
-extern const int DEFAULT_MONITORING_TIME_INTERVAL;
-extern const bool DEFAULT_MONITORING_DETAILED;
-extern const bool DEFAULT_XMLRPC_CHECK_ASCII;
-extern const bool DEFAULT_USER_CHECK_BLACKLIST;
-extern const std::string DEFAULT_CA_CERTIFICATES_FOLDER;
-extern const std::string DEFAULT_ARGUS_RESOURCE_ID;
-
-extern const char* EMPTY_DESCRIPTION;
-
-extern const char* ENVVAR_GRIDMAP;
-extern const char* ENVVAR_X509_USER_CERT;
-extern const char* ENVVAR_X509_USER_KEY;
-extern const char* ENVVAR_X509_CERT_DIR;
-
-extern const std::string OPT_HELP;
-extern const std::string OPTL_HELP;
-extern const char* OPT_HELP_DESCRIPTION;
-
-extern const std::string OPT_VERSION;
-extern const std::string OPTL_VERSION;
-extern const char* OPT_VERSION_DESCRIPTION;
-
-extern const std::string OPT_CONFIG_FILE;
-extern const std::string OPTL_CONFIG_FILE;
-extern const char* OPT_CONFIG_FILE_DESCRIPTION;
-
-extern const std::string OPT_DEBUG;
-extern const std::string OPTL_DEBUG;
-extern const char* OPT_DEBUG_DESCRIPTION;
-
 // Renamed disable with enable and changed checks accordingly
 extern const std::string OPTL_ENABLE_MAPPING;
-extern const char* OPT_ENABLE_MAPPING_DESCRIPTION;
-
 extern const std::string OPTL_ENABLE_VOMSCHECK;
-extern const char* OPT_ENABLE_VOMSCHECK_DESCRIPTION;
-
 extern const std::string OPTL_MONITORING_ENABLED;
-
 extern const std::string OPTL_MONITORING_FILE_NAME;
-extern const char* OPT_MONITORING_FILE_NAME_DESCRIPTION;
-
 extern const std::string OPTL_MONITORING_DETAILED;
-extern const char* OPT_MONITORING_DETAILED_DESCRIPTION;
-
 extern const std::string OPTL_MONITORING_TIME_INTERVAL;
-extern const char* OPT_MONITORING_TIME_INTERVAL_DESCRIPTION;
-
 extern const std::string OPTL_LOG_FILE_NAME;
-extern const char* OPT_LOG_FILE_NAME_DESCRIPTION;
-
 extern const std::string OPTL_DEBUG_LEVEL;
-extern const char* OPT_DEBUG_LEVEL_DESCRIPTION;
-
 extern const std::string OPTL_PORT;
-extern const char* OPT_PORT_DESCRIPTION;
-
 extern const std::string OPTL_NUM_THREADS;
-
 extern const std::string OPTL_MAX_THREADPOOL_PENDING;
-
 extern const std::string OPTL_SLEEP_THREADPOOL_MAX_PENDING;
-
 extern const std::string OPTL_MAX_GSOAP_PENDING;
-
 extern const std::string OPTL_GSOAP_SEND_TIMEOUT;
 extern const std::string OPTL_GSOAP_RECV_TIMEOUT;
-
-extern const std::string OPTL_XMLRPC_HOST;
-extern const char* OPT_XMLRPC_HOST_DESCRIPTION;
-
 extern const std::string OPTL_RECALLTABLE_PORT;
-extern const std::string OPTL_XMLRPC_PORT;
-extern const char* OPT_XMLRPC_PORT_DESCRIPTION;
-
-extern const std::string OPTL_XMLRPC_PATH;
-extern const char* OPT_XMLRPC_PATH_DESCRIPTION;
-
-extern const std::string OPTL_XMLRPC_TOKEN;
-extern const char* OPT_XMLRPC_TOKEN_DESCRIPTION;
-
 extern const std::string OPTL_WSDL_FILE;
-extern const char* OPT_WSDL_FILE_DESCRIPTION;
-
 extern const std::string OPTL_DB_HOST;
-extern const char* OPT_DB_HOST_DESCRIPTION;
-
 extern const std::string OPTL_DB_USER;
-extern const char* OPT_DB_USER_DESCRIPTION;
-
-extern const std::string OPTL_DB_USER_PASSWORD;
-extern const char* OPT_DB_USER_PASSWORD_DESCRIPTION;
-
-extern const std::string OPTL_XMLRPC_CHECK_ASCII;
-extern const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION;
-
-extern const std::string OPTL_USER_CHECK_BLACKLIST;
-extern const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION;
-
 extern const std::string OPTL_ARGUS_PEPD_ENDPOINT;
-extern const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION;
-
 extern const std::string OPTL_ARGUS_RESOURCE_ID;
-extern const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION;
-
-
 
 // A helper function to simplify printing options stuff
 template<class T>
@@ -166,7 +62,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
     std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
     return os;
 }
-
 
 // This class is a singleton. The creation is not thread-safe because it is
 // instantiated from main().
@@ -282,7 +177,5 @@ private:
     std::string ca_certificates_folder;
 
 };
-
-int getInstanceXMLRPCCheckAscii();
 
 #endif /* FRONTENDOPTIONS_HPP_ */

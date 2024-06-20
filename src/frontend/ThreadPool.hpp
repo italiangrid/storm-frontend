@@ -218,6 +218,12 @@ class ThreadPool {
 
          return lable;
       }
+
+      int getThreadNumber(boost::thread::id id) const
+      {
+        std::map<boost::thread::id, int>::const_iterator it = idMap.find(id);
+        return it != idMap.end() ? it->second : -1;
+      }
 };
 }
 #endif /* THREADPOOL_HPP_ */

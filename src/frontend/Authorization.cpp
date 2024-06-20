@@ -32,14 +32,13 @@
 #include "gssapi_openssl.h"
 #include "cgsi_plugin_int.h"
 
-#include <argus/pep.h>
-
 #include "Authorization.hpp"
 #include "srmlogit.h"
 #include "FrontendConfiguration.hpp"
 #include "storm_exception.hpp"
 #include "srmv2H.h"
 #include "xacml_utils.hpp"
+#include "srm_server.h"
 
 using namespace storm::authz;
 
@@ -533,7 +532,7 @@ static bool argus_check_enabled(){
 }
 
 static void
-set_pep_option(pep_option opt, std::string const& value){
+set_pep_option(storm::authz::PepPtr pep_handle, pep_option opt, std::string const& value){
   pep_error_t pep_rc = pep_setoption(pep_handle.get(), opt, value.c_str());
   if (pep_rc != PEP_OK){
     authz_failure(boost::format("Error setting pep option: %s")
@@ -541,12 +540,14 @@ set_pep_option(pep_option opt, std::string const& value){
   }
 }
 
-static void
-make_pep(){
+namespace storm{
+namespace authz{
 
-  pep_handle.reset(pep_initialize());
+PepPtr make_pep()
+{
+  PepPtr pep_handle(pep_initialize(), pep_destroy);
 
-  if (!pep_handle.get()){
+  if (pep_handle){
     authz_failure("Error building PEP client");
   }
 
@@ -557,7 +558,7 @@ make_pep(){
     authz_failure("No ARGUS PEPD endpoint configured.");
   }
   
-  set_pep_option(PEP_OPTION_ENDPOINT_URL, pepd_endpoint);
+  set_pep_option(pep_handle, PEP_OPTION_ENDPOINT_URL, pepd_endpoint);
 
   std::string key =
       FrontendConfiguration::getInstance()->getHostKeyFile();
@@ -566,7 +567,7 @@ make_pep(){
     authz_failure("Empty private key.");
   }
 
-  set_pep_option(PEP_OPTION_ENDPOINT_CLIENT_KEY, key);
+  set_pep_option(pep_handle, PEP_OPTION_ENDPOINT_CLIENT_KEY, key);
 
   std::string cert =
       FrontendConfiguration::getInstance()->getHostCertFile();
@@ -575,7 +576,7 @@ make_pep(){
     authz_failure("certificate is misconfigured.");
   }
 
-  set_pep_option(PEP_OPTION_ENDPOINT_CLIENT_CERT, cert);
+  set_pep_option(pep_handle, PEP_OPTION_ENDPOINT_CLIENT_CERT, cert);
 
   std::string ca_path = 
       FrontendConfiguration::getInstance()->getCaCertificatesFolder();
@@ -584,11 +585,10 @@ make_pep(){
     authz_failure("ca path is misconfigured.");
   }
 
-  set_pep_option(PEP_OPTION_ENDPOINT_SERVER_CAPATH, ca_path);
-}
+  set_pep_option(pep_handle, PEP_OPTION_ENDPOINT_SERVER_CAPATH, ca_path);
 
-namespace storm{
-namespace authz{
+  return pep_handle;
+}
 
 bool is_blacklisted(soap* soap){
 
@@ -603,10 +603,8 @@ bool is_blacklisted(soap* soap){
     resource_id = DEFAULT_AUTHORIZATION_RESOURCE;
   }
 
-  // Initialize thread local PEP handle, if not already done
-  if (!pep_handle.get()){
-    make_pep();
-  }
+  PEP* pep_handle = static_cast<srm_srv_thread_info*>(soap->user)->pep_handle;
+  assert(pep_handle);
 
   RequestPtr request_tmp =
       create_xacml_request(pem_chain, resource_id, DEFAULT_AUTHORIZATION_ACTION);
@@ -616,7 +614,7 @@ bool is_blacklisted(soap* soap){
   xacml_request_t* request_ptr = release_raw_pointer(request_tmp);
 
   pep_error_t pep_rc =
-      pep_authorize(pep_handle.get(), &request_ptr, &response_ptr);
+      pep_authorize(pep_handle, &request_ptr, &response_ptr);
 
   RequestPtr request(request_ptr, xacml_request_delete);
   ResponsePtr response(response_ptr, xacml_response_delete);
