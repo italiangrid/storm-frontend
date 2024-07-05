@@ -14,13 +14,14 @@ dnl limitations under the License.
 
 AC_DEFUN([AC_MYSQL],
 [
-    AC_ARG_WITH(mysql_config_location,
-        [  --with-mysql_config_location=LOCATION        Location of the mysql_config program.],
-            [with_mysql_config_location="$withval"],
-        [with_mysql_config_location="/usr/lib64/mysql/mysql_config"])
+    AC_ARG_WITH([mysql_config_location],
+        [AC_HELP_STRING[--with-mysql_config_location=LOCATION],[Location of the mysql_config program]],
+        [with_mysql_config_location="$withval"],
+        [with_mysql_config_location="mysql_config"])
 
     if ! test -e "$with_mysql_config_location"; then
-        AC_MSG_ERROR("mysql_config not found at $with_mysql_config_location.")
+        AC_CHECK_PROG([mysql_config_program],[mysql_config],[yes],[no],[],
+        [AC_MSG_ERROR("mysql_config not found at $with_mysql_config_location.")])
     fi
 
     MYSQL_CFLAGS=$(${with_mysql_config_location} --cflags)
