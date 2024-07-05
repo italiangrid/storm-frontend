@@ -29,7 +29,7 @@ storm_frontend_server_CFLAGS = $(INCLUDES)
 storm_frontend_server_CXXFLAGS = $(INCLUDES)
 storm_frontend_server_LDADD = \
     $(top_builddir)/src/db/libstormdb.la \
-    @MYSQL_LIBS@ \
+    @MYSQL_LDFLAGS@ \
     @XMLRPC_LIBS@ \
     @LIBCURL_LIBS@ \
     @GLOBUS_COMMON_LIBS@ \
