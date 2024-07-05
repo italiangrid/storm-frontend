@@ -18,7 +18,7 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <string>

@@ -37,7 +37,7 @@
 namespace dt = boost::posix_time;
 #include "FrontendConfiguration.hpp"
 #include "ThreadPool.hpp"
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include "DBConnectionPool.hpp"
 #include <signal.h>
 #include "frontend_version.h"
@@ -548,7 +548,7 @@ int main(int argc, char** argv) {
 		if (pid > 0) {
 			return 0;
 		}
-  }
+	}
 
   curl_global_init(CURL_GLOBAL_ALL);
 
