@@ -56,9 +56,7 @@ const bool DEFAULT_MONITORING_ENABLED = true;
 const int DEFAULT_MONITORING_TIME_INTERVAL = 60;
 const bool DEFAULT_MONITORING_DETAILED = false;
 const bool DEFAULT_XMLRPC_CHECK_ASCII = true;
-const bool DEFAULT_USER_CHECK_BLACKLIST = false;
 const string DEFAULT_CA_CERTIFICATES_FOLDER = string("/etc/grid-security/certificates");
-const string DEFAULT_ARGUS_RESOURCE_ID = "storm";
 
 const char* EMPTY_DESCRIPTION = "";
 
@@ -148,16 +146,6 @@ const char* OPT_DB_USER_PASSWORD_DESCRIPTION = "Database user password";
 
 const string OPTL_XMLRPC_CHECK_ASCII = string("be.xmlrpc.check.ascii");
 const char* OPT_XMLRPC_CHECK_ASCII_DESCRIPTION = "Flag to check or not strings to be sent via xmlrpc to the BE";
-
-const string OPTL_USER_CHECK_BLACKLIST = string("check.user.blacklisting");
-const char* OPT_USER_CHECK_BLACKLIST_DESCRIPTION = "Flag to check or not strings if a user is blacklisted in Argus";
-
-const string OPTL_ARGUS_PEPD_ENDPOINT = string("argus-pepd-endpoint");
-const char* OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION = "Full SERVICE ENDPOINT of the Argus PEP Daemon";
-
-const string OPTL_ARGUS_RESOURCE_ID = string("argus.resource-id");
-const char* OPT_ARGUS_RESOURCE_ID_DESCRIPTION = "the resource identifier for StoRM service in Argus policies";
-
 
 FrontendConfiguration* FrontendConfiguration::instance = NULL;
 
@@ -383,18 +371,6 @@ bool FrontendConfiguration::getXMLRPCCheckAscii() {
     return xmlrpc_check_ascii;
 }
 
-bool FrontendConfiguration::getUserCheckBlacklist() {
-    return user_check_blacklist;
-}
-
-string FrontendConfiguration::getArgusPepdEndpoint() {
-    return argus_pepd_endpoint;
-}
-
-string FrontendConfiguration::getArgusResourceId() {
-    return argus_resource_id;
-}
-
 string FrontendConfiguration::getCaCertificatesFolder() {
     return ca_certificates_folder;
 }
@@ -434,10 +410,7 @@ po::options_description FrontendConfiguration::defineConfigFileOptions() {
             (OPTL_DB_USER.c_str(), po::value<string>(), OPT_DB_USER_DESCRIPTION)
             (OPTL_DB_USER_PASSWORD.c_str(), po::value<string>(), OPT_DB_USER_PASSWORD_DESCRIPTION)
             (OPTL_ENABLE_MAPPING.c_str(), po::value<bool>()->default_value(false), OPT_ENABLE_MAPPING_DESCRIPTION)
-            (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION)
-            (OPTL_USER_CHECK_BLACKLIST.c_str(), po::value<bool>()->default_value(DEFAULT_USER_CHECK_BLACKLIST), OPT_USER_CHECK_BLACKLIST_DESCRIPTION)
-            (OPTL_ARGUS_PEPD_ENDPOINT.c_str(), po::value<string>(), OPT_ARGUS_PEPD_ENDPOINT_DESCRIPTION)
-            (OPTL_ARGUS_RESOURCE_ID.c_str(), po::value<string>()->default_value(DEFAULT_ARGUS_RESOURCE_ID), OPT_ARGUS_RESOURCE_ID_DESCRIPTION);
+            (OPTL_ENABLE_VOMSCHECK.c_str(), po::value<bool>()->default_value(true), OPT_ENABLE_VOMSCHECK_DESCRIPTION);
 
     return configurationFileOptions;
 }
@@ -519,15 +492,6 @@ void FrontendConfiguration::setConfigurationOptions(po::variables_map& vm) {
 
     if (vm.count(OPTL_DB_USER_PASSWORD))
         dbUserPassword = vm[OPTL_DB_USER_PASSWORD].as<string> ();
-
-    if (vm.count(OPTL_USER_CHECK_BLACKLIST))
-    	user_check_blacklist = vm[OPTL_USER_CHECK_BLACKLIST].as<bool> ();
-
-    if (vm.count(OPTL_ARGUS_PEPD_ENDPOINT))
-    	argus_pepd_endpoint = vm[OPTL_ARGUS_PEPD_ENDPOINT].as<string> ();
-
-    if (vm.count(OPTL_ARGUS_RESOURCE_ID))
-    	argus_resource_id = vm[OPTL_ARGUS_RESOURCE_ID].as<string> ();
 
     log_file = vm[OPTL_LOG_FILE_NAME].as<string> ();
     monitoring_file = vm[OPTL_MONITORING_FILE_NAME].as<string> ();

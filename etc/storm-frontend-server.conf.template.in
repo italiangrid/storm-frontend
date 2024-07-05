@@ -23,10 +23,6 @@ db.host = localhost
 db.user = storm
 db.passwd = password
 
-# Argus Blacklisting
-#check.user.blacklisting = false # default is false
-#argus-pepd-endpoint =
-
 #monitoring.enabled = true  # default is true
 #monitoring.timeInterval = 60  # default is 60 (seconds)
 #monitoring.detailed = false  # default is false

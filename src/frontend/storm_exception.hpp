@@ -35,19 +35,6 @@ struct invalid_response: public storm_error {
 	}
 };
 
-struct authorization_error: public storm_error {
-	authorization_error(std::string const& m):
-		storm_error(m) {
-	}
-};
-
-struct argus_error: public storm_error {
-	argus_error(std::string const& m):
-		storm_error(m) {
-	}
-};
-
-
 struct token_not_found: public invalid_request {
 	token_not_found(std::string const& m) :
 			invalid_request(m) {

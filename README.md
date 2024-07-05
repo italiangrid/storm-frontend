@@ -42,8 +42,6 @@ Install the following required packages:
 * globus-gsi-credential-devel
 * CGSI-gSOAP-devel
 * storm-xmlrpc-c-devel
-* argus-pep-api-c
-* argus-pep-api-c-devel
 * libuuid-devel
 * boost-devel
 

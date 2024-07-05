@@ -51,7 +51,6 @@ namespace dt = boost::posix_time;
 #include "storm_exception.hpp"
 #include "request_id.hpp"
 #include "get_socket_info.hpp"
-#include "Authorization.hpp"
 #include <vector>
 
 #define NAME "StoRM SRM v2.2"
@@ -71,25 +70,6 @@ static int gsoap_send_timeout = 10;
 static int gsoap_recv_timeout = 10;
 
 int const SYERR = 2; // system error
-
-static std::vector<storm::authz::PepPtr> peps;
-
-void create_peps(int n)
-{
-  assert(n >= 0);
-  assert(peps.empty());
-
-  peps.reserve(n);
-  for (int i = 0; i != n; ++i) {
-	peps.push_back(storm::authz::make_pep());
-  }
-}
-
-PEP* get_pep(int thread_num)
-{
-  assert(thread_num >= 0 && static_cast<std::size_t>(thread_num) < peps.size());
-  return peps[thread_num].get();
-}
 
 void sigint_handler(int /* sig */) {
 	srmlogit(STORM_LOG_INFO, __func__,
@@ -142,10 +122,6 @@ process_request(struct soap* tsoap) {
 	// explicitly manage the request id here since threadinfo is not
 	// destroyed for each request but kept in the database connection pool
 	thread_info->request_id = storm::get_request_id();
-  thread_info->pep_handle =
-    FrontendConfiguration::getInstance()->getUserCheckBlacklist()
-    ? get_pep(storm::ThreadPool::getInstance()->getThreadNumber(boost::this_thread::get_id()))
-    : 0;
 
   tsoap->user = thread_info;
 
@@ -275,12 +251,6 @@ void logConfiguration() {
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%u\n",
 			OPTL_MONITORING_TIME_INTERVAL.c_str(),
 			configuration->getMonitoringTimeInterval());
-	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n",
-			OPTL_ARGUS_PEPD_ENDPOINT.c_str(),
-			configuration->getArgusPepdEndpoint().c_str());
-	srmlogit(STORM_LOG_NONE, __func__, "%s=%s\n",
-			OPTL_ARGUS_RESOURCE_ID.c_str(),
-			configuration->getArgusResourceId().c_str());
 	srmlogit(STORM_LOG_NONE, __func__, "xmlrpc endpoint=%s\n",
 			configuration->getXMLRPCEndpoint().c_str());
 	srmlogit(STORM_LOG_NONE, __func__, "%s=%d\n", OPTL_RECALLTABLE_PORT.c_str(),
@@ -578,10 +548,6 @@ int main(int argc, char** argv) {
 		if (pid > 0) {
 			return 0;
 		}
-	}
-
-  if (FrontendConfiguration::getInstance()->getUserCheckBlacklist()) {
-    create_peps(configuration->getNumThreads());
   }
 
   curl_global_init(CURL_GLOBAL_ALL);

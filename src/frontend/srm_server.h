@@ -18,7 +18,6 @@
 #define _SRM_SERVER_H
 
 #include <mysql/mysql.h>
-#include <argus/pep.h>
 
 extern char *xmlrpc_endpoint;
 
@@ -31,7 +30,6 @@ struct srm_dbfd {
 struct srm_srv_thread_info {
     srm_dbfd  dbfd;
     const char*      request_id;
-    PEP* pep_handle;
 };
 
 #endif /* _SRM_SERVER_H */

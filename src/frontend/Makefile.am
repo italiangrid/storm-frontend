@@ -1,6 +1,3 @@
-# $Id$
-
-#
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
 #    You may obtain a copy of the License at
@@ -36,14 +33,11 @@ storm_frontend_server_LDADD = \
     @XMLRPC_LIBS@ \
     @LIBCURL_LIBS@ \
     @GLOBUS_COMMON_LIBS@ \
-    @GLOBUS_GSI_CREDENTIAL_LIBS@ \
-    @GLOBUS_GSS_ASSIST_LIBS@ \
     @GSOAP_SSL_PP_LIBS@ \
     @CGSI_GSOAP_PLUGIN_LIBS@ \
     @BOOST_PROGRAM_OPTIONS_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     @BOOST_REGEX_LIBS@ \
-    @LIBARGUS_PEP_LIBS@ \
     @UUID_LIBS@
 
 storm_frontend_server_LDFLAGS= \
@@ -106,7 +100,6 @@ stormfrontend_others = storm_exception.hpp \
     GetTransferProtocolsRequest.cpp GetTransferProtocolsRequest.hpp \
     PingRequest.cpp PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
-    Authorization.cpp Authorization.hpp \
     cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
@@ -141,13 +134,9 @@ AM_CPPFLAGS = \
     @LIBCURL_CFLAGS@ \
     @XMLRPC_CFLAGS@ \
     @UUID_CFLAGS@ \
-    @GLOBUS_GRIDMAP_CALLOUT_ERROR_CFLAGS@ \
-    @GLOBUS_GSI_CREDENTIAL_CFLAGS@ \
-    @GLOBUS_GSS_ASSIST_CFLAGS@ \
     @GLOBUS_COMMON_CFLAGS@ \
     @GSOAP_SSL_PP_CFLAGS@ \
     @MYSQL_CFLAGS@ \
-    @LIBARGUS_PEP_CFLAGS@ \
     $(MTC_CFLAGS)
 
 MAINTAINERCLEANFILES = Makefile.in \

@@ -32,7 +32,6 @@
 #include <boost/format.hpp>
 #include "MonitoringHelper.hpp"
 #include "Credentials.hpp"
-#include "Authorization.hpp"
 
 #include "get_socket_info.hpp"
 #include "base_request.hpp"
@@ -60,32 +59,6 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 					request.getRequestToken().c_str());
 		}
 
-		bool const is_blacklisted = storm::authz::is_blacklisted(soap);
-
-		if (is_blacklisted) {
-			srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-			try {
-				rep->srmStatusOfPutRequestResponse = request.buildSpecificResponse(
-						SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-						"User not authorized");
-			} catch (std::runtime_error& exc) {
-				srmlogit(STORM_LOG_ERROR, funcName,
-						"Unable to build soap response. logic_error: %s\n",
-						exc.what());
-				storm::MonitoringHelper::registerOperationError(start_time,
-						storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME);
-				srmLogResponse("PTP status", SRM_USCOREFAILURE);
-				return soap_sender_fault(soap, exc.what(), 0);
-			}
-			storm::MonitoringHelper::registerOperation(start_time,
-					storm::SRM_STATUS_OF_PUT_REQUEST_MONITOR_NAME,
-					request.getStatus());
-			srmLogResponse("PTP status", request.getStatus());
-			return (SOAP_OK);
-		}
-
-		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
-
 		soap_status = processRequestStatus<ns1__srmStatusOfPutRequestRequest,
 				ns1__srmStatusOfPutRequestResponse>(soap, funcName, request,
 				&rep->srmStatusOfPutRequestResponse);
@@ -104,18 +77,6 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 				storm::build_error_message_response<
 						ns1__srmStatusOfPutRequestResponse>(soap,
 						SRM_USCOREINVALID_USCOREREQUEST, e.what());
-
-	} catch (storm::authorization_error const& e) {
-
-		storm::request::register_request_error<storm::PutStatusRequest>(
-				__func__, SRM_USCOREAUTHORIZATION_USCOREFAILURE, start_time,
-				boost::str(boost::format("%s\n") % e.what()));
-
-		rep->srmStatusOfPutRequestResponse =
-			storm::build_error_message_response<
-			ns1__srmStatusOfPutRequestResponse>(soap,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-					e.what());
 
 	}
 
@@ -141,49 +102,6 @@ extern "C" int ns1__srmStatusOfGetRequest(struct soap *soap,
 				request.getRequestToken().c_str());
 	}
 
-	bool is_blacklisted;
-
-	try {
-		is_blacklisted = storm::authz::is_blacklisted(soap);
-
-	} catch ( storm::authorization_error& e ){
-
-		storm::request::register_request_error<storm::GetStatusRequest>(
-				__func__, SRM_USCOREAUTHORIZATION_USCOREFAILURE, start_time,
-				boost::str(boost::format("%s\n") % e.what()));
-
-		rep->srmStatusOfGetRequestResponse =
-			storm::build_error_message_response<
-			ns1__srmStatusOfGetRequestResponse>(soap,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-					e.what());
-
-		return SOAP_OK;
-	}
-  
-	if ( is_blacklisted ){
-		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		try {
-			rep->srmStatusOfGetRequestResponse = request.buildSpecificResponse(
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-					"User not authorized");
-		} catch (std::runtime_error& exc) {
-			srmlogit(STORM_LOG_ERROR, funcName,
-					"Unable to build soap response. logic_error: %s\n",
-					exc.what());
-			storm::MonitoringHelper::registerOperationError(start_time,
-					storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME);
-			srmLogResponse("PTG status", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap, exc.what(), 0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-				storm::SRM_STATUS_OF_GET_REQUEST_MONITOR_NAME,
-				request.getStatus());
-		srmLogResponse("PTG status", request.getStatus());
-		return (SOAP_OK);
-	} else {
-		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
-	}
 	int soap_status = processRequestStatus<ns1__srmStatusOfGetRequestRequest,
 			ns1__srmStatusOfGetRequestResponse>(soap, funcName, 
 			request,
@@ -224,51 +142,6 @@ extern "C" int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 		srmLogRequestWithToken("BOL status", get_ip(soap).c_str(),
 				request.getCredentials().getDN().c_str(),
 				request.getRequestToken().c_str());
-	}
-	
-	bool is_blacklisted;
-
-	try {
-		is_blacklisted = storm::authz::is_blacklisted(soap);
-
-	} catch ( storm::authorization_error& e ){
-
-		storm::request::register_request_error<storm::BolStatusRequest>(
-				__func__, SRM_USCOREAUTHORIZATION_USCOREFAILURE, start_time,
-				boost::str(boost::format("%s\n") % e.what()));
-
-		rep->srmStatusOfBringOnlineRequestResponse =
-			storm::build_error_message_response<
-			ns1__srmStatusOfBringOnlineRequestResponse>(soap,
-					SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-					e.what());
-
-		return SOAP_OK;
-	}
-
-	if ( is_blacklisted ) {
-		srmlogit(STORM_LOG_INFO, funcName, "The user is blacklisted\n");
-		try {
-			rep->srmStatusOfBringOnlineRequestResponse =
-					request.buildSpecificResponse(
-							SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-							"User not authorized");
-		} catch (std::runtime_error& exc) {
-			srmlogit(STORM_LOG_ERROR, funcName,
-					"Unable to build soap response. logic_error: %s\n",
-					exc.what());
-			storm::MonitoringHelper::registerOperationError(start_time,
-					storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME);
-			srmLogResponse("BOL status", SRM_USCOREFAILURE);
-			return soap_sender_fault(soap, exc.what(), 0);;
-		}
-		storm::MonitoringHelper::registerOperation(start_time,
-				storm::SRM_STATUS_OF_BRING_ONLINE_REQUEST_MONITOR_NAME,
-				request.getStatus());
-		srmLogResponse("BOL status", request.getStatus());
-		return (SOAP_OK);
-	} else {
-		srmlogit(STORM_LOG_DEBUG, funcName, "The user is not blacklisted\n");
 	}
 
 	int soap_status = processRequestStatus<
