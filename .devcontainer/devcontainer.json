@@ -20,6 +20,7 @@
       }
     }
   },
+  "remoteEnv": {"TZ": "Europe/Rome"},
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
