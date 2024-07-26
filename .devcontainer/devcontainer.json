@@ -1,0 +1,27 @@
+{
+  "name": "StoRM Frontend Devel",
+  "build": {
+    "dockerfile": "Dockerfile-el9"
+  },
+  "init": true,
+  "capAdd": ["SYS_PTRACE"],
+  "securityOpt": ["seccomp=unconfined"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools-extension-pack",
+        "eamodio.gitlens",
+        "maelvalais.autoconf"
+      ],
+      "settings": {
+        "terminal.integrated.profiles.linux": {
+          "/bin/bash": null
+        }
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "remoteUser": "vscode"
+}

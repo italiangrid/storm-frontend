@@ -1,0 +1,26 @@
+FROM --platform=amd64 centos:7
+
+ARG DEVTOOLSET_VERSION=11
+ARG PLATFORM=linux
+ARG ARCH=x86_64
+
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=${USER_UID}
+
+COPY library-scripts/*.sh /tmp/library-scripts/
+COPY library-scripts/scl_enable /opt/app-root/etc/
+
+ENV APP_ROOT=/opt/app-root
+ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
+    ENV=${APP_ROOT}/etc/scl_enable \
+    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
+
+RUN \
+    sed -i "s/#DEVTOOLSET_VERSION#/${DEVTOOLSET_VERSION}/g" /opt/app-root/etc/scl_enable && \
+    chmod +x /tmp/library-scripts/*.sh && \
+    /tmp/library-scripts/provide-deps.sh && \
+    /tmp/library-scripts/provide-user.sh ${USERNAME} ${USER_UID} ${USER_GID} && \
+    rm -rf /tmp/library-scripts
+
+USER ${USERNAME}
