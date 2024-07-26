@@ -1,4 +1,4 @@
-dnl Copyright (c) Istituto Nazionale di Fisica Nucleare (INFN). 2006-2010.
+dnl Copyright (c) Istituto Nazionale di Fisica Nucleare (INFN). 2006-2024.
 dnl
 dnl Licensed under the Apache License, Version 2.0 (the "License");
 dnl you may not use this file except in compliance with the License.
@@ -14,19 +14,23 @@ dnl limitations under the License.
 
 AC_DEFUN([AC_XMLRPC_C],
 [
-	AC_ARG_WITH(xmlrpc_includes,
-		[  --with-xmlrpc_includes=XMLRPC_INCLUDES	Sets a non-standard location for xmlrpc-c includes],
+	AC_ARG_WITH([xmlrpc_includes],
+		[AC_HELP_STRING([--with-xmlrpc_includes=XMLRPC_INCLUDES],[Sets a non-standard location for xmlrpc-c includes])],
 		[with_xmlrpc_includes="$withval"],
-		[with_xmlrpc_includes="/usr/include/storm"])
+		[])
 
 	AC_ARG_WITH(xmlrpc_libs,
-		[  --with-xmlrpc_libs=XMLRPC_LIBS	Sets a non-standard location for xmlrpc-c librarires],
+		[AC_HELP_STRING([--with-xmlrpc_libs=XMLRPC_LIBS],[Sets a non-standard location for xmlrpc-c libraries])],
 		[with_xmlrpc_libs="$withval"],
-		[with_xmlrpc_libs="/usr/lib64/storm"])
+		[])
 
-
-	XMLRPC_CFLAGS="-I$with_xmlrpc_includes"
-	XMLRPC_LIBS="-L$with_xmlrpc_libs -lxmlrpc_client -lxmlrpc_xmlparse -lxmlrpc -lxmlrpc_util -lxmlrpc_xmltok"
+	if test "x${with_xmlrpc_includes}" != x; then
+		XMLRPC_CFLAGS="-I$with_xmlrpc_includes"
+    fi
+	if test "x${with_xmlrpc_libs}" != x; then
+		XMLRPC_LIBS="-L$with_xmlrpc_libs"
+	fi
+	XMLRPC_LIBS="$XMLRPC_LIBS -lxmlrpc_client -lxmlrpc -lxmlrpc_util"
 
 	CPPFLAGS_SAVE=$CPPFLAGS
 	CFLAGS_SAVE=$CFLAGS

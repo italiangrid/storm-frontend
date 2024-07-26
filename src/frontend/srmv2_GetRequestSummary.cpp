@@ -19,13 +19,15 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
 #include "storm_mysql.hpp"
 
-#include "Authorization.hpp"
 #include "MonitoringHelper.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "Credentials.hpp"
@@ -82,7 +84,7 @@ ns1__TRequestType getRequestType(std::string& r_type)
     return ns1__TRequestType(PREPARE_USCORETO_USCOREPUT);
 }
 
-extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
+int ns1__srmGetRequestSummary(struct soap *soap,
                                          struct ns1__srmGetRequestSummaryRequest *req,
                                          struct ns1__srmGetRequestSummaryResponse_ *rep)
 {
@@ -111,18 +113,6 @@ extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
         }
         srmlogit(STORM_LOG_INFO, func, "UserDN=%s\n", credentials.getDN().c_str());
 
-        if(storm::authz::is_blacklisted(soap))
-		{
-			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
-			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
-			repp->returnStatus->explanation = const_cast<char*>("User not authorized");
-			storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_SUMMARY_MONITOR_NAME);
-			return SOAP_OK;
-		}
-		else
-		{
-			srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
-		}
         // Check for a valid input
         if (!validate_array_of_req_tokens(func, req->arrayOfRequestTokens)) {
             srmlogit(STORM_LOG_ERROR, func, "Invalid 'arrayOfRequestTokens'\n");

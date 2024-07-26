@@ -1,6 +1,3 @@
-# $Id$
-
-#
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
 #    You may obtain a copy of the License at
@@ -32,18 +29,15 @@ storm_frontend_server_CFLAGS = $(INCLUDES)
 storm_frontend_server_CXXFLAGS = $(INCLUDES)
 storm_frontend_server_LDADD = \
     $(top_builddir)/src/db/libstormdb.la \
-    @MYSQL_LIBS@ \
+    @MYSQL_LDFLAGS@ \
     @XMLRPC_LIBS@ \
     @LIBCURL_LIBS@ \
     @GLOBUS_COMMON_LIBS@ \
-    @GLOBUS_GSI_CREDENTIAL_LIBS@ \
-    @GLOBUS_GSS_ASSIST_LIBS@ \
-    @GSOAP_SSL_PP_LIBS@ \
+    @GSOAP_SSL_LIBS@ \
     @CGSI_GSOAP_PLUGIN_LIBS@ \
     @BOOST_PROGRAM_OPTIONS_LIBS@ \
     @BOOST_THREAD_LIBS@ \
     @BOOST_REGEX_LIBS@ \
-    @LIBARGUS_PEP_LIBS@ \
     @UUID_LIBS@
 
 storm_frontend_server_LDFLAGS= \
@@ -106,7 +100,6 @@ stormfrontend_others = storm_exception.hpp \
     GetTransferProtocolsRequest.cpp GetTransferProtocolsRequest.hpp \
     PingRequest.cpp PingRequest.hpp \
     ProtocolChecker.cpp ProtocolChecker.hpp \
-    Authorization.cpp Authorization.hpp \
     cgsi_plugin_int.h \
     gssapi_openssl.h globus_gsi_gss_constants.h \
     asynch.cpp asynch_status.cpp \
@@ -125,8 +118,8 @@ stormfrontend_others = storm_exception.hpp \
     token_validator.hpp token_validator.cpp \
     xmlrpc_decode.cpp xmlrpc_encode.cpp \
     storm_util.cpp storm_utils.hpp \
-    srmv2C.cc \
-    srmv2Server.cc \
+    srmv2Server.c \
+    srmv2C.c \
     Monitor.hpp InstrumentedMonitor.hpp \
     MonitorStub.hpp InstrumentedMonitorBuilder.hpp \
     MonitorHelper.hpp \
@@ -141,26 +134,22 @@ AM_CPPFLAGS = \
     @LIBCURL_CFLAGS@ \
     @XMLRPC_CFLAGS@ \
     @UUID_CFLAGS@ \
-    @GLOBUS_GRIDMAP_CALLOUT_ERROR_CFLAGS@ \
-    @GLOBUS_GSI_CREDENTIAL_CFLAGS@ \
-    @GLOBUS_GSS_ASSIST_CFLAGS@ \
     @GLOBUS_COMMON_CFLAGS@ \
-    @GSOAP_SSL_PP_CFLAGS@ \
+    @GSOAP_SSL_CFLAGS@ \
     @MYSQL_CFLAGS@ \
-    @LIBARGUS_PEP_CFLAGS@ \
     $(MTC_CFLAGS)
 
 MAINTAINERCLEANFILES = Makefile.in \
-    srmv2C.cc \
-    srmv2Server.cc
+    srmv2C.c \
+    srmv2Server.c
 
-srmv2C.cc:
-	@echo "Copying file \"srmv2C.cc\" from $(GENERATED_GSOAP_INCLUDES)"
-	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2C.cc .
+srmv2C.c: $(GENERATED_GSOAP_INCLUDES)/srmv2C.c
+	@echo "Copying file \"srmv2C.c\" from $(GENERATED_GSOAP_INCLUDES)"
+	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2C.c .
 
-srmv2Server.cc:
-	@echo "Copying file \"srmv2Server.cc\" from $(GENERATED_GSOAP_INCLUDES)"
-	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2Server.cc .
+srmv2Server.c: $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c
+	@echo "Copying file \"srmv2Server.c\" from $(GENERATED_GSOAP_INCLUDES)"
+	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c .
 
 distclean-local:
 	rm -f srmv2C.cc srmv2Server.cc

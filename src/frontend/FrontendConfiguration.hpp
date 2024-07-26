@@ -52,8 +52,6 @@ extern const std::string OPTL_RECALLTABLE_PORT;
 extern const std::string OPTL_WSDL_FILE;
 extern const std::string OPTL_DB_HOST;
 extern const std::string OPTL_DB_USER;
-extern const std::string OPTL_ARGUS_PEPD_ENDPOINT;
-extern const std::string OPTL_ARGUS_RESOURCE_ID;
 
 // A helper function to simplify printing options stuff
 template<class T>
@@ -112,9 +110,6 @@ public:
     std::string getHostCertFile();
     std::string getHostKeyFile();
     bool getXMLRPCCheckAscii();
-    bool getUserCheckBlacklist();
-    std::string getArgusPepdEndpoint();
-    std::string getArgusResourceId();
     std::string getCaCertificatesFolder();
 
 private:
@@ -171,9 +166,6 @@ private:
     std::string hostcertfile;
     std::string hostkeyfile;
     bool xmlrpc_check_ascii;
-    bool user_check_blacklist;
-    std::string argus_pepd_endpoint;
-    std::string argus_resource_id;
     std::string ca_certificates_folder;
 
 };

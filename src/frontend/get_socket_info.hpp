@@ -1,9 +1,9 @@
-#ifndef GSOAP_COMMON_HPP_
-#define GSOAP_COMMON_HPP_
+#ifndef GET_SOCKET_INFO_HPP
+#define GET_SOCKET_INFO_HPP
 
-#include "cgsi_plugin.h"
+struct soap;
 #include <string>
 
-std::string get_ip(struct soap * soap);
+std::string get_ip(soap * soap);
 
-#endif //GSOAP_COMMON_HPP
+#endif

@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
+
 #include <boost/format.hpp>
 
 #include "MonitoringHelper.hpp"
@@ -22,7 +26,6 @@
 
 #include "srmlogit.h"
 #include "get_socket_info.hpp"
-#include "Authorization.hpp"
 #include "soap_util.hpp"
 #include "synch.hpp"
 #include "storm_exception.hpp"
@@ -51,23 +54,6 @@ int handle_request(const char* func_name, struct soap* soap,
 
         logger.log_request(func_name, request);
 
-        bool const request_is_blacklisted =
-                storm::authz::is_blacklisted(request.getSoapRequest());
-
-        if (request_is_blacklisted) {
-
-            *soap_resp = storm::build_error_message_response<response_t>(soap,
-                    SRM_USCOREAUTHORIZATION_USCOREFAILURE,
-                    "Request authorization error: user is blacklisted.");
-
-            storm::request::register_request_error<request_t>(func_name,
-                    SRM_USCOREAUTHORIZATION_USCOREFAILURE, start_time,
-                    "Request authorization error: user is blacklisted.\n");
-
-            return SOAP_OK;
-        }
-
-        // Request is authorized, handle it
         int const soap_return_value = request.performXmlRpcCall(response_container);
 
         storm::MonitoringHelper::registerOperation(
@@ -89,17 +75,6 @@ int handle_request(const char* func_name, struct soap* soap,
         storm::request::register_request_error<request_t>(func_name,
                 SRM_USCOREINVALID_USCOREREQUEST, start_time,
                 str(format("%s\n") % e.what()));
-
-        return SOAP_OK;
-
-    } catch (storm::authorization_error& e) {
-
-        *soap_resp = storm::build_error_message_response<response_t>(soap,
-                SRM_USCOREFAILURE, e.what());
-
-        storm::request::register_request_error<request_t>(func_name, SRM_USCOREFAILURE,
-                start_time,
-                str(format("Error authorizing request: %s\n") % e.what()));
 
         return SOAP_OK;
 

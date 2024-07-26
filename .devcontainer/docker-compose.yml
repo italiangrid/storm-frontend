@@ -1,0 +1,23 @@
+
+services:
+
+  container-el9:
+
+    environment:
+      - TZ=Europe/Rome
+
+    build:
+      context: .
+      dockerfile: Dockerfile-el9
+
+    volumes:
+      - .:/workspace
+
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+    command: sleep infinity
+ 
+    init: true

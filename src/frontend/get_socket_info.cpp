@@ -1,5 +1,6 @@
 #include "get_socket_info.hpp"
 #include "srmlogit.h"
+#include "srmv2H.h"
 #include <arpa/inet.h>
 #include <iostream>
 #include <sstream>
@@ -90,17 +91,8 @@ std::string get_address(struct soap * soap, sockaddr_storage * peer)
  * @param soap [IN] the soap struct
  * @return address as string
  */
-std::string get_ip(struct soap *soap)
+std::string get_ip(soap *soap)
 {
-    return get_address(soap,&(soap->peer));
+    return get_address(soap,reinterpret_cast<sockaddr_storage*>(&(soap->peer)));
 }
 
-extern "C" {
-
-char *getip(struct soap *soap, char *buffer) 
-{
-  strcpy(buffer, get_ip(soap).c_str());
-  return buffer;
-}
-
-}

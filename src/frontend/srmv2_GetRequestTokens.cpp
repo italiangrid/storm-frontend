@@ -18,13 +18,16 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
+
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
 #include "storm_mysql.hpp"
 
-#include "Authorization.hpp"
 #include "MonitoringHelper.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -37,7 +40,7 @@
 
 using namespace std;
 
-extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
+int ns1__srmGetRequestTokens(struct soap *soap,
                                         struct ns1__srmGetRequestTokensRequest *req,
                                         struct ns1__srmGetRequestTokensResponse_ *rep)
 {
@@ -62,19 +65,6 @@ extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
             storm::MonitoringHelper::registerOperationError(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
             return SOAP_OK;
         }
-        
-        if(storm::authz::is_blacklisted(soap))
-		{
-			srmlogit(STORM_LOG_INFO, func, "The user is blacklisted\n");
-			repp->returnStatus->statusCode = SRM_USCOREAUTHORIZATION_USCOREFAILURE;
-			repp->returnStatus->explanation = const_cast<char*>("User not authorized");
-            storm::MonitoringHelper::registerOperationFailure(start_time, storm::SRM_GET_REQUEST_TOKENS_MONITOR_NAME);
-			return SOAP_OK;
-		}
-		else
-		{
-			srmlogit(STORM_LOG_DEBUG, func, "The user is not blacklisted\n");
-		}
 
         // TODO ping db connection?
 
