@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
+
 #include <boost/format.hpp>
 
 #include "MonitoringHelper.hpp"

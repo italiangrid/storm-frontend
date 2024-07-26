@@ -33,7 +33,7 @@ storm_frontend_server_LDADD = \
     @XMLRPC_LIBS@ \
     @LIBCURL_LIBS@ \
     @GLOBUS_COMMON_LIBS@ \
-    @GSOAP_SSL_PP_LIBS@ \
+    @GSOAP_SSL_LIBS@ \
     @CGSI_GSOAP_PLUGIN_LIBS@ \
     @BOOST_PROGRAM_OPTIONS_LIBS@ \
     @BOOST_THREAD_LIBS@ \
@@ -118,8 +118,8 @@ stormfrontend_others = storm_exception.hpp \
     token_validator.hpp token_validator.cpp \
     xmlrpc_decode.cpp xmlrpc_encode.cpp \
     storm_util.cpp storm_utils.hpp \
-    srmv2C.cc \
-    srmv2Server.cc \
+    srmv2Server.c \
+    srmv2C.c \
     Monitor.hpp InstrumentedMonitor.hpp \
     MonitorStub.hpp InstrumentedMonitorBuilder.hpp \
     MonitorHelper.hpp \
@@ -135,21 +135,21 @@ AM_CPPFLAGS = \
     @XMLRPC_CFLAGS@ \
     @UUID_CFLAGS@ \
     @GLOBUS_COMMON_CFLAGS@ \
-    @GSOAP_SSL_PP_CFLAGS@ \
+    @GSOAP_SSL_CFLAGS@ \
     @MYSQL_CFLAGS@ \
     $(MTC_CFLAGS)
 
 MAINTAINERCLEANFILES = Makefile.in \
-    srmv2C.cc \
-    srmv2Server.cc
+    srmv2C.c \
+    srmv2Server.c
 
-srmv2C.cc:
-	@echo "Copying file \"srmv2C.cc\" from $(GENERATED_GSOAP_INCLUDES)"
-	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2C.cc .
+srmv2C.c: $(GENERATED_GSOAP_INCLUDES)/srmv2C.c
+	@echo "Copying file \"srmv2C.c\" from $(GENERATED_GSOAP_INCLUDES)"
+	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2C.c .
 
-srmv2Server.cc:
-	@echo "Copying file \"srmv2Server.cc\" from $(GENERATED_GSOAP_INCLUDES)"
-	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2Server.cc .
+srmv2Server.c: $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c
+	@echo "Copying file \"srmv2Server.c\" from $(GENERATED_GSOAP_INCLUDES)"
+	/bin/cp $(GENERATED_GSOAP_INCLUDES)/srmv2Server.c .
 
 distclean-local:
 	rm -f srmv2C.cc srmv2Server.cc

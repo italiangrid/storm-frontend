@@ -19,7 +19,10 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
@@ -81,7 +84,7 @@ ns1__TRequestType getRequestType(std::string& r_type)
     return ns1__TRequestType(PREPARE_USCORETO_USCOREPUT);
 }
 
-extern "C" int ns1__srmGetRequestSummary(struct soap *soap,
+int ns1__srmGetRequestSummary(struct soap *soap,
                                          struct ns1__srmGetRequestSummaryRequest *req,
                                          struct ns1__srmGetRequestSummaryResponse_ *rep)
 {

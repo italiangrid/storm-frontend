@@ -18,7 +18,11 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
+
 #include "srmlogit.h"
 #include "soap_util.hpp"
 #include "mysql_query.hpp"
@@ -36,7 +40,7 @@
 
 using namespace std;
 
-extern "C" int ns1__srmGetRequestTokens(struct soap *soap,
+int ns1__srmGetRequestTokens(struct soap *soap,
                                         struct ns1__srmGetRequestTokensRequest *req,
                                         struct ns1__srmGetRequestTokensResponse_ *rep)
 {

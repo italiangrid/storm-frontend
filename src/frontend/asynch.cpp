@@ -13,7 +13,10 @@
  * limitations under the License.
 */
 
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
 #include "srmlogit.h"
 #include "filerequest_template.hpp"
 #include "PtpRequest.hpp"

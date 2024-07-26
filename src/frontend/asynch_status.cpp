@@ -20,7 +20,10 @@
  *      Author: alb
  */
 
+#include "stdsoap2.h"
+extern "C" {
 #include "srmv2H.h"
+}
 #include "srmlogit.h"
 #include "StatusTemplate.hpp"
 #include "PutStatusRequest.hpp"
@@ -83,7 +86,7 @@ int ns1__srmStatusOfPutRequest(struct soap *soap,
 	return soap_status;
 }
 
-extern "C" int ns1__srmStatusOfGetRequest(struct soap *soap,
+int ns1__srmStatusOfGetRequest(struct soap *soap,
 		struct ns1__srmStatusOfGetRequestRequest *req,
 		struct ns1__srmStatusOfGetRequestResponse_ *rep) {
 	static const char* funcName = "srmStatusOfGetRequest";
@@ -125,7 +128,7 @@ extern "C" int ns1__srmStatusOfGetRequest(struct soap *soap,
 	}
 }
 
-extern "C" int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
+int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 		struct ns1__srmStatusOfBringOnlineRequestRequest *req,
 		struct ns1__srmStatusOfBringOnlineRequestResponse_ *rep) {
 	static const char* funcName = "srmStatusOfBringOnLineRequest";
@@ -167,7 +170,7 @@ extern "C" int ns1__srmStatusOfBringOnlineRequest(struct soap *soap,
 	}
 }
 
-extern "C" int ns1__srmStatusOfCopyRequest(struct soap *soap,
+int ns1__srmStatusOfCopyRequest(struct soap *soap,
 		struct ns1__srmStatusOfCopyRequestRequest *req,
 		struct ns1__srmStatusOfCopyRequestResponse_ *rep) {
 	static const char* funcName = "srmStatusOfCopyRequest";

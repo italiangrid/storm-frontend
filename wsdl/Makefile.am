@@ -31,8 +31,17 @@ skeletons: $(FLAG_FILE)
 $(FLAG_FILE):
 	touch $(FLAG_FILE)
 	mkdir -p $(top_builddir)/wsdl/gsoap-autogen
+    # -w     always wrap response parameters in a response struct (<=1.1.4 behavior)
+    # -c     generate C source code
+    # -e     don't qualify enum names
+    # -y     generate typedef synonyms for structs and enums
+    # -tfile use type map file instead of the default file typemap.dat
 	@WSDL2H@ @WSDL2H_FLAGS@ -w -c -e -y -t $(top_srcdir)/wsdl/typemap.dat $(top_srcdir)/wsdl/srm.v2.2.wsdl -o $(top_builddir)/wsdl/gsoap-autogen/srm.v2.2.h
-	cd $(top_builddir)/wsdl/gsoap-autogen; @SOAPCPP2@ -S -I/usr/include -c -p srmv2 srm.v2.2.h; mv srmv2C.c srmv2C.cc; mv srmv2Server.c srmv2Server.cc; cd ..
+    # -S     generate server-side source code only
+    # -Ipath use path(s) for #import (paths separated with ':')
+    # -c     generate C source code
+    # -pname save files with new prefix name instead of 'soap'
+	cd $(top_builddir)/wsdl/gsoap-autogen; @SOAPCPP2@ -S -I/usr/include -c -p srmv2 srm.v2.2.h
 
 clean-local:
 	rm -rf $(top_builddir)/wsdl/gsoap-autogen
